@@ -19,6 +19,7 @@ CE161096 Nguyễn Ngọc Mỹ Quyên (Mobile)
 ## Quick Start
 1. npm i or npm install
 2. npm start
+
 #Note: Before you must be installed nodeJS enviroment (node -v)
 
 ## Reference tools

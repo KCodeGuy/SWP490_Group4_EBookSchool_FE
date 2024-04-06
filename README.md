@@ -10,17 +10,17 @@ Mô tả: E-SchoolBook là nền tảng sổ đầu bài trực tuyến, đưa s
 7. Ứng dụng mobile: Ứng dụng cho phép phụ huynh hoặc học sinh, giáo viên có thể xem các thông tin như lịch học, điểm, thông báo.
 
 ## About Teams
-CE160343 Huỳnh Hữu Nghĩa (C) (BE)
-CE160367 Trần Đăng Khoa (FE)
-CE160438 Lê Trung Uôl (FE)
-CE161025 Trần Thị Ngọc Hiếu (FE)
-CE161096 Nguyễn Ngọc Mỹ Quyên (Mobile)
+1. CE160343 Huỳnh Hữu Nghĩa (C) (BE)
+2. CE160367 Trần Đăng Khoa (FE)
+3. CE160438 Lê Trung Uôl (FE)
+4. CE161025 Trần Thị Ngọc Hiếu (FE)
+5. CE161096 Nguyễn Ngọc Mỹ Quyên (Mobile)
 
 ## Quick Start
 1. npm i or npm install
 2. npm start
 
-#Note: Before you must be installed nodeJS enviroment (node -v)
+#Note: Before you must be installed nodeJS environment (test node -v)
 
 ## Reference tools
 1. UI component documents: 

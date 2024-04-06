@@ -17,9 +17,9 @@ CE161025 Trần Thị Ngọc Hiếu (FE)
 CE161096 Nguyễn Ngọc Mỹ Quyên (Mobile)
 
 ## Quick Start
-2. npm i or npm install
-3. npm start
-Note: Before you must be installed nodeJS enviroment (node -v)
+1. npm i or npm install
+2. npm start
+#Note: Before you must be installed nodeJS enviroment (node -v)
 
 ## Reference tools
 1. UI component documents: 

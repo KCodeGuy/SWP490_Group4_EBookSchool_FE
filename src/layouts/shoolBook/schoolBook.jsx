@@ -89,7 +89,7 @@ const SchoolBook = () => {
           >
             <Grid item xs={12} md={6} lg={3}>
               <MDTypography>Manage products</MDTypography>
-              <ButtonComponent type="primary">Contained</ButtonComponent>
+              <ButtonComponent type="primary"> + Add new</ButtonComponent>
             </Grid>
             <Grid item xs={12} md={6} lg={3}>
               <MDBox mb={1.5}>

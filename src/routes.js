@@ -45,7 +45,7 @@ import SignUp from "layouts/authentication/sign-up";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
-import SchoolBook from "layouts/shoolBook/schoolBook";
+import SchoolBook from "layouts/shoolBook/SchoolBook";
 
 const routes = [
   {

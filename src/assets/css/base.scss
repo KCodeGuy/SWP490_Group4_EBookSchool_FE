@@ -1,0 +1,68 @@
+// COLOR VARIABLES
+$text-color: #7b809a;
+$white-color: #ffffff;
+$black-color: #000000;
+$main-color: #e91e63;
+$primary-color: #1a73e8;
+$success-color: #4caf50;
+$warning-color: #fb8c00;
+$error-color: #f44335;
+$light-color: #f0f2f5;
+$dark-color: #344767;
+
+$text-hover-color: #7b809a;
+$white-hover-color: #ffffff;
+$black-hover-color: #000000;
+$main-hover-color: #e91e63;
+$primary-hover-color: #1662c4;
+$success-hover-color: #4caf50;
+$warning-hover-color: #fb8c00;
+$error-hover-color: #f44335;
+$light-hover-color: #f0f2f5;
+$dark-hover-color: #344767;
+
+.text-color {
+  color: $text-color;
+
+  &.hover {
+    color: $text-color;
+  }
+}
+
+.white-color {
+  color: $white-color;
+}
+
+.black-color {
+  color: $black-color;
+}
+
+.primary-color {
+  color: $primary-color;
+  &.hover:hover {
+    color: $primary-hover-color;
+  }
+}
+
+.success-color {
+  color: $success-color;
+  &.hover:hover {
+    color: $success-hover-color;
+  }
+}
+
+.warning-color {
+  color: $warning-color;
+}
+
+.error-color {
+  color: $error-color;
+}
+
+.light-color {
+  color: $light-color;
+}
+
+.dark-color {
+  color: $dark-color;
+}

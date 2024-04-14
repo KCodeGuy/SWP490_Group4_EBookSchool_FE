@@ -5,10 +5,13 @@ import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import DataTable from "components/DataTable/DataTable";
-import * as ProductService from "../../services/ProductService.jsx";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard/index.js";
 import MDTypography from "components/MDTypography/index.js";
 import Button from "@mui/material/Button";
+
+import * as ProductService from "../../services/ProductService.jsx";
+import "../../assets/css/base.scss";
+import ButtonComponent from "components/ButtonComponent/ButtonComponent.jsx";
 
 const columns = [
   { field: "id", headerName: "No.", width: 70 },
@@ -85,12 +88,8 @@ const SchoolBook = () => {
             spacing={3}
           >
             <Grid item xs={12} md={6} lg={3}>
-              <MDTypography variant="h5" fontWeight="medium" color="info" mt={1}>
-                Manage products
-              </MDTypography>
-              <Button variant="contained" color="info" style={{ marginTop: "12px" }}>
-                + Add new
-              </Button>
+              <MDTypography>Manage products</MDTypography>
+              <ButtonComponent type="primary">Contained</ButtonComponent>
             </Grid>
             <Grid item xs={12} md={6} lg={3}>
               <MDBox mb={1.5}>

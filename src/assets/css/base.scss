@@ -2,31 +2,26 @@
 $text-color: #7b809a;
 $white-color: #ffffff;
 $black-color: #000000;
-$main-color: #e91e63;
-$primary-color: #1a73e8;
+$primary-color: #247cd4;
+$error-color: #e91e63;
 $success-color: #4caf50;
 $warning-color: #fb8c00;
-$error-color: #f44335;
+$red-color: #d70200;
 $light-color: #f0f2f5;
 $dark-color: #344767;
 
-$text-hover-color: #7b809a;
-$white-hover-color: #ffffff;
-$black-hover-color: #000000;
-$main-hover-color: #e91e63;
-$primary-hover-color: #1662c4;
-$success-hover-color: #4caf50;
-$warning-hover-color: #fb8c00;
-$error-hover-color: #f44335;
-$light-hover-color: #f0f2f5;
-$dark-hover-color: #344767;
+$white-hover-color: #ebe8e8;
+$black-hover-color: #535252;
+$primary-hover-color: #3776c7;
+$error-hover-color: #dd4376;
+$success-hover-color: #58b15d;
+$warning-hover-color: #db9744;
+$red-hover-color: #ce2927;
+$light-hover-color: #d5d6d6;
+$dark-hover-color: #505e77;
 
 .text-color {
   color: $text-color;
-
-  &.hover {
-    color: $text-color;
-  }
 }
 
 .white-color {
@@ -37,18 +32,16 @@ $dark-hover-color: #344767;
   color: $black-color;
 }
 
+.red-color {
+  color: $red-color;
+}
+
 .primary-color {
   color: $primary-color;
-  &.hover:hover {
-    color: $primary-hover-color;
-  }
 }
 
 .success-color {
   color: $success-color;
-  &.hover:hover {
-    color: $success-hover-color;
-  }
 }
 
 .warning-color {
@@ -65,4 +58,41 @@ $dark-hover-color: #344767;
 
 .dark-color {
   color: $dark-color;
+}
+
+// Background-color
+.bg-white-color {
+  background-color: $white-color;
+}
+
+.bg-black-color {
+  background-color: $black-color;
+}
+
+.bg-red-color {
+  background-color: $red-color;
+}
+
+.bg-primary-color {
+  background-color: $primary-color;
+}
+
+.bg-success-color {
+  background-color: $success-color;
+}
+
+.bg-warning-color {
+  background-color: $warning-color;
+}
+
+.bg-error-color {
+  background-color: $error-color;
+}
+
+.bg-light-color {
+  background-color: $light-color;
+}
+
+.bg-dark-color {
+  background-color: $dark-color;
 }

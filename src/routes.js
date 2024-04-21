@@ -46,6 +46,7 @@ import SignUp from "layouts/authentication/sign-up";
 // @mui icons
 import Icon from "@mui/material/Icon";
 import SchoolBook from "layouts/shoolBook/SchoolBook";
+import Wiki from "layouts/wiki/Wiki";
 
 const routes = [
   {
@@ -63,6 +64,14 @@ const routes = [
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/schoolBook",
     component: <SchoolBook />,
+  },
+  {
+    type: "collapse",
+    name: "Wiki",
+    key: "wiki",
+    icon: <Icon fontSize="small">dashboard</Icon>,
+    route: "/wiki",
+    component: <Wiki />,
   },
   {
     type: "collapse",

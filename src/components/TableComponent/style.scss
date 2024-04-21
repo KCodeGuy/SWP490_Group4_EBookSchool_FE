@@ -1,0 +1,14 @@
+@import "../../assets/css/base.scss";
+table {
+  width: 100%;
+  text-align: center;
+}
+
+table thead {
+  background-color: $primary-color;
+  color: $white-color;
+}
+table thead tr th {
+  min-width: 50px;
+  text-wrap: wrap;
+}

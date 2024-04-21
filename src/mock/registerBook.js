@@ -81,3 +81,5 @@ const registerBook = {
     },
   },
 };
+
+export { registerBook, registerBooks };

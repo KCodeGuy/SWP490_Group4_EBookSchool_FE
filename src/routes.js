@@ -45,8 +45,9 @@ import SignUp from "layouts/authentication/sign-up";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
-import SchoolBook from "layouts/shoolBook/SchoolBook";
-import Wiki from "layouts/wiki/Wiki";
+import SchoolBook from "./layouts/shoolBook/SchoolBook";
+import Wiki from "./layouts/wiki/Wiki";
+import MarkManagement from "./layouts/MarkManagement/MarkManagement";
 
 const routes = [
   {
@@ -56,6 +57,14 @@ const routes = [
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/dashboard",
     component: <Dashboard />,
+  },
+  {
+    type: "collapse",
+    name: "Mark Management",
+    key: "mark Management",
+    icon: <Icon fontSize="small">dashboard</Icon>,
+    route: "/markManagement",
+    component: <MarkManagement />,
   },
   {
     type: "collapse",

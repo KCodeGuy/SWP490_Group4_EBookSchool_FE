@@ -4,12 +4,12 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SendIcon from "@mui/icons-material/Send";
-import Footer from "examples/Footer";
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
-import DashboardNavbar from "examples/Navbars/DashboardNavbar";
+import Footer from "../../examples/Footer";
+import DashboardLayout from "../../examples/LayoutContainers/DashboardLayout";
+import DashboardNavbar from "../../examples/Navbars/DashboardNavbar";
 import { useState } from "react";
-import WeeklyTimeTableComponent from "components/WeeklyTimeTableComponent/WeeklyTimeTableComponent";
-import TableComponent from "components/TableComponent/TableCoponent";
+import WeeklyTimeTableComponent from "../../components/WeeklyTimeTableComponent/WeeklyTimeTableComponent";
+import TableComponent from "../../components/TableComponent/TableCoponent";
 
 const Wiki = () => {
   const logger = () => {

@@ -223,7 +223,7 @@ export default function MarkManagement() {
             </div>
           </div>
           {showPopup && (
-            <div className="absolute right-10 bg-white  shadow-md rounded z-50">
+            <div className="absolute right-10 bg-white shadow-xl rounded z-50">
               <ul className="list-none m-0 p-0">
                 <li
                   className="text-center font-bold py-2 px-4 hover"

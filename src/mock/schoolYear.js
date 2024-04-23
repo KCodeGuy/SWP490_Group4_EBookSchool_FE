@@ -1,4 +1,4 @@
-const schoolYear = {
+const schoolYears = {
   code: 200,
   status: true,
   message: "ok",
@@ -36,4 +36,4 @@ const schoolYear = {
   ],
 };
 
-export { schoolYear };
+export { schoolYears };

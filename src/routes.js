@@ -47,56 +47,68 @@ import SignUp from "layouts/authentication/sign-up";
 import Icon from "@mui/material/Icon";
 import SchoolBook from "./layouts/shoolBook/SchoolBook";
 import Wiki from "./layouts/wiki/Wiki";
-import MarkManagement from "./layouts/MarkManagement/MarkManagement";
+import MarkManagement from "./layouts/markManagement/MarkManagement";
+import RoomManagement from "./layouts/roomManagement/RoomManagement";
+import ClassManagement from "layouts/classManagement/ClassManagement";
+import SubjectManagement from "layouts/subjectManagement/SubjectManagement";
 
 const routes = [
   {
     type: "collapse",
-    name: "Dashboard",
-    key: "dashboard",
-    icon: <Icon fontSize="small">dashboard</Icon>,
-    route: "/dashboard",
-    component: <Dashboard />,
-  },
-  {
-    type: "collapse",
-    name: "Mark Management",
+    name: "Mark Management(HieuTTN)",
     key: "mark Management",
-    icon: <Icon fontSize="small">dashboard</Icon>,
+    icon: <Icon fontSize="small">assignment</Icon>,
     route: "/markManagement",
     component: <MarkManagement />,
   },
   {
     type: "collapse",
-    name: "SchoolBook",
+    name: "Room Management(UolLT)",
+    key: "room Management",
+    icon: <Icon fontSize="small">house</Icon>,
+    route: "/roomManagement",
+    component: <RoomManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Class Management(UolLT)",
+    key: "class Management",
+    icon: <Icon fontSize="small">house</Icon>,
+    route: "/classManagement",
+    component: <ClassManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Subject Management(UolLT)",
+    key: "subject Management",
+    icon: <Icon fontSize="small">house</Icon>,
+    route: "/subjectManagement",
+    component: <SubjectManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Dashboard",
+    key: "dashboard",
+    icon: <Icon fontSize="small">home</Icon>,
+    route: "/dashboard",
+    component: <Dashboard />,
+  },
+
+  {
+    type: "collapse",
+    name: "School Book(KhoaTD)",
     key: "schoolBook",
-    icon: <Icon fontSize="small">dashboard</Icon>,
+    icon: <Icon fontSize="small">table</Icon>,
     route: "/schoolBook",
     component: <SchoolBook />,
   },
   {
     type: "collapse",
-    name: "Wiki",
+    name: "Wiki(KhoaTD)",
     key: "wiki",
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/wiki",
     component: <Wiki />,
-  },
-  {
-    type: "collapse",
-    name: "Tables",
-    key: "tables",
-    icon: <Icon fontSize="small">table_view</Icon>,
-    route: "/tables",
-    component: <Tables />,
-  },
-  {
-    type: "collapse",
-    name: "Notifications",
-    key: "notifications",
-    icon: <Icon fontSize="small">notifications</Icon>,
-    route: "/notifications",
-    component: <Notifications />,
   },
   {
     type: "collapse",

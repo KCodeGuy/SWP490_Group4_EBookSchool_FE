@@ -5,17 +5,16 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import { Card } from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
-import { PendingActionsOutlined } from "@mui/icons-material";
-// Mark management (HieuTTN)
+// Subject management (UolLT)
 
-export default function MarkManagement() {
+export default function SubjectManagement() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <Card>
         <MDBox p={5}>
           {/* DO NOT DELETE CODE AS ABOVE*/}
-          <h4>Mark Management (HieuTTN)</h4>
+          <h4>Subject Management (UolLT)</h4>
           {/* Your code here */}
         </MDBox>
       </Card>

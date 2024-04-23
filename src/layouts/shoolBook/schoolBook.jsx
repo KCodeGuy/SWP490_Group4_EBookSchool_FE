@@ -10,7 +10,6 @@ import MDTypography from "components/MDTypography/index.js";
 import Button from "@mui/material/Button";
 
 import * as ProductService from "../../services/ProductService.jsx";
-import "../../assets/css/base.scss";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent.jsx";
 import Footer from "../../examples/Footer/index.js";
 

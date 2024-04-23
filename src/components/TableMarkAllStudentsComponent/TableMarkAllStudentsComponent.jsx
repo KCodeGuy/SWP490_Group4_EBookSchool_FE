@@ -1,11 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
 import "./style.scss";
-import { EditAttributesRounded } from "@mui/icons-material";
-
-const TableComponent = ({ data, onViewDetails }) => {
+import EditCalendarIcon from "@mui/icons-material/EditCalendar";
+const TableMarkAllStudentsComponent = ({ data, onViewDetails, className }) => {
   const headers = [
-    "STT",
+    "STT.",
     "Tên học sinh",
     "Mã học sinh",
     "Điểm trung bình các môn",
@@ -29,11 +28,13 @@ const TableComponent = ({ data, onViewDetails }) => {
     "Chi tiet",
   ];
   return (
-    <div>
+    <div className={className}>
       <table>
         <thead>
           <tr>
-            <th rowSpan={2}>{headers[0]}</th>
+            <th className="w-10" rowSpan={2}>
+              {headers[0]}
+            </th>
             <th rowSpan={2}>{headers[1]}</th>
             <th rowSpan={2}>{headers[2]}</th>
             <th rowSpan={1} colSpan={13}>
@@ -75,8 +76,8 @@ const TableComponent = ({ data, onViewDetails }) => {
               <td>{student.conduct}</td>
               <td>{student.rank}</td>
               <td>
-                <button className="primary-color" onClick={() => onViewDetails(student)}>
-                  Detail
+                <button className="primary-color text-xl" onClick={() => onViewDetails(student)}>
+                  <EditCalendarIcon />
                 </button>
               </td>
             </tr>
@@ -87,9 +88,10 @@ const TableComponent = ({ data, onViewDetails }) => {
   );
 };
 
-TableComponent.propTypes = {
+TableMarkAllStudentsComponent.propTypes = {
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
   onViewDetails: PropTypes.func.isRequired,
+  className: PropTypes.string,
 };
 
-export default TableComponent;
+export default TableMarkAllStudentsComponent;

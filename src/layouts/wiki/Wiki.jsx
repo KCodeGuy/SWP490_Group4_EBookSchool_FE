@@ -8,8 +8,9 @@ import Footer from "../../examples/Footer";
 import DashboardLayout from "../../examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "../../examples/Navbars/DashboardNavbar";
 import { useState } from "react";
-import WeeklyTimeTableComponent from "../../components/WeeklyTimeTableComponent/WeeklyTimeTableComponent";
-import TableComponent from "../../components/TableComponent/TableCoponent";
+import TableMarkAllStudentsComponent from "../../components/TableMarkAllStudentsComponent/TableMarkAllStudentsComponent";
+import TableComponent from "../../components/TableComponent/TableComponent";
+import SearchComponent from "../../components/SearchComponent/SearchComponent";
 
 const Wiki = () => {
   const logger = () => {
@@ -17,9 +18,8 @@ const Wiki = () => {
   };
 
   const [age, setAge] = useState("");
-  console.log(age);
 
-  const handleChange = (event) => {
+  const handleSelectedChange = (event) => {
     setAge(event.target.value);
   };
 
@@ -105,7 +105,58 @@ const Wiki = () => {
     console.log("View details for student:", student);
     // Implement your logic to view details
   };
+  const [tableData, setTableData] = useState([
+    ["Nguyen van", "Doe", "25"],
+    ["Le van", "Smith", "30"],
+    ["Tran thi", "Smith", "30"],
+    ["Quach tuan minh", "Smith", "30"],
+    ["Jane", "Smith", "30"],
+    ["Dinh minh", "Smith", "30"],
+    ["Jane", "Smith", "30"],
+    ["Tuan", "Smith", "30"],
+    ["Jane", "Smith", "30"],
+    ["Admin role", "Smith", "30"],
+    ["Admin", "Smith", "30"],
+    ["Jane", "Smith", "30"],
+    ["Son tung", "Smith", "30"],
+    ["Jane", "Smith", "30"],
+    ["Den vau", "Smith", "30"],
+    ["Phan manh", "Smith", "30"],
+    ["Dang tuan", "Smith", "30"],
+  ]);
 
+  const [tableDataNoAction, setTableDataNoAction] = useState([
+    ["Thông báo : Lịch thi văn nghệ Hội Trại chào mừng 26/3."],
+    [
+      "Thông báo : Tiết học trải nghiệm địa lí và lịch sử địa phương sẽ được diễn ra vào ngày 30/3.",
+    ],
+    ["Thông báo : Lịch nghỉ Tết Nguyên Đán Giáp Thìn 2024 chính thức. "],
+  ]);
+
+  const handleEdit = (rowItem) => {
+    console.log("Edit row:", rowItem);
+    // Implement edit logic here
+  };
+
+  const handleDelete = (rowItem) => {
+    console.log("Delete row:", rowItem);
+    // Implement delete logic here
+  };
+
+  const handleChecked = (rowItem) => {
+    console.log("checked:", rowItem);
+    // Implement delete logic here
+  };
+
+  const handleDetails = (rowItem) => {
+    console.log("Details row:", rowItem);
+    // Implement delete logic here
+  };
+
+  const handleEnter = (value) => {
+    console.log("Value after Enter:", value);
+    // Do something with the value, such as sending it to an API or updating state
+  };
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -159,17 +210,55 @@ const Wiki = () => {
                 value={age}
                 className="h-10"
                 label="Age"
-                onChange={handleChange}
+                onChange={handleSelectedChange}
               >
                 <MenuItem value={10}>Ten</MenuItem>
                 <MenuItem value={20}>Twenty</MenuItem>
                 <MenuItem value={30}>Thirty</MenuItem>
               </Select>
+              <SearchComponent
+                data={[
+                  { title: "Apple", age: 12 },
+                  { title: "Banana", age: 11 },
+                  { title: "ABC", age: 14 },
+                ]}
+                option="title"
+                placeHolder="Search item"
+                onEnter={handleEnter}
+                className="mt-5"
+              />
             </FormControl>
           </Grid>
           <Grid item xs={12} md={6} lg={3} marginTop={2}>
             <MDTypography>3. Table</MDTypography>
-            <TableComponent data={scoreByStudents.data} onViewDetails={handleViewDetails} />
+            <p>1. Table component(CRUD, pagging)</p>
+            <TableComponent
+              header={["Full name", "CC", "Age"]}
+              data={tableData}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              className="mt-4"
+            />
+            <p className="mt-4">2. Table component(Checked, pagging)</p>
+            <TableComponent
+              header={["Full name", "CC", "Age"]}
+              data={tableData}
+              onCheckboxChange={handleChecked}
+              showCheckboxes={true}
+              className="mt-4"
+            />
+            <p className="mt-4">3. Table no action</p>
+            <TableComponent
+              header={["Nội dung thông báo"]}
+              data={tableDataNoAction}
+              className="mt-4 text-left"
+            />
+            <p className="mt-4">4. Table show điểm all học sinh</p>
+            <TableMarkAllStudentsComponent
+              className="mt-4"
+              data={scoreByStudents.data}
+              onViewDetails={handleViewDetails}
+            />
           </Grid>
         </MDBox>
       </Card>

@@ -120,7 +120,7 @@ export default function MarkManagement() {
     setSchoolClass(event.target.value);
   };
 
-  const [schoolSubject, setSchoolSubject] = React.useState("");
+  const [schoolSubject, setSchoolSubject] = React.useState("Môn học");
   const handleSchoolSubjectSelectedChange = (event) => {
     setSchoolSubject(event.target.value);
   };

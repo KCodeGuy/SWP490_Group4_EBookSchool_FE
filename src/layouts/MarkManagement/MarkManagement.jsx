@@ -100,22 +100,22 @@ const handleViewDetails = (student) => {
 };
 
 export default function MarkManagement() {
-  const [schoolYear, setSchoolYear] = React.useState("");
+  const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
   };
 
-  const [schoolSemester, setSchoolSemester] = React.useState("");
+  const [schoolSemester, setSchoolSemester] = React.useState(semesters[0]);
   const handleSchoolSemesterSelectedChange = (event) => {
     setSchoolSemester(event.target.value);
   };
 
-  const [grade, setGrade] = React.useState("");
+  const [grade, setGrade] = React.useState(grades[0]);
   const handleGradeSelectedChange = (event) => {
     setGrade(event.target.value);
   };
 
-  const [schoolClass, setSchoolClass] = React.useState("");
+  const [schoolClass, setSchoolClass] = React.useState(studentClasses.data[0].name);
   const handleSchoolClassSelectedChange = (event) => {
     setSchoolClass(event.target.value);
   };

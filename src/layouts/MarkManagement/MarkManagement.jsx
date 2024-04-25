@@ -1,5 +1,5 @@
 import MenuIcon from "@mui/icons-material/Menu";
-import { Card, MenuItem, Select } from "@mui/material";
+import { FormControl, InputLabel, Card, MenuItem, Select } from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -7,7 +7,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import { studentClasses } from "mock/class";
 import { schoolYears } from "mock/schoolYear";
 import { subjects } from "mock/subject";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import TableMarkAllStudentsComponent from "../../components/TableMarkAllStudentsComponent/TableMarkAllStudentsComponent";
 import "./style.scss";
 // Mark management (HieuTTN)
@@ -126,10 +126,30 @@ export default function MarkManagement() {
   };
 
   const [showPopup, setShowPopup] = useState(false);
+  const popupRef = useRef(null);
 
   const togglePopup = () => {
     setShowPopup(!showPopup);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setShowPopup(false);
+      }
+    };
+
+    if (showPopup) {
+      window.addEventListener("mousedown", handleClickOutside);
+    } else {
+      window.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      window.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showPopup]);
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -138,84 +158,113 @@ export default function MarkManagement() {
           {/* DO NOT DELETE CODE AS ABOVE*/}
           {/* Your code here */}
           {/* <InputLabel id="demo-simple-select-label">Năm học</InputLabel> */}
+
           <div className="flex flex-nowrap justify-between mb-2.5">
             <div className="left">
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={schoolYear}
-                className="h-10 mx-3"
-                label="Năm học"
-                onChange={handleSchoolYearSelectedChange}
-              >
-                {schoolYears.data.map((item) => (
-                  <MenuItem key={item.schoolYear} value={item.schoolYear}>
-                    {item.schoolYear}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={schoolSemester}
-                className="h-10 mx-3"
-                label="Học kì"
-                onChange={handleSchoolSemesterSelectedChange}
-              >
-                {semesters.map((item) => (
-                  <MenuItem key={item} value={item}>
-                    {item}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={grade}
-                className="h-10 mx-3"
-                label="Khối"
-                onChange={handleGradeSelectedChange}
-              >
-                {grades.map((item) => (
-                  <MenuItem key={item} value={item}>
-                    {item}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={schoolClass}
-                className="h-10 mx-3"
-                label="Lớp"
-                onChange={handleSchoolClassSelectedChange}
-              >
-                {studentClasses.data.map((item) => (
-                  <MenuItem key={item.name} value={item.name}>
-                    {item.name}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={schoolSubject}
-                className="h-10 mx-3"
-                label="Môn học"
-                onChange={handleSchoolSubjectSelectedChange}
-              >
-                <MenuItem key="Môn học" value="Môn học">
+              <FormControl sx={{ minWidth: 120, marginLeft: "12px" }}>
+                <InputLabel id="select-school-year-lable" className="ml-3">
+                  Năm học
+                </InputLabel>
+                <Select
+                  labelId="select-school-year-lable"
+                  id="elect-school-year"
+                  value={schoolYear}
+                  className="h-10 mx-3"
+                  label="Năm học"
+                  onChange={handleSchoolYearSelectedChange}
+                >
+                  {schoolYears.data.map((item) => (
+                    <MenuItem key={item.schoolYear} value={item.schoolYear}>
+                      {item.schoolYear}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl sx={{ minWidth: 120, marginLeft: "12px" }}>
+                <InputLabel id="select-semester-lable" className="ml-3">
+                  Học kì
+                </InputLabel>
+                <Select
+                  labelId="select-semester-lable"
+                  id="select-semester"
+                  value={schoolSemester}
+                  className="h-10 mx-3"
+                  label="Học kì"
+                  onChange={handleSchoolSemesterSelectedChange}
+                >
+                  {semesters.map((item) => (
+                    <MenuItem key={item} value={item}>
+                      {item}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl sx={{ minWidth: 120, marginLeft: "12px" }}>
+                <InputLabel id="select-grade-lable" className="ml-3">
+                  Khối
+                </InputLabel>
+                <Select
+                  labelId="select-grade-lable"
+                  id="select-grade"
+                  value={grade}
+                  className="h-10 mx-3"
+                  label="Khối"
+                  onChange={handleGradeSelectedChange}
+                >
+                  {grades.map((item) => (
+                    <MenuItem key={item} value={item}>
+                      {item}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl sx={{ minWidth: 120, marginLeft: "12px" }}>
+                <InputLabel id="select-school-class-lable" className="ml-3">
+                  Lớp
+                </InputLabel>
+                <Select
+                  labelId="select-school-class-lable"
+                  id="select-school-class"
+                  value={schoolClass}
+                  className="h-10 mx-3"
+                  label="Lớp"
+                  onChange={handleSchoolClassSelectedChange}
+                >
+                  {studentClasses.data.map((item) => (
+                    <MenuItem key={item.name} value={item.name}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl sx={{ minWidth: 120, marginLeft: "12px" }}>
+                <InputLabel id="select-school-subject-lable" className="ml-3">
                   Môn học
-                </MenuItem>
-                {subjects.data.map((item) => (
-                  <MenuItem key={item.name} value={item.name}>
-                    {item.name}
+                </InputLabel>
+                <Select
+                  labelId="select-school-subject-lable"
+                  id="select-school-subject"
+                  value={schoolSubject}
+                  className="h-10 mx-3"
+                  label="Môn học"
+                  onChange={handleSchoolSubjectSelectedChange}
+                >
+                  <MenuItem key="Môn học" value="Môn học">
+                    Môn học
                   </MenuItem>
-                ))}
-              </Select>
+                  {subjects.data.map((item) => (
+                    <MenuItem key={item.name} value={item.name}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </div>
 
             <div
+              ref={popupRef}
               className="right rounded flex justify-center items-center w-10"
               onClick={togglePopup}
             >
@@ -223,7 +272,7 @@ export default function MarkManagement() {
             </div>
           </div>
           {showPopup && (
-            <div className="absolute right-10 bg-white shadow-xl rounded z-50">
+            <div className="absolute right-10 bg-white shadow-xl rounded z-50 cursor-pointer">
               <ul className="list-none m-0 p-0">
                 <li
                   className="text-center font-bold py-2 px-4 hover"

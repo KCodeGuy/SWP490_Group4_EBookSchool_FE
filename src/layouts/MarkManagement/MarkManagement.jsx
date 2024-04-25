@@ -153,7 +153,7 @@ export default function MarkManagement() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card>
+      <Card className="h-screen">
         <MDBox p={5}>
           {/* DO NOT DELETE CODE AS ABOVE*/}
           {/* Your code here */}

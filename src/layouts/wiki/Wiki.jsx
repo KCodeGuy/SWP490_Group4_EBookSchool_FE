@@ -1,4 +1,4 @@
-import { Box, Card, FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
+import { Box, Button, Card, FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -15,7 +15,8 @@ import TableMarkOfSubjectComponent from "../../components/TableMarkOfSubjectComp
 import { scoreByStudentsBySubjectEnlish } from "../../mock/score";
 import { countDuplicateItemsInArray } from "utils/HandleArray";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import InputEmailComponent from "components/InputEmailComponent/InputEmailComponent";
 
 const Wiki = () => {
   const logger = () => {
@@ -24,8 +25,6 @@ const Wiki = () => {
 
   const oldArr = scoreByStudentsBySubjectEnlish.data.score[0].scores;
   const result = countDuplicateItemsInArray(oldArr);
-  const { register, handleSubmit } = useForm();
-  const onSubmit = (data) => console.log(data);
 
   const [age, setAge] = useState("");
 
@@ -174,6 +173,26 @@ const Wiki = () => {
     console.log("Cancel:", value);
   };
 
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   formState: { errors },
+  // } = useForm();
+
+  // const onSubmit = (data) => {
+  //   console.log(data); // You can do something with the form data here
+  // };
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = (data) => {
+    console.log(data); // You can do something with the form data here
+  };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -293,12 +312,39 @@ const Wiki = () => {
               <p>CC</p>
             </PopupComponent>
             <p>2. Form</p>
-            {/* <form onSubmit={handleSubmit(onSubmit)}>
-              <input {...register("firstName", { required: true, maxLength: 20 })} />
-              <input {...register("lastName", { pattern: /^[A-Za-z]+$/i })} />
-              <input type="number" {...register("age", { min: 18, max: 99 })} />
-              <input type="submit" />
-            </form> */}
+            <form onSubmit={handleSubmit(onSubmit)} className="w-64">
+              <InputEmailComponent
+                name="email"
+                control={control}
+                errors={errors} // Pass errors prop
+                placeholder="Enter your email"
+                type="email"
+              />
+              <InputEmailComponent
+                name="password"
+                control={control}
+                errors={errors} // Pass errors prop
+                placeholder="Enter your password"
+                type="Password"
+              />
+              <InputEmailComponent
+                name="phone"
+                control={control}
+                errors={errors} // Pass errors prop
+                placeholder="Enter your phone"
+                type="text"
+              />
+              <InputEmailComponent
+                name="address"
+                control={control}
+                errors={errors} // Pass errors prop
+                placeholder="Enter your phone"
+                type="text"
+              />
+              <ButtonComponent style={{ marginTop: "12px", width: "100%" }} action="submit">
+                Submit
+              </ButtonComponent>
+            </form>
           </Grid>
         </MDBox>
       </Card>

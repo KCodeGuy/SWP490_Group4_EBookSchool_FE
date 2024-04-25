@@ -21,7 +21,6 @@ function TableMarkOfSubjectComponent({
   isOrdered,
   showCheckboxes,
 }) {
-  console.log(data);
   const [currentPage, setCurrentPage] = useState(1);
   const isShowActions = onDelete != undefined || onEdit != undefined || onDetails != undefined;
 

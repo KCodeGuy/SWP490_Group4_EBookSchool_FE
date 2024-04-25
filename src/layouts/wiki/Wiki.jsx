@@ -11,11 +11,21 @@ import { useState } from "react";
 import TableMarkAllStudentsComponent from "../../components/TableMarkAllStudentsComponent/TableMarkAllStudentsComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import SearchComponent from "../../components/SearchComponent/SearchComponent";
+import TableMarkOfSubjectComponent from "../../components/TableMarkOfSubjectComponent/TableMarkOfSubjectComponent";
+import { scoreByStudentsBySubjectEnlish } from "../../mock/score";
+import { countDuplicateItemsInArray } from "utils/HandleArray";
+import PopupComponent from "../../components/PopupComponent/PopupComponent";
+import { useForm } from "react-hook-form";
 
 const Wiki = () => {
   const logger = () => {
     console.log("clicked me");
   };
+
+  const oldArr = scoreByStudentsBySubjectEnlish.data.score[0].scores;
+  const result = countDuplicateItemsInArray(oldArr);
+  const { register, handleSubmit } = useForm();
+  const onSubmit = (data) => console.log(data);
 
   const [age, setAge] = useState("");
 
@@ -155,8 +165,15 @@ const Wiki = () => {
 
   const handleEnter = (value) => {
     console.log("Value after Enter:", value);
-    // Do something with the value, such as sending it to an API or updating state
   };
+
+  const handleCancel = (value) => {
+    console.log("Cancel:", value);
+  };
+  const hanldeOK = (value) => {
+    console.log("Cancel:", value);
+  };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -259,6 +276,29 @@ const Wiki = () => {
               data={scoreByStudents.data}
               onViewDetails={handleViewDetails}
             />
+            <p className="mt-4">5. Table show điểm một môn của cả lớp</p>
+            <TableMarkOfSubjectComponent
+              header={result}
+              data={scoreByStudentsBySubjectEnlish.data.score}
+              className="mt-4 text-left"
+              onDetails={handleDetails}
+            />
+          </Grid>
+          <Grid item xs={12} md={6} lg={3} marginTop={2}>
+            <MDTypography>4. Popup, form</MDTypography>
+            <p>1. Popup</p>
+            <PopupComponent title="Popup title" onSubmit={hanldeOK}>
+              <p>CC</p>
+              <p>CC</p>
+              <p>CC</p>
+            </PopupComponent>
+            <p>2. Form</p>
+            {/* <form onSubmit={handleSubmit(onSubmit)}>
+              <input {...register("firstName", { required: true, maxLength: 20 })} />
+              <input {...register("lastName", { pattern: /^[A-Za-z]+$/i })} />
+              <input type="number" {...register("age", { min: 18, max: 99 })} />
+              <input type="submit" />
+            </form> */}
           </Grid>
         </MDBox>
       </Card>

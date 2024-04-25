@@ -92,6 +92,7 @@ const scoreByStudentsBySubjects = {
 };
 
 // Điểm 1 môn của cả lớp
+// KhoaTD: Khúc này map ok
 const scoreByStudentsBySubject = {
   code: 200,
   status: true,
@@ -103,6 +104,34 @@ const scoreByStudentsBySubject = {
     schoolYear: "2023-2024",
     teacherName: "Nguyên Thị B",
     score: [
+      {
+        id: 1,
+        fullName: "Nguyễn Lê Văn A",
+        average: 10,
+        rank: 1,
+        scores: [
+          {
+            key: "Kiểm tra miệng",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra miệng",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 15 phút",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 1 tiết",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+        ],
+      },
       {
         id: 1,
         fullName: "Nguyễn Lê Văn A",
@@ -156,6 +185,143 @@ const scoreByStudentsBySubject = {
           {
             key: "Kiểm tra cuối kì",
             value: 10,
+          },
+        ],
+      },
+    ],
+  },
+};
+
+// Điểm 1 môn của cả lớp môn tiếng anh (Ví dụ)
+// KhoaTD: này chỉ t example, don't care cái này
+const scoreByStudentsBySubjectEnlish = {
+  code: 200,
+  status: true,
+  message: "ok",
+  data: {
+    subject: "Ngoại ngữ",
+    semester: "Học kì 1",
+    class: "12A2",
+    schoolYear: "2023-2024",
+    teacherName: "Nguyên Thị B",
+    score: [
+      {
+        id: 1,
+        fullName: "Nguyễn Lê Văn A",
+        average: 10,
+        rank: 1,
+        scores: [
+          {
+            key: "Kiểm tra miệng",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra miệng",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 15 phút",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 1 tiết",
+            value: 5,
+          },
+          {
+            key: "Kiểm tra 1 tiết",
+            value: 7,
+          },
+          {
+            key: "Kiểm tra 1 tiết",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 9,
+          },
+        ],
+      },
+      {
+        id: 2,
+        fullName: "Nguyễn Lê Văn A",
+        average: 10,
+        rank: 1,
+        scores: [
+          {
+            key: "Kiểm tra miệng",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra miệng",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 15 phút",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 1 tiết",
+            value: 5,
+          },
+          {
+            key: "Kiểm tra 1 tiết",
+            value: 7,
+          },
+          {
+            key: "Kiểm tra 1 tiết",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 9,
+          },
+        ],
+      },
+      {
+        id: 3,
+        fullName: "Nguyễn Lê Văn A",
+        average: 10,
+        rank: 1,
+        scores: [
+          {
+            key: "Kiểm tra miệng",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra miệng",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 15 phút",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 1 tiết",
+            value: 5,
+          },
+          {
+            key: "Kiểm tra 1 tiết",
+            value: 7,
+          },
+          {
+            key: "Kiểm tra 1 tiết",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 9,
           },
         ],
       },
@@ -632,6 +798,7 @@ export {
   scoreByStudent,
   scoreByStudentBySubject,
   scoreByStudentsBySubject,
+  scoreByStudentsBySubjectEnlish,
   scoreByStudentsBySubjects,
   scoreStatisticsAllClassBySubject,
   scoreStatisticsAllGradeBySubject,

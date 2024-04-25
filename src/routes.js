@@ -37,17 +37,15 @@ Coded by www.creative-tim.com
 
 // Material Dashboard 2 React layouts
 import Dashboard from "layouts/dashboard";
-import Tables from "layouts/tables";
-import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
-import SchoolBook from "./layouts/shoolBook/schoolBook";
+import SchoolBook from "./layouts/shoolBook/SchoolBook";
 import Wiki from "./layouts/wiki/Wiki";
-import MarkManagement from "./layouts/MarkManagement/MarkManagement";
+import MarkManagement from "./layouts/markManagement/MarkManagement";
 import RoomManagement from "./layouts/roomManagement/RoomManagement";
 import ClassManagement from "layouts/classManagement/ClassManagement";
 import SubjectManagement from "layouts/subjectManagement/SubjectManagement";
@@ -56,7 +54,7 @@ const routes = [
   {
     type: "collapse",
     name: "Mark Management(HieuTTN)",
-    key: "mark Management",
+    key: "markManagement",
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/markManagement",
     component: <MarkManagement />,
@@ -64,7 +62,7 @@ const routes = [
   {
     type: "collapse",
     name: "Room Management(UolLT)",
-    key: "room Management",
+    key: "roomManagement",
     icon: <Icon fontSize="small">house</Icon>,
     route: "/roomManagement",
     component: <RoomManagement />,
@@ -72,7 +70,7 @@ const routes = [
   {
     type: "collapse",
     name: "Class Management(UolLT)",
-    key: "class Management",
+    key: "classManagement",
     icon: <Icon fontSize="small">house</Icon>,
     route: "/classManagement",
     component: <ClassManagement />,
@@ -80,7 +78,7 @@ const routes = [
   {
     type: "collapse",
     name: "Subject Management(UolLT)",
-    key: "subject Management",
+    key: "subjectManagement",
     icon: <Icon fontSize="small">house</Icon>,
     route: "/subjectManagement",
     component: <SubjectManagement />,

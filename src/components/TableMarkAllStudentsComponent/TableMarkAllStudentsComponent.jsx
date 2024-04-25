@@ -29,7 +29,7 @@ const TableMarkAllStudentsComponent = ({ data, onViewDetails, className }) => {
   ];
   return (
     <div className={className}>
-      <table>
+      <table className="rounded-md">
         <thead>
           <tr>
             <th className="w-10" rowSpan={2}>

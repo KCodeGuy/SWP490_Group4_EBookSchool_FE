@@ -40,12 +40,24 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
+import ButtonComponent from "components/ButtonComponent/ButtonComponent";
+import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent";
+import { useForm, Controller } from "react-hook-form";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
 
 function Basic() {
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
+  const handleSubmitLogin = (data) => {
+    console.log(data); // You can do something with the form data here
+  };
   return (
     <BasicLayout image={bgImage}>
       <Card>
@@ -61,7 +73,7 @@ function Basic() {
           textAlign="center"
         >
           <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
-            Sign in
+            Đăng nhập
           </MDTypography>
           <Grid container spacing={3} justifyContent="center" sx={{ mt: 1, mb: 2 }}>
             <Grid item xs={2}>
@@ -82,7 +94,7 @@ function Basic() {
           </Grid>
         </MDBox>
         <MDBox pt={4} pb={3} px={3}>
-          <MDBox component="form" role="form">
+          {/* <MDBox component="form" role="form">
             <MDBox mb={2}>
               <MDInput type="email" label="Email" fullWidth />
             </MDBox>
@@ -121,7 +133,59 @@ function Basic() {
                 </MDTypography>
               </MDTypography>
             </MDBox>
-          </MDBox>
+          </MDBox> */}
+          <form onSubmit={handleSubmit(handleSubmitLogin)} className="w-full">
+            <InputBaseComponent
+              placeholder="Nhập địa chỉ email"
+              type="email"
+              control={control}
+              name="email"
+              errors={errors}
+              validationRules={{
+                required: "Email không được bỏ trống!",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "Email không đúng định dạng!",
+                },
+              }}
+            />
+            <InputBaseComponent
+              placeholder="Nhập mật khẩu"
+              type="password"
+              control={control}
+              name="password"
+              errors={errors}
+              validationRules={{
+                required: "Mật khẩu không được bỏ trống",
+                minLength: {
+                  value: 8,
+                  message: "Mật khẩu ít nhât 8 kí tự!",
+                },
+                maxLength: {
+                  value: 20,
+                  message: "Mật khẩu dài nhất 20 kí tự",
+                },
+              }}
+            />
+            <MDBox mt={3} mb={1} textAlign="center">
+              <MDTypography variant="button" color="text">
+                Bạn đã quên mật khẩu?{" "}
+                <MDTypography
+                  component={Link}
+                  to="/authentication/sign-in"
+                  variant="button"
+                  color="info"
+                  fontWeight="medium"
+                  textGradient
+                >
+                  Nhấn vào đây!
+                </MDTypography>
+              </MDTypography>
+            </MDBox>
+            <ButtonComponent style={{ marginTop: "24px", width: "100%" }} action="submit">
+              ĐĂNG NHẬP
+            </ButtonComponent>
+          </form>
         </MDBox>
       </Card>
     </BasicLayout>

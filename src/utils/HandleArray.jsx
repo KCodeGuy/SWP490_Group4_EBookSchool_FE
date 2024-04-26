@@ -10,3 +10,7 @@ export const countDuplicateItemsInArray = (arr) => {
   // Convert counts object to array of objects with key and count
   return Object.keys(counts).map((key) => ({ key, count: counts[key] }));
 };
+
+export const capitalizeFirstLetter = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};

@@ -16,7 +16,8 @@ import { scoreByStudentsBySubjectEnlish } from "../../mock/score";
 import { countDuplicateItemsInArray } from "utils/HandleArray";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
 import { useForm, Controller } from "react-hook-form";
-import InputEmailComponent from "components/InputEmailComponent/InputEmailComponent";
+import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
 
 const Wiki = () => {
   const logger = () => {
@@ -173,23 +174,13 @@ const Wiki = () => {
     console.log("Cancel:", value);
   };
 
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   formState: { errors },
-  // } = useForm();
-
-  // const onSubmit = (data) => {
-  //   console.log(data); // You can do something with the form data here
-  // };
-
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
+  const onSubmitDefaultLabel = (data) => {
     console.log(data); // You can do something with the form data here
   };
 
@@ -305,41 +296,71 @@ const Wiki = () => {
           </Grid>
           <Grid item xs={12} md={6} lg={3} marginTop={2}>
             <MDTypography>4. Popup, form</MDTypography>
-            <p>1. Popup</p>
+            <p className="mt-4">1. Popup</p>
             <PopupComponent title="Popup title" onSubmit={hanldeOK}>
               <p>CC</p>
               <p>CC</p>
               <p>CC</p>
             </PopupComponent>
-            <p>2. Form</p>
-            <form onSubmit={handleSubmit(onSubmit)} className="w-64">
-              <InputEmailComponent
-                name="email"
-                control={control}
-                errors={errors} // Pass errors prop
+            <p className="mt-4 mb-3">2. Form horizontalLabel</p>
+            <form onSubmit={handleSubmit(onSubmitDefaultLabel)} className="w-96">
+              <InputBaseComponent
                 placeholder="Enter your email"
                 type="email"
-              />
-              <InputEmailComponent
-                name="password"
                 control={control}
-                errors={errors} // Pass errors prop
+                name="email"
+                errors={errors}
+                horizontalLabel={true}
+                validationRules={{
+                  required: "Email is required!",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Invalid email format!",
+                  },
+                }}
+              />
+              <InputBaseComponent
                 placeholder="Enter your password"
-                type="Password"
+                type="password"
+                control={control}
+                name="password"
+                errors={errors}
+                validationRules={{
+                  required: "Password is required!",
+                  minLength: {
+                    value: 8,
+                    message: "Password is min length 8!",
+                  },
+                  maxLength: {
+                    value: 20,
+                    message: "Password is max length 20",
+                  },
+                }}
               />
-              <InputEmailComponent
+              <InputBaseComponent
+                placeholder="Enter your phone"
+                type="text"
+                control={control}
                 name="phone"
-                control={control}
-                errors={errors} // Pass errors prop
-                placeholder="Enter your phone"
-                type="text"
+                errors={errors}
+                validationRules={{
+                  required: "Phone is required!",
+                  pattern: {
+                    value: /^[0-9]{10}$/,
+                    message: "Phone is invalid format!",
+                  },
+                }}
               />
-              <InputEmailComponent
-                name="address"
-                control={control}
-                errors={errors} // Pass errors prop
-                placeholder="Enter your phone"
+              <InputBaseComponent
+                placeholder="Enter your address"
                 type="text"
+                control={control}
+                name="address"
+                errors={errors}
+                noLabel={true}
+                validationRules={{
+                  required: "address is required!",
+                }}
               />
               <ButtonComponent style={{ marginTop: "12px", width: "100%" }} action="submit">
                 Submit

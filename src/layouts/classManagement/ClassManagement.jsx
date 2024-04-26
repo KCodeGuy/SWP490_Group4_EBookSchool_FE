@@ -6,11 +6,8 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import { Card } from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
-import SearchComponent from "../../components/SearchComponent/SearchComponent";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { classrooms } from "mock/classroom";
 import { schoolYears } from "mock/schoolYear";
@@ -25,36 +22,13 @@ export default function ClassManagement() {
     console.log("Delete row:", rowItem);
     // Implement delete logic here
   };
-  const handleEnter = (value) => {
-    console.log("Value after Enter:", value);
-    // Do something with the value, such as sending it to an API or updating state
-  };
-  const [age, setAge] = useState("");
-
   const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
   };
-
   const [classroom, setClassRoom] = React.useState(classrooms.data[0].name);
   const handleClassRoomSelectedChange = (event) => {
     setClassRoom(event.target.value);
-  };
-
-  const [studentclass, setStudentClass] = React.useState(studentClasses.data[0].name);
-  const handleStudentClassSelectedChange = (event) => {
-    setStudentClass(event.target.value);
-  };
-
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
   };
   return (
     <DashboardLayout>
@@ -63,37 +37,8 @@ export default function ClassManagement() {
         <MDBox p={5}>
           {/* DO NOT DELETE CODE AS ABOVE*/}
           {/* Your code here */}
-          <div className="flex justify-end items-center">
-            <div className="relative border border-gray-300 rounded">
-              <Button
-                id="basic-button"
-                aria-controls={open ? "basic-menu" : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? "true" : undefined}
-                onClick={handleClick}
-                startIcon={<MenuIcon className="icon" />}
-                sx={{ p: 0 }}
-              />
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  "aria-labelledby": "basic-button",
-                }}
-                sx={{ left: -30, textAlign: "center" }}
-              >
-                <MenuItem onClick={handleClose}>Nhập điểm</MenuItem>
-                <MenuItem onClick={handleClose}>Nhập điểm bằng excel</MenuItem>
-                <MenuItem onClick={handleClose}>Sửa điểm</MenuItem>
-                <MenuItem onClick={handleClose}>Sửa điểm bằng excel</MenuItem>
-              </Menu>
-            </div>
-          </div>
-
           <div className="text-center mt-0">
-            <h2 className="text-3xl font-bold">Quản lý lớp học</h2>
+            <h4 className="text-xl font-bold">Quản lý lớp học</h4>
           </div>
 
           <div className="flex items-center justify-between">
@@ -112,8 +57,8 @@ export default function ClassManagement() {
                   onChange={handleSchoolYearSelectedChange}
                 >
                   {schoolYears.data.map((item) => (
-                    <MenuItem key={item.schoolYear} value={item.schoolYear}>
-                      {item.schoolYear}
+                    <MenuItem key={item.schoolYear.toString()} value={item.schoolYear.toString()}>
+                      {item.schoolYear.toString()}
                     </MenuItem>
                   ))}
                 </Select>
@@ -132,8 +77,8 @@ export default function ClassManagement() {
                   onChange={handleClassRoomSelectedChange}
                 >
                   {classrooms.data.map((item) => (
-                    <MenuItem key={item.name} value={item.name}>
-                      {item.name}
+                    <MenuItem key={item.name.toString()} value={item.name.toString()}>
+                      {item.name.toString()}
                     </MenuItem>
                   ))}
                 </Select>
@@ -141,23 +86,10 @@ export default function ClassManagement() {
             </div>
             {/* Search, Input, Button */}
             <div className="flex justify-end">
-              <div className="mr-4">
-                <SearchComponent
-                  data={[
-                    { title: "Apple", age: 12 },
-                    { title: "Banana", age: 11 },
-                    { title: "ABC", age: 14 },
-                  ]}
-                  option="title"
-                  placeHolder="Search item"
-                  onEnter={handleEnter}
-                  className=""
-                />
-              </div>
-              <div className="mr-4 mt-1">
+              <div className="mr-6 mt-1">
                 <input
                   type="text"
-                  className="border border-gray-300 rounded-lg  py-2 px-4 w-full"
+                  className="border border-gray-300 rounded-lg py-2 px-4 w-full"
                   placeholder="Nhập tên phòng học..."
                 />
               </div>
@@ -172,7 +104,11 @@ export default function ClassManagement() {
           <div>
             <TableComponent
               header={["ID", "Tên lớp", "Phòng học"]}
-              data={studentClasses.data.map((item) => [item.id, item.name, item.classroom])}
+              data={studentClasses.data.map((item) => [
+                item.id.toString(),
+                item.name.toString(),
+                item.classroom.toString(),
+              ])}
               onEdit={handleEdit}
               onDelete={handleDelete}
               className="mt-4"

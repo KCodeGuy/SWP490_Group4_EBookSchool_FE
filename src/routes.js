@@ -39,7 +39,7 @@ Coded by www.creative-tim.com
 import Dashboard from "layouts/dashboard";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
-import SignUp from "layouts/authentication/sign-up";
+import ResetPassword from "layouts/authentication/reset-password";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -49,6 +49,7 @@ import MarkManagement from "./layouts/markManagement/MarkManagement";
 import RoomManagement from "./layouts/roomManagement/RoomManagement";
 import ClassManagement from "layouts/classManagement/ClassManagement";
 import SubjectManagement from "layouts/subjectManagement/SubjectManagement";
+import Demo from "layouts/demo/Demo";
 
 const routes = [
   {
@@ -58,6 +59,14 @@ const routes = [
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/markManagement",
     component: <MarkManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Demo(KhoaTD)",
+    key: "demo",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/demo",
+    component: <Demo />,
   },
   {
     type: "collapse",
@@ -126,11 +135,11 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Sign Up",
-    key: "sign-up",
+    name: "Reset Password",
+    key: "reset-password",
     icon: <Icon fontSize="small">assignment</Icon>,
-    route: "/authentication/sign-up",
-    component: <SignUp />,
+    route: "/authentication/reset-password",
+    component: <ResetPassword />,
   },
 ];
 

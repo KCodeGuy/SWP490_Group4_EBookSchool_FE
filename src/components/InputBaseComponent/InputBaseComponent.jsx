@@ -5,6 +5,7 @@ import { Controller } from "react-hook-form";
 import { capitalizeFirstLetter } from "../../utils/HandleArray";
 
 const InputBaseComponent = ({
+  label,
   placeholder,
   type,
   control,
@@ -19,9 +20,7 @@ const InputBaseComponent = ({
   return (
     <div className="flex flex-col mb-3">
       <div className={`flex ${horizontalLabel ? "items-end" : "flex-col"}`}>
-        <label className={`mr-2 w-24 font-medium ${noLabel ? "hidden" : ""}`}>
-          {capitalizeFirstLetter(name)}
-        </label>
+        <label className={`mr-2 w-24 font-medium ${noLabel ? "hidden" : ""}`}>{label}</label>
         <Controller
           name={name}
           control={control}
@@ -49,6 +48,7 @@ InputBaseComponent.propTypes = {
   placeholder: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   noLabel: PropTypes.bool,
+  label: PropTypes.string,
   horizontalLabel: PropTypes.bool,
   control: PropTypes.object.isRequired,
   name: PropTypes.string.isRequired,

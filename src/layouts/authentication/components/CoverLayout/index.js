@@ -36,7 +36,7 @@ function CoverLayout({ coverHeight, image, children }) {
       <DefaultNavbar
         action={{
           type: "external",
-          route: "https://creative-tim.com/product/material-dashboard-react",
+          route: "/",
           label: "Back",
         }}
         transparent

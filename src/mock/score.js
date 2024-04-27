@@ -216,23 +216,23 @@ const scoreByStudentsBySubjectEnlish = {
             value: 10,
           },
           {
-            key: "Kiểm tra miệng",
-            value: 10,
-          },
-          {
             key: "Kiểm tra 15 phút",
             value: 10,
           },
           {
             key: "Kiểm tra 1 tiết",
-            value: 5,
+            value: 10,
           },
           {
-            key: "Kiểm tra 1 tiết",
-            value: 7,
+            key: "Kiểm tra cuối kì",
+            value: 10,
           },
           {
-            key: "Kiểm tra 1 tiết",
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
             value: 10,
           },
           {
@@ -256,23 +256,23 @@ const scoreByStudentsBySubjectEnlish = {
             value: 10,
           },
           {
-            key: "Kiểm tra miệng",
-            value: 10,
-          },
-          {
             key: "Kiểm tra 15 phút",
             value: 10,
           },
           {
             key: "Kiểm tra 1 tiết",
-            value: 5,
+            value: 10,
           },
           {
-            key: "Kiểm tra 1 tiết",
-            value: 7,
+            key: "Kiểm tra cuối kì",
+            value: 10,
           },
           {
-            key: "Kiểm tra 1 tiết",
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
             value: 10,
           },
           {
@@ -296,23 +296,23 @@ const scoreByStudentsBySubjectEnlish = {
             value: 10,
           },
           {
-            key: "Kiểm tra miệng",
-            value: 10,
-          },
-          {
             key: "Kiểm tra 15 phút",
             value: 10,
           },
           {
             key: "Kiểm tra 1 tiết",
-            value: 5,
+            value: 10,
           },
           {
-            key: "Kiểm tra 1 tiết",
-            value: 7,
+            key: "Kiểm tra cuối kì",
+            value: 10,
           },
           {
-            key: "Kiểm tra 1 tiết",
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
             value: 10,
           },
           {

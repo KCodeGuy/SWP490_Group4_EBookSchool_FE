@@ -297,11 +297,7 @@ const Wiki = () => {
           <Grid item xs={12} md={6} lg={3} marginTop={2}>
             <MDTypography>4. Popup, form</MDTypography>
             <p className="mt-4">1. Popup</p>
-            <PopupComponent title="Popup title" onSubmit={hanldeOK}>
-              <p>CC</p>
-              <p>CC</p>
-              <p>CC</p>
-            </PopupComponent>
+            <PopupComponent title="Popup title" onSubmit={hanldeOK}></PopupComponent>
             <p className="mt-4 mb-3">2. Form horizontalLabel</p>
             <form onSubmit={handleSubmit(onSubmitDefaultLabel)} className="w-96">
               <InputBaseComponent
@@ -309,13 +305,13 @@ const Wiki = () => {
                 type="email"
                 control={control}
                 name="email"
+                label="Email"
                 errors={errors}
-                horizontalLabel={true}
                 validationRules={{
-                  required: "Email is required!",
+                  required: "Không được bỏ trống!",
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "Invalid email format!",
+                    message: "Email không đúng định dạng!",
                   },
                 }}
               />
@@ -324,11 +320,12 @@ const Wiki = () => {
                 type="password"
                 control={control}
                 name="password"
+                label="Mật khẩu"
                 errors={errors}
                 validationRules={{
                   required: "Password is required!",
                   minLength: {
-                    value: 8,
+                    value: 10,
                     message: "Password is min length 8!",
                   },
                   maxLength: {
@@ -342,6 +339,7 @@ const Wiki = () => {
                 type="text"
                 control={control}
                 name="phone"
+                label="Số điện thoại"
                 errors={errors}
                 validationRules={{
                   required: "Phone is required!",
@@ -356,6 +354,7 @@ const Wiki = () => {
                 type="text"
                 control={control}
                 name="address"
+                label="Địa chỉ"
                 errors={errors}
                 noLabel={true}
                 validationRules={{

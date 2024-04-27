@@ -10,6 +10,7 @@ import { subjects } from "mock/subject";
 import React, { useState, useEffect, useRef } from "react";
 import TableMarkAllStudentsComponent from "../../components/TableMarkAllStudentsComponent/TableMarkAllStudentsComponent";
 import "./style.scss";
+import MenuItemComponent from "../../components/MenuItemComponent/MenuItemComponent";
 // Mark management (HieuTTN)
 
 const scoreByStudents = {
@@ -88,6 +89,10 @@ const scoreByStudents = {
     },
     // Additional student data...
   ],
+};
+
+const onChangeData = (data) => {
+  console.log(data);
 };
 
 const semesters = ["Học kì I", "Học kì II", "Cả năm"];
@@ -271,7 +276,7 @@ export default function MarkManagement() {
               <MenuIcon className="icon" />
             </div>
           </div>
-          {showPopup && (
+          {/* {showPopup && (
             <div className="absolute right-10 bg-white shadow-xl rounded z-50 cursor-pointer">
               <ul className="list-none m-0 p-0">
                 <li
@@ -300,8 +305,19 @@ export default function MarkManagement() {
                 </li>
               </ul>
             </div>
-          )}
+          )} */}
+          {/* <MenuItemComponent items={["nhap diem excel", "nhap diem tay"]} handleGetItems={onHanlde}/> */}
 
+          {showPopup && (
+            <MenuItemComponent
+              data={[
+                { id: 1, name: "Nhap diem bang excel" },
+                { id: 2, name: "Nhap diem" },
+                { id: 3, name: "Sua diem" },
+              ]}
+              onChange={onChangeData}
+            />
+          )}
           <div className="text-center mt-5">
             <h4 className="text-xl font-bold">Bảng điểm tổng kết lớp 12A1</h4>
             <h4 className="text-xl font-bold">Học kỳ: HKI. Năm học: 2023-2024</h4>

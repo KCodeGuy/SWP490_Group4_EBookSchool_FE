@@ -43,9 +43,10 @@ import SignUp from "layouts/authentication/sign-up";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
-import SchoolBook from "./layouts/shoolBook/SchoolBook";
+import SchoolBook from "./layouts/shoolBook/schoolBook";
 import Wiki from "./layouts/wiki/Wiki";
-import MarkManagement from "./layouts/markManagement/MarkManagement";
+import MarkManagement from "./layouts/MarkManagement/MarkManagement";
+import ComponentMark from "./layouts/componentMark/ComponentMark";
 import RoomManagement from "./layouts/roomManagement/RoomManagement";
 import ClassManagement from "layouts/classManagement/ClassManagement";
 import SubjectManagement from "layouts/subjectManagement/SubjectManagement";
@@ -58,6 +59,14 @@ const routes = [
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/markManagement",
     component: <MarkManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Component Mark(HieuTTN)",
+    key: "componentMark",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/componentMark",
+    component: <ComponentMark />,
   },
   {
     type: "collapse",

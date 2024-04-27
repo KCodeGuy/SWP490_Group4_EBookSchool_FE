@@ -2,19 +2,3 @@
 // @import "../../assets/css/base.scss";
 
 // Your styles scss here
-
-.right {
-  border: 1px solid rgb(109, 109, 109);
-  .icon {
-    width: 30px;
-    height: 30px;
-  }
-}
-
-.hover {
-  &:hover {
-    background-color: #247cd4;
-    border-radius: 5px;
-    color: #f0f0f0;
-  }
-}

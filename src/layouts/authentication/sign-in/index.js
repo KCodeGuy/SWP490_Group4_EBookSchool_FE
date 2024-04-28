@@ -75,7 +75,12 @@ function Basic() {
           <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
             Đăng nhập
           </MDTypography>
-          <Grid container spacing={3} justifyContent="center" sx={{ mt: 1, mb: 2 }}>
+          <MDBox mt={1} mb={1} textAlign="center">
+            <MDTypography variant="button" color="white" fontWeight="medium">
+              Trường THSC&THPT Nguyen Van A
+            </MDTypography>
+          </MDBox>
+          {/* <Grid container spacing={3} justifyContent="center" sx={{ mb: 2 }}>
             <Grid item xs={2}>
               <MDTypography component={MuiLink} href="#" variant="body1" color="white">
                 <FacebookIcon color="inherit" />
@@ -91,7 +96,7 @@ function Basic() {
                 <GoogleIcon color="inherit" />
               </MDTypography>
             </Grid>
-          </Grid>
+          </Grid> */}
         </MDBox>
         <MDBox pt={4} pb={3} px={3}>
           {/* <MDBox component="form" role="form">
@@ -140,6 +145,7 @@ function Basic() {
               type="email"
               control={control}
               name="email"
+              label="Email"
               errors={errors}
               validationRules={{
                 required: "Email không được bỏ trống!",
@@ -154,6 +160,7 @@ function Basic() {
               type="password"
               control={control}
               name="password"
+              label="Mật khẩu"
               errors={errors}
               validationRules={{
                 required: "Mật khẩu không được bỏ trống",
@@ -172,7 +179,7 @@ function Basic() {
                 Bạn đã quên mật khẩu?{" "}
                 <MDTypography
                   component={Link}
-                  to="/authentication/sign-in"
+                  to="/authentication/reset-password"
                   variant="button"
                   color="info"
                   fontWeight="medium"
@@ -182,7 +189,7 @@ function Basic() {
                 </MDTypography>
               </MDTypography>
             </MDBox>
-            <ButtonComponent style={{ marginTop: "24px", width: "100%" }} action="submit">
+            <ButtonComponent style={{ marginTop: "12px", width: "100%" }} action="submit">
               ĐĂNG NHẬP
             </ButtonComponent>
           </form>

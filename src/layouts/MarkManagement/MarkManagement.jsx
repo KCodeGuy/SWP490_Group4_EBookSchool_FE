@@ -95,6 +95,10 @@ const scoreByStudents = {
   ],
 };
 
+const onChangeData = (data) => {
+  console.log(data);
+};
+
 const semesters = ["Học kì I", "Học kì II", "Cả năm"];
 
 const grades = ["Khối 10", "Khối 11", "Khối 12"];

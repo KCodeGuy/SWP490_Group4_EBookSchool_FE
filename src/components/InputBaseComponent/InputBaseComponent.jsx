@@ -5,6 +5,7 @@ import { Controller } from "react-hook-form";
 import { capitalizeFirstLetter } from "../../utils/HandleArray";
 
 const InputBaseComponent = ({
+  label,
   placeholder,
   type,
   control,
@@ -15,12 +16,13 @@ const InputBaseComponent = ({
   validationRules, // Custom validation rules prop
 }) => {
   const rules = validationRules || {};
+  const isRequired = rules.required; // Check if 'required' rule exists
 
   return (
     <div className="flex flex-col mb-3">
       <div className={`flex ${horizontalLabel ? "items-end" : "flex-col"}`}>
-        <label className={`mr-2 w-24 font-medium ${noLabel ? "hidden" : ""}`}>
-          {capitalizeFirstLetter(name)}
+        <label className={`mr-2 w-36 font-medium ${noLabel ? "hidden" : ""}`}>
+          {label} {isRequired && <span className="text-red-500">*</span>}
         </label>
         <Controller
           name={name}
@@ -49,6 +51,7 @@ InputBaseComponent.propTypes = {
   placeholder: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   noLabel: PropTypes.bool,
+  label: PropTypes.string,
   horizontalLabel: PropTypes.bool,
   control: PropTypes.object.isRequired,
   name: PropTypes.string.isRequired,

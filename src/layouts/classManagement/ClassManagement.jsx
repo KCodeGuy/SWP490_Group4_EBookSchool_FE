@@ -12,8 +12,12 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { classrooms } from "mock/classroom";
 import { schoolYears } from "mock/schoolYear";
 import { studentClasses } from "mock/class";
+import MenuItemComponent from "../../components/MenuItemComponent/MenuItemComponent";
 // Class management (UolLT)
 export default function ClassManagement() {
+  const onChangeData = (data) => {
+    console.log(data);
+  };
   const handleEdit = (rowItem) => {
     console.log("Edit row:", rowItem);
     // Implement edit logic here
@@ -41,6 +45,15 @@ export default function ClassManagement() {
             <h4 className="text-xl font-bold">Quản lý lớp học</h4>
           </div>
 
+          <MenuItemComponent
+            data={[
+              { id: 1, name: "Nhap diem bang pp" },
+              { id: 2, name: "Nhap diem canva" },
+              { id: 3, name: "Sua diem excel" },
+            ]}
+            onChange={onChangeData}
+          />
+
           <div className="flex items-center justify-between">
             {/* School Year Select */}
             <div className="flex justify-start">
@@ -56,8 +69,8 @@ export default function ClassManagement() {
                   label="Năm học"
                   onChange={handleSchoolYearSelectedChange}
                 >
-                  {schoolYears.data.map((item) => (
-                    <MenuItem key={item.schoolYear.toString()} value={item.schoolYear.toString()}>
+                  {schoolYears.data.map((item, index) => (
+                    <MenuItem key={index} value={item.schoolYear.toString()}>
                       {item.schoolYear.toString()}
                     </MenuItem>
                   ))}
@@ -76,8 +89,8 @@ export default function ClassManagement() {
                   label="Phòng học"
                   onChange={handleClassRoomSelectedChange}
                 >
-                  {classrooms.data.map((item) => (
-                    <MenuItem key={item.name.toString()} value={item.name.toString()}>
+                  {classrooms.data.map((item, index) => (
+                    <MenuItem key={index} value={item.name.toString()}>
                       {item.name.toString()}
                     </MenuItem>
                   ))}

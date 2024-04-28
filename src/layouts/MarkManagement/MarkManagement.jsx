@@ -1,4 +1,4 @@
-import MenuIcon from "@mui/icons-material/Menu";
+import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
 import { FormControl, InputLabel, Card, MenuItem, Select } from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
@@ -10,7 +10,11 @@ import { subjects } from "mock/subject";
 import React, { useState, useEffect, useRef } from "react";
 import TableMarkAllStudentsComponent from "../../components/TableMarkAllStudentsComponent/TableMarkAllStudentsComponent";
 import "./style.scss";
-import MenuItemComponent from "../../components/MenuItemComponent/MenuItemComponent";
+import PopupMenu from "components/MenuComponent/MenuComponent";
+import { scoreByStudentsBySubjectEnlish } from "../../mock/score";
+import { countDuplicateItemsInArray } from "utils/HandleArray";
+import TableMarkOfSubjectComponent from "components/TableMarkOfSubjectComponent/TableMarkOfSubjectComponent";
+import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 // Mark management (HieuTTN)
 
 const scoreByStudents = {
@@ -104,7 +108,29 @@ const handleViewDetails = (student) => {
   // Implement your logic to view details
 };
 
+const oldArr = scoreByStudentsBySubjectEnlish.data.score[0].scores;
+const result = countDuplicateItemsInArray(oldArr);
+
 export default function MarkManagement() {
+  const menuItems = [
+    {
+      label: "Nhập điểm",
+      action: () => console.log("Nhập điểm"),
+    },
+    {
+      label: "Nhập điểm bằng Excel",
+      action: () => console.log("Nhập điểm bằng Excel"),
+    },
+    {
+      label: "Sửa điểm",
+      action: () => console.log("Sửa điểm"),
+    },
+    {
+      label: "Sửa điểm bằng Excel",
+      action: () => console.log("Sửa điểm bằng Excel"),
+    },
+  ];
+
   const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
@@ -130,30 +156,10 @@ export default function MarkManagement() {
     setSchoolSubject(event.target.value);
   };
 
-  const [showPopup, setShowPopup] = useState(false);
-  const popupRef = useRef(null);
-
-  const togglePopup = () => {
-    setShowPopup(!showPopup);
+  const handleDetails = (rowItem) => {
+    console.log("Details row:", rowItem);
+    // Implement delete logic here
   };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (popupRef.current && !popupRef.current.contains(event.target)) {
-        setShowPopup(false);
-      }
-    };
-
-    if (showPopup) {
-      window.addEventListener("mousedown", handleClickOutside);
-    } else {
-      window.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      window.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showPopup]);
 
   return (
     <DashboardLayout>
@@ -268,67 +274,58 @@ export default function MarkManagement() {
               </FormControl>
             </div>
 
-            <div
-              ref={popupRef}
-              className="right rounded flex justify-center items-center w-10"
-              onClick={togglePopup}
-            >
-              <MenuIcon className="icon" />
-            </div>
+            <PopupMenu
+              items={menuItems}
+              // style={{ backgroundColor: "lightblue", color: "darkblue" }}
+              className=" rounded flex justify-center items-center w-10"
+            />
           </div>
-          {/* {showPopup && (
-            <div className="absolute right-10 bg-white shadow-xl rounded z-50 cursor-pointer">
-              <ul className="list-none m-0 p-0">
-                <li
-                  className="text-center font-bold py-2 px-4 hover"
-                  onClick={() => console.log("Nhập điểm")}
-                >
-                  Nhập điểm
-                </li>
-                <li
-                  className="text-center font-bold py-2 px-4 hover"
-                  onClick={() => console.log("Nhập điểm bằng Excel")}
-                >
-                  Nhập điểm bằng Excel
-                </li>
-                <li
-                  className="text-center font-bold py-2 px-4 hover"
-                  onClick={() => console.log(" Sửa điểm")}
-                >
-                  Sửa điểm
-                </li>
-                <li
-                  className="text-center font-bold py-2 px-4 hover"
-                  onClick={() => console.log(" Sửa điểm bằng Excel")}
-                >
-                  Sửa điểm bằng Excel
-                </li>
-              </ul>
-            </div>
-          )} */}
-          {/* <MenuItemComponent items={["nhap diem excel", "nhap diem tay"]} handleGetItems={onHanlde}/> */}
 
-          {showPopup && (
-            <MenuItemComponent
-              data={[
-                { id: 1, name: "Nhap diem bang excel" },
-                { id: 2, name: "Nhap diem" },
-                { id: 3, name: "Sua diem" },
-              ]}
-              onChange={onChangeData}
-            />
-          )}
-          <div className="text-center mt-5">
-            <h4 className="text-xl font-bold">Bảng điểm tổng kết lớp 12A1</h4>
-            <h4 className="text-xl font-bold">Học kỳ: HKI. Năm học: 2023-2024</h4>
-          </div>
-          <div className="overflow-scroll">
-            <TableMarkAllStudentsComponent
-              className="mt-4"
-              data={scoreByStudents.data}
-              onViewDetails={handleViewDetails}
-            />
-          </div>
+          <>
+            <div className="text-center mt-5">
+              <h4 className="text-xl font-bold">Bảng điểm tổng kết lớp 12A1</h4>
+              <h4 className="text-xl font-bold">Học kỳ: HKI. Năm học: 2023-2024</h4>
+            </div>
+            <div className="overflow-auto">
+              <TableMarkAllStudentsComponent
+                className="mt-4"
+                data={scoreByStudents.data}
+                onViewDetails={handleViewDetails}
+              />
+            </div>
+            <>
+              <div className="text-center mt-5">
+                <h4 className="text-xl font-bold">Bảng điểm môn Toán lớp 12A1</h4>
+                <h4 className="text-xl font-bold">Học kỳ: HKI. Năm học: 2023-2024</h4>
+              </div>
+              <div className="flex flex-nowrap justify-between icon-custom">
+                <p className="font-bold mt-3 left">GVBM: Le Van A</p>
+                <CardGiftcardIcon
+                  className="right mt-3.5 icon cursor-pointer"
+                  onClick={() => console.log("Người được chọn =)))")}
+                >
+                  {" "}
+                </CardGiftcardIcon>
+              </div>
+              <div className="overflow-auto">
+                <TableMarkOfSubjectComponent
+                  header={result}
+                  data={scoreByStudentsBySubjectEnlish.data.score}
+                  className="mt-1 text-left"
+                  onDetails={handleDetails}
+                />
+                <div className="mt-3 flex flex-nowrap justify-end icon-custom">
+                  <ButtonComponent
+                    className="right w-3 icon cursor-pointer"
+                    type="primary"
+                    onClick={() => console.log("Lưu")}
+                  >
+                    Lưu
+                  </ButtonComponent>
+                </div>
+              </div>
+            </>
+          </>
         </MDBox>
       </Card>
       <Footer />

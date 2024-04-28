@@ -1,0 +1,22 @@
+.menu-custom {
+  border: 1px solid rgb(109, 109, 109);
+  .icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  &:hover {
+    background-color: #247cd4;
+    .icon {
+      color: #f0f0f0;
+    }
+  }
+}
+
+.hover {
+  &:hover {
+    background-color: #247cd4;
+    border-radius: 3px;
+    color: #f0f0f0;
+  }
+}

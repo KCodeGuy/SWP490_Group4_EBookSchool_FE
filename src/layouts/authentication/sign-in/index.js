@@ -189,7 +189,7 @@ function Basic() {
                 </MDTypography>
               </MDTypography>
             </MDBox>
-            <ButtonComponent style={{ marginTop: "24px", width: "100%" }} action="submit">
+            <ButtonComponent style={{ marginTop: "12px", width: "100%" }} action="submit">
               ĐĂNG NHẬP
             </ButtonComponent>
           </form>

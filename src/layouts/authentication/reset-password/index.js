@@ -1,30 +1,11 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// react-router-dom components
 import { Link } from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
-import Checkbox from "@mui/material/Checkbox";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import MDInput from "components/MDInput";
-import MDButton from "components/MDButton";
 
 // Authentication layout components
 import CoverLayout from "layouts/authentication/components/CoverLayout";
@@ -34,6 +15,7 @@ import bgImage from "assets/images/bg-sign-up-cover.jpeg";
 import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent";
 import { useForm, Controller } from "react-hook-form";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
+import { useState } from "react";
 
 function Cover() {
   const {
@@ -42,9 +24,14 @@ function Cover() {
     formState: { errors },
   } = useForm();
 
+  const [isMatchedPassword, setIsMatchedPassword] = useState(true);
+
   const handleSubmitLogin = (data) => {
-    console.log(data); // You can do something with the form data here
+    console.log(data);
+    const isCorrectPassword = data.password === data.passwordReset;
+    setIsMatchedPassword(isCorrectPassword);
   };
+
   return (
     <CoverLayout image={bgImage}>
       <Card>
@@ -67,6 +54,11 @@ function Cover() {
           </MDTypography>
         </MDBox>
         <MDBox pt={4} pb={3} px={3}>
+          {!isMatchedPassword ? (
+            <p className="error-color mb-1">Mật khẩu nhập lại không khớp!</p>
+          ) : (
+            ""
+          )}
           <form onSubmit={handleSubmit(handleSubmitLogin)} className="w-full">
             <InputBaseComponent
               placeholder="Nhập địa chỉ email"
@@ -106,7 +98,7 @@ function Cover() {
               placeholder="Nhập lại mật khẩu mới"
               type="password"
               control={control}
-              name="password-reset"
+              name="passwordReset"
               label="Nhập lại"
               errors={errors}
               validationRules={{
@@ -136,7 +128,7 @@ function Cover() {
                 </MDTypography>
               </MDTypography>
             </MDBox>
-            <ButtonComponent style={{ marginTop: "24px", width: "100%" }} action="submit">
+            <ButtonComponent style={{ marginTop: "12px", width: "100%" }} action="submit">
               ĐỔI MẬT KHẨU
             </ButtonComponent>
           </form>

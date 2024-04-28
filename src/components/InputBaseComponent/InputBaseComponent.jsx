@@ -16,11 +16,14 @@ const InputBaseComponent = ({
   validationRules, // Custom validation rules prop
 }) => {
   const rules = validationRules || {};
+  const isRequired = rules.required; // Check if 'required' rule exists
 
   return (
     <div className="flex flex-col mb-3">
       <div className={`flex ${horizontalLabel ? "items-end" : "flex-col"}`}>
-        <label className={`mr-2 w-24 font-medium ${noLabel ? "hidden" : ""}`}>{label}</label>
+        <label className={`mr-2 w-36 font-medium ${noLabel ? "hidden" : ""}`}>
+          {label} {isRequired && <span className="text-red-500">*</span>}
+        </label>
         <Controller
           name={name}
           control={control}

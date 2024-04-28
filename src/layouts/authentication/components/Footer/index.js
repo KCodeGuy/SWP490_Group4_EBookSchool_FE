@@ -76,7 +76,7 @@ function Footer({ light }) {
                   fontWeight="regular"
                   color={light ? "white" : "dark"}
                 >
-                  About Us
+                  Giới thiệu
                 </MDTypography>
               </Link>
             </MDBox>
@@ -87,7 +87,7 @@ function Footer({ light }) {
                   fontWeight="regular"
                   color={light ? "white" : "dark"}
                 >
-                  Instruction
+                  Hướng dẫn
                 </MDTypography>
               </Link>
             </MDBox>

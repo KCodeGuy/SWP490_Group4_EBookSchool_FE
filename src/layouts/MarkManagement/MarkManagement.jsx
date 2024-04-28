@@ -1,4 +1,4 @@
-import MenuIcon from "@mui/icons-material/Menu";
+import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
 import { FormControl, InputLabel, Card, MenuItem, Select } from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
@@ -293,11 +293,20 @@ export default function MarkManagement() {
                 <h4 className="text-xl font-bold">Bảng điểm môn Toán lớp 12A1</h4>
                 <h4 className="text-xl font-bold">Học kỳ: HKI. Năm học: 2023-2024</h4>
               </div>
+              <div className="flex flex-nowrap justify-between icon-custom">
+                <p className="font-bold mt-3 left">GVBM: Le Van A</p>
+                <CardGiftcardIcon
+                  className="right mt-3.5 icon cursor-pointer"
+                  onClick={() => console.log("Người được chọn =)))")}
+                >
+                  {" "}
+                </CardGiftcardIcon>
+              </div>
               <div className="overflow-auto">
                 <TableMarkOfSubjectComponent
                   header={result}
                   data={scoreByStudentsBySubjectEnlish.data.score}
-                  className="mt-4 text-left"
+                  className="mt-1 text-left"
                   onDetails={handleDetails}
                 />
               </div>

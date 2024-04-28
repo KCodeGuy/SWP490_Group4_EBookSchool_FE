@@ -2,3 +2,14 @@
 // @import "../../assets/css/base.scss";
 
 // Your styles scss here
+
+.icon-custom {
+  .icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.icon:hover {
+  color: #247cd4;
+}

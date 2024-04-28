@@ -14,6 +14,7 @@ import PopupMenu from "components/MenuComponent/MenuComponent";
 import { scoreByStudentsBySubjectEnlish } from "../../mock/score";
 import { countDuplicateItemsInArray } from "utils/HandleArray";
 import TableMarkOfSubjectComponent from "components/TableMarkOfSubjectComponent/TableMarkOfSubjectComponent";
+import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 // Mark management (HieuTTN)
 
 const scoreByStudents = {
@@ -309,6 +310,15 @@ export default function MarkManagement() {
                   className="mt-1 text-left"
                   onDetails={handleDetails}
                 />
+                <div className="mt-3 flex flex-nowrap justify-end icon-custom">
+                  <ButtonComponent
+                    className="right w-3 icon cursor-pointer"
+                    type="primary"
+                    onClick={() => console.log("Lưu")}
+                  >
+                    Lưu
+                  </ButtonComponent>
+                </div>
               </div>
             </>
           </>

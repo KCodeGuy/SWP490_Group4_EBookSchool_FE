@@ -21,6 +21,7 @@ function Cover() {
   const {
     control,
     handleSubmit,
+    setValue: noSetValue,
     formState: { errors },
   } = useForm();
 
@@ -65,6 +66,7 @@ function Cover() {
               type="email"
               control={control}
               name="email"
+              setValue={noSetValue}
               label="Email"
               errors={errors}
               validationRules={{
@@ -79,6 +81,7 @@ function Cover() {
               placeholder="Nhập mật khẩu mới"
               type="password"
               control={control}
+              setValue={noSetValue}
               name="password"
               label="Mật khẩu"
               errors={errors}
@@ -99,6 +102,7 @@ function Cover() {
               type="password"
               control={control}
               name="passwordReset"
+              setValue={noSetValue}
               label="Nhập lại"
               errors={errors}
               validationRules={{

@@ -1,14 +1,13 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import PropTypes from "prop-types";
-import ButtonComponent from "components/ButtonComponent/ButtonComponent";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -19,52 +18,77 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-export default function PopupComponent({ title, onSubmit, children }) {
-  const [open, setOpen] = React.useState(false);
+export default function PopupComponent({
+  title,
+  icon,
+  onSubmit,
+  children,
+  isOpen,
+  onClose,
+  description,
+  tabs,
+}) {
+  const [selectedTab, setSelectedTab] = useState(0);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
+  const handleTabChange = (event, newValue) => {
+    setSelectedTab(newValue);
   };
 
   return (
-    <React.Fragment>
-      <ButtonComponent type="primary" onClick={handleClickOpen}>
-        Open modal
-      </ButtonComponent>
-      <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          {title}
-        </DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleClose}
+    <BootstrapDialog onClose={onClose} aria-labelledby="customized-dialog-title" open={isOpen}>
+      <DialogTitle sx={{ m: 0, paddingX: 2, paddingY: 2 }} id="customized-dialog-title">
+        {icon && <span className="mr-2 text-xl">{icon}</span>}
+        {title}
+        {description && <p className="mt-0 text-sm font-medium">{description}</p>}
+      </DialogTitle>
+      <IconButton
+        aria-label="close"
+        onClick={onClose}
+        sx={{
+          position: "absolute",
+          right: 8,
+          top: 8,
+          color: (theme) => theme.palette.grey[500],
+        }}
+      >
+        <CloseIcon />
+      </IconButton>
+      {tabs && (
+        <Tabs
+          value={selectedTab}
+          onChange={handleTabChange}
+          variant="standard"
           sx={{
-            position: "absolute",
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
+            paddingX: 2,
+            "& .Mui-selected": {
+              backgroundColor: "#247cd4",
+              color: "white !important",
+            },
           }}
         >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent dividers>{children}</DialogContent>
-        <DialogActions>
-          <ButtonComponent type="error" onClick={handleClose}>
-            Cancel
-          </ButtonComponent>
-          <ButtonComponent type="primary" onClick={handleClose}>
-            OK
-          </ButtonComponent>
-        </DialogActions>
-      </BootstrapDialog>
-    </React.Fragment>
+          {tabs.map((tab, index) => (
+            <Tab key={index} label={tab.label} />
+          ))}
+        </Tabs>
+      )}
+      <DialogContent sx={{ m: 0, paddingX: 3, paddingY: 3, minWidth: 450 }} dividers>
+        {tabs ? children[selectedTab] : children}
+      </DialogContent>
+    </BootstrapDialog>
   );
 }
+
 PopupComponent.propTypes = {
   onSubmit: PropTypes.func,
   title: PropTypes.string.isRequired,
-  children: PropTypes.node.isRequired,
+  description: PropTypes.string,
+  icon: PropTypes.node,
+  children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]).isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  tabs: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+    })
+  ),
 };

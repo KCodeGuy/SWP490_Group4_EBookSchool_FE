@@ -10,7 +10,7 @@ import { subjects } from "mock/subject";
 import React, { useState, useEffect, useRef } from "react";
 import TableMarkAllStudentsComponent from "../../components/TableMarkAllStudentsComponent/TableMarkAllStudentsComponent";
 import "./style.scss";
-import PopupMenu from "components/MenuComponent/MenuComponent";
+import PopupMenu from "../../components/MenuComponent/MenuComponent";
 import { scoreByStudentsBySubjectEnlish } from "../../mock/score";
 import { countDuplicateItemsInArray } from "utils/HandleArray";
 import TableMarkOfSubjectComponent from "components/TableMarkOfSubjectComponent/TableMarkOfSubjectComponent";

@@ -70,53 +70,69 @@ function TableComponent({
           </tr>
         </thead>
         <tbody>
-          {currentData.map((row, rowIndex) => (
-            <tr key={rowIndex}>
-              {isOrdered && <td>{startIndex + rowIndex + 1}</td>}
-              {row.map((cell, cellIndex) => (
-                <td key={cellIndex}>{cell}</td>
-              ))}
-              {showCheckboxes && (
-                <td className="max-w-28">
-                  <Checkbox
-                    checked={checkedItems.includes(row)}
-                    onChange={() => handleCheckboxChange(row)}
-                  />
-                </td>
-              )}
-              {isShowActions && (
-                <td className="max-w-28">
-                  {onEdit && (
-                    <button
-                      title="Edit button"
-                      className="text-xl primary-color"
-                      onClick={() => onEdit(row)}
-                    >
-                      <ModeEditIcon />
-                    </button>
-                  )}
-                  {onDelete && (
-                    <button
-                      title="Delete button "
-                      className="text-xl ml-3 error-color"
-                      onClick={() => onDelete(row)}
-                    >
-                      <DeleteIcon />
-                    </button>
-                  )}
-                  {onDetails && (
-                    <button
-                      title="Detail button "
-                      className="text-xl ml-3 primary-color"
-                      onClick={() => onDetails(row)}
-                    >
-                      <EditCalendarIcon />
-                    </button>
-                  )}
-                </td>
-              )}
+          {currentData.length === 0 ? (
+            <tr>
+              <td
+                className="font-medium"
+                colSpan={
+                  header.length +
+                  (isOrdered ? 1 : 0) +
+                  (showCheckboxes ? 1 : 0) +
+                  (isShowActions ? 1 : 0)
+                }
+              >
+                Chưa có dữ liệu...!
+              </td>
             </tr>
-          ))}
+          ) : (
+            currentData.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {isOrdered && <td>{startIndex + rowIndex + 1}</td>}
+                {row.map((cell, cellIndex) => (
+                  <td key={cellIndex}>{cell}</td>
+                ))}
+                {showCheckboxes && (
+                  <td className="max-w-28">
+                    <Checkbox
+                      checked={checkedItems.includes(row)}
+                      onChange={() => handleCheckboxChange(row)}
+                    />
+                  </td>
+                )}
+                {isShowActions && (
+                  <td className="max-w-28">
+                    {onEdit && (
+                      <button
+                        title="Edit button"
+                        className="text-xl primary-color"
+                        onClick={() => onEdit(row)}
+                      >
+                        <ModeEditIcon />
+                      </button>
+                    )}
+                    {onDelete && (
+                      <button
+                        title="Delete button "
+                        className="text-xl ml-3 error-color"
+                        onClick={() => onDelete(row)}
+                      >
+                        <DeleteIcon />
+                      </button>
+                    )}
+                    {onDetails && (
+                      <button
+                        title="Detail button "
+                        className="text-xl ml-3 primary-color"
+                        onClick={() => onDetails(row)}
+                      >
+                        <EditCalendarIcon />
+                      </button>
+                    )}
+                  </td>
+                )}
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
       <div className="pagination border py-2 flex justify-between items-center px-3">
@@ -151,7 +167,7 @@ function TableComponent({
 
 TableComponent.propTypes = {
   header: PropTypes.arrayOf(PropTypes.string).isRequired,
-  data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+  data: PropTypes.array,
   onDetails: PropTypes.func,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,

@@ -52,6 +52,7 @@ function Basic() {
   const {
     control,
     handleSubmit,
+    setValue: noSetValue,
     formState: { errors },
   } = useForm();
 
@@ -144,6 +145,7 @@ function Basic() {
               placeholder="Nhập địa chỉ email"
               type="email"
               control={control}
+              setValue={noSetValue}
               name="email"
               label="Email"
               errors={errors}
@@ -159,6 +161,7 @@ function Basic() {
               placeholder="Nhập mật khẩu"
               type="password"
               control={control}
+              setValue={noSetValue}
               name="password"
               label="Mật khẩu"
               errors={errors}

@@ -1,4 +1,14 @@
-import { Box, Button, Card, FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+} from "@mui/material";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -16,8 +26,9 @@ import { scoreByStudentsBySubjectEnlish } from "../../mock/score";
 import { countDuplicateItemsInArray } from "utils/HandleArray";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
 import { useForm, Controller } from "react-hook-form";
-import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent";
+import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
+import SearchInputComponent from "components/SearchInputComponent/SearchInputComponent";
 
 const Wiki = () => {
   const logger = () => {
@@ -177,12 +188,148 @@ const Wiki = () => {
   const {
     control,
     handleSubmit,
+    setValue: noSetValue,
     formState: { errors },
   } = useForm();
 
   const onSubmitDefaultLabel = (data) => {
     console.log(data); // You can do something with the form data here
   };
+
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  const [modalIconTitleOpen, setModalIconTitleOpen] = useState(false);
+
+  const handleOpenIconTitleModal = () => {
+    setModalIconTitleOpen(true);
+  };
+
+  const handleCloseIconTitleModal = () => {
+    setModalIconTitleOpen(false);
+  };
+
+  const [modal3, setModal3] = useState(false);
+  const [modal4, setModal4] = useState(false);
+
+  const handleOpenModal3 = () => {
+    setModal3(true);
+  };
+
+  const handleCloseModal3 = () => {
+    setModal3(false);
+  };
+
+  const handleSubmitModal3 = () => {
+    setModal3(false);
+    // Add logic handle submit
+  };
+
+  const selectOptions = [
+    { value: "option1", label: "Option 1" },
+    { value: "option2", label: "Option 2" },
+    { value: "option3", label: "Option 3" },
+  ];
+
+  const radioOptions = [
+    { label: "Option 1", value: "option1" },
+    { label: "Option 2", value: "option2" },
+    { label: "Option 3", value: "option3" },
+  ];
+  const handleSearchAction = (txtSearch) => {
+    console.log("txtSearch: ", txtSearch);
+  };
+
+  function Tab1Content() {
+    return (
+      <div>
+        <InputBaseComponent
+          placeholder="Enter your email"
+          type="email"
+          control={control}
+          setValue={noSetValue}
+          name="input1Tab1"
+          label="Email"
+          errors={errors}
+        />
+        <InputBaseComponent
+          placeholder="Enter your password"
+          type="password"
+          control={control}
+          setValue={noSetValue}
+          name="input2Tab1"
+          label="Mật khẩu"
+          errors={errors}
+        />
+        <div className="flex justify-end">
+          <ButtonComponent action="button" type="error">
+            Cancel
+          </ButtonComponent>
+          <ButtonComponent action="button">Submit</ButtonComponent>
+        </div>
+      </div>
+    );
+  }
+
+  function Tab2Content() {
+    return (
+      <div>
+        <InputBaseComponent
+          type="checkbox"
+          horizontalLabel={true}
+          control={control}
+          setValue={noSetValue}
+          name="input1Tab2"
+          label="Đẹp trai"
+          errors={errors}
+        />
+        <InputBaseComponent
+          placeholder="Input horizontal Label"
+          type="radio"
+          horizontalLabel={true}
+          control={control}
+          setValue={noSetValue}
+          options={radioOptions}
+          name="input2Tab2"
+          label="Giới tính"
+          errors={errors}
+        />
+        <div className="flex justify-end mt-2">
+          <ButtonComponent action="button" type="error">
+            Cancel
+          </ButtonComponent>
+          <ButtonComponent action="button">Submit</ButtonComponent>
+        </div>
+      </div>
+    );
+  }
+
+  function Tab3Content() {
+    return (
+      <div>
+        <ol>
+          <li>Thông báo : Lịch thi văn nghệ Hội Trại chào mừng 26/3.</li>
+          <li>Thông báo : Lịch thi văn nghệ Hội Trại chào mừng 26/3.</li>
+          <li>Thông báo : Có ghệ đẹp.</li>
+          <li>Thông báo : Rớt môn đồ án.</li>
+        </ol>
+        <ButtonComponent
+          action="button"
+          type="success"
+          style={{ marginTop: "12px", width: "100%" }}
+        >
+          Apply
+        </ButtonComponent>
+      </div>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -228,7 +375,7 @@ const Wiki = () => {
             </ButtonComponent>
           </Grid>
           <Grid item xs={12} md={6} lg={3} marginTop={2}>
-            <MDTypography>2. Drop down</MDTypography>
+            <MDTypography>2. Drop down, Search</MDTypography>
             <FormControl sx={{ minWidth: 120, marginLeft: "12px" }}>
               <InputLabel id="demo-simple-select-label">Age</InputLabel>
               <Select
@@ -243,16 +390,10 @@ const Wiki = () => {
                 <MenuItem value={20}>Twenty</MenuItem>
                 <MenuItem value={30}>Thirty</MenuItem>
               </Select>
-              <SearchComponent
-                data={[
-                  { title: "Apple", age: 12 },
-                  { title: "Banana", age: 11 },
-                  { title: "ABC", age: 14 },
-                ]}
-                option="title"
-                placeHolder="Search item"
-                onEnter={handleEnter}
-                className="mt-5"
+              <SearchInputComponent
+                className="mt-4"
+                onSearch={handleSearchAction}
+                placeHolder="Nhập từ khóa..."
               />
             </FormControl>
           </Grid>
@@ -294,78 +435,250 @@ const Wiki = () => {
               onDetails={handleDetails}
             />
           </Grid>
-          <Grid item xs={12} md={6} lg={3} marginTop={2}>
-            <MDTypography>4. Popup, form</MDTypography>
-            <p className="mt-4">1. Popup</p>
-            <PopupComponent title="Popup title" onSubmit={hanldeOK}></PopupComponent>
-            <p className="mt-4 mb-3">2. Form horizontalLabel</p>
-            <form onSubmit={handleSubmit(onSubmitDefaultLabel)} className="w-96">
-              <InputBaseComponent
-                placeholder="Enter your email"
-                type="email"
-                control={control}
-                name="email"
-                label="Email"
-                errors={errors}
-                validationRules={{
-                  required: "Không được bỏ trống!",
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "Email không đúng định dạng!",
-                  },
-                }}
-              />
-              <InputBaseComponent
-                placeholder="Enter your password"
-                type="password"
-                control={control}
-                name="password"
-                label="Mật khẩu"
-                errors={errors}
-                validationRules={{
-                  required: "Password is required!",
-                  minLength: {
-                    value: 10,
-                    message: "Password is min length 8!",
-                  },
-                  maxLength: {
-                    value: 20,
-                    message: "Password is max length 20",
-                  },
-                }}
-              />
-              <InputBaseComponent
-                placeholder="Enter your phone"
-                type="text"
-                control={control}
-                name="phone"
-                label="Số điện thoại"
-                errors={errors}
-                validationRules={{
-                  required: "Phone is required!",
-                  pattern: {
-                    value: /^[0-9]{10}$/,
-                    message: "Phone is invalid format!",
-                  },
-                }}
-              />
-              <InputBaseComponent
-                placeholder="Enter your address"
-                type="text"
-                control={control}
-                name="address"
-                label="Địa chỉ"
-                errors={errors}
-                noLabel={true}
-                validationRules={{
-                  required: "address is required!",
-                }}
-              />
-              <ButtonComponent style={{ marginTop: "12px", width: "100%" }} action="submit">
-                Submit
+
+          <p className="mt-4"></p>
+          <MDTypography>4. Popup, form</MDTypography>
+          <p className="mt-4">1. Popup basic modal</p>
+          <ButtonComponent onClick={handleOpenModal}>Open basic modal</ButtonComponent>
+          <PopupComponent title="Modal basic" isOpen={modalOpen} onClose={handleCloseModal}>
+            {/* Modal Content */}
+            <p className="mt-4">This is modal content</p>
+          </PopupComponent>
+          <p className="mt-4">2. Popup icon title modal</p>
+          <ButtonComponent onClick={handleOpenIconTitleModal}>Open with icon modal</ButtonComponent>
+          <PopupComponent
+            icon={<DeleteIcon />}
+            title="Modal icon basic"
+            isOpen={modalIconTitleOpen}
+            onClose={handleCloseIconTitleModal}
+          >
+            {/* Modal Content */}
+            <p className="mt-4">This is modal content</p>
+          </PopupComponent>
+          <p className="mt-4">3. Popup modal with action</p>
+          <ButtonComponent onClick={handleOpenModal3}>Open action modal</ButtonComponent>
+          <PopupComponent
+            title="XÓA LỚP HỌC"
+            description="Hãy kiểm xác nhận thông tin trước khi xóa"
+            isOpen={modal3}
+            onClose={handleCloseModal3}
+          >
+            <p>Bạn có chắc chắn muốn xóa lớp học?</p>
+            <div className="mt-4 flex justify-end">
+              <ButtonComponent type="error" action="button" onClick={handleCloseModal3}>
+                HỦY BỎ
               </ButtonComponent>
-            </form>
-          </Grid>
+              <ButtonComponent action="button" onClick={handleSubmitModal3}>
+                XÓA
+              </ButtonComponent>
+            </div>
+          </PopupComponent>
+          <p className="mt-4">4. Popup with tabs</p>
+          <ButtonComponent onClick={() => setModal4(true)}>Open tabs popup</ButtonComponent>
+          <PopupComponent
+            title="Modal tabs"
+            isOpen={modal4}
+            onClose={() => setModal4(false)}
+            tabs={[{ label: "Tab 1" }, { label: "Tab 2" }, { label: "Tab 3" }]}
+            description="This is a description."
+          >
+            <Tab1Content />
+            <Tab2Content />
+            <Tab3Content />
+          </PopupComponent>
+          <p className="mt-4 mb-3">2. Form mẫu</p>
+          <form onSubmit={handleSubmit(onSubmitDefaultLabel)} className="w-full">
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={4} marginTop={2}>
+                <p className="mt-4 mb-3">2.1. Các loại thẻ input</p>
+                <InputBaseComponent
+                  placeholder="Enter your email"
+                  type="email"
+                  control={control}
+                  setValue={noSetValue}
+                  name="email"
+                  label="Email"
+                  errors={errors}
+                  validationRules={{
+                    required: "Không được bỏ trống!",
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: "Email không đúng định dạng!",
+                    },
+                  }}
+                />
+                <InputBaseComponent
+                  placeholder="Enter your password"
+                  type="password"
+                  control={control}
+                  setValue={noSetValue}
+                  name="password"
+                  label="Mật khẩu"
+                  errors={errors}
+                  validationRules={{
+                    required: "Không được bỏ trống!",
+                    minLength: {
+                      value: 10,
+                      message: "Mật khẩu ít nhât 8 kí tự!",
+                    },
+                    maxLength: {
+                      value: 20,
+                      message: "Mật khẩu nhiều nhất 20 kí tự!",
+                    },
+                  }}
+                />
+                <InputBaseComponent
+                  placeholder="Enter your phone"
+                  type="text"
+                  control={control}
+                  setValue={noSetValue}
+                  name="phone"
+                  label="Số điện thoại"
+                  errors={errors}
+                  validationRules={{
+                    required: "Không được bỏ trống!",
+                    pattern: {
+                      value: /^[0-9]{10}$/,
+                      message: "Số điện thoại không đúng định dạng!",
+                    },
+                  }}
+                />
+                <InputBaseComponent
+                  label="Select"
+                  name="selectOption"
+                  control={control}
+                  type="select"
+                  options={selectOptions}
+                  setValue={noSetValue}
+                  errors={errors}
+                />
+
+                <InputBaseComponent
+                  type="date"
+                  control={control}
+                  setValue={noSetValue}
+                  name="birdthday"
+                  label="Ngày sinh"
+                  errors={errors}
+                  validationRules={{
+                    required: "Không được bỏ trống!",
+                  }}
+                />
+
+                <InputBaseComponent
+                  type="file"
+                  control={control}
+                  setValue={noSetValue}
+                  name="document"
+                  label="Chọn file"
+                  errors={errors}
+                  validationRules={{
+                    required: "Không được bỏ trống!",
+                  }}
+                />
+                <InputBaseComponent
+                  type="checkbox"
+                  horizontalLabel={true}
+                  control={control}
+                  setValue={noSetValue}
+                  name="handsomeBoy"
+                  label="Đẹp trai"
+                  errors={errors}
+                  // validationRules={{
+                  //   required: "Phải chọn!",
+                  // }}
+                />
+                <InputBaseComponent
+                  placeholder="Input horizontal Label"
+                  type="radio"
+                  horizontalLabel={true}
+                  control={control}
+                  setValue={noSetValue}
+                  options={radioOptions}
+                  name="sex"
+                  label="Giới tính"
+                  errors={errors}
+                  validationRules={{
+                    required: "Phải chọn 1 trong các options!",
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} md={4} marginTop={2}>
+                <p className="mt-4 mb-3">2.2. Các loại label đi cùng</p>
+                <InputBaseComponent
+                  placeholder="Nhập địa chỉ"
+                  type="text"
+                  control={control}
+                  setValue={noSetValue}
+                  name="address1"
+                  label="1. Label đứng(default)"
+                  errors={errors}
+                  validationRules={{
+                    required: "Không được bỏ trống!",
+                  }}
+                />
+                <InputBaseComponent
+                  placeholder="Nhập địa chỉ"
+                  type="text"
+                  horizontalLabel={true}
+                  control={control}
+                  setValue={noSetValue}
+                  name="address2"
+                  label="2. Label ngang"
+                  errors={errors}
+                  validationRules={{
+                    required: "Không được bỏ trống!",
+                  }}
+                />
+                <InputBaseComponent
+                  placeholder="3. No label"
+                  type="text"
+                  control={control}
+                  setValue={noSetValue}
+                  name="address"
+                  label="Địa chỉ"
+                  errors={errors}
+                  noLabel={true}
+                  validationRules={{
+                    required: "Không được bỏ trống!",
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} md={4} marginTop={2}>
+                <p className="mt-4 mb-3">2.3. Custom gọp 2 ô input thành 1 dòng</p>
+                <div className="flex">
+                  <InputBaseComponent
+                    type="date"
+                    className="w-1/2 mr-2"
+                    control={control}
+                    setValue={noSetValue}
+                    name="birdthday2"
+                    label="Ngày sinh"
+                    errors={errors}
+                    validationRules={{
+                      required: "Không được bỏ trống!",
+                    }}
+                  />
+                  <InputBaseComponent
+                    type="date"
+                    control={control}
+                    className="w-1/2"
+                    setValue={noSetValue}
+                    name="birdthday3"
+                    label="Sinh nhật ghệ"
+                    errors={errors}
+                    validationRules={{
+                      required: "Không được bỏ trống!",
+                    }}
+                  />
+                </div>
+              </Grid>
+            </Grid>
+
+            <ButtonComponent style={{ marginTop: "12px", width: "100%" }} action="submit">
+              Submit
+            </ButtonComponent>
+          </form>
         </MDBox>
       </Card>
       <Footer />

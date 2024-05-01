@@ -89,7 +89,7 @@ const TableMarkAllStudentsComponent = ({ data, onViewDetails, className }) => {
 };
 
 TableMarkAllStudentsComponent.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  data: PropTypes.array.isRequired,
   onViewDetails: PropTypes.func.isRequired,
   className: PropTypes.string,
 };

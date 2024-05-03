@@ -21,3 +21,8 @@ table tbody tr td {
   padding: 4px 0px;
   border: 1px solid #ddd;
 }
+
+table tbody tr:hover {
+  background-color: #eaeaea;
+  transition: all 0.3s ease-in;
+}

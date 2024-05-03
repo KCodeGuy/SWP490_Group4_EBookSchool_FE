@@ -43,7 +43,7 @@ import ResetPassword from "layouts/authentication/reset-password";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
-import SchoolBook from "./layouts/shoolBook/schoolBook";
+import SchoolBook from "./layouts/shoolBook/SchoolBook";
 import Wiki from "./layouts/wiki/Wiki";
 import MarkManagement from "./layouts/markManagement/MarkManagement";
 import RoomManagement from "./layouts/roomManagement/RoomManagement";

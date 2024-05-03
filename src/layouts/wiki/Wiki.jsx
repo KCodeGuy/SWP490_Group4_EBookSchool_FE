@@ -403,8 +403,9 @@ const Wiki = () => {
             <TableComponent
               header={["Full name", "CC", "Age"]}
               data={tableData}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
+              // onEdit={handleEdit}
+              onDetails={handleDetails}
+              // onDelete={handleDelete}
               className="mt-4"
             />
             <p className="mt-4">2. Table component(Checked, pagging)</p>

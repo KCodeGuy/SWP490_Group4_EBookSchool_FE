@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import * as React from "react";
 import TextField from "@mui/material/TextField";
 import PropTypes from "prop-types";

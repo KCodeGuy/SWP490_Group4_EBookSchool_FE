@@ -45,28 +45,11 @@ export default function RoomManagement() {
     formState: { errors: errorsEditAction },
   } = useForm();
 
-  //4. Functions handle adding
-  const handleOpenAddModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseAddModal = () => {
-    setModalOpen(false);
-  };
-
   const handleAddRoom = (data) => {
     console.log("Call API add room: ", data);
     // Call API add room here
   };
 
-  const handleClearAddForm = () => {
-    reset(); // Reset the form of adding modal
-  };
-
-  //5. Functions handle editing
-  const handleCloseEditModal = () => {
-    setModalEditOpen(false);
-  };
   const handleEdit = (rowItem) => {
     if (rowItem) {
       setValue("idEdit", rowItem[0]);
@@ -80,14 +63,6 @@ export default function RoomManagement() {
   const handleEditRoom = (data) => {
     console.log("Call API edit room: ", data);
     // Call API edit room here
-  };
-  const handleClearEditForm = () => {
-    resetEditAction();
-  };
-
-  //6. Functions handle deleting
-  const handleCloseDeleteModal = () => {
-    setModalDeleteOpen(false);
   };
 
   const handleDelete = (rowItem) => {
@@ -139,7 +114,7 @@ export default function RoomManagement() {
               placeHolder="Nhập từ khóa..."
             />
             <div className="ml-3">
-              <ButtonComponent onClick={handleOpenAddModal}>
+              <ButtonComponent onClick={() => setModalOpen(true)}>
                 <AddCircleOutlineIcon className="text-3xl mr-1" />
                 Tạo phòng học
               </ButtonComponent>
@@ -148,7 +123,7 @@ export default function RoomManagement() {
                 description="Hãy tạo phòng học để bắt đầu năm học mới"
                 icon={<AddCircleOutlineIcon />}
                 isOpen={modalOpen}
-                onClose={handleCloseAddModal}
+                onClose={() => setModalOpen(false)}
               >
                 <form onSubmit={handleSubmit(handleAddRoom)}>
                   <InputBaseComponent
@@ -176,7 +151,7 @@ export default function RoomManagement() {
                     }}
                   />
                   <div className="mt-4 flex justify-end">
-                    <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
+                    <ButtonComponent type="error" action="reset" onClick={() => reset()}>
                       CLEAR
                     </ButtonComponent>
                     <ButtonComponent action="submit">TẠO PHÒNG HỌC</ButtonComponent>
@@ -203,7 +178,7 @@ export default function RoomManagement() {
               description="Hãy chỉnh sửa để bắt đầu năm học mới"
               icon={<EditIcon />}
               isOpen={modalEditOpen}
-              onClose={handleCloseEditModal}
+              onClose={() => setModalEditOpen(false)}
             >
               <form onSubmit={handleSubmitEditAction(handleEditRoom)}>
                 <InputBaseComponent
@@ -231,7 +206,7 @@ export default function RoomManagement() {
                   }}
                 />
                 <div className="mt-4 flex justify-end">
-                  <ButtonComponent type="error" action="reset" onClick={handleClearEditForm}>
+                  <ButtonComponent type="error" action="reset" onClick={() => resetEditAction()}>
                     CLEAR
                   </ButtonComponent>
                   <ButtonComponent action="submit">CHỈNH SỬA</ButtonComponent>
@@ -243,11 +218,15 @@ export default function RoomManagement() {
               description="Hãy kiểm xác nhận thông tin trước khi xóa"
               icon={<DeleteIcon />}
               isOpen={modalDeleteOpen}
-              onClose={handleCloseDeleteModal}
+              onClose={() => setModalDeleteOpen(false)}
             >
               <p>Bạn có chắc chắn muốn xóa phòng học?</p>
               <div className="mt-4 flex justify-end">
-                <ButtonComponent type="error" action="button" onClick={handleCloseDeleteModal}>
+                <ButtonComponent
+                  type="error"
+                  action="button"
+                  onClick={() => setModalDeleteOpen(false)}
+                >
                   HỦY BỎ
                 </ButtonComponent>
                 <ButtonComponent action="button" onClick={handleDeleteAPI}>

@@ -361,7 +361,7 @@ export default function MarkStatistics() {
 
           <>
             <div className="text-center mt-5">
-              <h4 className="text-xl font-bold">Thống kê điểm Toán khối 12</h4>
+              <h4 className="text-xl font-bold">Thống kê điểm Toán trường THPT Nguyễn Việt Hồng</h4>
               <h4 className="text-xl font-bold">Học kỳ: HKI. Năm học: 2023-2024</h4>
             </div>
 

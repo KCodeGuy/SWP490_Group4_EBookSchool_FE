@@ -12,7 +12,10 @@ const InputBaseComponent = ({
   errors,
   horizontalLabel,
   className,
+  rowTextArea,
   noLabel,
+  readOnly,
+  disabled,
   setValue,
   validationRules,
   options,
@@ -51,6 +54,7 @@ const InputBaseComponent = ({
                 className={`outline-none px-3 py-2 h-11 border rounded 
                 ${errors[name] ? "border-red-400" : "border-blue-500"}`}
                 {...field}
+                disabled={disabled}
                 onChange={(e) => {
                   field.onChange(e);
                   handleSetValue(e.target.value);
@@ -68,6 +72,8 @@ const InputBaseComponent = ({
                 className={`outline-none px-3 py-2 border rounded w-5 h-5 accent-blue-500
                 ${errors[name] ? "border-red-400" : "border-blue-500"}`}
                 {...field}
+                disabled={disabled}
+                readOnly={readOnly}
                 type="checkbox"
                 onChange={(e) => {
                   field.onChange(e);
@@ -86,6 +92,8 @@ const InputBaseComponent = ({
                     ${errors[name] ? "border-red-400" : "border-blue-500"}`}
                     {...field}
                     type="radio"
+                    disabled={disabled}
+                    readOnly={readOnly}
                     value={option.value}
                     checked={field.value === option.value}
                     onChange={(e) => {
@@ -98,6 +106,21 @@ const InputBaseComponent = ({
                   </label>
                 </div>
               ))
+            ) : type === "textArea" ? (
+              <textarea
+                id={name}
+                className={`outline-none px-3 py-2 border rounded w-full
+                ${errors[name] ? "border-red-400" : "border-blue-500"}`}
+                {...field}
+                disabled={disabled}
+                readOnly={readOnly}
+                rows={rowTextArea}
+                onChange={(e) => {
+                  field.onChange(e);
+                  handleSetValue(e.target.value);
+                }}
+                placeholder={placeholder}
+              />
             ) : (
               <input
                 id={name}
@@ -105,6 +128,8 @@ const InputBaseComponent = ({
                 ${errors[name] ? "border-red-400" : "border-blue-500"}`}
                 {...field}
                 type={type}
+                disabled={disabled}
+                readOnly={readOnly}
                 onChange={(e) => {
                   field.onChange(e);
                   handleSetValue(e.target.value);
@@ -131,6 +156,9 @@ InputBaseComponent.propTypes = {
   label: PropTypes.string,
   className: PropTypes.string,
   noLabel: PropTypes.bool,
+  rowTextArea: PropTypes.number,
+  readOnly: PropTypes.bool,
+  disabled: PropTypes.bool,
   setValue: PropTypes.func,
   horizontalLabel: PropTypes.bool,
 };

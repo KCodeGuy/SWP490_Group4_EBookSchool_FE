@@ -12,7 +12,7 @@ import TableMarkAllStudentsComponent from "../../components/TableMarkAllStudents
 import "./style.scss";
 import PopupMenu from "../../components/MenuComponent/MenuComponent";
 import { scoreByStudentsBySubjectEnlish } from "../../mock/score";
-import { countDuplicateItemsInArray } from "utils/HandleArray";
+import { countDuplicateItemsInArray } from "utils/CommonFunctions";
 import TableMarkOfSubjectComponent from "components/TableMarkOfSubjectComponent/TableMarkOfSubjectComponent";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 // Mark management (HieuTTN)

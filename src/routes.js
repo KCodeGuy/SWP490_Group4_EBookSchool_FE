@@ -43,12 +43,13 @@ import ResetPassword from "layouts/authentication/reset-password";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
-import SchoolBook from "./layouts/shoolBook/SchoolBook";
+import SchoolBook from "./layouts/shoolBook/schoolBook";
 import Wiki from "./layouts/wiki/Wiki";
-import MarkManagement from "./layouts/markManagement/MarkManagement";
+import MarkManagement from "./layouts/MarkManagement/MarkManagement";
 import RoomManagement from "./layouts/roomManagement/RoomManagement";
 import ClassManagement from "layouts/classManagement/ClassManagement";
 import SubjectManagement from "layouts/subjectManagement/SubjectManagement";
+import MarkStatistics from "layouts/markStatistics/MarkStatistics";
 import Demo from "layouts/demo/Demo";
 
 const routes = [
@@ -59,6 +60,14 @@ const routes = [
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/markManagement",
     component: <MarkManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Mark Statistics(HieuTTN)",
+    key: "markStatistics",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/markStatistics",
+    component: <MarkStatistics />,
   },
   {
     type: "collapse",

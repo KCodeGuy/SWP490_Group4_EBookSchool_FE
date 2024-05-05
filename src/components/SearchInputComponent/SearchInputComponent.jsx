@@ -25,7 +25,7 @@ export default function SearchInputComponent({ onSearch, placeHolder, className 
   return (
     <div className={customClassName}>
       <input
-        className="h-full outline-none"
+        className="h-full outline-none text-base"
         placeholder={placeHolder}
         value={searchValue}
         onChange={handleChange}

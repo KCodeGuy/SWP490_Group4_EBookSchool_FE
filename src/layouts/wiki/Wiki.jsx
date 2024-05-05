@@ -424,7 +424,7 @@ const Wiki = () => {
             />
             <p className="mt-4">4. Table show điểm all học sinh</p>
             <TableMarkAllStudentsComponent
-              className="mt-4"
+              className="mt-4 overflow-auto"
               data={scoreByStudents.data}
               onViewDetails={handleViewDetails}
             />

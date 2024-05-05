@@ -100,3 +100,16 @@ $dark-hover-color: #505e77;
 .animation-button {
   transition: all 0.3s linear;
 }
+
+.no-hover-table:hover {
+  background-color: unset !important;
+}
+
+.cell-hover:hover {
+  background-color: #eaeaea !important;
+  transition: all 0.3s ease-in !important;
+}
+
+.text-base {
+  font-size: 14px;
+}

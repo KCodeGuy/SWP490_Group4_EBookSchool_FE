@@ -50,11 +50,13 @@ function Cover() {
           <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
             Đổi mật khẩu
           </MDTypography>
-          <MDTypography display="block" variant="button" color="white" my={1}>
-            Hãy xác thực tài khoản email để lấy lại mật khẩu!
-          </MDTypography>
+          <MDBox mt={1} mb={1} textAlign="center">
+            <MDTypography variant="button" color="white" fontWeight="medium">
+              Trường THSC&THPT Nguyen Van A
+            </MDTypography>
+          </MDBox>
         </MDBox>
-        <MDBox pt={4} pb={3} px={3}>
+        <MDBox pt={2} pb={3} px={3}>
           {!isMatchedPassword ? (
             <p className="error-color mb-1">Mật khẩu nhập lại không khớp!</p>
           ) : (
@@ -117,7 +119,7 @@ function Cover() {
                 },
               }}
             />
-            <MDBox mt={3} mb={1} textAlign="center">
+            <MDBox mt={1} mb={1} textAlign="center">
               <MDTypography variant="button" color="text">
                 Bạn đã có tài khoản?{" "}
                 <MDTypography

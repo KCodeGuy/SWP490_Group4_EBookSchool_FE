@@ -99,7 +99,7 @@ function Basic() {
             </Grid>
           </Grid> */}
         </MDBox>
-        <MDBox pt={4} pb={3} px={3}>
+        <MDBox pt={2} pb={3} px={3}>
           {/* <MDBox component="form" role="form">
             <MDBox mb={2}>
               <MDInput type="email" label="Email" fullWidth />
@@ -177,7 +177,7 @@ function Basic() {
                 },
               }}
             />
-            <MDBox mt={3} mb={1} textAlign="center">
+            <MDBox mt={1} mb={1} textAlign="center">
               <MDTypography variant="button" color="text">
                 Bạn đã quên mật khẩu?{" "}
                 <MDTypography

@@ -187,15 +187,15 @@ function TableRegisterBookComponent({
         </tbody>
       </table>
       <div
-        className={`pagination border py-2 flex justify-between items-center px-3 ${
+        className={`pagination border py-2 flex justify-between items-center px-3 text-base ${
           isPaginated ? "" : "hidden"
         }`}
       >
-        <div>
+        <div className="text-sm">
           <span className="mr-4">Total items: {data.length}</span>
           {showCheckboxes && <ButtonComponent onClick={handleSave}>Save</ButtonComponent>}
         </div>
-        <div>
+        <div className="text-sm">
           <span>Page items: {itemsPerPage}</span>
           <span className="ml-4">
             {currentPage} of {totalPages}

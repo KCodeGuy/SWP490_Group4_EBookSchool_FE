@@ -31,7 +31,7 @@ const InputBaseComponent = ({
   return (
     <div className={customClassName}>
       <div
-        className={`flex 
+        className={`flex text-base
         ${horizontalLabel ? "items-end" : "flex-col"} 
         ${type === "checkbox" ? "items-center" : ""} `}
       >
@@ -51,7 +51,7 @@ const InputBaseComponent = ({
             type === "select" ? (
               <select
                 id={name}
-                className={`outline-none px-3 py-2 h-11 border rounded 
+                className={`outline-none px-3 py-2 h-11 border rounded text-base
                 ${errors[name] ? "border-red-400" : "border-blue-500"}`}
                 {...field}
                 disabled={disabled}
@@ -69,7 +69,7 @@ const InputBaseComponent = ({
             ) : type === "checkbox" ? (
               <input
                 id={name}
-                className={`outline-none px-3 py-2 border rounded w-5 h-5 accent-blue-500
+                className={`outline-none border rounded w-4 h-4 accent-blue-500
                 ${errors[name] ? "border-red-400" : "border-blue-500"}`}
                 {...field}
                 disabled={disabled}
@@ -88,7 +88,7 @@ const InputBaseComponent = ({
                 <div key={index} className="flex items-center mr-3">
                   <input
                     id={`${name}-${index}`}
-                    className={`outline-none px-3 py-2 border rounded w-5 h-5 accent-blue-500
+                    className={`outline-none border rounded w-4 h-4 accent-blue-500
                     ${errors[name] ? "border-red-400" : "border-blue-500"}`}
                     {...field}
                     type="radio"
@@ -101,7 +101,7 @@ const InputBaseComponent = ({
                       handleSetValue(option.value);
                     }}
                   />
-                  <label htmlFor={`${name}-${index}`} className="ml-1">
+                  <label htmlFor={`${name}-${index}`} className="ml-1 text-sm">
                     {option.label}
                   </label>
                 </div>
@@ -140,7 +140,7 @@ const InputBaseComponent = ({
           }
         />
       </div>
-      {errors[name] && <p className="error-color mt-1">{errors[name].message}</p>}
+      {errors[name] && <p className="error-color mt-1 text-base">{errors[name].message}</p>}
     </div>
   );
 };

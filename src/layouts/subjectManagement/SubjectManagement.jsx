@@ -11,7 +11,7 @@ export default function SubjectManagement() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="h-screen">
+      <Card className="max-h-max">
         <MDBox p={5}>
           {/* DO NOT DELETE CODE AS ABOVE*/}
           <h4>Subject Management (UolLT)</h4>

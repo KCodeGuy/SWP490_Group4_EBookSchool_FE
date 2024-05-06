@@ -34,7 +34,7 @@ function TableMarkOfSubjectComponent({
   };
 
   return (
-    <div className={className}>
+    <div className={`max-[1023px]:overflow-scroll lg:overflow-auto ${className}`}>
       <table>
         <thead>
           <tr>
@@ -57,7 +57,9 @@ function TableMarkOfSubjectComponent({
               <td>{row.fullName}</td>
               <td>{row.id}</td>
               {row.scores.map((item, index) => (
-                <td key={index}>{item.value}</td>
+                <td key={index} className="min-w-9">
+                  {item.value}
+                </td>
               ))}
               <td>{row.average}</td>
               {isShowActions && (
@@ -97,12 +99,12 @@ function TableMarkOfSubjectComponent({
       </table>
       <div className="pagination border py-2 flex justify-between items-center px-3 text-base">
         <div className="text-sm">
-          <span className="mr-4">Total items: {data.length}</span>
+          <span className="mr-4">Tổng: {data.length}</span>
         </div>
         <div className="text-sm">
-          <span>Page items: {itemsPerPage}</span>
+          <span>Số lượng: {itemsPerPage}</span>
           <span className="ml-4">
-            {currentPage} of {totalPages}
+            {currentPage} / {totalPages}
           </span>
           <button
             className="text-2xl ml-2 primary-color"

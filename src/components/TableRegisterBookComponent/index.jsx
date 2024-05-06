@@ -115,7 +115,7 @@ function TableRegisterBookComponent({
     return slotTime;
   };
   return (
-    <div className={className}>
+    <div className={`max-[1023px]:overflow-scroll lg:overflow-auto ${className}`}>
       <table>
         <thead>
           <tr>
@@ -192,13 +192,13 @@ function TableRegisterBookComponent({
         }`}
       >
         <div className="text-sm">
-          <span className="mr-4">Total items: {data.length}</span>
+          <span className="mr-4">Tổng: {data.length}</span>
           {showCheckboxes && <ButtonComponent onClick={handleSave}>Save</ButtonComponent>}
         </div>
         <div className="text-sm">
-          <span>Page items: {itemsPerPage}</span>
+          <span>Số lượng: {itemsPerPage}</span>
           <span className="ml-4">
-            {currentPage} of {totalPages}
+            {currentPage} / {totalPages}
           </span>
           <button
             className="text-2xl ml-2 primary-color"

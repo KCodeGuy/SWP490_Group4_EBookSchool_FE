@@ -5,4 +5,5 @@
 html {
     font-family: "Roboto", "Helvetica", "Arial", sans-serif !important;
     font-size: 15px;
+    max-width: 1900px;
 }

@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
 
 import "./style.scss";
 import { classrooms } from "../../mock/classroom";
@@ -108,6 +109,10 @@ export default function ClassManagement() {
     setModalDeleteOpen(false);
   };
 
+  const handleStatistic = () => {
+    console.log("Call api: ", { schoolYear, classroom });
+  };
+
   const handleDelete = (rowItem) => {
     if (rowItem) {
       setDeletedClass({
@@ -148,25 +153,23 @@ export default function ClassManagement() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="h-screen">
+      <Card className="max-h-max">
         <MDBox p={5}>
           {/* DO NOT DELETE CODE AS ABOVE*/}
           {/* Your code here */}
           <div className="text-center mt-0">
             <h4 className="text-xl font-bold">Quản lý lớp học</h4>
           </div>
-          <div className="flex items-center justify-between">
+          <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
             {/* School Year Select */}
-            <div className="flex justify-start">
-              <FormControl sx={{ minWidth: 80 }}>
-                <InputLabel id="select-school-year-lable" className="ml-0">
-                  Năm học
-                </InputLabel>
+            <div className="flex justify-start max-[639px]:flex-wrap">
+              <FormControl sx={{ minWidth: 120 }}>
+                <InputLabel id="select-school-year-lable">Năm học</InputLabel>
                 <Select
                   labelId="select-school-year-lable"
                   id="elect-school-year"
                   value={schoolYear}
-                  className="h-10 mx-0"
+                  className="h-11 mr-0"
                   label="Năm học"
                   onChange={handleSchoolYearSelectedChange}
                 >
@@ -177,16 +180,13 @@ export default function ClassManagement() {
                   ))}
                 </Select>
               </FormControl>
-
               <FormControl sx={{ minWidth: 120, marginLeft: "12px" }}>
-                <InputLabel id="select-class-room-lable" className="ml-3">
-                  Phòng học
-                </InputLabel>
+                <InputLabel id="select-class-room-lable">Phòng học</InputLabel>
                 <Select
                   labelId="select-class-room-lable"
                   id="select-class-room"
                   value={classroom}
-                  className="h-10 mx-3"
+                  className="h-11 mr-3"
                   label="Phòng học"
                   onChange={handleClassRoomSelectedChange}
                 >
@@ -197,14 +197,19 @@ export default function ClassManagement() {
                   ))}
                 </Select>
               </FormControl>
+              <div className="max-[639px]:mt-2">
+                <ButtonComponent type="success" onClick={handleStatistic}>
+                  <FilterAltIcon className="mr-1" /> Thống kế
+                </ButtonComponent>
+              </div>
             </div>
-            <div className="flex justify-end items-center">
+            <div className="flex justify-end items-center sm:w-full sm:flex-wrap ">
               <SearchInputComponent
                 onSearch={handleChangeSearchValue}
                 placeHolder="Nhập từ khóa..."
               />
               <div className="ml-3">
-                <ButtonComponent onClick={handleOpenAddModal}>
+                <ButtonComponent className="" onClick={handleOpenAddModal}>
                   <AddCircleOutlineIcon className="text-3xl mr-1" />
                   Tạo lớp học
                 </ButtonComponent>
@@ -291,7 +296,7 @@ export default function ClassManagement() {
               itemsPerPage={4}
               onEdit={handleEdit}
               onDelete={handleDelete}
-              className="mt-4"
+              className="mt-8"
             />
             <PopupComponent
               title="CẬP NHẬT"

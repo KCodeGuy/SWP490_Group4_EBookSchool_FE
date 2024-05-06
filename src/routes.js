@@ -43,15 +43,15 @@ import ResetPassword from "layouts/authentication/reset-password";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
-import SchoolBook from "./layouts/shoolBook/schoolBook";
+import SchoolBook from "./layouts/shoolBook/SchoolBook";
 import Wiki from "./layouts/wiki/Wiki";
-import MarkManagement from "./layouts/MarkManagement/MarkManagement";
+import MarkManagement from "./layouts/markManagement/MarkManagement";
 import RoomManagement from "./layouts/roomManagement/RoomManagement";
 import ClassManagement from "./layouts/classManagement/ClassManagement";
 import SubjectManagement from "./layouts/subjectManagement/SubjectManagement";
 import Demo from "./layouts/demo/Demo";
 import WeeklyTimeTable from "./layouts/weeklyTimeTable";
-import MarkStatistics from "layouts/markStatistics/MarkStatistics";
+import MarkStatistics from "./layouts/markStatistics/MarkStatistics";
 
 const routes = [
   {

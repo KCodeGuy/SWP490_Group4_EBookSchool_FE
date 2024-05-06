@@ -101,7 +101,7 @@ export default function RoomManagement() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="h-screen">
+      <Card className="max-h-max">
         <MDBox p={5}>
           {/* DO NOT DELETE CODE AS ABOVE*/}
           {/* Your code here */}

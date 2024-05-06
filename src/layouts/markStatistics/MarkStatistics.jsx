@@ -8,102 +8,63 @@ import { studentClasses } from "mock/class";
 import { schoolYears } from "mock/schoolYear";
 import { subjects } from "mock/subject";
 import React, { useState } from "react";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
 
 import "./style.scss";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 import TableComponent from "components/TableComponent/TableComponent";
+import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 
 const semesters = ["Học kì I", "Học kì II", "Cả năm"];
 
 const grades = ["Khối 10", "Khối 11", "Khối 12"];
 
-const handleViewDetails = (student) => {
-  console.log("View details for student:", student);
-  // Implement your logic to view details
-};
-
 const dataset = [
   {
-    london: 59,
-    paris: 57,
-    newYork: 86,
     Toán: 2.1,
     Lớp: "12A1",
   },
   {
-    london: 50,
-    paris: 52,
-    newYork: 78,
     Toán: 2.8,
     Lớp: "12A2",
   },
   {
-    london: 47,
-    paris: 53,
-    newYork: 106,
     Toán: 4.1,
     Lớp: "12A3",
   },
   {
-    london: 54,
-    paris: 56,
-    newYork: 92,
     Toán: 7.3,
     Lớp: "12A4",
   },
   {
-    london: 57,
-    paris: 69,
-    newYork: 92,
     Toán: 9.9,
     Lớp: "12A5",
   },
   {
-    london: 60,
-    paris: 63,
-    newYork: 103,
     Toán: 1.2,
     Lớp: "12A6",
   },
   {
-    london: 59,
-    paris: 60,
-    newYork: 105,
     Toán: 3.1,
     Lớp: "12A7",
   },
   {
-    london: 65,
-    paris: 60,
-    newYork: 106,
     Toán: 4.9,
     Lớp: "12A8",
   },
   {
-    london: 51,
-    paris: 51,
-    newYork: 95,
     Toán: 1.3,
     Lớp: "12A9",
   },
   {
-    london: 60,
-    paris: 65,
-    newYork: 97,
     Toán: 5.5,
     Lớp: "12A10",
   },
   {
-    london: 67,
-    paris: 64,
-    newYork: 76,
     Toán: 6.5,
     Lớp: "12A11",
   },
   {
-    london: 61,
-    paris: 70,
-    newYork: 103,
     Toán: 10,
     Lớp: "12A12",
   },
@@ -111,23 +72,14 @@ const dataset = [
 
 const dataset1 = [
   {
-    london: 59,
-    paris: 57,
-    newYork: 86,
     Toán: 9,
     Khối: "10",
   },
   {
-    london: 50,
-    paris: 52,
-    newYork: 78,
     Toán: 2.8,
     Khối: "11",
   },
   {
-    london: 47,
-    paris: 53,
-    newYork: 106,
     Toán: 4.1,
     Khối: "12",
   },
@@ -207,6 +159,10 @@ export default function MarkStatistics() {
     // Implement delete logic here
   };
 
+  const handleStatistic = () => {
+    console.log("Call api: ", { schoolYear, schoolSemester, grade, schoolSubject });
+  };
+
   (React.useState < "middle") | ("tick" > "middle");
   const [tickPlacement, setTickPlacement] = React.useState("middle");
   const [tickLabelPlacement, setTickLabelPlacement] = React.useState("middle");
@@ -217,15 +173,13 @@ export default function MarkStatistics() {
         <MDBox p={5}>
           {/* DO NOT DELETE CODE AS ABOVE*/}
           <div className="left">
-            <FormControl sx={{ minWidth: 120, marginLeft: "12px" }}>
-              <InputLabel id="select-school-year-lable" className="ml-3">
-                Năm học
-              </InputLabel>
+            <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+              <InputLabel id="select-school-year-lable">Năm học</InputLabel>
               <Select
                 labelId="select-school-year-lable"
                 id="elect-school-year"
                 value={schoolYear}
-                className="h-10 mx-3"
+                className="h-11 mr-3"
                 label="Năm học"
                 onChange={handleSchoolYearSelectedChange}
               >
@@ -236,15 +190,13 @@ export default function MarkStatistics() {
                 ))}
               </Select>
             </FormControl>
-            <FormControl sx={{ minWidth: 120, marginLeft: "12px" }}>
-              <InputLabel id="select-semester-lable" className="ml-3">
-                Học kì
-              </InputLabel>
+            <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+              <InputLabel id="select-semester-lable">Học kì</InputLabel>
               <Select
                 labelId="select-semester-lable"
                 id="select-semester"
                 value={schoolSemester}
-                className="h-10 mx-3"
+                className="h-11 mr-3"
                 label="Học kì"
                 onChange={handleSchoolSemesterSelectedChange}
               >
@@ -255,15 +207,13 @@ export default function MarkStatistics() {
                 ))}
               </Select>
             </FormControl>
-            <FormControl sx={{ minWidth: 120, marginLeft: "12px" }}>
-              <InputLabel id="select-grade-lable" className="ml-3">
-                Khối
-              </InputLabel>
+            <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+              <InputLabel id="select-grade-lable">Khối</InputLabel>
               <Select
                 labelId="select-grade-lable"
                 id="select-grade"
                 value={grade}
-                className="h-10 mx-3"
+                className="h-11 mr-3"
                 label="Khối"
                 onChange={handleGradeSelectedChange}
               >
@@ -275,35 +225,13 @@ export default function MarkStatistics() {
               </Select>
             </FormControl>
 
-            <FormControl sx={{ minWidth: 120, marginLeft: "12px" }}>
-              <InputLabel id="select-school-class-lable" className="ml-3">
-                Lớp
-              </InputLabel>
-              <Select
-                labelId="select-school-class-lable"
-                id="select-school-class"
-                value={schoolClass}
-                className="h-10 mx-3"
-                label="Lớp"
-                onChange={handleSchoolClassSelectedChange}
-              >
-                {studentClasses.data.map((item) => (
-                  <MenuItem key={item.name} value={item.name}>
-                    {item.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl sx={{ minWidth: 120, marginLeft: "12px" }}>
-              <InputLabel id="select-school-subject-lable" className="ml-3">
-                Môn học
-              </InputLabel>
+            <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+              <InputLabel id="select-school-subject-lable">Môn học</InputLabel>
               <Select
                 labelId="select-school-subject-lable"
                 id="select-school-subject"
                 value={schoolSubject}
-                className="h-10 mx-3"
+                className="h-11 mr-3"
                 label="Môn học"
                 onChange={handleSchoolSubjectSelectedChange}
               >
@@ -317,37 +245,81 @@ export default function MarkStatistics() {
                 ))}
               </Select>
             </FormControl>
+            <ButtonComponent
+              type="success"
+              className="max-[639px]:w-full"
+              onClick={handleStatistic}
+            >
+              <FilterAltIcon className="mr-1" /> Thống kế
+            </ButtonComponent>
           </div>
 
           <>
-            <div className="text-center mt-5">
-              <h4 className="text-xl font-bold">Thống kê điểm Toán khối 12</h4>
-              <h4 className="text-xl font-bold">Học kỳ: HKI. Năm học: 2023-2024</h4>
+            <div className="text-center mt-6">
+              <h4 className="text-xl font-bold">
+                Thống kê điểm {schoolSubject} khối {grade}
+              </h4>
+              <h4 className="text-xl font-bold">
+                Học kỳ: {schoolSemester}. Năm học: {schoolYear}
+              </h4>
+            </div>
+            <div className="w-full custom mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+              <ComplexStatisticsCard
+                color="primary"
+                icon="leaderboard"
+                title="Điểm thấp nhất"
+                count="4.95"
+                percentage={{
+                  color: "primary",
+                  amount: "12A1",
+                  label: "có điểm TB thấp nhất",
+                }}
+              />
+              <ComplexStatisticsCard
+                icon="leaderboard"
+                title="Điểm trung bình"
+                count="6.75"
+                percentage={{
+                  color: "info",
+                  amount: "Điểm trung bình giữa các lớp",
+                  label: "",
+                }}
+              />
+              <ComplexStatisticsCard
+                color="success"
+                icon="leaderboard"
+                title="Điểm cao nhất"
+                count="10"
+                percentage={{
+                  color: "success",
+                  amount: "12A2",
+                  label: "có TB cao nhất",
+                }}
+              />
+              <ComplexStatisticsCard
+                icon="leaderboard"
+                title="Tổng số lớp"
+                count="12 lớp"
+                percentage={{
+                  color: "info",
+                  amount: "12",
+                  label: "là tổng số lớp lượng lớp",
+                }}
+              />
+            </div>
+            <div
+              className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
+              style={{ background: "#E9F7FF" }}
+            >
+              <BarChart
+                dataset={dataset}
+                xAxis={[{ scaleType: "band", dataKey: "Lớp", tickPlacement, tickLabelPlacement }]}
+                {...chartSetting}
+              />
             </div>
 
-            <div className="flex  mt-4">
-              <div className="w-4/5 p-3 rounded-md shadow-md" style={{ background: "#E9F7FF" }}>
-                <BarChart
-                  dataset={dataset}
-                  xAxis={[{ scaleType: "band", dataKey: "Lớp", tickPlacement, tickLabelPlacement }]}
-                  {...chartSetting}
-                />
-              </div>
-              <div className="w-1/5 ml-3 mt-4 custom">
-                <ComplexStatisticsCard
-                  icon="leaderboard"
-                  title="Điểm trung bình"
-                  count="6.75"
-                  percentage={{
-                    color: "success",
-                    amount: "12A1",
-                    label: "có TB cao nhất",
-                  }}
-                />
-              </div>
-            </div>
-
-            <div className="mt-5 custom-table">
+            <div className="mt-8 custom-table">
+              <p className="text-base font-bold">THỐNG KÊ CHI TIẾT ({schoolSubject})</p>
               <TableComponent
                 header={["Lớp", "Điểm TB", "Hạng"]}
                 data={aSubjectForAGrade}
@@ -360,13 +332,16 @@ export default function MarkStatistics() {
           </>
 
           <>
-            <div className="text-center mt-5">
+            <div className="text-center mt-8">
               <h4 className="text-xl font-bold">Thống kê điểm Toán trường THPT Nguyễn Việt Hồng</h4>
               <h4 className="text-xl font-bold">Học kỳ: HKI. Năm học: 2023-2024</h4>
             </div>
 
-            <div className="flex mt-4">
-              <div className="w-2/5 p-3 rounded-md shadow-md" style={{ background: "#E9F7FF" }}>
+            <div className="mt-4 w-full grid gap-4 sm:grid-cols-1 md:grid-cols-2  overflow-x-scroll">
+              <div
+                className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
+                style={{ background: "#E9F7FF" }}
+              >
                 <BarChart
                   dataset={dataset1}
                   xAxis={[
@@ -375,9 +350,31 @@ export default function MarkStatistics() {
                   {...chartSetting}
                 />
               </div>
-              <div className="w-3/5">
-                <div className="w-4/12 ml-3 mt-4 custom">
+              <div className="w-full">
+                <div className="mt-8 grid gap-2 sm:grid-cols-1 md:grid-cols-3 custom">
                   <ComplexStatisticsCard
+                    color="primary"
+                    icon="leaderboard"
+                    title="Điểm trung bình"
+                    count="8.75"
+                    percentage={{
+                      color: "primary",
+                      amount: "Khối 12",
+                      label: "có TB cao nhất",
+                    }}
+                  />
+                  <ComplexStatisticsCard
+                    icon="leaderboard"
+                    title="Điểm trung bình"
+                    count="8.75"
+                    percentage={{
+                      color: "info",
+                      amount: "Khối 12",
+                      label: "có TB cao nhất",
+                    }}
+                  />
+                  <ComplexStatisticsCard
+                    color="success"
                     icon="leaderboard"
                     title="Điểm trung bình"
                     count="8.75"
@@ -388,7 +385,8 @@ export default function MarkStatistics() {
                     }}
                   />
                 </div>
-                <div className="w-full ml-3 table">
+                <div className="table w-full mt-8">
+                  <p className="text-base font-bold">THỐNG KÊ CHI TIẾT (HK1, 2023)</p>
                   <TableComponent
                     header={["Khối", "Số lượng", "Điểm", "Hạng"]}
                     data={aSubjectForEntireSchool}

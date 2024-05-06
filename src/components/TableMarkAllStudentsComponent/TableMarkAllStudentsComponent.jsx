@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import "./style.scss";
 import EditCalendarIcon from "@mui/icons-material/EditCalendar";
-const TableMarkAllStudentsComponent = ({ data, onViewDetails, className }) => {
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+const TableMarkAllStudentsComponent = ({ data, onViewDetails, className, itemsPerPage }) => {
   const headers = [
     "STT.",
     "Tên học sinh",
@@ -27,9 +29,18 @@ const TableMarkAllStudentsComponent = ({ data, onViewDetails, className }) => {
     "Xếp hạng",
     "Chi tiet",
   ];
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = data.slice(startIndex, endIndex);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
   return (
-    <div className={className}>
-      <table className="rounded-md overflow-x-auto">
+    <div className={`max-[1023px]:overflow-scroll lg:overflow-auto ${className}`}>
+      <table className="rounded-md table-auto">
         <thead>
           <tr>
             <th className="" rowSpan={2}>
@@ -63,7 +74,7 @@ const TableMarkAllStudentsComponent = ({ data, onViewDetails, className }) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((student, index) => (
+          {currentData.map((student, index) => (
             <tr key={student.id}>
               <td>{index + 1}</td>
               <td>{student.fullName}</td>
@@ -84,6 +95,31 @@ const TableMarkAllStudentsComponent = ({ data, onViewDetails, className }) => {
           ))}
         </tbody>
       </table>
+      <div className="pagination border py-2 flex justify-between items-center px-3 text-base w-full">
+        <div className="text-sm">
+          <span className="mr-4">Tổng: {data.length}</span>
+        </div>
+        <div className="text-sm">
+          <span>Số lượng: {itemsPerPage}</span>
+          <span className="ml-4">
+            {currentPage} / {totalPages}
+          </span>
+          <button
+            className="text-2xl ml-2 primary-color"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <KeyboardArrowLeftIcon />
+          </button>
+          <button
+            className="text-2xl ml-2 primary-color"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            <KeyboardArrowRightIcon />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
@@ -92,6 +128,12 @@ TableMarkAllStudentsComponent.propTypes = {
   data: PropTypes.array.isRequired,
   onViewDetails: PropTypes.func.isRequired,
   className: PropTypes.string,
+  itemsPerPage: PropTypes.number,
+};
+
+TableMarkAllStudentsComponent.defaultProps = {
+  itemsPerPage: 2, // Default items per page
+  isOrdered: true, // Default to not showing row numbers
 };
 
 export default TableMarkAllStudentsComponent;

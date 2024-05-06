@@ -168,7 +168,7 @@ export default function MarkManagement() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="h-screen">
+      <Card className="max-h-max">
         <MDBox p={5}>
           {/* DO NOT DELETE CODE AS ABOVE*/}
           {/* Your code here */}
@@ -291,20 +291,18 @@ export default function MarkManagement() {
               <h4 className="text-xl font-bold">Bảng điểm tổng kết lớp 12A1</h4>
               <h4 className="text-xl font-bold">Học kỳ: HKI. Năm học: 2023-2024</h4>
             </div>
-            <div className="overflow-auto">
-              <TableMarkAllStudentsComponent
-                className="mt-4"
-                data={scoreByStudents.data}
-                onViewDetails={handleViewDetails}
-              />
-            </div>
+            <TableMarkAllStudentsComponent
+              className="mt-4"
+              data={scoreByStudents.data}
+              onViewDetails={handleViewDetails}
+            />
             <>
               <div className="text-center mt-5">
                 <h4 className="text-xl font-bold">Bảng điểm môn Toán lớp 12A1</h4>
                 <h4 className="text-xl font-bold">Học kỳ: HKI. Năm học: 2023-2024</h4>
               </div>
               <div className="flex flex-nowrap justify-between icon-custom">
-                <p className="font-bold mt-3 left">GVBM: Le Van A</p>
+                <p className="font-bold mt-3 left text-base">GVBM: Le Van A</p>
                 <CardGiftcardIcon
                   className="right mt-3.5 icon cursor-pointer"
                   onClick={() => console.log("Người được chọn =)))")}
@@ -312,7 +310,7 @@ export default function MarkManagement() {
                   {" "}
                 </CardGiftcardIcon>
               </div>
-              <div className="overflow-auto">
+              <div>
                 <TableMarkOfSubjectComponent
                   header={result}
                   data={scoreByStudentsBySubjectEnlish.data.score}
@@ -320,11 +318,7 @@ export default function MarkManagement() {
                   onDetails={handleDetails}
                 />
                 <div className="mt-3 flex flex-nowrap justify-end icon-custom">
-                  <ButtonComponent
-                    className="right w-3 icon cursor-pointer"
-                    type="primary"
-                    onClick={() => console.log("Lưu")}
-                  >
+                  <ButtonComponent type="primary" onClick={() => console.log("Lưu")}>
                     Lưu
                   </ButtonComponent>
                 </div>

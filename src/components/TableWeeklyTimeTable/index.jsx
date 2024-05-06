@@ -24,74 +24,76 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
     }
   };
   return (
-    <table className={className}>
-      <thead>
-        <tr>
-          <th className="w-20">Buổi</th>
-          <th className="w-20">Tiết</th>
-          {dates.map((date) => (
-            <th key={date}>
-              {`${data.find((item) => item.date === date).weekDate}`}{" "}
-              <p className="font-medium">{date}</p>
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {defaultSlots.map((slot, index) => (
-          <tr key={slot} className="no-hover-table">
-            {(index === 0 || index === 5) && (
-              <>
-                <td rowSpan={5} className="font-bold">
-                  {index === 0 ? "Sáng" : "Chiều"}
-                </td>
-              </>
-            )}
-            <td>{slot}</td>
-            {dates.map((date) => {
-              const slotData = data
-                .find((item) => item.date === date)
-                ?.slots.find((s) => s.slot === slot);
-              return (
-                <td key={`${date}-${slot}`} className="cell-hover">
-                  {slotData ? (
-                    <div className="mx-2 my-1 text-left">
-                      <div
-                        className="flex justify-between cursor-pointer hover:underline"
-                        onClick={() => onDetails([slotData, date])}
-                      >
-                        <p className="font-bold">
-                          {slotData.subject}{" "}
-                          <span className="warning-color">({slotData.teacher})</span>
-                        </p>
-                      </div>
-                      <p className="text-center text-white px-1 max-w-max h-6 leading-6 rounded bg-success-color">
-                        <AccessAlarmsIcon className="mb-1 mr-1" />
-                        {slotData.slotTime}
-                      </p>
-                      <div className="flex justify-between mt-1 items-center">
-                        <p className="mt-1 font-medium">{slotData.classRoom}</p>
-                        <Link to="/schoolBook">
-                          <button className="text-center text-white px-2 max-w-max h-6 leading-6 rounded bg-warning-color">
-                            SĐB
-                          </button>
-                        </Link>
-                      </div>
-                      <p>{renderSlotStatus(slotData.status)}</p>
-                      <button className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color">
-                        Điểm danh
-                      </button>
-                    </div>
-                  ) : (
-                    <p>_</p>
-                  )}
-                </td>
-              );
-            })}
+    <div className={`max-[1023px]:overflow-scroll lg:overflow-auto ${className}`}>
+      <table>
+        <thead>
+          <tr>
+            <th className="w-20">Buổi</th>
+            <th className="w-20">Tiết</th>
+            {dates.map((date) => (
+              <th key={date}>
+                {`${data.find((item) => item.date === date).weekDate}`}{" "}
+                <p className="font-medium">{date}</p>
+              </th>
+            ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {defaultSlots.map((slot, index) => (
+            <tr key={slot} className="no-hover-table">
+              {(index === 0 || index === 5) && (
+                <>
+                  <td rowSpan={5} className="font-bold">
+                    {index === 0 ? "Sáng" : "Chiều"}
+                  </td>
+                </>
+              )}
+              <td>{slot}</td>
+              {dates.map((date) => {
+                const slotData = data
+                  .find((item) => item.date === date)
+                  ?.slots.find((s) => s.slot === slot);
+                return (
+                  <td key={`${date}-${slot}`} className="cell-hover">
+                    {slotData ? (
+                      <div className="mx-2 my-1 text-left">
+                        <div
+                          className="flex justify-between cursor-pointer hover:underline"
+                          onClick={() => onDetails([slotData, date])}
+                        >
+                          <p className="font-bold">
+                            {slotData.subject}{" "}
+                            <span className="warning-color">({slotData.teacher})</span>
+                          </p>
+                        </div>
+                        <p className="text-center text-white px-1 max-w-max h-6 leading-6 rounded bg-success-color">
+                          <AccessAlarmsIcon className="mb-1 mr-1" />
+                          {slotData.slotTime}
+                        </p>
+                        <div className="flex justify-between mt-1 items-center">
+                          <p className="mt-1 font-medium">{slotData.classRoom}</p>
+                          <Link to="/schoolBook">
+                            <button className="text-center text-white px-2 max-w-max h-6 leading-6 rounded bg-warning-color">
+                              SĐB
+                            </button>
+                          </Link>
+                        </div>
+                        <p>{renderSlotStatus(slotData.status)}</p>
+                        <button className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color">
+                          Điểm danh
+                        </button>
+                      </div>
+                    ) : (
+                      <p>_</p>
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

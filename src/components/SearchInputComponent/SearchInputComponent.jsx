@@ -6,7 +6,7 @@ import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 export default function SearchInputComponent({ onSearch, placeHolder, className }) {
   const [searchValue, setSearchValue] = useState("");
 
-  const customClassName = `border pl-3 h-11 w-56 rounded box-border flex justify-between items-center ${className}`;
+  const customClassName = `border pl-3 h-11 max-w-max  rounded box-border flex justify-between items-center ${className}`;
 
   const handleSearch = () => {
     onSearch(searchValue);

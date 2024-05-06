@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 
 import "./style.scss";
 
-const ButtonComponent = ({ type, size, children, onClick, style, action }) => {
-  const buttonClasses = `button ${type} ${size}`;
+const ButtonComponent = ({ type, size, children, onClick, style, action, className }) => {
+  const buttonClasses = `button ${type} ${size} ${className}`;
 
   return (
     <button className={buttonClasses} onClick={onClick} style={style} type={action}>
@@ -19,6 +19,7 @@ ButtonComponent.propTypes = {
   style: PropTypes.object,
   onClick: PropTypes.func,
   action: PropTypes.string,
+  className: PropTypes.string,
   children: PropTypes.node.isRequired,
 };
 

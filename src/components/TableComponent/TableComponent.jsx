@@ -57,8 +57,8 @@ function TableComponent({
   };
 
   return (
-    <div className={className}>
-      <table>
+    <div className={`max-[1023px]:overflow-scroll lg:overflow-auto ${className}`}>
+      <table className="w-full">
         <thead>
           <tr>
             {isOrdered && <th className="w-10">STT.</th>}
@@ -135,15 +135,15 @@ function TableComponent({
           )}
         </tbody>
       </table>
-      <div className="pagination border py-2 flex justify-between items-center px-3">
+      <div className="pagination border py-2 flex justify-between items-center px-3 w-full">
         <div>
-          <span className="mr-4 text-sm">Total items: {data.length}</span>
+          <span className="mr-4 text-sm">Tổng: {data.length}</span>
           {showCheckboxes && <ButtonComponent onClick={handleSave}>Save</ButtonComponent>}
         </div>
         <div className="text-sm">
-          <span>Page items: {itemsPerPage}</span>
+          <span>Số lượng: {itemsPerPage}</span>
           <span className="ml-4">
-            {currentPage} of {totalPages}
+            {currentPage} / {totalPages}
           </span>
           <button
             className="text-2xl ml-2 primary-color"

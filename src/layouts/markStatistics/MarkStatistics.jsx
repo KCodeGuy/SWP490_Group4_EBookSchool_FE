@@ -128,9 +128,16 @@ const datasetDetailedMarksfForSubjectOfClass = [
   },
 ];
 
-const valueFormatter = (value) => {
+const valueASubjectForAGrade = (value) => {
   if (typeof value === "number" || value === null) {
     return `${value} điểm`;
+  }
+  throw new Error("Value must be a number or null");
+};
+
+const valueDetailedMarksfForSubjectOfClass = (value) => {
+  if (typeof value === "number" || value === null) {
+    return `${value} học sinh`;
   }
   throw new Error("Value must be a number or null");
 };
@@ -141,7 +148,7 @@ const chartASubjectForAGrade = {
       label: "Điểm",
     },
   ],
-  series: [{ dataKey: "Toán", label: "Trung bình môn", valueFormatter, color: "#247CD4" }],
+  series: [{ dataKey: "Toán", label: "Trung bình môn", valueASubjectForAGrade, color: "#247CD4" }],
   height: 500,
   sx: {
     [`& .${axisClasses.directionY} .${axisClasses.label}`]: {
@@ -153,10 +160,17 @@ const chartASubjectForAGrade = {
 const chartDetailedMarksfForSubjectOfClass = {
   yAxis: [
     {
-      label: "Điểm",
+      label: "Số học sinh",
     },
   ],
-  series: [{ dataKey: "LessThan1", label: "Trung bình môn", valueFormatter, color: "#247CD4" }],
+  series: [
+    {
+      dataKey: "LessThan1",
+      label: "Số học sinh",
+      valueDetailedMarksfForSubjectOfClass,
+      color: "#247CD4",
+    },
+  ],
   height: 500,
   sx: {
     [`& .${axisClasses.directionY} .${axisClasses.label}`]: {

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import AccessAlarmsIcon from "@mui/icons-material/AccessAlarms";
+import { Link } from "react-router-dom";
 
-const TableWeeklyTimeTableComponent = ({ data, onDetails }) => {
+const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
   const dates = data.map((item) => item.date);
   const defaultSlots = Array.from({ length: 10 }, (_, index) => index + 1);
   const renderSlotStatus = (status) => {
@@ -23,7 +24,7 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails }) => {
     }
   };
   return (
-    <table>
+    <table className={className}>
       <thead>
         <tr>
           <th className="w-20">Buổi</th>
@@ -54,11 +55,11 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails }) => {
               return (
                 <td key={`${date}-${slot}`} className="cell-hover">
                   {slotData ? (
-                    <div
-                      className="mx-2 text-left cursor-pointer"
-                      onClick={() => onDetails([slotData, date])}
-                    >
-                      <div className="flex justify-between">
+                    <div className="mx-2 my-1 text-left">
+                      <div
+                        className="flex justify-between cursor-pointer hover:underline"
+                        onClick={() => onDetails([slotData, date])}
+                      >
                         <p className="font-bold">
                           {slotData.subject}{" "}
                           <span className="warning-color">({slotData.teacher})</span>
@@ -68,11 +69,21 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails }) => {
                         <AccessAlarmsIcon className="mb-1 mr-1" />
                         {slotData.slotTime}
                       </p>
-                      <p className="mt-1 font-medium">{slotData.classRoom}</p>
+                      <div className="flex justify-between mt-1 items-center">
+                        <p className="mt-1 font-medium">{slotData.classRoom}</p>
+                        <Link to="/schoolBook">
+                          <button className="text-center text-white px-2 max-w-max h-6 leading-6 rounded bg-warning-color">
+                            SĐB
+                          </button>
+                        </Link>
+                      </div>
                       <p>{renderSlotStatus(slotData.status)}</p>
+                      <button className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color">
+                        Điểm danh
+                      </button>
                     </div>
                   ) : (
-                    <p></p>
+                    <p>_</p>
                   )}
                 </td>
               );

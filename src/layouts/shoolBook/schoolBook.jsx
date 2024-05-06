@@ -2,22 +2,18 @@ import MDBox from "components/MDBox";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import React, { useEffect, useState } from "react";
-import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useForm } from "react-hook-form";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 
-import * as ProductService from "../../services/ProductService.jsx";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent.jsx";
 import Footer from "../../examples/Footer/index.js";
 import { studentClasses } from "../../mock/class";
 import { schoolYears } from "../../mock/schoolYear";
 import { subjects } from "../../mock/subject.js";
 import { registerBooks } from "../../mock/registerBook.js";
-import SendIcon from "@mui/icons-material/Send";
 
 const schoolWeeks = [
   { id: 1, name: "week 1", startTime: "20/1/2024", endTime: "28/1/2024" },
@@ -183,7 +179,7 @@ const SchoolBook = () => {
                   onChange={handleSchoolYearSelectedChange}
                 >
                   {schoolYears.data.map((item, index) => (
-                    <MenuItem key={index} value={item.schoolYear}>
+                    <MenuItem className="mt-1" key={index} value={item.schoolYear}>
                       {item.schoolYear}
                     </MenuItem>
                   ))}
@@ -223,7 +219,7 @@ const SchoolBook = () => {
                 >
                   {schoolWeeks.map((item, index) => (
                     <MenuItem key={index} value={item.name}>
-                      {item.name}
+                      {item.startTime} - {item.endTime}
                     </MenuItem>
                   ))}
                 </Select>
@@ -485,6 +481,27 @@ const SchoolBook = () => {
             onDetails={handleViewSlotDetail}
             className="mt-8"
           />
+          <div className="mt-5 text-base">
+            <p className="font-bold">Ghi chú:</p>
+            <ul className="list-disc ml-5">
+              <li>
+                <span className="success-color">(A): </span>
+                <span className="italic">Tiết tích cực, tốt.</span>
+              </li>
+              <li>
+                <span className="primary-color">(B): </span>
+                <span className="italic">Tiết học khá.</span>
+              </li>
+              <li>
+                <span className="warning-color">(C): </span>
+                <span className="italic">Tiết Trung bình.</span>
+              </li>
+              <li>
+                <span className="error-color">(D): </span>
+                <span className="italic">Tiết học kém.</span>
+              </li>
+            </ul>
+          </div>
           <PopupComponent
             title="CẬP NHẬT SỔ"
             description={`GVBM: ${teacherOfSlot}`}

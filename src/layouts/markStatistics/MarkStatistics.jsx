@@ -491,8 +491,8 @@ export default function MarkStatistics() {
                   count="0-1 điểm"
                   percentage={{
                     color: "primary",
-                    amount: "Khối 12",
-                    label: "có TB cao nhất",
+                    amount: "0-1 điểm",
+                    label: "chiếm tỉ lệ ít nhất",
                   }}
                 />
                 <ComplexStatisticsCard
@@ -501,8 +501,8 @@ export default function MarkStatistics() {
                   count="8-9 điểm"
                   percentage={{
                     color: "info",
-                    amount: "Khối 12",
-                    label: "có TB cao nhất",
+                    amount: "8-9 điểm",
+                    label: "chiếm tỉ lệ cao nhất",
                   }}
                 />
                 <ComplexStatisticsCard
@@ -512,8 +512,8 @@ export default function MarkStatistics() {
                   count="8.0"
                   percentage={{
                     color: "success",
-                    amount: "Khối 12",
-                    label: "có TB cao nhất",
+                    amount: "8.0",
+                    label: "là điểm trung bình",
                   }}
                 />
               </div>

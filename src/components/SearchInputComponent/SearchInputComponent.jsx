@@ -6,7 +6,7 @@ import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 export default function SearchInputComponent({ onSearch, placeHolder, className }) {
   const [searchValue, setSearchValue] = useState("");
 
-  const customClassName = `border pl-3 h-10 w-56 rounded box-border flex justify-between items-center ${className}`;
+  const customClassName = `border pl-3 h-11 w-56 rounded box-border flex justify-between items-center ${className}`;
 
   const handleSearch = () => {
     onSearch(searchValue);
@@ -25,14 +25,14 @@ export default function SearchInputComponent({ onSearch, placeHolder, className 
   return (
     <div className={customClassName}>
       <input
-        className="h-full outline-none"
+        className="h-full outline-none text-base"
         placeholder={placeHolder}
         value={searchValue}
         onChange={handleChange}
         onKeyPress={handleKeyPress}
       />
       <button
-        className="w-10 h-9 leading-9 bg-primary-color rounded text-white text-center cursor-pointer"
+        className="w-10 h-10 leading-10 bg-primary-color rounded text-white text-center cursor-pointer"
         onClick={handleSearch}
       >
         <SearchIcon className="text-3xl" />

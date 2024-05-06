@@ -29,10 +29,10 @@ const TableMarkAllStudentsComponent = ({ data, onViewDetails, className }) => {
   ];
   return (
     <div className={className}>
-      <table className="rounded-md">
+      <table className="rounded-md overflow-x-auto">
         <thead>
           <tr>
-            <th className="w-10" rowSpan={2}>
+            <th className="" rowSpan={2}>
               {headers[0]}
             </th>
             <th rowSpan={2}>{headers[1]}</th>

@@ -47,10 +47,11 @@ import SchoolBook from "./layouts/shoolBook/schoolBook";
 import Wiki from "./layouts/wiki/Wiki";
 import MarkManagement from "./layouts/MarkManagement/MarkManagement";
 import RoomManagement from "./layouts/roomManagement/RoomManagement";
-import ClassManagement from "layouts/classManagement/ClassManagement";
-import SubjectManagement from "layouts/subjectManagement/SubjectManagement";
+import ClassManagement from "./layouts/classManagement/ClassManagement";
+import SubjectManagement from "./layouts/subjectManagement/SubjectManagement";
+import Demo from "./layouts/demo/Demo";
+import WeeklyTimeTable from "./layouts/weeklyTimeTable";
 import MarkStatistics from "layouts/markStatistics/MarkStatistics";
-import Demo from "layouts/demo/Demo";
 
 const routes = [
   {
@@ -117,6 +118,14 @@ const routes = [
     icon: <Icon fontSize="small">table</Icon>,
     route: "/schoolBook",
     component: <SchoolBook />,
+  },
+  {
+    type: "collapse",
+    name: "Weekly Time Table(KhoaTD)",
+    key: "weeklyTimeTable",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/weeklyTimeTable",
+    component: <WeeklyTimeTable />,
   },
   {
     type: "collapse",

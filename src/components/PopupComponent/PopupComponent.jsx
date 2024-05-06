@@ -26,6 +26,7 @@ export default function PopupComponent({
   isOpen,
   onClose,
   description,
+  rightNote,
   tabs,
 }) {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -39,7 +40,10 @@ export default function PopupComponent({
       <DialogTitle sx={{ m: 0, paddingX: 2, paddingY: 2 }} id="customized-dialog-title">
         {icon && <span className="mr-2 text-xl">{icon}</span>}
         {title}
-        {description && <p className="mt-0 text-sm font-medium">{description}</p>}
+        <div className="flex justify-between">
+          {description && <p className="mt-0 text-sm font-medium">{description}</p>}
+          {rightNote && <p className="mt-0 text-sm font-medium">{rightNote}</p>}
+        </div>
       </DialogTitle>
       <IconButton
         aria-label="close"
@@ -71,7 +75,7 @@ export default function PopupComponent({
           ))}
         </Tabs>
       )}
-      <DialogContent sx={{ m: 0, paddingX: 3, paddingY: 3, minWidth: 450 }} dividers>
+      <DialogContent sx={{ m: 0, paddingX: 3, paddingY: 3, minWidth: 350 }} dividers>
         {tabs ? children[selectedTab] : children}
       </DialogContent>
     </BootstrapDialog>
@@ -82,6 +86,7 @@ PopupComponent.propTypes = {
   onSubmit: PropTypes.func,
   title: PropTypes.string.isRequired,
   description: PropTypes.string,
+  rightNote: PropTypes.string,
   icon: PropTypes.node,
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]).isRequired,
   isOpen: PropTypes.bool.isRequired,

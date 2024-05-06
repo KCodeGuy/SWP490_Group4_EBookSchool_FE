@@ -1,5 +1,4 @@
 // contains common methods
-
 export const countDuplicateItemsInArray = (arr) => {
   // Count occurrences of each key
   const counts = arr.reduce((acc, { key }) => {
@@ -13,4 +12,10 @@ export const countDuplicateItemsInArray = (arr) => {
 
 export const capitalizeFirstLetter = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export const formatDateYearsMonthsDates = (inputDate) => {
+  const [day, month, year] = inputDate.split("/");
+  const formattedDate = `${year}-${month}-${day}`;
+  return formattedDate;
 };

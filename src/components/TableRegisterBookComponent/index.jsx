@@ -6,6 +6,7 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditCalendarIcon from "@mui/icons-material/EditCalendar";
 import Checkbox from "@mui/material/Checkbox";
+import AccessAlarmsIcon from "@mui/icons-material/AccessAlarms";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 
 function TableRegisterBookComponent({
@@ -14,10 +15,9 @@ function TableRegisterBookComponent({
   onEdit,
   onDelete,
   onDetails,
-  onCheckboxChange,
-  onSave,
   className,
   itemsPerPage,
+  isPaginated,
   isOrdered,
   showCheckboxes,
 }) {
@@ -29,6 +29,7 @@ function TableRegisterBookComponent({
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentData = data.slice(startIndex, endIndex);
+  let rowNumber = 1;
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -44,6 +45,27 @@ function TableRegisterBookComponent({
       }
     }
     return count;
+  };
+
+  const renderRating = (rating) => {
+    const defaultStyles = "mx-auto text-center text-white w-12 h-8 leading-8 rounded";
+    switch (rating) {
+      case "A": {
+        return <div className={`${defaultStyles} bg-success-color`}>{rating}</div>;
+      }
+      case "B": {
+        return <div className={`${defaultStyles} bg-primary-color`}>{rating}</div>;
+      }
+      case "C": {
+        return <div className={`${defaultStyles} bg-warning-color`}>{rating}</div>;
+      }
+      case "D": {
+        return <div className={`${defaultStyles} bg-error-color`}>{rating}</div>;
+      }
+      default: {
+        return <div className={`${defaultStyles} bg-slate-300-color`}>{rating}</div>;
+      }
+    }
   };
 
   const renderSlotTime = (slot) => {
@@ -101,7 +123,7 @@ function TableRegisterBookComponent({
             {header.map((column, index) => (
               <th key={index}>{column}</th>
             ))}
-            {isShowActions && <th className="w-28">Thao tác</th>}
+            {isShowActions && <th className="w-24">Chi tiết</th>}
           </tr>
         </thead>
         <tbody>
@@ -120,36 +142,38 @@ function TableRegisterBookComponent({
               </td>
             </tr>
           ) : (
-            currentData.map(
-              (date, index) => (
+            currentData.map((date, index) => {
+              return (
                 <tr key={index}>
-                  {(index === 0 || date.date !== data[index - 1].date) && (
+                  {(index === 0 || date.date !== currentData[index - 1].date) && (
                     <>
-                      <td rowSpan={renderRowSpan(index, date.date)}>{index + 1}</td>
+                      <td rowSpan={renderRowSpan(index, date.date)}>{rowNumber++}</td>
                       <td rowSpan={renderRowSpan(index, date.date)}>
                         {date.weekDate} <br />
                         {date.date}
                       </td>
                     </>
                   )}
-
                   <td>
-                    {date.slot} <br /> {renderSlotTime(date.slot)}
+                    <p className="font-bold">Tiết {date.slot}</p>
+                    <p>
+                      <AccessAlarmsIcon /> {renderSlotTime(date.slot)}
+                    </p>
                   </td>
+                  <td>{date.subject}</td>
                   <td>{date.teacher}</td>
-                  <td>{date.slotByLessonPlans}</td>
                   <td>{date.slotByLessonPlans}</td>
                   <td>{date.numberOfAbsent}</td>
                   <td>{date.title}</td>
                   <td>{date.note}</td>
-                  <td>{date.rating}</td>
+                  <td>{renderRating(date.rating)}</td>
                   {isShowActions && (
-                    <td className="max-w-28">
+                    <td className="max-w-28 text-center">
                       {onDetails && (
                         <button
                           title="Detail button "
-                          className="text-xl ml-3 primary-color"
-                          onClick={() => onDetails(row)}
+                          className="text-xl primary-color"
+                          onClick={() => onDetails(date)}
                         >
                           <EditCalendarIcon />
                         </button>
@@ -157,40 +181,21 @@ function TableRegisterBookComponent({
                     </td>
                   )}
                 </tr>
-              )
-              /* <tr key={rowIndex}>
-                {(rowIndex === 0 || (rowIndex % 5 === 0 && isOrdered)) && (
-                  <td rowSpan={5}>{rowIndex / 5 + 1}</td>
-                )}
-                {(rowIndex === 0 || rowIndex % 5 === 0) && <td rowSpan={5}>Thứ 2 - 20/1/2024</td>}
-                {row.map((cell, cellIndex) =>
-                  cell ? <td key={cellIndex}>{cell}</td> : <td key={cellIndex}>Trống</td>
-                )}
-                {isShowActions && (
-                  <td className="max-w-28">
-                    {onDetails && (
-                      <button
-                        title="Detail button "
-                        className="text-xl ml-3 primary-color"
-                        onClick={() => onDetails(row)}
-                      >
-                        <EditCalendarIcon />
-                      </button>
-                    )}
-                  </td>
-                )}
-              </tr>
-               */
-            )
+              );
+            })
           )}
         </tbody>
       </table>
-      <div className="pagination border py-2 flex justify-between items-center px-3">
-        <div>
+      <div
+        className={`pagination border py-2 flex justify-between items-center px-3 text-base ${
+          isPaginated ? "" : "hidden"
+        }`}
+      >
+        <div className="text-sm">
           <span className="mr-4">Total items: {data.length}</span>
           {showCheckboxes && <ButtonComponent onClick={handleSave}>Save</ButtonComponent>}
         </div>
-        <div>
+        <div className="text-sm">
           <span>Page items: {itemsPerPage}</span>
           <span className="ml-4">
             {currentPage} of {totalPages}
@@ -221,17 +226,17 @@ TableRegisterBookComponent.propTypes = {
   onDetails: PropTypes.func,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
-  onCheckboxChange: PropTypes.func,
-  onSave: PropTypes.func,
   className: PropTypes.string,
   itemsPerPage: PropTypes.number,
   isOrdered: PropTypes.bool,
+  isPaginated: PropTypes.bool,
   showCheckboxes: PropTypes.bool,
 };
 
 TableRegisterBookComponent.defaultProps = {
-  itemsPerPage: 10, // Default items per page
+  itemsPerPage: 70, // Default items per page
   isOrdered: true, // Default to not showing row numbers
+  isPaginated: true,
   showCheckboxes: false, // Default to not showing checkboxes
 };
 

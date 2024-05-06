@@ -12,7 +12,7 @@ import TableMarkAllStudentsComponent from "../../components/TableMarkAllStudents
 import "./style.scss";
 import PopupMenu from "../../components/MenuComponent/MenuComponent";
 import { scoreByStudentsBySubjectEnlish } from "../../mock/score";
-import { countDuplicateItemsInArray } from "utils/HandleArray";
+import { countDuplicateItemsInArray } from "utils/CommonFunctions";
 import TableMarkOfSubjectComponent from "components/TableMarkOfSubjectComponent/TableMarkOfSubjectComponent";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 // Mark management (HieuTTN)
@@ -114,20 +114,20 @@ const result = countDuplicateItemsInArray(oldArr);
 export default function MarkManagement() {
   const menuItems = [
     {
+      id: 1,
       label: "Nhập điểm",
-      action: () => console.log("Nhập điểm"),
     },
     {
+      id: 2,
       label: "Nhập điểm bằng Excel",
-      action: () => console.log("Nhập điểm bằng Excel"),
     },
     {
+      id: 3,
       label: "Sửa điểm",
-      action: () => console.log("Sửa điểm"),
     },
     {
+      id: 4,
       label: "Sửa điểm bằng Excel",
-      action: () => console.log("Sửa điểm bằng Excel"),
     },
   ];
 
@@ -159,6 +159,10 @@ export default function MarkManagement() {
   const handleDetails = (rowItem) => {
     console.log("Details row:", rowItem);
     // Implement delete logic here
+  };
+
+  const handleOnChange = (data) => {
+    console.log("selected item: ", data);
   };
 
   return (
@@ -276,6 +280,7 @@ export default function MarkManagement() {
 
             <PopupMenu
               items={menuItems}
+              onChange={handleOnChange}
               // style={{ backgroundColor: "lightblue", color: "darkblue" }}
               className=" rounded flex justify-center items-center w-10"
             />

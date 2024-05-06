@@ -2,18 +2,38 @@ import MDBox from "components/MDBox";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import React, { useEffect, useState } from "react";
-import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import { useForm } from "react-hook-form";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
 
-import * as ProductService from "../../services/ProductService.jsx";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent.jsx";
 import Footer from "../../examples/Footer/index.js";
-import { studentClasses } from "mock/class";
-import { schoolYears } from "mock/schoolYear";
+import { studentClasses } from "../../mock/class";
+import { schoolYears } from "../../mock/schoolYear";
+import { subjects } from "../../mock/subject.js";
 import { registerBooks } from "../../mock/registerBook.js";
-import SendIcon from "@mui/icons-material/Send";
+
+const schoolWeeks = [
+  { id: 1, name: "week 1", startTime: "20/1/2024", endTime: "28/1/2024" },
+  { id: 2, name: "week 2", startTime: "20/1/2024", endTime: "28/1/2024" },
+  { id: 3, name: "week 3", startTime: "20/1/2024", endTime: "28/1/2024" },
+  { id: 4, name: "week 4", startTime: "20/1/2024", endTime: "28/1/2024" },
+  { id: 5, name: "week 5", startTime: "20/1/2024", endTime: "28/1/2024" },
+  { id: 6, name: "week 6", startTime: "20/1/2024", endTime: "28/1/2024" },
+  { id: 7, name: "week 7", startTime: "20/1/2024", endTime: "28/1/2024" },
+  { id: 8, name: "week 8", startTime: "20/1/2024", endTime: "28/1/2024" },
+  { id: 9, name: "week 9", startTime: "20/1/2024", endTime: "28/1/2024" },
+  { id: 10, name: "week 10", startTime: "20/1/2024", endTime: "28/1/2024" },
+  { id: 11, name: "week 11", startTime: "20/1/2024", endTime: "28/1/2024" },
+  { id: 12, name: "week 12", startTime: "20/1/2024", endTime: "28/1/2024" },
+  { id: 13, name: "week 13", startTime: "20/1/2024", endTime: "28/1/2024" },
+];
+const formattedSubjects = subjects.data.map((subject) => ({
+  label: subject.name,
+  value: subject.name,
+}));
 
 import {
   CardActionArea,
@@ -26,26 +46,41 @@ import {
   Select,
   Typography,
 } from "@mui/material";
-import SearchInputComponent from "components/SearchInputComponent/SearchInputComponent.jsx";
-import PaginationComponent from "components/PaginationComponent/PaginationComponent.jsx";
-import TableRegisterBookComponent from "components/TableRegisterBookComponent/index.jsx";
+import { formatDateYearsMonthsDates } from "utils/CommonFunctions";
+import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent.jsx";
+import PaginationComponent from "../../components/PaginationComponent/PaginationComponent.jsx";
+import TableRegisterBookComponent from "../../components/TableRegisterBookComponent/index.jsx";
+import PopupComponent from "../../components/PopupComponent/PopupComponent.jsx";
+import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent.jsx";
 
 const SchoolBook = () => {
-  const schoolWeeks = [
-    { id: 1, name: "week 1", startTime: "20/1/2024", endTime: "28/1/2024" },
-    { id: 2, name: "week 2", startTime: "20/1/2024", endTime: "28/1/2024" },
-    { id: 3, name: "week 3", startTime: "20/1/2024", endTime: "28/1/2024" },
-    { id: 4, name: "week 4", startTime: "20/1/2024", endTime: "28/1/2024" },
-    { id: 5, name: "week 5", startTime: "20/1/2024", endTime: "28/1/2024" },
-    { id: 6, name: "week 6", startTime: "20/1/2024", endTime: "28/1/2024" },
-    { id: 7, name: "week 7", startTime: "20/1/2024", endTime: "28/1/2024" },
-    { id: 8, name: "week 8", startTime: "20/1/2024", endTime: "28/1/2024" },
-    { id: 9, name: "week 9", startTime: "20/1/2024", endTime: "28/1/2024" },
-    { id: 10, name: "week 10", startTime: "20/1/2024", endTime: "28/1/2024" },
-    { id: 11, name: "week 11", startTime: "20/1/2024", endTime: "28/1/2024" },
-    { id: 12, name: "week 12", startTime: "20/1/2024", endTime: "28/1/2024" },
-    { id: 13, name: "week 13", startTime: "20/1/2024", endTime: "28/1/2024" },
-  ];
+  const [openModalAddSchoolBook, setOpenModalAddSchoolBook] = useState(false);
+  const [openModalEditSchoolBook, setOpenModalEditSchoolBook] = useState(false);
+  const teacherOfSlot = "Quach Luynl Da";
+  const currentClass = "12A1";
+
+  //3.1 React-hook-from of adding action
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue: noSetValue,
+    formState: { errors },
+  } = useForm();
+  //3.1 React-hook-from of editing action
+  const {
+    control: controlEditAction,
+    handleSubmit: handleSubmitEditAction,
+    reset: resetEditAction,
+    setValue,
+    formState: { errors: errorsEditAction },
+  } = useForm();
+
+  const handleAddSchoolBook = (data) => {
+    console.log("Call API schoolBook: ", data);
+    // Call API add class here
+  };
+
   const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
@@ -60,27 +95,27 @@ const SchoolBook = () => {
   const handleSchoolWeeksSelectedChange = (event) => {
     setSchoolWeek(event.target.value);
   };
-  // const [products, setProducts] = useState([]);
-  // const [isLoading, setIsLoading] = useState(true);
-  // const [error, setError] = useState(null);
 
-  // async function fetchData() {
-  //   try {
-  //     const response = await ProductService.getAllProduct();
-  //     setProducts(response.products);
-  //     setIsLoading(false);
-  //   } catch (error) {
-  //     setError(error.message);
-  //     setIsLoading(false);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
+  const handleViewSlotDetail = (slot) => {
+    if (slot) {
+      setValue("id", slot.id);
+      setValue("dateEdit", formatDateYearsMonthsDates(slot.date));
+      setValue("weekDateEdit", slot.weekDate);
+      setValue("slotEdit", slot.slot);
+      setValue("subjectEdit", slot.subject);
+      setValue("teacherEdit", slot.teacher);
+      setValue("slotByLessonPlansEdit", slot.slotByLessonPlans);
+      setValue("numberOfAbsentEdit", slot.numberOfAbsent);
+      setValue("titleEdit", slot.title);
+      setValue("noteEdit", slot.note);
+      setValue("ratingEdit", slot.rating);
+      setOpenModalEditSchoolBook(true);
+    } else {
+      setOpenModalEditSchoolBook(false);
+    }
+  };
 
   const transformedData = [];
-
   registerBooks.data.detail.forEach((detail) => {
     const date = detail.date;
     const weekDate = detail.weekDate;
@@ -105,8 +140,6 @@ const SchoolBook = () => {
     });
   });
 
-  console.log(transformedData);
-
   const handleChangeSearchValue = (txtSearch) => {
     console.log(txtSearch);
   };
@@ -125,10 +158,6 @@ const SchoolBook = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-
-  const handleViewSlotDetail = (slot) => {
-    console.log("Slot: ", slot);
-  };
 
   return (
     <DashboardLayout>
@@ -150,7 +179,7 @@ const SchoolBook = () => {
                   onChange={handleSchoolYearSelectedChange}
                 >
                   {schoolYears.data.map((item, index) => (
-                    <MenuItem key={index} value={item.schoolYear}>
+                    <MenuItem className="mt-1" key={index} value={item.schoolYear}>
                       {item.schoolYear}
                     </MenuItem>
                   ))}
@@ -190,7 +219,7 @@ const SchoolBook = () => {
                 >
                   {schoolWeeks.map((item, index) => (
                     <MenuItem key={index} value={item.name}>
-                      {item.name}
+                      {item.startTime} - {item.endTime}
                     </MenuItem>
                   ))}
                 </Select>
@@ -199,12 +228,19 @@ const SchoolBook = () => {
                 <FilterAltIcon className="mr-1" /> Filter
               </ButtonComponent>
             </div>
-            <SearchInputComponent
-              onSearch={handleChangeSearchValue}
-              placeHolder="Nhập từ khóa..."
-            />
+            <div className="flex items-center">
+              <SearchInputComponent
+                onSearch={handleChangeSearchValue}
+                placeHolder="Nhập từ khóa..."
+                className="mr-3"
+              />
+              <ButtonComponent onClick={() => setOpenModalAddSchoolBook(true)}>
+                <AddCircleOutlineIcon className="text-3xl mr-1" />
+                NHẬP SỔ ĐẦU BÀI
+              </ButtonComponent>
+            </div>
           </div>
-          <Grid container spacing={2} marginTop={2}>
+          {/* <Grid container spacing={2} marginTop={2}>
             {paginatedData.map((item, index) => (
               <Grid key={index} item xs={12} md={6} lg={3}>
                 <Card sx={{ maxWidth: 345 }}>
@@ -240,7 +276,193 @@ const SchoolBook = () => {
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={handlePageChange}
-          />
+          /> */}
+          <div className="w-full flex justify-end">
+            <PopupComponent
+              title="NHẬP SỔ ĐẦU BÀI"
+              description={`GVBM: ${teacherOfSlot}`}
+              rightNote={`Lớp: ${currentClass}`}
+              icon={<AddCircleOutlineIcon />}
+              isOpen={openModalAddSchoolBook}
+              onClose={() => setOpenModalAddSchoolBook(false)}
+            >
+              <form onSubmit={handleSubmit(handleAddSchoolBook)}>
+                <div className="flex">
+                  <InputBaseComponent
+                    name="date"
+                    placeholder="Chọn ngày"
+                    label="Ngày"
+                    className="w-1/3 mr-3"
+                    control={control}
+                    setValue={noSetValue}
+                    type="date"
+                    errors={errors}
+                    validationRules={{
+                      required: "Hãy chọn ngày!",
+                    }}
+                  />
+                  <InputBaseComponent
+                    name="slot"
+                    label="Tiết học"
+                    className="w-1/2 mr-3"
+                    control={control}
+                    setValue={noSetValue}
+                    type="select"
+                    options={[
+                      { id: 1, label: "Tiết 1", value: "1" },
+                      { id: 2, label: "Tiết 2", value: "2" },
+                      { id: 3, label: "Tiết 3", value: "3" },
+                      { id: 4, label: "Tiết 4", value: "4" },
+                      { id: 5, label: "Tiết 5", value: "5" },
+                      { id: 6, label: "Tiết 6", value: "6" },
+                      { id: 7, label: "Tiết 7", value: "7" },
+                      { id: 8, label: "Tiết 8", value: "8" },
+                      { id: 9, label: "Tiết 9", value: "9" },
+                      { id: 10, label: "Tiết 10", value: "10" },
+                    ]}
+                    errors={errors}
+                    validationRules={{
+                      required: "Hãy chọn tiết học!",
+                    }}
+                  />
+                  <InputBaseComponent
+                    name="numberOfAbsent"
+                    placeholder="Nhập số lượng vắng"
+                    type="number"
+                    className="w-1/2"
+                    control={control}
+                    setValue={noSetValue}
+                    label="HS vắng"
+                    errors={errors}
+                    validationRules={{
+                      required: "Không được bỏ trống!",
+                      pattern: {
+                        value: /^[1-9]*$/,
+                        message: "Sai định dạng số!",
+                      },
+                    }}
+                  />
+                </div>
+                <div className="flex">
+                  <InputBaseComponent
+                    name="rating"
+                    label="Xếp loại tiết"
+                    className="w-1/3 mr-3"
+                    control={control}
+                    setValue={noSetValue}
+                    type="select"
+                    options={[
+                      { id: 1, label: "Loại A (Tốt)", value: "A" },
+                      { id: 2, label: "Loại B (Khá)", value: "B" },
+                      { id: 3, label: "Loại C (Trung bình)", value: "C" },
+                      { id: 4, label: "Loại D (Kém)", value: "D" },
+                    ]}
+                    errors={errors}
+                    validationRules={{
+                      required: "Hãy xếp loại tiết!",
+                    }}
+                  />
+                  <InputBaseComponent
+                    name="subject"
+                    label="Môn học"
+                    className="w-1/2 mr-3"
+                    control={control}
+                    setValue={noSetValue}
+                    type="select"
+                    options={formattedSubjects}
+                    errors={errors}
+                    validationRules={{
+                      required: "Hãy chọn môn học!",
+                    }}
+                  />
+                  <InputBaseComponent
+                    name="slotByLessonPlans"
+                    label="Tiết theo môn"
+                    className="w-1/2"
+                    control={control}
+                    setValue={noSetValue}
+                    type="select"
+                    options={[
+                      { id: 1, label: "Tiết 1", value: "slot 1" },
+                      { id: 2, label: "Tiết 2", value: "slot 2" },
+                      { id: 3, label: "Tiết 3", value: "slot 3" },
+                      { id: 4, label: "Tiết 4", value: "slot 4" },
+                      { id: 5, label: "Tiết 5", value: "slot 5" },
+                      { id: 6, label: "Tiết 6", value: "slot 6" },
+                      { id: 7, label: "Tiết 7", value: "slot 7" },
+                      { id: 8, label: "Tiết 8", value: "slot 8" },
+                      { id: 9, label: "Tiết 9", value: "slot 9" },
+                      { id: 10, label: "Tiết 10", value: "slot 10" },
+                      { id: 11, label: "Tiết 11", value: "slot 11" },
+                      { id: 12, label: "Tiết 12", value: "slot 12" },
+                      { id: 13, label: "Tiết 13", value: "slot 13" },
+                      { id: 14, label: "Tiết 14", value: "slot 14" },
+                      { id: 15, label: "Tiết 15", value: "slot 15" },
+                    ]}
+                    errors={errors}
+                    validationRules={{
+                      required: "Hãy chọn tiết học!",
+                    }}
+                  />
+                </div>
+                <InputBaseComponent
+                  name="title"
+                  placeholder="Nhập nội dung tiết học"
+                  type="textArea"
+                  control={control}
+                  rowTextArea={2}
+                  setValue={noSetValue}
+                  label="Nội dung"
+                  errors={errors}
+                  validationRules={{
+                    required: "Không được bỏ trống!",
+                  }}
+                />
+
+                <InputBaseComponent
+                  name="note"
+                  placeholder="Nhập nội nhận xét"
+                  type="text"
+                  control={control}
+                  setValue={noSetValue}
+                  label="Nhập xét"
+                  errors={errors}
+                  validationRules={{
+                    required: "Không được bỏ trống!",
+                  }}
+                />
+                <div className="mt-4 flex justify-between">
+                  <ButtonComponent type="success" action="button">
+                    <BorderColorIcon className="mr-1" />
+                    ĐIỂM DANH
+                  </ButtonComponent>
+                  <div>
+                    <ButtonComponent type="error" action="reset" onClick={() => reset()}>
+                      CLEAR
+                    </ButtonComponent>
+                    <ButtonComponent action="submit">HOÀN TẤT</ButtonComponent>
+                  </div>
+                </div>
+              </form>
+            </PopupComponent>
+          </div>
+          <div className="text-center mt-7">
+            <h4 className="text-xl font-bold uppercase">Sổ shi đầu bài lớp {schoolClass} HK1</h4>
+          </div>
+          <div className="flex justify-between mt-2">
+            <div className="text-sm">
+              <span className="mr-2 font-bold">GVCN:</span>
+              <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                {teacherOfSlot}
+              </span>
+            </div>
+            <div className="text-sm">
+              <span className="mr-2 font-bold">Năm học:</span>
+              <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                {schoolYear}
+              </span>
+            </div>
+          </div>
           <TableRegisterBookComponent
             header={[
               "Ngày",
@@ -253,10 +475,189 @@ const SchoolBook = () => {
               "Nhận xét",
               "Xếp loại",
             ]}
+            itemsPerPage={70}
+            isPaginated={true}
             data={transformedData}
             onDetails={handleViewSlotDetail}
-            className="mt-12"
+            className="mt-8"
           />
+          <div className="mt-5 text-base">
+            <p className="font-bold">Ghi chú:</p>
+            <ul className="list-disc ml-5">
+              <li>
+                <span className="success-color">(A): </span>
+                <span className="italic">Tiết tích cực, tốt.</span>
+              </li>
+              <li>
+                <span className="primary-color">(B): </span>
+                <span className="italic">Tiết học khá.</span>
+              </li>
+              <li>
+                <span className="warning-color">(C): </span>
+                <span className="italic">Tiết Trung bình.</span>
+              </li>
+              <li>
+                <span className="error-color">(D): </span>
+                <span className="italic">Tiết học kém.</span>
+              </li>
+            </ul>
+          </div>
+          <PopupComponent
+            title="CẬP NHẬT SỔ"
+            description={`GVBM: ${teacherOfSlot}`}
+            rightNote={`Lớp: ${currentClass}`}
+            icon={<AddCircleOutlineIcon />}
+            isOpen={openModalEditSchoolBook}
+            onClose={() => setOpenModalEditSchoolBook(false)}
+          >
+            <form onSubmit={handleSubmitEditAction((data) => console.log("Edit: ", data))}>
+              <div className="flex">
+                <InputBaseComponent
+                  name="dateEdit"
+                  placeholder="Chọn ngày"
+                  label="Ngày"
+                  className="w-1/3 mr-3"
+                  control={controlEditAction}
+                  setValue={setValue}
+                  type="date"
+                  errors={errorsEditAction}
+                  validationRules={{
+                    required: "Hãy chọn ngày!",
+                  }}
+                />
+                <InputBaseComponent
+                  name="slotEdit"
+                  label="Tiết học"
+                  className="w-1/2 mr-3"
+                  control={controlEditAction}
+                  setValue={setValue}
+                  type="select"
+                  options={[
+                    { id: 1, label: "Tiết 1", value: "1" },
+                    { id: 2, label: "Tiết 2", value: "2" },
+                    { id: 3, label: "Tiết 3", value: "3" },
+                    { id: 4, label: "Tiết 4", value: "4" },
+                    { id: 5, label: "Tiết 5", value: "5" },
+                  ]}
+                  errors={errorsEditAction}
+                  validationRules={{
+                    required: "Hãy chọn tiết học!",
+                  }}
+                />
+                <InputBaseComponent
+                  name="numberOfAbsentEdit"
+                  placeholder="Nhập số lượng vắng"
+                  type="number"
+                  className="w-1/2"
+                  control={controlEditAction}
+                  setValue={setValue}
+                  label="HS vắng"
+                  errors={errorsEditAction}
+                  validationRules={{
+                    required: "Không được bỏ trống!",
+                    pattern: {
+                      value: /^[1-9]*$/,
+                      message: "Sai định dạng số!",
+                    },
+                  }}
+                />
+              </div>
+              <div className="flex">
+                <InputBaseComponent
+                  name="ratingEdit"
+                  label="Xếp loại tiết"
+                  className="w-1/3 mr-3"
+                  control={controlEditAction}
+                  setValue={setValue}
+                  type="select"
+                  options={[
+                    { id: 1, label: "Loại A (Tốt)", value: "A" },
+                    { id: 2, label: "Loại B (Khá)", value: "B" },
+                    { id: 3, label: "Loại C (Trung bình)", value: "C" },
+                    { id: 4, label: "Loại D (Kém)", value: "D" },
+                  ]}
+                  errors={errorsEditAction}
+                  validationRules={{
+                    required: "Hãy xếp loại tiết!",
+                  }}
+                />
+                <InputBaseComponent
+                  name="subjectEdit"
+                  label="Môn học"
+                  className="w-1/2 mr-3"
+                  control={controlEditAction}
+                  setValue={setValue}
+                  type="select"
+                  options={formattedSubjects}
+                  errors={errorsEditAction}
+                  validationRules={{
+                    required: "Hãy chọn môn học!",
+                  }}
+                />
+                <InputBaseComponent
+                  name="slotByLessonPlansEdit"
+                  label="Tiết theo môn"
+                  className="w-1/2"
+                  control={controlEditAction}
+                  setValue={setValue}
+                  type="select"
+                  options={[
+                    { id: 1, label: "Tiết 1", value: "1" },
+                    { id: 2, label: "Tiết 2", value: "2" },
+                    { id: 3, label: "Tiết 3", value: "3" },
+                    { id: 4, label: "Tiết 4", value: "4" },
+                    { id: 5, label: "Tiết 5", value: "5" },
+                    { id: 6, label: "Tiết 6", value: "6" },
+                    { id: 7, label: "Tiết 7", value: "7" },
+                    { id: 8, label: "Tiết 8", value: "8" },
+                    { id: 9, label: "Tiết 9", value: "9" },
+                    { id: 10, label: "Tiết 10", value: "10" },
+                  ]}
+                  errors={errorsEditAction}
+                  validationRules={{
+                    required: "Hãy chọn tiết học!",
+                  }}
+                />
+              </div>
+              <InputBaseComponent
+                name="titleEdit"
+                placeholder="Nhập nội dung tiết học"
+                type="textArea"
+                control={controlEditAction}
+                rowTextArea={2}
+                setValue={setValue}
+                label="Nội dung"
+                errors={errorsEditAction}
+                validationRules={{
+                  required: "Không được bỏ trống!",
+                }}
+              />
+              <InputBaseComponent
+                name="noteEdit"
+                placeholder="Nhập nội nhận xét"
+                type="text"
+                control={controlEditAction}
+                setValue={setValue}
+                label="Nhập xét"
+                errors={errorsEditAction}
+                validationRules={{
+                  required: "Không được bỏ trống!",
+                }}
+              />
+              <div className="mt-4 flex justify-between">
+                <ButtonComponent type="success" action="button">
+                  <BorderColorIcon className="mr-1" />
+                  ĐIỂM DANH
+                </ButtonComponent>
+                <div>
+                  <ButtonComponent type="error" action="reset" onClick={() => resetEditAction()}>
+                    CLEAR
+                  </ButtonComponent>
+                  <ButtonComponent action="submit">CẬP NHẬT</ButtonComponent>
+                </div>
+              </div>
+            </form>
+          </PopupComponent>
         </MDBox>
       </Card>
       <Footer />

@@ -23,7 +23,7 @@ import TableComponent from "../../components/TableComponent/TableComponent";
 import SearchComponent from "../../components/SearchComponent/SearchComponent";
 import TableMarkOfSubjectComponent from "../../components/TableMarkOfSubjectComponent/TableMarkOfSubjectComponent";
 import { scoreByStudentsBySubjectEnlish } from "../../mock/score";
-import { countDuplicateItemsInArray } from "utils/HandleArray";
+import { countDuplicateItemsInArray } from "utils/CommonFunctions";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
 import { useForm, Controller } from "react-hook-form";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
@@ -424,7 +424,7 @@ const Wiki = () => {
             />
             <p className="mt-4">4. Table show điểm all học sinh</p>
             <TableMarkAllStudentsComponent
-              className="mt-4"
+              className="mt-4 overflow-auto"
               data={scoreByStudents.data}
               onViewDetails={handleViewDetails}
             />

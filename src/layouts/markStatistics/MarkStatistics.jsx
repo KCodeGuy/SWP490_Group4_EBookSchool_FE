@@ -19,7 +19,7 @@ const semesters = ["Học kì I", "Học kì II", "Cả năm"];
 
 const grades = ["Khối 10", "Khối 11", "Khối 12"];
 
-const dataset = [
+const datasetASubjectForAGrade = [
   {
     Toán: 2.1,
     Lớp: "12A1",
@@ -70,7 +70,7 @@ const dataset = [
   },
 ];
 
-const dataset1 = [
+const datasetASubjectForEntireSchool = [
   {
     Toán: 9,
     Khối: "10",
@@ -85,20 +85,92 @@ const dataset1 = [
   },
 ];
 
-const valueFormatter = (value) => {
+const datasetDetailedMarksfForSubjectOfClass = [
+  {
+    LessThan1: 2,
+    Điểm: ">0 và <=1",
+  },
+  {
+    LessThan1: 2,
+    Điểm: ">1 và <=2",
+  },
+  {
+    LessThan1: 4,
+    Điểm: ">2 và <=3",
+  },
+  {
+    LessThan1: 5,
+    Điểm: ">3 và <=4",
+  },
+  {
+    LessThan1: 6,
+    Điểm: ">4 và <=5",
+  },
+  {
+    LessThan1: 10,
+    Điểm: ">5 và <=6",
+  },
+  {
+    LessThan1: 8,
+    Điểm: ">6 và <=7",
+  },
+  {
+    LessThan1: 6,
+    Điểm: ">7 và <=8",
+  },
+  {
+    LessThan1: 5,
+    Điểm: ">8 và <=9",
+  },
+  {
+    LessThan1: 4,
+    Điểm: ">9 và <=10",
+  },
+];
+
+const valueASubjectForAGrade = (value) => {
   if (typeof value === "number" || value === null) {
     return `${value} điểm`;
   }
   throw new Error("Value must be a number or null");
 };
 
-const chartSetting = {
+const valueDetailedMarksfForSubjectOfClass = (value) => {
+  if (typeof value === "number" || value === null) {
+    return `${value} học sinh`;
+  }
+  throw new Error("Value must be a number or null");
+};
+
+const chartASubjectForAGrade = {
   yAxis: [
     {
       label: "Điểm",
     },
   ],
-  series: [{ dataKey: "Toán", label: "Trung bình môn", valueFormatter, color: "#247CD4" }],
+  series: [{ dataKey: "Toán", label: "Trung bình môn", valueASubjectForAGrade, color: "#247CD4" }],
+  height: 500,
+  sx: {
+    [`& .${axisClasses.directionY} .${axisClasses.label}`]: {
+      transform: "translateX(-10px)",
+    },
+  },
+};
+
+const chartDetailedMarksfForSubjectOfClass = {
+  yAxis: [
+    {
+      label: "Số học sinh",
+    },
+  ],
+  series: [
+    {
+      dataKey: "LessThan1",
+      label: "Số học sinh",
+      valueDetailedMarksfForSubjectOfClass,
+      color: "#247CD4",
+    },
+  ],
   height: 500,
   sx: {
     [`& .${axisClasses.directionY} .${axisClasses.label}`]: {
@@ -127,6 +199,12 @@ export default function MarkStatistics() {
     ["Khối 10", "500", "9", "1"],
     ["Khối 11", "500", "9", "2"],
     ["Khối 12", "500", "9", "3"],
+  ]);
+
+  const [detailedMarksfForSubjectOfClass, setDetailedMarksfForSubjectOfClass] = useState([
+    ["Lê Văn A", "CE161025", "9", "1"],
+    ["Lê Văn B", "CE161025", "8", "2"],
+    ["Lê Văn C", "CE161025", "7", "3"],
   ]);
 
   const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
@@ -263,7 +341,8 @@ export default function MarkStatistics() {
                 Học kỳ: {schoolSemester}. Năm học: {schoolYear}
               </h4>
             </div>
-            <div className="w-full custom mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+            <h4 className="text-xl font-bold mt-5">Giáo viên: Lê Văn A</h4>
+            <div className="w-full custom mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
               <ComplexStatisticsCard
                 color="primary"
                 icon="leaderboard"
@@ -312,9 +391,9 @@ export default function MarkStatistics() {
               style={{ background: "#E9F7FF" }}
             >
               <BarChart
-                dataset={dataset}
+                dataset={datasetASubjectForAGrade}
                 xAxis={[{ scaleType: "band", dataKey: "Lớp", tickPlacement, tickLabelPlacement }]}
-                {...chartSetting}
+                {...chartASubjectForAGrade}
               />
             </div>
 
@@ -333,21 +412,25 @@ export default function MarkStatistics() {
 
           <>
             <div className="text-center mt-8">
-              <h4 className="text-xl font-bold">Thống kê điểm Toán trường THPT Nguyễn Việt Hồng</h4>
-              <h4 className="text-xl font-bold">Học kỳ: HKI. Năm học: 2023-2024</h4>
+              <h4 className="text-xl font-bold">
+                Thống kê điểm {schoolSubject} trường THPT Nguyễn Việt Hồng
+              </h4>
+              <h4 className="text-xl font-bold">
+                Học kỳ: {schoolSemester}. Năm học: {schoolYear}
+              </h4>
             </div>
 
-            <div className="mt-4 w-full grid gap-4 sm:grid-cols-1 md:grid-cols-2  overflow-x-scroll">
+            <div className="mt-4 w-full grid gap-4 sm:grid-cols-1 md:grid-cols-2 overflow-x-scroll">
               <div
                 className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
                 style={{ background: "#E9F7FF" }}
               >
                 <BarChart
-                  dataset={dataset1}
+                  dataset={datasetASubjectForEntireSchool}
                   xAxis={[
                     { scaleType: "band", dataKey: "Khối", tickPlacement, tickLabelPlacement },
                   ]}
-                  {...chartSetting}
+                  {...chartASubjectForAGrade}
                 />
               </div>
               <div className="w-full">
@@ -396,6 +479,87 @@ export default function MarkStatistics() {
                     className="mt-4"
                   />
                 </div>
+              </div>
+            </div>
+          </>
+
+          <>
+            <div className="text-center mt-8">
+              <h4 className="text-xl font-bold">
+                Thống kê chi tiết điểm {schoolSubject} lớp {schoolClass}
+              </h4>
+              <h4 className="text-xl font-bold">
+                Học kỳ: {schoolSemester}. Năm học: {schoolYear}
+              </h4>
+            </div>
+            <div className="mt-5">
+              <h4 className="text-xl font-bold">Giáo viên: Lê Văn A</h4>
+              <h4 className="text-xl font-bold">Sỉ số: 40</h4>
+            </div>
+            <div className="w-full mt-5">
+              <div className="mt-8 grid gap-2 sm:grid-cols-1 md:grid-cols-3 custom">
+                <ComplexStatisticsCard
+                  color="primary"
+                  icon="leaderboard"
+                  title="Ít nhất"
+                  count="0-1 điểm"
+                  percentage={{
+                    color: "primary",
+                    amount: "0-1 điểm",
+                    label: "chiếm tỉ lệ ít nhất",
+                  }}
+                />
+                <ComplexStatisticsCard
+                  icon="leaderboard"
+                  title="Nhiều nhất"
+                  count="8-9 điểm"
+                  percentage={{
+                    color: "info",
+                    amount: "8-9 điểm",
+                    label: "chiếm tỉ lệ cao nhất",
+                  }}
+                />
+                <ComplexStatisticsCard
+                  color="success"
+                  icon="leaderboard"
+                  title="Điểm trung bình"
+                  count="8.0"
+                  percentage={{
+                    color: "success",
+                    amount: "8.0",
+                    label: "là điểm trung bình",
+                  }}
+                />
+              </div>
+              <div className="table w-full mt-8">
+                <div
+                  className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
+                  style={{ background: "#E9F7FF" }}
+                >
+                  <BarChart
+                    dataset={datasetDetailedMarksfForSubjectOfClass}
+                    xAxis={[
+                      {
+                        scaleType: "band",
+                        dataKey: "Điểm",
+                        tickPlacement,
+                        tickLabelPlacement,
+                      },
+                    ]}
+                    {...chartDetailedMarksfForSubjectOfClass}
+                  />
+                </div>
+              </div>
+              <div className="mt-8 custom-table">
+                <p className="text-base font-bold">THỐNG KÊ CHI TIẾT MÔN TOÁN (HK1, 2023)</p>
+                <TableComponent
+                  header={["Họ và tên", "Mã học sinh", "Điểm", "Hạng"]}
+                  data={detailedMarksfForSubjectOfClass}
+                  // onEdit={handleEdit}
+                  onDetails={handleDetails}
+                  // onDelete={handleDelete}
+                  className="mt-4"
+                />
               </div>
             </div>
           </>

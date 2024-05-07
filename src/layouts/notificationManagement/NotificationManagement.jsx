@@ -9,7 +9,6 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
-import "./style.scss";
 import { notifications } from "../../mock/notification";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
@@ -104,7 +103,7 @@ export default function NotificationManagement() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="h-screen">
+      <Card className="max-h-max">
         <MDBox p={5}>
           <div className="text-center mt-0">
             <h4 className="text-xl font-bold">Quản lý thông báo</h4>
@@ -117,7 +116,7 @@ export default function NotificationManagement() {
             <div className="ml-3">
               <ButtonComponent onClick={() => setModalOpen(true)}>
                 <AddCircleOutlineIcon className="text-3xl mr-1" />
-                Tạo thông báo
+                Tạo
               </ButtonComponent>
               <PopupComponent
                 title="TẠO THÔNG BÁO"

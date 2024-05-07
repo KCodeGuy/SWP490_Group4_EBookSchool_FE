@@ -17,7 +17,7 @@ import SendIcon from "@mui/icons-material/Send";
 import Footer from "../../examples/Footer";
 import DashboardLayout from "../../examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "../../examples/Navbars/DashboardNavbar";
-import { useState } from "react";
+import React, { useState } from "react";
 import TableMarkAllStudentsComponent from "../../components/TableMarkAllStudentsComponent/TableMarkAllStudentsComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import SearchComponent from "../../components/SearchComponent/SearchComponent";
@@ -29,10 +29,31 @@ import { useForm, Controller } from "react-hook-form";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import SearchInputComponent from "components/SearchInputComponent/SearchInputComponent";
+import { studentClasses } from "mock/class";
+import { schoolYears } from "mock/schoolYear";
+import { subjects } from "mock/subject";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
 
 const Wiki = () => {
+  const semesters = ["Học kì I", "Học kì II", "Cả năm"];
+  const grades = ["Khối 10", "Khối 11", "Khối 12"];
   const logger = () => {
     console.log("clicked me");
+  };
+
+  const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
+  const handleSchoolYearSelectedChange = (event) => {
+    setSchoolYear(event.target.value);
+  };
+
+  const [schoolSemester, setSchoolSemester] = React.useState(semesters[0]);
+  const handleSchoolSemesterSelectedChange = (event) => {
+    setSchoolSemester(event.target.value);
+  };
+
+  const [grade, setGrade] = React.useState(grades[0]);
+  const handleGradeSelectedChange = (event) => {
+    setGrade(event.target.value);
   };
 
   const oldArr = scoreByStudentsBySubjectEnlish.data.score[0].scores;
@@ -154,16 +175,6 @@ const Wiki = () => {
     ["Thông báo : Lịch nghỉ Tết Nguyên Đán Giáp Thìn 2024 chính thức. "],
   ]);
 
-  const handleEdit = (rowItem) => {
-    console.log("Edit row:", rowItem);
-    // Implement edit logic here
-  };
-
-  const handleDelete = (rowItem) => {
-    console.log("Delete row:", rowItem);
-    // Implement delete logic here
-  };
-
   const handleChecked = (rowItem) => {
     console.log("checked:", rowItem);
     // Implement delete logic here
@@ -172,17 +183,6 @@ const Wiki = () => {
   const handleDetails = (rowItem) => {
     console.log("Details row:", rowItem);
     // Implement delete logic here
-  };
-
-  const handleEnter = (value) => {
-    console.log("Value after Enter:", value);
-  };
-
-  const handleCancel = (value) => {
-    console.log("Cancel:", value);
-  };
-  const hanldeOK = (value) => {
-    console.log("Cancel:", value);
   };
 
   const {
@@ -204,6 +204,10 @@ const Wiki = () => {
 
   const handleCloseModal = () => {
     setModalOpen(false);
+  };
+
+  const handleStatistic = () => {
+    console.log("Call api: ", { schoolYear, grades });
   };
 
   const [modalIconTitleOpen, setModalIconTitleOpen] = useState(false);
@@ -375,6 +379,68 @@ const Wiki = () => {
             </ButtonComponent>
           </Grid>
           <Grid item xs={12} md={6} lg={3} marginTop={2}>
+            <MDTypography>1. Select drop down</MDTypography>
+            <div className="left mt-8">
+              <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                <InputLabel id="select-school-year-lable">Năm học</InputLabel>
+                <Select
+                  labelId="select-school-year-lable"
+                  id="elect-school-year"
+                  value={schoolYear}
+                  className="h-11 mr-3"
+                  label="Năm học"
+                  onChange={handleSchoolYearSelectedChange}
+                >
+                  {schoolYears.data.map((item) => (
+                    <MenuItem key={item.schoolYear} value={item.schoolYear}>
+                      {item.schoolYear}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                <InputLabel id="select-semester-lable">Học kì</InputLabel>
+                <Select
+                  labelId="select-semester-lable"
+                  id="select-semester"
+                  value={schoolSemester}
+                  className="h-11 mr-3"
+                  label="Học kì"
+                  onChange={handleSchoolSemesterSelectedChange}
+                >
+                  {semesters.map((item) => (
+                    <MenuItem key={item} value={item}>
+                      {item}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                <InputLabel id="select-grade-lable">Khối</InputLabel>
+                <Select
+                  labelId="select-grade-lable"
+                  id="select-grade"
+                  value={grade}
+                  className="h-11 mr-3"
+                  label="Khối"
+                  onChange={handleGradeSelectedChange}
+                >
+                  {grades.map((item) => (
+                    <MenuItem key={item} value={item}>
+                      {item}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <ButtonComponent
+                type="success"
+                className="max-[639px]:w-full"
+                onClick={handleStatistic}
+              >
+                <FilterAltIcon className="mr-1" /> Thống kế
+              </ButtonComponent>
+            </div>
             <MDTypography>2. Drop down, Search</MDTypography>
             <FormControl sx={{ minWidth: 120, marginLeft: "12px" }}>
               <InputLabel id="demo-simple-select-label">Age</InputLabel>

@@ -33,42 +33,6 @@ const datasetASubjectForAGrade = [
     Toán: 4.1,
     Lớp: "12A3",
   },
-  {
-    Toán: 7.3,
-    Lớp: "12A4",
-  },
-  {
-    Toán: 9.9,
-    Lớp: "12A5",
-  },
-  {
-    Toán: 1.2,
-    Lớp: "12A6",
-  },
-  {
-    Toán: 3.1,
-    Lớp: "12A7",
-  },
-  {
-    Toán: 4.9,
-    Lớp: "12A8",
-  },
-  {
-    Toán: 1.3,
-    Lớp: "12A9",
-  },
-  {
-    Toán: 5.5,
-    Lớp: "12A10",
-  },
-  {
-    Toán: 6.5,
-    Lớp: "12A11",
-  },
-  {
-    Toán: 10,
-    Lớp: "12A12",
-  },
 ];
 
 const datasetASubjectForEntireSchool = [
@@ -147,6 +111,8 @@ const chartASubjectForAGrade = {
   yAxis: [
     {
       label: "Điểm",
+      min: 1, // Setting the minimum value of the y-axis
+      max: 10, // Setting the maximum value of the y-axis
     },
   ],
   series: [{ dataKey: "Toán", label: "Trung bình môn", valueASubjectForAGrade, color: "#247CD4" }],

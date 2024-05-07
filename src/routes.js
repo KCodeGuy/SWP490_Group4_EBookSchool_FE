@@ -43,11 +43,12 @@ import ResetPassword from "layouts/authentication/reset-password";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
-import SchoolBook from "./layouts/shoolBook/SchoolBook";
+import SchoolBook from "./layouts/shoolBook/schoolBook";
 import Wiki from "./layouts/wiki/Wiki";
-import MarkManagement from "./layouts/markManagement/MarkManagement";
+import MarkManagement from "./layouts/MarkManagement/MarkManagement";
 import RoomManagement from "./layouts/roomManagement/RoomManagement";
 import ClassManagement from "./layouts/classManagement/ClassManagement";
+import NotificationManagement from "./layouts/notificationManagement/NotificationManagement";
 import SubjectManagement from "./layouts/subjectManagement/SubjectManagement";
 import Demo from "./layouts/demo/Demo";
 import WeeklyTimeTable from "./layouts/weeklyTimeTable";
@@ -93,6 +94,14 @@ const routes = [
     icon: <Icon fontSize="small">house</Icon>,
     route: "/classManagement",
     component: <ClassManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Notification Management(UolLT)",
+    key: "notificationManagement",
+    icon: <Icon fontSize="small">house</Icon>,
+    route: "/notificationManagement",
+    component: <NotificationManagement />,
   },
   {
     type: "collapse",

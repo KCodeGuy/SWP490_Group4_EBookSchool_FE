@@ -1,12 +1,19 @@
-import { Card } from "@mui/material";
+import { Box, Card, Tab, Tabs, Typography } from "@mui/material";
 import { BarChart } from "@mui/x-charts";
 import MDBox from "components/MDBox";
+import { TabPanel } from "components/TabPanelComponent";
 import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import React from "react";
 
 export default function Demo() {
+  const [value, setValue] = React.useState(0);
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const tabLabels = ["Tab 1", "Tab 2", "Tab 3"];
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -29,6 +36,47 @@ export default function Demo() {
             width={500}
             height={300}
           /> */}
+          <div className="mt-10 w-full">
+            <Tabs
+              value={value}
+              onChange={handleChange}
+              aria-label="simple tabs example"
+              sx={{
+                width: "100%",
+                textAlign: "left",
+                paddingX: 2,
+                paddingY: 2,
+                overflowWrap: "wrap",
+                "& .Mui-selected": {
+                  backgroundColor: "#247cd4",
+                  color: "white !important",
+                  paddingY: 2,
+                },
+              }}
+            >
+              {tabLabels.map((item, index) => (
+                <Tab
+                  sx={{
+                    color: "teal", // customize the tab label color
+                    "&.Mui-selected": {
+                      color: "navy", // customize the tab label color when selected
+                    },
+                  }}
+                  key={index}
+                  label={item}
+                />
+              ))}
+            </Tabs>
+            <TabPanel value={value} index={0}>
+              Tab 1 Content
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              Tab 2 Content
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+              Tab 3 Content
+            </TabPanel>
+          </div>
         </MDBox>
       </Card>
       <Footer />

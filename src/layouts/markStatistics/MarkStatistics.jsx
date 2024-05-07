@@ -1,4 +1,4 @@
-import { Card, FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
+import { Card, FormControl, Grid, InputLabel, MenuItem, Select, Tab, Tabs } from "@mui/material";
 import { BarChart, axisClasses } from "@mui/x-charts";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
@@ -14,6 +14,7 @@ import "./style.scss";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 import TableComponent from "components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
+import { TabPanel } from "../../components/TabPanelComponent";
 
 const semesters = ["Học kì I", "Học kì II", "Cả năm"];
 
@@ -180,6 +181,18 @@ const chartDetailedMarksfForSubjectOfClass = {
 };
 
 export default function MarkStatistics() {
+  const [value, setValue] = React.useState(0);
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const tabLabels = [
+    "ĐIỂM MÔN TOÀN TRƯỜNG",
+    "ĐIỂM MÔN THEO KHỐI",
+    "ĐIỂM MÔN THEO LỚP",
+    "Tab 4",
+    "Tab 5",
+  ];
   const [aSubjectForAGrade, setASubjectForAGrade] = useState([
     ["12A1", "10.0", "1"],
     ["12A2", "10.0", "3"],
@@ -237,8 +250,22 @@ export default function MarkStatistics() {
     // Implement delete logic here
   };
 
-  const handleStatistic = () => {
-    console.log("Call api: ", { schoolYear, schoolSemester, grade, schoolSubject });
+  const handleStatisticSubjectSchool = () => {
+    console.log("Call api by all school: ", { schoolYear, schoolSemester, schoolSubject });
+  };
+
+  const handleStatisticSubjectGrads = () => {
+    console.log("Call api by grad: ", { schoolYear, schoolSemester, schoolSubject, grade });
+  };
+
+  const handleStatisticSubjectClass = () => {
+    console.log("Call api by class: ", {
+      schoolYear,
+      schoolSemester,
+      schoolSubject,
+      grade,
+      schoolClass,
+    });
   };
 
   (React.useState < "middle") | ("tick" > "middle");
@@ -249,320 +276,492 @@ export default function MarkStatistics() {
       <DashboardNavbar />
       <Card>
         <MDBox p={5}>
-          {/* DO NOT DELETE CODE AS ABOVE*/}
-          <div className="left">
-            <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-              <InputLabel id="select-school-year-lable">Năm học</InputLabel>
-              <Select
-                labelId="select-school-year-lable"
-                id="elect-school-year"
-                value={schoolYear}
-                className="h-11 mr-3"
-                label="Năm học"
-                onChange={handleSchoolYearSelectedChange}
-              >
-                {schoolYears.data.map((item) => (
-                  <MenuItem key={item.schoolYear} value={item.schoolYear}>
-                    {item.schoolYear}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-              <InputLabel id="select-semester-lable">Học kì</InputLabel>
-              <Select
-                labelId="select-semester-lable"
-                id="select-semester"
-                value={schoolSemester}
-                className="h-11 mr-3"
-                label="Học kì"
-                onChange={handleSchoolSemesterSelectedChange}
-              >
-                {semesters.map((item) => (
-                  <MenuItem key={item} value={item}>
-                    {item}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-              <InputLabel id="select-grade-lable">Khối</InputLabel>
-              <Select
-                labelId="select-grade-lable"
-                id="select-grade"
-                value={grade}
-                className="h-11 mr-3"
-                label="Khối"
-                onChange={handleGradeSelectedChange}
-              >
-                {grades.map((item) => (
-                  <MenuItem key={item} value={item}>
-                    {item}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-              <InputLabel id="select-school-subject-lable">Môn học</InputLabel>
-              <Select
-                labelId="select-school-subject-lable"
-                id="select-school-subject"
-                value={schoolSubject}
-                className="h-11 mr-3"
-                label="Môn học"
-                onChange={handleSchoolSubjectSelectedChange}
-              >
-                <MenuItem key="Môn học" value="Môn học">
-                  Môn học
-                </MenuItem>
-                {subjects.data.map((item) => (
-                  <MenuItem key={item.name} value={item.name}>
-                    {item.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <ButtonComponent
-              type="success"
-              className="max-[639px]:w-full"
-              onClick={handleStatistic}
+          <div className="w-full mb-10">
+            <Tabs
+              value={value}
+              onChange={handleChange}
+              aria-label="simple tabs example"
+              sx={{
+                width: "100%",
+                textAlign: "left",
+                paddingX: 1,
+                paddingY: 2,
+                "& .Mui-selected": {
+                  backgroundColor: "#247cd4",
+                  color: "white !important",
+                  fontWeight: "bold",
+                  paddingY: 2,
+                },
+              }}
             >
-              <FilterAltIcon className="mr-1" /> Thống kế
-            </ButtonComponent>
-          </div>
-
-          <>
-            <div className="text-center mt-6">
-              <h4 className="text-xl font-bold">
-                Thống kê điểm {schoolSubject} khối {grade}
-              </h4>
-              <h4 className="text-xl font-bold">
-                Học kỳ: {schoolSemester}. Năm học: {schoolYear}
-              </h4>
-            </div>
-            <h4 className="text-xl font-bold mt-5">Giáo viên: Lê Văn A</h4>
-            <div className="w-full custom mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-              <ComplexStatisticsCard
-                color="primary"
-                icon="leaderboard"
-                title="Điểm thấp nhất"
-                count="4.95"
-                percentage={{
-                  color: "primary",
-                  amount: "12A1",
-                  label: "có điểm TB thấp nhất",
-                }}
-              />
-              <ComplexStatisticsCard
-                icon="leaderboard"
-                title="Điểm trung bình"
-                count="6.75"
-                percentage={{
-                  color: "info",
-                  amount: "Điểm trung bình giữa các lớp",
-                  label: "",
-                }}
-              />
-              <ComplexStatisticsCard
-                color="success"
-                icon="leaderboard"
-                title="Điểm cao nhất"
-                count="10"
-                percentage={{
-                  color: "success",
-                  amount: "12A2",
-                  label: "có TB cao nhất",
-                }}
-              />
-              <ComplexStatisticsCard
-                icon="leaderboard"
-                title="Tổng số lớp"
-                count="12 lớp"
-                percentage={{
-                  color: "info",
-                  amount: "12",
-                  label: "là tổng số lớp lượng lớp",
-                }}
-              />
-            </div>
-            <div
-              className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
-              style={{ background: "#E9F7FF" }}
-            >
-              <BarChart
-                dataset={datasetASubjectForAGrade}
-                xAxis={[{ scaleType: "band", dataKey: "Lớp", tickPlacement, tickLabelPlacement }]}
-                {...chartASubjectForAGrade}
-              />
-            </div>
-
-            <div className="mt-8 custom-table">
-              <p className="text-base font-bold">THỐNG KÊ CHI TIẾT ({schoolSubject})</p>
-              <TableComponent
-                header={["Lớp", "Điểm TB", "Hạng"]}
-                data={aSubjectForAGrade}
-                // onEdit={handleEdit}
-                onDetails={handleDetails}
-                // onDelete={handleDelete}
-                className="mt-4"
-              />
-            </div>
-          </>
-
-          <>
-            <div className="text-center mt-8">
-              <h4 className="text-xl font-bold">
-                Thống kê điểm {schoolSubject} trường THPT Nguyễn Việt Hồng
-              </h4>
-              <h4 className="text-xl font-bold">
-                Học kỳ: {schoolSemester}. Năm học: {schoolYear}
-              </h4>
-            </div>
-
-            <div className="mt-4 w-full grid gap-4 sm:grid-cols-1 md:grid-cols-2 overflow-x-scroll">
-              <div
-                className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
-                style={{ background: "#E9F7FF" }}
-              >
-                <BarChart
-                  dataset={datasetASubjectForEntireSchool}
-                  xAxis={[
-                    { scaleType: "band", dataKey: "Khối", tickPlacement, tickLabelPlacement },
-                  ]}
-                  {...chartASubjectForAGrade}
-                />
+              {tabLabels.map((item, index) => (
+                <Tab key={index} label={item} />
+              ))}
+            </Tabs>
+            <TabPanel value={value} index={0}>
+              <div className="left">
+                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                  <InputLabel id="select-school-year-lable">Năm học</InputLabel>
+                  <Select
+                    labelId="select-school-year-lable"
+                    id="elect-school-year"
+                    value={schoolYear}
+                    className="h-11 mr-3"
+                    label="Năm học"
+                    onChange={handleSchoolYearSelectedChange}
+                  >
+                    {schoolYears.data.map((item) => (
+                      <MenuItem key={item.schoolYear} value={item.schoolYear}>
+                        {item.schoolYear}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                  <InputLabel id="select-school-subject-lable">Môn học</InputLabel>
+                  <Select
+                    labelId="select-school-subject-lable"
+                    id="select-school-subject"
+                    value={schoolSubject}
+                    className="h-11 mr-3"
+                    label="Môn học"
+                    onChange={handleSchoolSubjectSelectedChange}
+                  >
+                    <MenuItem key="Môn học" value="Môn học">
+                      Môn học
+                    </MenuItem>
+                    {subjects.data.map((item) => (
+                      <MenuItem key={item.name} value={item.name}>
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                  <InputLabel id="select-semester-lable">Học kì</InputLabel>
+                  <Select
+                    labelId="select-semester-lable"
+                    id="select-semester"
+                    value={schoolSemester}
+                    className="h-11 mr-3"
+                    label="Học kì"
+                    onChange={handleSchoolSemesterSelectedChange}
+                  >
+                    {semesters.map((item) => (
+                      <MenuItem key={item} value={item}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <ButtonComponent
+                  type="success"
+                  className="max-[639px]:w-full"
+                  onClick={handleStatisticSubjectSchool}
+                >
+                  <FilterAltIcon className="mr-1" /> Thống kế
+                </ButtonComponent>
               </div>
-              <div className="w-full">
-                <div className="mt-8 grid gap-2 sm:grid-cols-1 md:grid-cols-3 custom">
+              <>
+                <div className="text-center mt-8">
+                  <h4 className="text-xl font-bold">
+                    Thống kê điểm {schoolSubject} trường THPT Nguyễn Việt Hồng
+                  </h4>
+                  <h4 className="text-xl font-bold">
+                    Học kỳ: {schoolSemester}. Năm học: {schoolYear}
+                  </h4>
+                </div>
+
+                <div className="mt-4 w-full grid gap-4 sm:grid-cols-1 md:grid-cols-2 overflow-x-scroll">
+                  <div
+                    className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
+                    style={{ background: "#E9F7FF" }}
+                  >
+                    <BarChart
+                      dataset={datasetASubjectForEntireSchool}
+                      xAxis={[
+                        { scaleType: "band", dataKey: "Khối", tickPlacement, tickLabelPlacement },
+                      ]}
+                      {...chartASubjectForAGrade}
+                    />
+                  </div>
+                  <div className="w-full">
+                    <div className="mt-8 grid gap-2 sm:grid-cols-1 md:grid-cols-3 custom">
+                      <ComplexStatisticsCard
+                        color="primary"
+                        icon="leaderboard"
+                        title="Điểm trung bình"
+                        count="8.75"
+                        percentage={{
+                          color: "primary",
+                          amount: "Khối 12",
+                          label: "có TB cao nhất",
+                        }}
+                      />
+                      <ComplexStatisticsCard
+                        icon="leaderboard"
+                        title="Điểm trung bình"
+                        count="8.75"
+                        percentage={{
+                          color: "info",
+                          amount: "Khối 12",
+                          label: "có TB cao nhất",
+                        }}
+                      />
+                      <ComplexStatisticsCard
+                        color="success"
+                        icon="leaderboard"
+                        title="Điểm trung bình"
+                        count="8.75"
+                        percentage={{
+                          color: "success",
+                          amount: "Khối 12",
+                          label: "có TB cao nhất",
+                        }}
+                      />
+                    </div>
+                    <div className="table w-full mt-8">
+                      <p className="text-base font-bold">THỐNG KÊ CHI TIẾT (HK1, 2023)</p>
+                      <TableComponent
+                        header={["Khối", "Số lượng", "Điểm", "Hạng"]}
+                        data={aSubjectForEntireSchool}
+                        // onEdit={handleEdit}
+                        onDetails={handleDetails}
+                        // onDelete={handleDelete}
+                        className="mt-4"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </>
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              <div className="left">
+                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                  <InputLabel id="select-school-year-lable">Năm học</InputLabel>
+                  <Select
+                    labelId="select-school-year-lable"
+                    id="elect-school-year"
+                    value={schoolYear}
+                    className="h-11 mr-3"
+                    label="Năm học"
+                    onChange={handleSchoolYearSelectedChange}
+                  >
+                    {schoolYears.data.map((item) => (
+                      <MenuItem key={item.schoolYear} value={item.schoolYear}>
+                        {item.schoolYear}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                  <InputLabel id="select-grade-lable">Khối</InputLabel>
+                  <Select
+                    labelId="select-grade-lable"
+                    id="select-grade"
+                    value={grade}
+                    className="h-11 mr-3"
+                    label="Khối"
+                    onChange={handleGradeSelectedChange}
+                  >
+                    {grades.map((item) => (
+                      <MenuItem key={item} value={item}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                  <InputLabel id="select-school-subject-lable">Môn học</InputLabel>
+                  <Select
+                    labelId="select-school-subject-lable"
+                    id="select-school-subject"
+                    value={schoolSubject}
+                    className="h-11 mr-3"
+                    label="Môn học"
+                    onChange={handleSchoolSubjectSelectedChange}
+                  >
+                    <MenuItem key="Môn học" value="Môn học">
+                      Môn học
+                    </MenuItem>
+                    {subjects.data.map((item) => (
+                      <MenuItem key={item.name} value={item.name}>
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                  <InputLabel id="select-semester-lable">Học kì</InputLabel>
+                  <Select
+                    labelId="select-semester-lable"
+                    id="select-semester"
+                    value={schoolSemester}
+                    className="h-11 mr-3"
+                    label="Học kì"
+                    onChange={handleSchoolSemesterSelectedChange}
+                  >
+                    {semesters.map((item) => (
+                      <MenuItem key={item} value={item}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <ButtonComponent
+                  type="success"
+                  className="max-[639px]:w-full"
+                  onClick={handleStatisticSubjectGrads}
+                >
+                  <FilterAltIcon className="mr-1" /> Thống kế
+                </ButtonComponent>
+              </div>
+              <>
+                <div className="text-center mt-6">
+                  <h4 className="text-xl font-bold">
+                    Thống kê điểm {schoolSubject} khối {grade}
+                  </h4>
+                  <h4 className="text-xl font-bold">
+                    Học kỳ: {schoolSemester}. Năm học: {schoolYear}
+                  </h4>
+                </div>
+                <h4 className="text-xl font-bold mt-5">Giáo viên: Lê Văn A</h4>
+                <div className="w-full custom mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
                   <ComplexStatisticsCard
                     color="primary"
                     icon="leaderboard"
-                    title="Điểm trung bình"
-                    count="8.75"
+                    title="Điểm thấp nhất"
+                    count="4.95"
                     percentage={{
                       color: "primary",
-                      amount: "Khối 12",
-                      label: "có TB cao nhất",
+                      amount: "12A1",
+                      label: "có điểm TB thấp nhất",
                     }}
                   />
                   <ComplexStatisticsCard
                     icon="leaderboard"
                     title="Điểm trung bình"
-                    count="8.75"
+                    count="6.75"
                     percentage={{
                       color: "info",
-                      amount: "Khối 12",
-                      label: "có TB cao nhất",
+                      amount: "Điểm trung bình giữa các lớp",
+                      label: "",
                     }}
                   />
                   <ComplexStatisticsCard
                     color="success"
                     icon="leaderboard"
-                    title="Điểm trung bình"
-                    count="8.75"
+                    title="Điểm cao nhất"
+                    count="10"
                     percentage={{
                       color: "success",
-                      amount: "Khối 12",
+                      amount: "12A2",
                       label: "có TB cao nhất",
                     }}
                   />
+                  <ComplexStatisticsCard
+                    icon="leaderboard"
+                    title="Tổng số lớp"
+                    count="12 lớp"
+                    percentage={{
+                      color: "info",
+                      amount: "12",
+                      label: "là tổng số lớp lượng lớp",
+                    }}
+                  />
                 </div>
-                <div className="table w-full mt-8">
-                  <p className="text-base font-bold">THỐNG KÊ CHI TIẾT (HK1, 2023)</p>
+                <div
+                  className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
+                  style={{ background: "#E9F7FF" }}
+                >
+                  <BarChart
+                    dataset={datasetASubjectForAGrade}
+                    xAxis={[
+                      { scaleType: "band", dataKey: "Lớp", tickPlacement, tickLabelPlacement },
+                    ]}
+                    {...chartASubjectForAGrade}
+                  />
+                </div>
+
+                <div className="mt-8 custom-table">
+                  <p className="text-base font-bold">THỐNG KÊ CHI TIẾT ({schoolSubject})</p>
                   <TableComponent
-                    header={["Khối", "Số lượng", "Điểm", "Hạng"]}
-                    data={aSubjectForEntireSchool}
+                    header={["Lớp", "Điểm TB", "Hạng"]}
+                    data={aSubjectForAGrade}
                     // onEdit={handleEdit}
                     onDetails={handleDetails}
                     // onDelete={handleDelete}
                     className="mt-4"
                   />
                 </div>
-              </div>
-            </div>
-          </>
+              </>
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+              <div className="left">
+                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                  <InputLabel id="select-school-year-lable">Năm học</InputLabel>
+                  <Select
+                    labelId="select-school-year-lable"
+                    id="elect-school-year"
+                    value={schoolYear}
+                    className="h-11 mr-3"
+                    label="Năm học"
+                    onChange={handleSchoolYearSelectedChange}
+                  >
+                    {schoolYears.data.map((item) => (
+                      <MenuItem key={item.schoolYear} value={item.schoolYear}>
+                        {item.schoolYear}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                  <InputLabel id="select-grade-lable">Khối</InputLabel>
+                  <Select
+                    labelId="select-grade-lable"
+                    id="select-grade"
+                    value={grade}
+                    className="h-11 mr-3"
+                    label="Khối"
+                    onChange={handleGradeSelectedChange}
+                  >
+                    {grades.map((item) => (
+                      <MenuItem key={item} value={item}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
 
-          <>
-            <div className="text-center mt-8">
-              <h4 className="text-xl font-bold">
-                Thống kê chi tiết điểm {schoolSubject} lớp {schoolClass}
-              </h4>
-              <h4 className="text-xl font-bold">
-                Học kỳ: {schoolSemester}. Năm học: {schoolYear}
-              </h4>
-            </div>
-            <div className="mt-5">
-              <h4 className="text-xl font-bold">Giáo viên: Lê Văn A</h4>
-              <h4 className="text-xl font-bold">Sỉ số: 40</h4>
-            </div>
-            <div className="w-full mt-5">
-              <div className="mt-8 grid gap-2 sm:grid-cols-1 md:grid-cols-3 custom">
-                <ComplexStatisticsCard
-                  color="primary"
-                  icon="leaderboard"
-                  title="Ít nhất"
-                  count="0-1 điểm"
-                  percentage={{
-                    color: "primary",
-                    amount: "0-1 điểm",
-                    label: "chiếm tỉ lệ ít nhất",
-                  }}
-                />
-                <ComplexStatisticsCard
-                  icon="leaderboard"
-                  title="Nhiều nhất"
-                  count="8-9 điểm"
-                  percentage={{
-                    color: "info",
-                    amount: "8-9 điểm",
-                    label: "chiếm tỉ lệ cao nhất",
-                  }}
-                />
-                <ComplexStatisticsCard
-                  color="success"
-                  icon="leaderboard"
-                  title="Điểm trung bình"
-                  count="8.0"
-                  percentage={{
-                    color: "success",
-                    amount: "8.0",
-                    label: "là điểm trung bình",
-                  }}
-                />
-              </div>
-              <div className="table w-full mt-8">
-                <div
-                  className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
-                  style={{ background: "#E9F7FF" }}
+                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                  <InputLabel id="select-school-subject-lable">Môn học</InputLabel>
+                  <Select
+                    labelId="select-school-subject-lable"
+                    id="select-school-subject"
+                    value={schoolSubject}
+                    className="h-11 mr-3"
+                    label="Môn học"
+                    onChange={handleSchoolSubjectSelectedChange}
+                  >
+                    <MenuItem key="Môn học" value="Môn học">
+                      Môn học
+                    </MenuItem>
+                    {subjects.data.map((item) => (
+                      <MenuItem key={item.name} value={item.name}>
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                  <InputLabel id="select-semester-lable">Học kì</InputLabel>
+                  <Select
+                    labelId="select-semester-lable"
+                    id="select-semester"
+                    value={schoolSemester}
+                    className="h-11 mr-3"
+                    label="Học kì"
+                    onChange={handleSchoolSemesterSelectedChange}
+                  >
+                    {semesters.map((item) => (
+                      <MenuItem key={item} value={item}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <ButtonComponent
+                  type="success"
+                  className="max-[639px]:w-full"
+                  onClick={handleStatisticSubjectClass}
                 >
-                  <BarChart
-                    dataset={datasetDetailedMarksfForSubjectOfClass}
-                    xAxis={[
-                      {
-                        scaleType: "band",
-                        dataKey: "Điểm",
-                        tickPlacement,
-                        tickLabelPlacement,
-                      },
-                    ]}
-                    {...chartDetailedMarksfForSubjectOfClass}
-                  />
+                  <FilterAltIcon className="mr-1" /> Thống kế
+                </ButtonComponent>
+              </div>
+              <>
+                <div className="text-center mt-8">
+                  <h4 className="text-xl font-bold">
+                    Thống kê chi tiết điểm {schoolSubject} lớp {schoolClass}
+                  </h4>
+                  <h4 className="text-xl font-bold">
+                    Học kỳ: {schoolSemester}. Năm học: {schoolYear}
+                  </h4>
                 </div>
-              </div>
-              <div className="mt-8 custom-table">
-                <p className="text-base font-bold">THỐNG KÊ CHI TIẾT MÔN TOÁN (HK1, 2023)</p>
-                <TableComponent
-                  header={["Họ và tên", "Mã học sinh", "Điểm", "Hạng"]}
-                  data={detailedMarksfForSubjectOfClass}
-                  // onEdit={handleEdit}
-                  onDetails={handleDetails}
-                  // onDelete={handleDelete}
-                  className="mt-4"
-                />
-              </div>
-            </div>
-          </>
+                <div className="mt-5">
+                  <h4 className="text-xl font-bold">Giáo viên: Lê Văn A</h4>
+                  <h4 className="text-xl font-bold">Sỉ số: 40</h4>
+                </div>
+                <div className="w-full mt-5">
+                  <div className="mt-8 grid gap-2 sm:grid-cols-1 md:grid-cols-3 custom">
+                    <ComplexStatisticsCard
+                      color="primary"
+                      icon="leaderboard"
+                      title="Ít nhất"
+                      count="0-1 điểm"
+                      percentage={{
+                        color: "primary",
+                        amount: "0-1 điểm",
+                        label: "chiếm tỉ lệ ít nhất",
+                      }}
+                    />
+                    <ComplexStatisticsCard
+                      icon="leaderboard"
+                      title="Nhiều nhất"
+                      count="8-9 điểm"
+                      percentage={{
+                        color: "info",
+                        amount: "8-9 điểm",
+                        label: "chiếm tỉ lệ cao nhất",
+                      }}
+                    />
+                    <ComplexStatisticsCard
+                      color="success"
+                      icon="leaderboard"
+                      title="Điểm trung bình"
+                      count="8.0"
+                      percentage={{
+                        color: "success",
+                        amount: "8.0",
+                        label: "là điểm trung bình",
+                      }}
+                    />
+                  </div>
+                  <div className="table w-full mt-8">
+                    <div
+                      className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
+                      style={{ background: "#E9F7FF" }}
+                    >
+                      <BarChart
+                        dataset={datasetDetailedMarksfForSubjectOfClass}
+                        xAxis={[
+                          {
+                            scaleType: "band",
+                            dataKey: "Điểm",
+                            tickPlacement,
+                            tickLabelPlacement,
+                          },
+                        ]}
+                        {...chartDetailedMarksfForSubjectOfClass}
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-8 custom-table">
+                    <p className="text-base font-bold">THỐNG KÊ CHI TIẾT MÔN TOÁN (HK1, 2023)</p>
+                    <TableComponent
+                      header={["Họ và tên", "Mã học sinh", "Điểm", "Hạng"]}
+                      data={detailedMarksfForSubjectOfClass}
+                      // onEdit={handleEdit}
+                      onDetails={handleDetails}
+                      // onDelete={handleDelete}
+                      className="mt-4"
+                    />
+                  </div>
+                </div>
+              </>
+            </TabPanel>
+          </div>
         </MDBox>
       </Card>
       <Footer />

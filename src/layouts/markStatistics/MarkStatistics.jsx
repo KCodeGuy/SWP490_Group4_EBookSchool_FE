@@ -615,7 +615,6 @@ export default function MarkStatistics() {
                     Học kỳ: {schoolSemester}. Năm học: {schoolYear}
                   </h4>
                 </div>
-                <h4 className="text-xl font-bold mt-5">Giáo viên: Lê Văn A</h4>
                 <div className="w-full custom mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
                   <ComplexStatisticsCard
                     color="primary"
@@ -760,6 +759,23 @@ export default function MarkStatistics() {
                     ))}
                   </Select>
                 </FormControl>
+                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                  <InputLabel id="select-school-class-lable">Lớp</InputLabel>
+                  <Select
+                    labelId="select-school-class-lable"
+                    id="select-school-class"
+                    value={schoolClass}
+                    className="h-11 mr-3"
+                    label="Lớp"
+                    onChange={handleSchoolClassSelectedChange}
+                  >
+                    {studentClasses.data.map((item) => (
+                      <MenuItem key={item.name} value={item.name}>
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
                 <ButtonComponent
                   type="success"
                   className="max-[639px]:w-full"
@@ -777,9 +793,19 @@ export default function MarkStatistics() {
                     Học kỳ: {schoolSemester}. Năm học: {schoolYear}
                   </h4>
                 </div>
-                <div className="mt-5">
-                  <h4 className="text-xl font-bold">Giáo viên: Lê Văn A</h4>
-                  <h4 className="text-xl font-bold">Sỉ số: 40</h4>
+                <div className="flex justify-between mt-2">
+                  <div className="text-sm">
+                    <span className="mr-2 font-bold">Giáo viên</span>
+                    <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                      Lương Hoàng Hướng
+                    </span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="mr-2 font-bold">Sỉ số:</span>
+                    <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                      40
+                    </span>
+                  </div>
                 </div>
                 <div className="w-full mt-5">
                   <div className="mt-8 grid gap-2 sm:grid-cols-1 md:grid-cols-3 custom">
@@ -1087,6 +1113,23 @@ export default function MarkStatistics() {
                     ))}
                   </Select>
                 </FormControl>
+                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                  <InputLabel id="select-school-class-lable">Lớp</InputLabel>
+                  <Select
+                    labelId="select-school-class-lable"
+                    id="select-school-class"
+                    value={schoolClass}
+                    className="h-11 mr-3"
+                    label="Lớp"
+                    onChange={handleSchoolClassSelectedChange}
+                  >
+                    {studentClasses.data.map((item) => (
+                      <MenuItem key={item.name} value={item.name}>
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
                 <ButtonComponent
                   type="success"
                   className="max-[639px]:w-full"
@@ -1101,6 +1144,20 @@ export default function MarkStatistics() {
                   <h4 className="text-xl font-bold">
                     Học kỳ: {schoolSemester}. Năm học: {schoolYear}
                   </h4>
+                </div>
+                <div className="flex justify-between mt-2">
+                  <div className="text-sm">
+                    <span className="mr-2 font-bold">Giáo viên</span>
+                    <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                      Lương Hoàng Hướng
+                    </span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="mr-2 font-bold">Sỉ số:</span>
+                    <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                      40
+                    </span>
+                  </div>
                 </div>
                 <div className="w-full custom mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
                   <ComplexStatisticsCard

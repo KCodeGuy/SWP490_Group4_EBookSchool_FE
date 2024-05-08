@@ -9,6 +9,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditCalendarIcon from "@mui/icons-material/EditCalendar";
 import Checkbox from "@mui/material/Checkbox";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 function TableComponent({
   header,
@@ -21,6 +22,7 @@ function TableComponent({
   className,
   itemsPerPage,
   isOrdered,
+  isShowImage,
   showCheckboxes,
 }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -65,7 +67,7 @@ function TableComponent({
             {header.map((column, index) => (
               <th key={index}>{column}</th>
             ))}
-            {showCheckboxes && <th className="w-28">Chọn</th>}
+            {showCheckboxes && <th className="w-28">Có mặt</th>}
             {isShowActions && <th className="w-28">Thao tác</th>}
           </tr>
         </thead>
@@ -88,6 +90,13 @@ function TableComponent({
             currentData.map((row, rowIndex) => (
               <tr key={rowIndex}>
                 {isOrdered && <td>{startIndex + rowIndex + 1}</td>}
+                {isShowImage && (
+                  <td>
+                    <div>
+                      <AccountCircleIcon className="w-20 h-20" />
+                    </div>
+                  </td>
+                )}
                 {row.map((cell, cellIndex) => (
                   <td key={cellIndex}>{cell}</td>
                 ))}
@@ -176,6 +185,7 @@ TableComponent.propTypes = {
   className: PropTypes.string,
   itemsPerPage: PropTypes.number,
   isOrdered: PropTypes.bool,
+  isShowImage: PropTypes.bool,
   showCheckboxes: PropTypes.bool,
 };
 

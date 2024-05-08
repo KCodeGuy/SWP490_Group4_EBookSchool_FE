@@ -2,7 +2,7 @@ import { FormControl, InputLabel, MenuItem, Select, Tab, Tabs } from "@mui/mater
 import React, { useState } from "react";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import { Card } from "@mui/material";
+import { Card, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
 import { useForm } from "react-hook-form";
@@ -189,8 +189,6 @@ export default function SubjectManagement() {
       <DashboardNavbar />
       <Card className="max-h-max">
         <MDBox p={5}>
-          {/* DO NOT DELETE CODE AS ABOVE*/}
-          {/* Your code here */}
           <div className="text-center mt-0">
             <h4 className="text-xl font-bold">Quản lí môn học</h4>
           </div>
@@ -236,11 +234,7 @@ export default function SubjectManagement() {
                   icon={<AddCircleOutlineIcon />}
                   isOpen={modalOpen}
                   onClose={handleCloseAddModal}
-                  tabs={[
-                    { label: "Tạo môn học" },
-                    { label: "Điểm thành phần" },
-                    { label: "Giáo án" },
-                  ]}
+                  tabs={[{ label: "Tạo môn" }, { label: "Điểm thành phần" }, { label: "Giáo án" }]}
                   currentTab={currentTab}
                   onTabChange={handleTabChange}
                 >

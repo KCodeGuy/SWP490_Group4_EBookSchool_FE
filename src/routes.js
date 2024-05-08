@@ -53,6 +53,7 @@ import SubjectManagement from "./layouts/subjectManagement/SubjectManagement";
 import Demo from "./layouts/demo/Demo";
 import WeeklyTimeTable from "./layouts/weeklyTimeTable";
 import MarkStatistics from "./layouts/markStatistics/MarkStatistics";
+import TakeAttendance from "layouts/takeAttendance";
 
 const routes = [
   {
@@ -135,6 +136,14 @@ const routes = [
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/weeklyTimeTable",
     component: <WeeklyTimeTable />,
+  },
+  {
+    type: "collapse",
+    name: "Take Attendance(KhoaTD)",
+    key: "takeAttendance",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/takeAttendance",
+    component: <TakeAttendance />,
   },
   {
     type: "collapse",

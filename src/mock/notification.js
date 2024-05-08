@@ -7,12 +7,9 @@ const notification = {
     id: 1,
     title: "Thông báo lịch nghỉ tết năm 2024", // allow null
     startDate: "03/04/2024",
-    endDate: "10/04/2024",
-    content: {
-      header: "Thông báo lịch nghỉ tết năm 2024",
-      body: "Cụ thể như sau nhà trường thông báo toàn bộ học sinh của trường thpt X",
-      footer: "Trân trọng",
-    },
+    // endDate: "10/04/2024",
+    thumbNail: "",
+    content: "",
   },
 };
 

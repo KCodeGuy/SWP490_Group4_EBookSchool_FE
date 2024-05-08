@@ -1,30 +1,194 @@
-import React from "react";
-import "./style.scss";
+import { FormControl, InputLabel, MenuItem, Select, Tab, Tabs } from "@mui/material";
+import React, { useState } from "react";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import { Card, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
-import ButtonComponent from "components/ButtonComponent/ButtonComponent";
-import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent";
-import TableComponent from "components/TableComponent/TableComponent";
-import PopupComponent from "components/PopupComponent/PopupComponent";
-import SearchInputComponent from "components/SearchInputComponent/SearchInputComponent";
-
+import { useForm } from "react-hook-form";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-// Subject management (UolLT)
 
+import "./style.scss";
+import { grades } from "../../mock/grade";
+import { subjects } from "../../mock/subject";
+import { studentClasses } from "../../mock/class";
+import { schoolYears } from "../../mock/schoolYear";
+import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
+import PopupComponent from "../../components/PopupComponent/PopupComponent";
+import TableComponent from "../../components/TableComponent/TableComponent";
+import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
+import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
+
+// Subject Management (UolLT)
 export default function SubjectManagement() {
+  //1. Modal form states open, close
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalEditOpen, setModalEditOpen] = useState(false);
+  const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
+  const [deletedSubject, setDeletedSubject] = useState({});
+  const [currentData, setCurrentData] = useState(subjects.data);
+  const [currentTab, setCurrentTab] = useState(0);
+
+  //2. Set data by Call API
+  const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
+  const handleSchoolYearSelectedChange = (event) => {
+    setSchoolYear(event.target.value);
+  };
+  const formattedSchoolYears = schoolYears.data.map((year) => ({
+    label: year.schoolYear,
+    value: year.schoolYear,
+  }));
+
+  const formattedGrades = grades.data.map((grade) => ({
+    label: grade.name,
+    value: grade.name,
+  }));
+  //3.1 React-hook-from of adding action
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue: noSetValue,
+    formState: { errors },
+  } = useForm();
+
+  //3.1 React-hook-from of editing action
+  const {
+    control: controlEditAction,
+    handleSubmit: handleSubmitEditAction,
+    reset: resetEditAction,
+    setValue,
+    formState: { errors: errorsEditAction },
+  } = useForm();
+
+  //4. Functions handle adding
+  const handleOpenAddModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseAddModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleAddSubject = (data) => {
+    console.log("Call API add subject: ", data);
+    // Call API add subject here
+  };
+
+  const handleAddMark = (data) => {
+    console.log("Call API add mark: ", data);
+    // Call API add subject here
+  };
+
+  const handleAddLesson = (data) => {
+    console.log("Call API add lesson: ", data);
+    // Call API add subject here
+  };
+
+  const handleClearAddForm = () => {
+    reset(); // Reset the form of adding modal
+  };
+
+  //5. Functions handle editing
+  const handleCloseEditModal = () => {
+    setModalEditOpen(false);
+  };
+  const handleEdit = (rowItem) => {
+    console.log(rowItem);
+    if (rowItem) {
+      setValue("idEdit", rowItem[0]);
+      setValue("nameEdit", rowItem[1]);
+      setValue("selectGradeEdit", rowItem[3]);
+      setValue("selectYearEdit", rowItem[2]);
+      setValue("descriptionEdit", rowItem[2]);
+      setModalEditOpen(true);
+    } else {
+      setModalEditOpen(false);
+    }
+  };
+  const handleEditSubject = (data) => {
+    console.log("Call API edit subject: ", data);
+    // Call API edit subject here
+  };
+  const handleClearEditForm = () => {
+    resetEditAction();
+  };
+
+  //6. Functions handle deleting
+  const handleCloseDeleteModal = () => {
+    setModalDeleteOpen(false);
+  };
+
+  const handleStatistic = () => {
+    console.log("Call api: ", { schoolYear });
+  };
+
+  const handleDelete = (rowItem) => {
+    if (rowItem) {
+      setDeletedSubject({
+        idEdit: rowItem[0],
+        nameEdit: rowItem[1],
+        selectGradeEdit: rowItem[3],
+        selectYearEdit: rowItem[2],
+        descriptionEdit: rowItem[2],
+      });
+      setModalDeleteOpen(true);
+    } else {
+      setModalDeleteOpen(false);
+    }
+  };
+
+  const handleDeleteAPI = () => {
+    setModalDeleteOpen(false);
+    console.log("Call API delete subject: ", deletedSubject);
+    // Call API delete subject here
+  };
+
+  const handleChangeSearchValue = (txtSearch) => {
+    console.log(txtSearch);
+    setCurrentData(filterSubjects(txtSearch, studentClasses.data));
+  };
+
+  const filterSubjects = (txtSearch, data) => {
+    const search = txtSearch.trim().toLowerCase();
+    return data.filter((subject) => {
+      return (
+        (subject.title && subject.title.toLowerCase().includes(search)) ||
+        (subject.description && subject.description.toLowerCase().includes(search))
+      );
+    });
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue);
+  };
+
+  //show console.log check
+  console.log("Data before processing:", currentData);
+
+  const tableData = currentData.reduce((accumulator, lesson) => {
+    if (lesson.lessonPlans && Array.isArray(lesson.lessonPlans)) {
+      const lessonPlansData = lesson.lessonPlans.map((lessonPlan) => [
+        lessonPlan.id.toString(),
+        lessonPlan.title.toString(),
+        lessonPlan.description.toString(),
+        lessonPlan.slot.toString(),
+      ]);
+      return accumulator.concat(lessonPlansData);
+    }
+    return accumulator;
+  }, []);
+
+  console.log("Table data:", tableData);
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <Card className="max-h-max">
         <MDBox p={5}>
-          {/* DO NOT DELETE CODE AS ABOVE*/}
-          <h4>Subject Management (UolLT)</h4>
           <div className="text-center mt-0">
             <h4 className="text-xl font-bold">Quản lí môn học</h4>
           </div>

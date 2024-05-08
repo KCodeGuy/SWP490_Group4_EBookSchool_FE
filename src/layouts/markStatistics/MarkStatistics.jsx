@@ -356,6 +356,36 @@ export default function MarkStatistics() {
     });
   };
 
+  const markOfAlSchoolsBox = [
+    {
+      color: "primary",
+      icon: "leaderboard",
+      title: "Điểm thấp nhất",
+      count: "4.75",
+      textDescriptionColor: "primary",
+      amount: "Khối 12",
+      label: "có TB thấp nhất",
+    },
+    {
+      color: "info",
+      icon: "leaderboard",
+      title: "Điểm trung bình",
+      count: "8.75",
+      textDescriptionColor: "info",
+      amount: "Khối 11",
+      label: "có TB",
+    },
+    {
+      color: "success",
+      icon: "leaderboard",
+      title: "Điểm cao nhất",
+      count: "10",
+      textDescriptionColor: "success",
+      amount: "Khối 10",
+      label: "có TB cao nhất",
+    },
+  ];
+
   (React.useState < "middle") | ("tick" > "middle");
   const [tickPlacement, setTickPlacement] = React.useState("middle");
   const [tickLabelPlacement, setTickLabelPlacement] = React.useState("middle");
@@ -475,38 +505,20 @@ export default function MarkStatistics() {
                   </div>
                   <div className="w-full">
                     <div className="mt-8 grid gap-2 sm:grid-cols-1 md:grid-cols-3 custom">
-                      <ComplexStatisticsCard
-                        color="primary"
-                        icon="leaderboard"
-                        title="Điểm trung bình"
-                        count="8.75"
-                        percentage={{
-                          color: "primary",
-                          amount: "Khối 12",
-                          label: "có TB cao nhất",
-                        }}
-                      />
-                      <ComplexStatisticsCard
-                        icon="leaderboard"
-                        title="Điểm trung bình"
-                        count="8.75"
-                        percentage={{
-                          color: "info",
-                          amount: "Khối 12",
-                          label: "có TB cao nhất",
-                        }}
-                      />
-                      <ComplexStatisticsCard
-                        color="success"
-                        icon="leaderboard"
-                        title="Điểm trung bình"
-                        count="8.75"
-                        percentage={{
-                          color: "success",
-                          amount: "Khối 12",
-                          label: "có TB cao nhất",
-                        }}
-                      />
+                      {markOfAlSchoolsBox.map((item, index) => (
+                        <ComplexStatisticsCard
+                          key={index}
+                          color={item.color}
+                          icon={item.icon}
+                          title={item.title}
+                          count={item.count}
+                          percentage={{
+                            color: item.textDescriptionColor,
+                            amount: item.amount,
+                            label: item.label,
+                          }}
+                        />
+                      ))}
                     </div>
                     <div className="table w-full mt-8">
                       <p className="text-base font-bold">THỐNG KÊ CHI TIẾT (HK1, 2023)</p>

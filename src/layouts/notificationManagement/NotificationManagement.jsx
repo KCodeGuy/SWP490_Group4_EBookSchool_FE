@@ -53,7 +53,7 @@ export default function NotificationManagement() {
       setValue("idEdit", rowItem[0]);
       setValue("nameEdit", rowItem[1]);
       setValue("startDateEdit", rowItem[2]);
-      setValue("endDateEdit", rowItem[3]);
+      setValue("thumbnailEdit", rowItem[3]);
       setValue("contentEdit", rowItem[4]);
       setModalEditOpen(true);
     } else {
@@ -71,7 +71,7 @@ export default function NotificationManagement() {
         idEdit: rowItem[0],
         nameEdit: rowItem[1],
         startDateEdit: rowItem[2],
-        endDateEdit: rowItem[3],
+        thumbnailEdit: rowItem[3],
         contentEdit: rowItem[4],
       });
       setModalDeleteOpen(true);
@@ -152,12 +152,11 @@ export default function NotificationManagement() {
                       }}
                     />
                     <InputBaseComponent
-                      type="date"
+                      type="text"
                       control={control}
-                      className="w-1/2"
                       setValue={noSetValue}
-                      name="enddate"
-                      label="Ngày kết thúc"
+                      name="thumbnail"
+                      label="Link ảnh"
                       errors={errors}
                       validationRules={{
                         required: "Không được bỏ trống!",
@@ -189,7 +188,7 @@ export default function NotificationManagement() {
           </div>
           <div>
             <TableComponent
-              header={["ID", "Tên thông báo", "Ngày tạo", "Ảnh", "Nội dung"]}
+              header={["ID", "Tên thông báo", "Ngày tạo", "Hình ảnh", "Nội dung"]}
               data={currentData.map((item) => [
                 item.id.toString(),
                 item.title.toString(),
@@ -236,12 +235,11 @@ export default function NotificationManagement() {
                     }}
                   />
                   <InputBaseComponent
-                    type="date"
+                    type="text"
                     control={controlEditAction}
-                    className="w-1/2"
                     setValue={setValue}
-                    name="endDateEdit"
-                    label="Ngày kết thúc"
+                    name="thumbnailEdit"
+                    label="Link ảnh"
                     errors={errorsEditAction}
                     validationRules={{
                       required: "Không được bỏ trống!",

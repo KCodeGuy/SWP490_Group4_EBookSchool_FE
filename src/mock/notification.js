@@ -6,9 +6,9 @@ const notification = {
   data: {
     id: 1,
     title: "Thông báo lịch nghỉ tết năm 2024", // allow null
-    startDate: "03/04/2024",
-    thumbNail: "link hình",
-    content: "Nghỉ tết",
+    startDate: "2024-03-04",
+    thumbNail: "Ảnh demo",
+    content: "Thông báo lịch nghỉ tết năm 2024",
   },
 };
 
@@ -20,23 +20,23 @@ const notifications = {
     {
       id: 1,
       title: "Thông báo lịch nghỉ tết năm 2024", // allow null
-      startDate: "03/04/2024",
-      thumbNail: "link hình",
-      content: "Nghỉ tết",
+      startDate: "2024-03-04",
+      thumbNail: "Ảnh demo",
+      content: "Thông báo lịch nghỉ tết năm 2024",
     },
     {
       id: 2,
-      title: "Thông báo lịch nghỉ tết năm 2024", // allow null
-      startDate: "03/04/2024",
-      thumbNail: "link hình",
-      content: "Nghỉ tết",
+      title: "Tham gia hội thao", // allow null
+      startDate: "2024-05-04",
+      thumbNail: "Ảnh demo",
+      content: "Thông báo lịch nghỉ tết năm 2024",
     },
     {
       id: 3,
-      title: "Thông báo lịch nghỉ tết năm 2024", // allow null
-      startDate: "03/04/2024",
-      thumbNail: "link hình",
-      content: "Nghỉ tết",
+      title: "Nghĩ tết ", // allow null
+      startDate: "2024-05-04",
+      thumbNail: "Ảnh demo",
+      content: "Thông báo lịch nghỉ tết năm 2024",
     },
   ],
 };

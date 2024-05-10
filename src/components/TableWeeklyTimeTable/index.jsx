@@ -33,7 +33,7 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
             {dates.map((date) => (
               <th key={date}>
                 {`${data.find((item) => item.date === date).weekDate}`}{" "}
-                <p className="font-medium">{date}</p>
+                <p className="font-normal">{date}</p>
               </th>
             ))}
           </tr>
@@ -54,7 +54,7 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
                   .find((item) => item.date === date)
                   ?.slots.find((s) => s.slot === slot);
                 return (
-                  <td key={`${date}-${slot}`} className="cell-hover">
+                  <td key={`${date}-${slot}`} className="cell-hover min-w-28">
                     {slotData ? (
                       <div className="mx-2 my-1 text-left">
                         <div
@@ -78,10 +78,19 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
                             </button>
                           </Link>
                         </div>
+                        <p>
+                          {slotData.isAttendance ? (
+                            <span className="font-bold success-color">(Có mặt)</span>
+                          ) : (
+                            <span className="font-bold error-color">(Vắng)</span>
+                          )}
+                        </p>
                         <p>{renderSlotStatus(slotData.status)}</p>
-                        <button className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color">
-                          Điểm danh
-                        </button>
+                        <Link to="/takeAttendance">
+                          <button className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color">
+                            Điểm danh
+                          </button>
+                        </Link>
                       </div>
                     ) : (
                       <p>_</p>

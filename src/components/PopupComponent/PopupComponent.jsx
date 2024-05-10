@@ -67,15 +67,24 @@ export default function PopupComponent({
             "& .Mui-selected": {
               backgroundColor: "#247cd4",
               color: "white !important",
+              fontWeight: "bold",
             },
           }}
         >
           {tabs.map((tab, index) => (
-            <Tab key={index} label={tab.label} />
+            <Tab
+              key={index}
+              sx={{
+                paddingX: 1,
+                paddingY: 1.2,
+                fontSize: 13,
+              }}
+              label={tab.label}
+            />
           ))}
         </Tabs>
       )}
-      <DialogContent sx={{ m: 0, paddingX: 3, paddingY: 3, minWidth: 350 }} dividers>
+      <DialogContent sx={{ m: 0, paddingX: 3, paddingY: 3, minWidth: 380 }} dividers>
         {tabs ? children[selectedTab] : children}
       </DialogContent>
     </BootstrapDialog>

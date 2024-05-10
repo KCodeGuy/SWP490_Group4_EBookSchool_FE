@@ -189,13 +189,13 @@ export default function NotificationManagement() {
           </div>
           <div>
             <TableComponent
-              header={["ID", "Tên thông báo", "Ngày tạo", "Ngày kết thúc", "Nội dung"]}
+              header={["ID", "Tên thông báo", "Ngày tạo", "Ảnh", "Nội dung"]}
               data={currentData.map((item) => [
                 item.id.toString(),
                 item.title.toString(),
                 item.startDate.toString(),
-                item.endDate.toString(),
-                item.content.body.toString(),
+                item.thumbNail.toString(),
+                item.content.toString(),
               ])}
               itemsPerPage={4}
               onEdit={handleEdit}

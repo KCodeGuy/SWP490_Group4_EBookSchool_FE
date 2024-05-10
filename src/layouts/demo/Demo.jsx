@@ -1,11 +1,16 @@
 import { Box, Card, Tab, Tabs, Typography } from "@mui/material";
 import { BarChart } from "@mui/x-charts";
+import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import MDBox from "components/MDBox";
 import { TabPanel } from "components/TabPanelComponent";
+import TableComponent from "components/TableComponent/TableComponent";
 import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import React from "react";
+import React, { useState } from "react";
+import * as XLSX from "xlsx";
+import { scoreByStudentsBySubjectEnlish } from "../../mock/score";
+import { handleImportData, handleExportData } from "../../utils/CommonFunctions";
 
 export default function Demo() {
   const [value, setValue] = React.useState(0);
@@ -13,7 +18,15 @@ export default function Demo() {
     setValue(newValue);
   };
 
+  const [excelData, setExcelData] = useState([]);
+  // console.log(excelData);
   const tabLabels = ["Tab 1", "Tab 2", "Tab 3"];
+  const data = scoreByStudentsBySubjectEnlish.data.score;
+
+  const handleExport = () => {
+    handleExportData(data, "sheetNew", "MyFile");
+  };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -76,6 +89,31 @@ export default function Demo() {
             <TabPanel value={value} index={2}>
               Tab 3 Content
             </TabPanel>
+          </div>
+
+          <div className="mt-10">
+            <div>
+              <input
+                type="file"
+                accept=".xlsx, .xls"
+                onChange={(e) => handleImportData(e, setExcelData)}
+              />
+            </div>
+
+            {excelData.length > 0 ? (
+              <TableComponent
+                header={["ID", "Full name", "Age", "Gender", "New", "new"]}
+                data={excelData}
+                onEdit={(data) => console.log(data)}
+                onDelete={(data) => console.log(data)}
+                className="mt-10"
+              />
+            ) : (
+              <p className="mt-10">Chưa chọn file...!</p>
+            )}
+            <ButtonComponent className="mt-20" onClick={handleExport}>
+              Export data
+            </ButtonComponent>
           </div>
         </MDBox>
       </Card>

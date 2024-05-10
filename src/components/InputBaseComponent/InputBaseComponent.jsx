@@ -124,7 +124,7 @@ const InputBaseComponent = ({
             ) : (
               <input
                 id={name}
-                className={`outline-none px-3 py-2 border rounded w-full
+                className={`outline-none px-3 border py-2 rounded w-full
                 ${errors[name] ? "border-red-400" : "border-blue-500"}`}
                 {...field}
                 type={type}

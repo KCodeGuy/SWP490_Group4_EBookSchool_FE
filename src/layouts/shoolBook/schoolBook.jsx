@@ -240,43 +240,6 @@ const SchoolBook = () => {
               </ButtonComponent>
             </div>
           </div>
-          {/* <Grid container spacing={2} marginTop={2}>
-            {paginatedData.map((item, index) => (
-              <Grid key={index} item xs={12} md={6} lg={3}>
-                <Card sx={{ maxWidth: 345 }}>
-                  <CardActionArea>
-                    <CardMedia
-                      className="w-full"
-                      component="img"
-                      alt="green iguana"
-                      height="140"
-                      image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLFldOLZiLNW91179-8Y1D67r7u68CrFF-Zw&s"
-                    />
-                    <CardContent>
-                      <h3 className="text-lg font-bold">{item.weekName}</h3>
-                      <p className="text-color">{item.weekDescription}</p>
-                      <p className="h-5 leading-5 text-color">
-                        <CalendarMonthIcon className="mr-1 mb-1" />
-                        <span>21/1/2024 - 28/1/2024</span>
-                      </p>
-                    </CardContent>
-                  </CardActionArea>
-                  <CardActions>
-                    <ButtonComponent type="primary" size="md" style={{ width: "100%" }}>
-                      <SendIcon className="mr-1" />
-                      CHI TIẾT TUẦN HỌC
-                    </ButtonComponent>
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-          <PaginationComponent
-            location="center"
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          /> */}
           <div className="w-full flex justify-end">
             <PopupComponent
               title="NHẬP SỔ ĐẦU BÀI"

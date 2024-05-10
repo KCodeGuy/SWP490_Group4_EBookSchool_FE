@@ -1,4 +1,3 @@
-import { FormControl, InputLabel, MenuItem, Select, Tab, Tabs } from "@mui/material";
 import React, { useState } from "react";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -13,7 +12,7 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 
 import "./style.scss";
 import { grades } from "../../mock/grade";
-import { subjects } from "../../mock/subject";
+import { subjects, subject } from "../../mock/subject";
 import { studentClasses } from "../../mock/class";
 import { schoolYears } from "../../mock/schoolYear";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
@@ -29,14 +28,36 @@ export default function SubjectManagement() {
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [deletedSubject, setDeletedSubject] = useState({});
-  const [currentData, setCurrentData] = useState(subjects.data);
   const [currentTab, setCurrentTab] = useState(0);
+
+  const currentSubjects = subjects.data;
+
+  const markFactors = subject.data.points[0].componentPoints.map((obj) => [
+    obj.id,
+    obj.name,
+    obj.count,
+    obj.scoreFactor,
+    subject.data.points[0].semester,
+  ]);
+
+  const lessonPlan = subject.data.lessonPlans.map((obj) => [
+    obj.id,
+    obj.title,
+    obj.description,
+    obj.slot,
+  ]);
 
   //2. Set data by Call API
   const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
   };
+
+  const semesters = [
+    { label: "Học kì I", value: "HK1" },
+    { label: "Học kì II", value: "HK2" },
+    { label: "Cả năm", value: "cả năm" },
+  ];
   const formattedSchoolYears = schoolYears.data.map((year) => ({
     label: year.schoolYear,
     value: year.schoolYear,
@@ -166,24 +187,6 @@ export default function SubjectManagement() {
     setCurrentTab(newValue);
   };
 
-  //show console.log check
-  console.log("Data before processing:", currentData);
-
-  const tableData = currentData.reduce((accumulator, lesson) => {
-    if (lesson.lessonPlans && Array.isArray(lesson.lessonPlans)) {
-      const lessonPlansData = lesson.lessonPlans.map((lessonPlan) => [
-        lessonPlan.id.toString(),
-        lessonPlan.title.toString(),
-        lessonPlan.description.toString(),
-        lessonPlan.slot.toString(),
-      ]);
-      return accumulator.concat(lessonPlansData);
-    }
-    return accumulator;
-  }, []);
-
-  console.log("Table data:", tableData);
-
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -234,7 +237,7 @@ export default function SubjectManagement() {
                   icon={<AddCircleOutlineIcon />}
                   isOpen={modalOpen}
                   onClose={handleCloseAddModal}
-                  tabs={[{ label: "Tạo môn" }, { label: "Điểm thành phần" }, { label: "Giáo án" }]}
+                  tabs={[{ label: "TẠO MÔN" }, { label: "ĐIỂM THÀNH PHẦN" }, { label: "GIÁO ÁN" }]}
                   currentTab={currentTab}
                   onTabChange={handleTabChange}
                 >
@@ -306,8 +309,9 @@ export default function SubjectManagement() {
                   <div role="tabpanel" hidden={currentTab == 1}>
                     {/* Form để nhập điểm */}
                     <form onSubmit={handleSubmit(handleAddMark)}>
-                      <div className="flex">
+                      <div className="flex w-full">
                         <InputBaseComponent
+                          className="w-1/2 mr-3"
                           placeholder="Nhập tên cột điểm"
                           type="text"
                           control={control}
@@ -320,6 +324,23 @@ export default function SubjectManagement() {
                           }}
                         />
                         <InputBaseComponent
+                          className="w-1/2"
+                          placeholder="Chọ kì học"
+                          type="select"
+                          options={semesters}
+                          control={control}
+                          setValue={noSetValue}
+                          name="semester"
+                          label="Chọn kì"
+                          errors={errors}
+                          validationRules={{
+                            required: "Không được bỏ trống!",
+                          }}
+                        />
+                      </div>
+                      <div className="flex w-full">
+                        <InputBaseComponent
+                          className="w-1/2 mr-3"
                           placeholder="Nhập số lượng"
                           type="number"
                           control={control}
@@ -332,6 +353,7 @@ export default function SubjectManagement() {
                           }}
                         />
                         <InputBaseComponent
+                          className="w-1/2"
                           placeholder="Nhập hệ số"
                           type="number"
                           control={control}
@@ -352,29 +374,18 @@ export default function SubjectManagement() {
                         <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
                           CLEAR
                         </ButtonComponent>
-                        <ButtonComponent action="submit">NHẬP ĐIỂM</ButtonComponent>
+                        <ButtonComponent action="submit">THÊM ĐIỂM</ButtonComponent>
                       </div>
                     </form>
-
+                    <p className="text-sm font-bold">TẤT CẢ CỘT ĐIỂM (TOÁN)</p>
                     <TableComponent
-                      header={["ID", "Tên cột điểm", "Số lượng", "Hệ số"]}
-                      data={currentData.reduce((accumulator, semester) => {
-                        if (semester.points && Array.isArray(semester.points)) {
-                          const componentPointsData = semester.points.map((componentPoint) => [
-                            componentPoint.id.toString(),
-                            componentPoint.name.toString(),
-                            componentPoint.count.toString(),
-                            componentPoint.scoreFactor.toString(),
-                          ]);
-                          return accumulator.concat(componentPointsData);
-                        } else {
-                          return accumulator.concat([["", "Không có dữ liệu", "", ""]]);
-                        }
-                      }, [])}
-                      itemsPerPage={4}
-                      onEdit={handleEdit}
+                      header={["ID", "Tên", "Số lượng", "Hệ số", "Kì học"]}
+                      data={markFactors}
+                      isOrdered={false}
+                      itemsPerPage={5}
+                      // onEdit={handleEdit}
                       onDelete={handleDelete}
-                      className="mt-8"
+                      className="mt-1"
                     />
                   </div>
                   {/* Content for Tab 3 */}
@@ -384,6 +395,7 @@ export default function SubjectManagement() {
                       <div className="flex">
                         <InputBaseComponent
                           placeholder="Nhập tên chủ đề"
+                          className="w-1/3 mr-3"
                           type="text"
                           control={control}
                           setValue={noSetValue}
@@ -395,6 +407,7 @@ export default function SubjectManagement() {
                           }}
                         />
                         <InputBaseComponent
+                          className="w-1/3 mr-3"
                           placeholder="Nhập mô tả"
                           type="text"
                           control={control}
@@ -407,6 +420,7 @@ export default function SubjectManagement() {
                           }}
                         />
                         <InputBaseComponent
+                          className="w-1/3"
                           placeholder="Nhập thứ tự tiết"
                           type="number"
                           control={control}
@@ -427,28 +441,18 @@ export default function SubjectManagement() {
                         <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
                           CLEAR
                         </ButtonComponent>
-                        <ButtonComponent action="submit">NHẬP GIÁO ÁN</ButtonComponent>
+                        <ButtonComponent action="submit">TẠO GIÁO ÁN</ButtonComponent>
                       </div>
                     </form>
+                    <p className="text-sm font-bold">TẤT CẢ GIÁO ÁN (TOÁN)</p>
                     <TableComponent
                       header={["ID", "Tên chủ đề", "Mô tả", "Thứ tự"]}
-                      data={currentData.reduce((accumulator, lesson) => {
-                        if (lesson.lessonPlans && Array.isArray(lesson.lessonPlans)) {
-                          const lessonPlansData = lesson.lessonPlans.map((lessonPlan) => [
-                            lessonPlan.id.toString(),
-                            lessonPlan.title.toString(),
-                            lessonPlan.description.toString(),
-                            lessonPlan.slot.toString(),
-                          ]);
-                          return accumulator.concat(lessonPlansData);
-                        } else {
-                          return accumulator.concat([["", "Không có dữ liệu", "", ""]]);
-                        }
-                      }, [])}
-                      itemsPerPage={4}
+                      data={lessonPlan}
+                      isOrdered={false}
+                      itemsPerPage={5}
                       onEdit={handleEdit}
                       onDelete={handleDelete}
-                      className="mt-8"
+                      className="mt-1"
                     />
                   </div>
                 </PopupComponent>
@@ -457,13 +461,14 @@ export default function SubjectManagement() {
           </div>
           <div>
             <TableComponent
-              header={["ID", "Tên môn học", "Mô tả"]}
-              data={currentData.map((item) => [
+              header={["ID", "Tên môn học", "Khối", "Mô tả"]}
+              data={currentSubjects.map((item) => [
                 item.id.toString(),
                 item.name.toString(),
+                item.grade.toString(),
                 item.description.toString(),
               ])}
-              itemsPerPage={4}
+              itemsPerPage={10}
               onEdit={handleEdit}
               onDelete={handleDelete}
               className="mt-8"

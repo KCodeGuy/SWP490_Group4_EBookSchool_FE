@@ -2,22 +2,33 @@ import { Card, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
 import { useForm } from "react-hook-form";
-
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import { studentWeeklyTimeTableDates } from "../../mock/weeklyTimeTable";
-import TableWeeklyTimeTableComponent from "../../components/TableWeeklyTimeTable";
-import PopupComponent from "components/PopupComponent/PopupComponent";
-import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent";
-import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
-import { studentClasses } from "../../mock/class";
-import { schoolYears } from "../../mock/schoolYear";
-import { subjects } from "../../mock/subject.js";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import DownloadIcon from "@mui/icons-material/Download";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import SearchInputComponent from "components/SearchInputComponent/SearchInputComponent";
+import MapsHomeWorkIcon from "@mui/icons-material/MapsHomeWork";
+import LockClockIcon from "@mui/icons-material/LockClock";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import AutoStoriesIcon from "@mui/icons-material/AutoStories";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import AccessAlarmIcon from "@mui/icons-material/AccessAlarm";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { Link } from "react-router-dom";
+
+import TableWeeklyTimeTableComponent from "../../components/TableWeeklyTimeTable";
+import PopupComponent from "../../components/PopupComponent/PopupComponent";
+import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
+import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
+import TextValueComponent from "../../components/TextValueComponent";
+import TableComponent from "../../components/TableComponent/TableComponent";
+import { studentClasses } from "../../mock/class";
+import { schoolYears } from "../../mock/schoolYear";
+import { studentWeeklyTimeTableDates, timeTablesAllSchool } from "../../mock/weeklyTimeTable";
 
 const schoolWeeks = [
   { id: 1, name: "week 1", startTime: "20/1/2024", endTime: "28/1/2024" },
@@ -35,10 +46,29 @@ const schoolWeeks = [
   { id: 13, name: "week 13", startTime: "20/1/2024", endTime: "28/1/2024" },
 ];
 
+const formattedSemester = [
+  { label: "Học kì 1", value: "HK1" },
+  { label: "Học kì 2", value: "HK2" },
+  { label: "Cả năm", value: "Cả năm" },
+];
+
+let totalSlots = 16;
 export default function WeeklyTimeTable() {
+  const [openModelAdd, setOpenModelAdd] = useState(false);
   const [openModalDetail, setOpenModalDetail] = useState(false);
-  const [currentSlot, setCurrentSlot] = useState(1);
+  const [currentSlot, setCurrentSlot] = useState({});
   const [currentRoom, setCurrentClass] = useState("12A1");
+  const [currentSlotDate, setCurrentSlotDate] = useState("");
+
+  const timeTableOfAllSchool = timeTablesAllSchool.data.map((item) => [
+    // item.id,
+    item.schoolYear,
+    item.semester,
+    item.class,
+    item.mainTeacher,
+    item.fromDate,
+    item.toDate,
+  ]);
 
   const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
   const handleSchoolYearSelectedChange = (event) => {
@@ -54,38 +84,58 @@ export default function WeeklyTimeTable() {
   const handleSchoolWeeksSelectedChange = (event) => {
     setSchoolWeek(event.target.value);
   };
+  const [currentTab, setCurrentTab] = useState(0);
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue: noSetValue,
+    formState: { errors },
+  } = useForm();
 
   //3.1 React-hook-from of editing action
   const {
     control: controlEditAction,
     handleSubmit: handleSubmitEditAction,
     reset: resetEditAction,
-    setValue,
+    setValue: noSetUploadValue,
     formState: { errors: errorsEditAction },
   } = useForm();
 
+  const {
+    control: controlUploadAction,
+    handleSubmit: handleSubmitUploadAction,
+    reset: resetUploadAction,
+    setValue,
+    formState: { errors: errorsUploadAction },
+  } = useForm();
+
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue);
+  };
+
   const handleViewSlotDetail = ([slotDetails, date]) => {
     if (slotDetails) {
-      setCurrentSlot(slotDetails.slot);
-      setValue("id", slotDetails.id);
-      setValue("date", date);
-      setValue("classRoom", slotDetails.classRoom);
-      setValue("slotTime", slotDetails.slotTime);
-      setValue("subject", slotDetails.subject);
-      setValue("slotByLessonPlans", slotDetails.slotByLessonPlans);
-      setValue("status", slotDetails.status);
-      setValue("isAttendance", slotDetails.isAttendance);
-      setValue("teacher", slotDetails.teacher);
+      setCurrentSlot(slotDetails);
+      setCurrentSlotDate(date);
       setOpenModalDetail(true);
     }
-
-    console.log("slot details: ", slotDetails);
-    console.log("date: ", date);
   };
 
-  const handleChangeSearchValue = (txtSearch) => {
-    console.log(txtSearch);
+  const handleAddWeeklyTimeTable = (data) => {
+    console.log(data);
   };
+
+  const formattedSchoolYear = schoolYears.data.map((year) => ({
+    label: year.schoolYear,
+    value: year.schoolYear,
+  }));
+
+  const formattedSchoolClass = studentClasses.data.map((item) => ({
+    label: item.name,
+    value: item.name,
+  }));
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -94,14 +144,12 @@ export default function WeeklyTimeTable() {
           <div className="flex justify-between items-center">
             <div>
               <FormControl sx={{ minWidth: 120 }}>
-                <InputLabel id="select-school-year-lable" className="ml-3">
-                  Năm học
-                </InputLabel>
+                <InputLabel id="select-school-year-lable">Năm học</InputLabel>
                 <Select
                   labelId="select-school-year-lable"
                   id="elect-school-year"
                   value={schoolYear}
-                  className="h-10"
+                  className="h-10 mr-2 max-[767px]:mb-4"
                   label="Năm học"
                   onChange={handleSchoolYearSelectedChange}
                 >
@@ -114,14 +162,12 @@ export default function WeeklyTimeTable() {
               </FormControl>
 
               <FormControl sx={{ minWidth: 120 }}>
-                <InputLabel id="select-school-class-lable" className="ml-3">
-                  Lớp
-                </InputLabel>
+                <InputLabel id="select-school-class-lable">Lớp</InputLabel>
                 <Select
                   labelId="select-school-class-lable"
                   id="select-school-class"
                   value={schoolClass}
-                  className="h-10 mx-2"
+                  className="h-10 mr-2 max-[767px]:mb-4"
                   label="Lớp"
                   onChange={handleSchoolClassSelectedChange}
                 >
@@ -133,14 +179,12 @@ export default function WeeklyTimeTable() {
                 </Select>
               </FormControl>
               <FormControl sx={{ minWidth: 120 }}>
-                <InputLabel id="select-school-week-lable" className="ml-3">
-                  Tuần
-                </InputLabel>
+                <InputLabel id="select-school-week-lable">Tuần</InputLabel>
                 <Select
                   labelId="select-school-week-lable"
                   id="select-school-class"
                   value={schoolWeek}
-                  className="h-10 mr-2"
+                  className="h-10 mr-2 max-[767px]:mb-4"
                   label="Tuần"
                   onChange={handleSchoolWeeksSelectedChange}
                 >
@@ -152,26 +196,192 @@ export default function WeeklyTimeTable() {
                 </Select>
               </FormControl>
               <ButtonComponent type="success">
-                <FilterAltIcon className="mr-1" /> Filter
+                <FilterAltIcon className="mr-1" /> TÌM KIẾM
+              </ButtonComponent>
+              <ButtonComponent
+                className="max-[767px]:inline-block max-[639px]:ml-0 md:hidden"
+                onClick={() => setOpenModelAdd(true)}
+              >
+                <AddCircleOutlineIcon className="text-3xl mr-1" />
+                TẠO
               </ButtonComponent>
             </div>
+
             <div className="flex items-center">
-              <SearchInputComponent
-                onSearch={handleChangeSearchValue}
-                placeHolder="Nhập từ khóa..."
-                className="mr-3"
-              />
+              <ButtonComponent
+                className="max-[767px]:hidden md:block"
+                onClick={() => setOpenModelAdd(true)}
+              >
+                <AddCircleOutlineIcon className="text-3xl mr-1" />
+                TẠO TKB
+              </ButtonComponent>
+              <PopupComponent
+                title="TẠO THỜI KHÓA BIỂU"
+                description={`Tạo thời khóa biểu bằng excel`}
+                // rightNote={`Lớp: ${currentClass}`}
+                icon={<AddCircleOutlineIcon />}
+                isOpen={openModelAdd}
+                onClose={() => setOpenModelAdd(false)}
+                tabs={[{ label: "TẢI TEMPLATE" }, { label: "UPLOAD TEMPLATE" }]}
+                currentTab={currentTab}
+                onTabChange={handleTabChange}
+              >
+                <div role="tabpanel" hidden={currentTab !== 0}>
+                  <form onSubmit={handleSubmit(handleAddWeeklyTimeTable)}>
+                    <InputBaseComponent
+                      name="schoolYear"
+                      label="Năm học"
+                      className="w-full"
+                      control={control}
+                      setValue={noSetValue}
+                      type="select"
+                      options={formattedSchoolYear}
+                      errors={errors}
+                      validationRules={{
+                        required: "Hãy chọn năm học!",
+                      }}
+                    />
+                    <div className="w-full flex">
+                      <InputBaseComponent
+                        name="schoolClass"
+                        label="Lớp học"
+                        className="w-1/2 mr-3"
+                        control={control}
+                        setValue={noSetValue}
+                        type="select"
+                        options={formattedSchoolClass}
+                        errors={errors}
+                        validationRules={{
+                          required: "Hãy chọn lớp học!",
+                        }}
+                      />
+                      <InputBaseComponent
+                        name="semester"
+                        label="Kì học"
+                        className="w-1/2"
+                        control={control}
+                        setValue={noSetValue}
+                        type="select"
+                        options={formattedSemester}
+                        errors={errors}
+                        validationRules={{
+                          required: "Hãy chọn kì học!",
+                        }}
+                      />
+                    </div>
+                    <div className="flex justify-end mt-4">
+                      <ButtonComponent type="error" action="reset" onClick={() => reset()}>
+                        CLEAR
+                      </ButtonComponent>
+                      <ButtonComponent action="submit">
+                        <DownloadIcon className="mr-2" />
+                        TẢI FILE
+                      </ButtonComponent>
+                    </div>
+                  </form>
+                </div>
+                <div role="tabpanel" hidden={currentTab !== 0}>
+                  <form
+                    onSubmit={handleSubmitUploadAction((data) => console.log("Upload: ", data))}
+                  >
+                    <InputBaseComponent
+                      name="schoolYearUpload"
+                      label="Năm học"
+                      className="w-full"
+                      control={controlUploadAction}
+                      setValue={noSetUploadValue}
+                      type="select"
+                      options={formattedSchoolYear}
+                      errors={errorsUploadAction}
+                      validationRules={{
+                        required: "Hãy chọn năm học!",
+                      }}
+                    />
+                    <div className="w-full flex">
+                      <InputBaseComponent
+                        name="schoolClassUpload"
+                        label="Lớp học"
+                        className="w-1/2 mr-3"
+                        control={controlUploadAction}
+                        setValue={noSetUploadValue}
+                        type="select"
+                        options={formattedSchoolClass}
+                        errors={errorsUploadAction}
+                        validationRules={{
+                          required: "Hãy chọn lớp học!",
+                        }}
+                      />
+                      <InputBaseComponent
+                        name="semesterUpload"
+                        label="Kì học"
+                        className="w-1/2"
+                        control={controlUploadAction}
+                        setValue={noSetUploadValue}
+                        type="select"
+                        options={formattedSemester}
+                        errors={errorsUploadAction}
+                        validationRules={{
+                          required: "Hãy chọn kì học!",
+                        }}
+                      />
+                    </div>
+                    <InputBaseComponent
+                      name="timeTableFile"
+                      label="Mẫu thời khóa biểu"
+                      className="w-full"
+                      control={controlUploadAction}
+                      setValue={noSetUploadValue}
+                      type="file"
+                      errors={errorsUploadAction}
+                      validationRules={{
+                        required: "Hãy chọn file!",
+                      }}
+                    />
+                    <div className="flex justify-end mt-4">
+                      <ButtonComponent
+                        type="error"
+                        action="reset"
+                        onClick={() => resetUploadAction()}
+                      >
+                        CLEAR
+                      </ButtonComponent>
+                      <ButtonComponent action="submit">
+                        <FileUploadIcon className="mr-2" />
+                        UPLOAD FILE
+                      </ButtonComponent>
+                    </div>
+                  </form>
+                </div>
+              </PopupComponent>
             </div>
           </div>
-          <div className="text-center mt-7">
+          <p className="text-base font-bold mt-10">TẤT CẢ THỜI KHÓA BIỂU</p>
+          <TableComponent
+            header={["Năm học", "Học kì", "Lớp", "GVCN", "Từ ngày", "Đến"]}
+            data={timeTableOfAllSchool}
+            onEdit={(data) => console.log(data)}
+            // onDetails={() => console.log(data)}
+            onDelete={(data) => console.log(data)}
+            className="mt-4"
+            itemsPerPage={5}
+          />
+          <div className="text-center mt-10">
             <h4 className="text-xl font-bold uppercase">THỜI KHÓA BIỂU lớp {schoolClass}</h4>
           </div>
-          <div className="flex justify-between mt-2">
-            <div className="text-sm">
-              <span className="mr-2 font-bold">Lịch học của:</span>
-              <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                DaQL
-              </span>
+          <div className="flex justify-between mt-2 flex-wrap max-[767px]:mt-4">
+            <div className="flex max-[767px]:mb-4">
+              <div className="text-sm mr-4">
+                <span className="mr-2 font-bold">Lịch học của:</span>
+                <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                  DaQL
+                </span>
+              </div>
+              <div className="text-sm">
+                <span className="mr-2 font-bold">Tổng số tiết:</span>
+                <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                  {totalSlots}
+                </span>
+              </div>
             </div>
             <div className="text-sm">
               <span className="mr-2 font-bold">Năm học:</span>
@@ -195,7 +405,7 @@ export default function WeeklyTimeTable() {
               <li>
                 <span className="error-color">(Not-started): </span>
                 <span className="italic">
-                  Tiết học này chưa bắt đầu, tiết học sẽ bắt đầu khi đến ngày học
+                  Tiết học này chưa bắt đầu, tiết học sẽ bắt đầu khi đến ngày học.
                 </span>
               </li>
               <li>
@@ -216,134 +426,78 @@ export default function WeeklyTimeTable() {
           </div>
           <PopupComponent
             title="CHI TIẾT"
-            description={`TIẾT: ${currentSlot}`}
-            rightNote={`Lớp: ${currentRoom}`}
+            description={`TIẾT: ${currentSlot.slot}`}
+            rightNote={`NGÀY: ${currentSlotDate}`}
             isOpen={openModalDetail}
             onClose={() => setOpenModalDetail(false)}
           >
-            <form onSubmit={handleSubmitEditAction((data) => console.log("Edit: ", data))}>
-              <div className="flex">
-                <InputBaseComponent
-                  name="date"
-                  placeholder="Chọn ngày"
-                  label="Ngày"
-                  className="w-1/3 mr-3"
-                  control={controlEditAction}
-                  setValue={setValue}
-                  type="date"
-                  errors={errorsEditAction}
-                  validationRules={{
-                    required: "Hãy chọn ngày!",
-                  }}
-                />
-                <InputBaseComponent
-                  name="classRoom"
-                  label="Phòng học"
-                  className="w-1/3 mr-3"
-                  control={controlEditAction}
-                  setValue={setValue}
-                  type="select"
-                  options={[]}
-                  errors={errorsEditAction}
-                  // validationRules={{
-                  //   required: "Hãy xếp loại tiết!",
-                  // }}
-                />
-                <InputBaseComponent
-                  name="slotTime"
-                  label="Thời gian"
-                  className="w-1/3 mr-3"
-                  control={controlEditAction}
-                  setValue={setValue}
-                  type="text"
-                  errors={errorsEditAction}
-                  // validationRules={{
-                  //   required: "Hãy xếp loại tiết!",
-                  // }}
-                />
-              </div>
-              <div className="flex">
-                <InputBaseComponent
-                  name="subject"
-                  label="Môn học"
-                  className="w-1/3 mr-3"
-                  control={controlEditAction}
-                  setValue={setValue}
-                  type="select"
-                  options={[]}
-                  errors={errorsEditAction}
-                  // validationRules={{
-                  //   required: "Hãy xếp loại tiết!",
-                  // }}
-                />
-                <InputBaseComponent
-                  name="slotByLessonPlans"
-                  label="Tiết học"
-                  className="w-1/3 mr-3"
-                  control={controlEditAction}
-                  setValue={setValue}
-                  type="select"
-                  options={[]}
-                  errors={errorsEditAction}
-                  // validationRules={{
-                  //   required: "Hãy xếp loại tiết!",
-                  // }}
-                />
-                <InputBaseComponent
-                  name="status"
-                  label="Trạng thái"
-                  className="w-1/3 mr-3"
-                  control={controlEditAction}
-                  setValue={setValue}
-                  type="select"
-                  options={[]}
-                  errors={errorsEditAction}
-                  // validationRules={{
-                  //   required: "Hãy xếp loại tiết!",
-                  // }}
-                />
-              </div>
-              <div className="flex">
-                <InputBaseComponent
-                  name="isAttendance"
-                  label="Có mặt"
-                  className="w-1/3 mr-3"
-                  control={controlEditAction}
-                  setValue={setValue}
-                  type="select"
-                  options={[]}
-                  errors={errorsEditAction}
-                  // validationRules={{
-                  //   required: "Hãy xếp loại tiết!",
-                  // }}
-                />
-                <InputBaseComponent
-                  name="teacher"
-                  label="Giáo viên"
-                  className="w-1/3 mr-3"
-                  control={controlEditAction}
-                  setValue={setValue}
-                  type="text"
-                  options={[]}
-                  errors={errorsEditAction}
-                  // validationRules={{
-                  //   required: "Hãy xếp loại tiết!",
-                  // }}
-                />
-              </div>
-              <div className="mt-4 flex justify-between">
-                <ButtonComponent type="success" action="button">
-                  <BorderColorIcon className="mr-1" />
-                  ĐIỂM DANH
-                </ButtonComponent>
-                <div>
-                  <ButtonComponent type="error" action="reset" onClick={() => resetEditAction()}>
-                    CLEAR
+            <div className="max-w-md">
+              <TextValueComponent
+                label="Tên môn học"
+                value={currentSlot.subject}
+                icon={<AutoStoriesIcon />}
+                customValue="text-black font-medium"
+              />
+              <TextValueComponent
+                label="Thời gian"
+                value={currentSlot.slotTime}
+                icon={<AccessAlarmIcon />}
+                variantValue="success"
+              />
+              <TextValueComponent
+                label="Lớp"
+                value={currentSlot.classRoom}
+                icon={<MapsHomeWorkIcon />}
+              />
+              <TextValueComponent
+                label="Phòng học"
+                value={currentSlot.classRoom}
+                icon={<LocationOnIcon />}
+              />
+              <TextValueComponent
+                label="Giáo viên"
+                value={currentSlot.teacher}
+                icon={<AccountCircleIcon />}
+                variantValue="warning"
+              />
+
+              <TextValueComponent
+                label="Tiết giáo án"
+                value={currentSlot.slotByLessonPlans}
+                icon={<LockClockIcon />}
+              />
+              <TextValueComponent
+                label="Bài học"
+                value="Bài 12: Đại số tuyến tính"
+                icon={<EventAvailableIcon />}
+              />
+              <TextValueComponent
+                label="Trạng thái"
+                value={currentSlot.status}
+                icon={<AccessAlarmIcon />}
+                customValue="error-color"
+              />
+              <TextValueComponent
+                label="Điểm danh"
+                value={currentSlot.isAttendance ? "Có mặt" : "Vắng"}
+                icon={<CheckCircleIcon />}
+                customValue={
+                  currentSlot.isAttendance ? "success-color font-medium" : "error-color font-medium"
+                }
+              />
+
+              <div className="mt-4 flex justify-end">
+                <Link to="/takeAttendance" className="mr-2">
+                  <ButtonComponent type="success" action="button">
+                    <BorderColorIcon className="" />
+                    ĐIỂM DANH
                   </ButtonComponent>
-                  <ButtonComponent action="submit">CẬP NHẬT</ButtonComponent>
-                </div>
+                </Link>
+                <Link to="/schoolBook">
+                  <ButtonComponent action="button">SỔ ĐẦU BÀI</ButtonComponent>
+                </Link>
               </div>
-            </form>
+            </div>
           </PopupComponent>
         </MDBox>
       </Card>

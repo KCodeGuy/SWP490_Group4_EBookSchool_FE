@@ -149,22 +149,10 @@ const Wiki = () => {
   };
   const [tableData, setTableData] = useState([
     ["Nguyen van", "Doe", "25"],
-    ["Le van", "Smith", "30"],
-    ["Tran thi", "Smith", "30"],
-    ["Quach tuan minh", "Smith", "30"],
-    ["Jane", "Smith", "30"],
-    ["Dinh minh", "Smith", "30"],
-    ["Jane", "Smith", "30"],
-    ["Tuan", "Smith", "30"],
-    ["Jane", "Smith", "30"],
-    ["Admin role", "Smith", "30"],
-    ["Admin", "Smith", "30"],
-    ["Jane", "Smith", "30"],
-    ["Son tung", "Smith", "30"],
-    ["Jane", "Smith", "30"],
-    ["Den vau", "Smith", "30"],
-    ["Phan manh", "Smith", "30"],
-    ["Dang tuan", "Smith", "30"],
+    ["Nguyen van", "Doe", "25"],
+    ["Nguyen van", "Doe", "25"],
+    ["Nguyen van", "Doe", "25"],
+    ["Nguyen van", "Doe", "25"],
   ]);
 
   const [tableDataNoAction, setTableDataNoAction] = useState([
@@ -234,6 +222,10 @@ const Wiki = () => {
   const handleSubmitModal3 = () => {
     setModal3(false);
     // Add logic handle submit
+  };
+
+  const handleEdit = (data) => {
+    console.log(data);
   };
 
   const selectOptions = [
@@ -469,7 +461,7 @@ const Wiki = () => {
             <TableComponent
               header={["Full name", "CC", "Age"]}
               data={tableData}
-              // onEdit={handleEdit}
+              onEdit={handleEdit}
               onDetails={handleDetails}
               // onDelete={handleDelete}
               className="mt-4"

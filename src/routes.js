@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-undef */
 /**
 =========================================================
 * Material Dashboard 2 React - v2.2.0
@@ -50,6 +51,7 @@ import RoomManagement from "./layouts/roomManagement/RoomManagement";
 import ClassManagement from "./layouts/classManagement/ClassManagement";
 import NotificationManagement from "./layouts/notificationManagement/NotificationManagement";
 import SubjectManagement from "./layouts/subjectManagement/SubjectManagement";
+import AccountManagement from "./layouts/accountManagement/AccountManagement";
 import Demo from "./layouts/demo/Demo";
 import WeeklyTimeTable from "./layouts/weeklyTimeTable";
 import MarkStatistics from "./layouts/markStatistics/MarkStatistics";
@@ -120,6 +122,14 @@ const routes = [
     icon: <Icon fontSize="small">house</Icon>,
     route: "/subjectManagement",
     component: <SubjectManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Account Management(UolLT)",
+    key: "accountManagement",
+    icon: <Icon fontSize="small">house</Icon>,
+    route: "/accountManagement",
+    component: <AccountManagement />,
   },
   {
     type: "collapse",

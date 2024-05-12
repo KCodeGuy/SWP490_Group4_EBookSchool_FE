@@ -37,7 +37,7 @@ export default function SubjectManagement() {
     obj.name,
     obj.count,
     obj.scoreFactor,
-    subject.data.points[0].semester,
+    subject.data.points[0].semeaster,
   ]);
 
   const lessonPlan = subject.data.lessonPlans.map((obj) => [

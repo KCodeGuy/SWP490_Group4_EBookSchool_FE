@@ -1,0 +1,40 @@
+.css-1qdzy9k-MuiBarElement-root {
+  fill: #287cd4 !important;
+}
+
+.css-3dcfwk-MuiBarElement-root {
+  fill: #a5a5a5 !important;
+}
+
+.css-adnr9q-MuiBarElement-root {
+  fill: #f9c559 !important;
+}
+
+.css-1x13gzd-MuiBarElement-root {
+  fill: #d70200 !important;
+}
+
+.css-1u0lry5-MuiChartsLegend-root {
+  g {
+    &:first-child {
+      .MuiChartsLegend-mark {
+        fill: #287cd4;
+      }
+    }
+    &:nth-child(2) {
+      .MuiChartsLegend-mark {
+        fill: #a5a5a5;
+      }
+    }
+    &:nth-child(3) {
+      .MuiChartsLegend-mark {
+        fill: #f9c559;
+      }
+    }
+    &:nth-child(4) {
+      .MuiChartsLegend-mark {
+        fill: #d70200;
+      }
+    }
+  }
+}

@@ -356,7 +356,7 @@ export default function MarkStatistics() {
     });
   };
 
-  const markOfAlSchoolsBox = [
+  const markOfAllSchoolsBox = [
     {
       color: "primary",
       icon: "leaderboard",
@@ -386,6 +386,152 @@ export default function MarkStatistics() {
     },
   ];
 
+  const aSubjectForAGradeBox = [
+    {
+      color: "primary",
+      icon: "leaderboard",
+      title: "Điểm thấp nhất",
+      count: "4.75",
+      textDescriptionColor: "primary",
+      amount: "Khối 12",
+      label: "có TB thấp nhất",
+    },
+    {
+      color: "info",
+      icon: "leaderboard",
+      title: "Điểm trung bình",
+      count: "8.75",
+      textDescriptionColor: "info",
+      amount: "Điểm TB giữa các lớp",
+      label: "",
+    },
+    {
+      color: "success",
+      icon: "leaderboard",
+      title: "Điểm cao nhất",
+      count: "10",
+      textDescriptionColor: "success",
+      amount: "Khối 12",
+      label: "có TB cao nhất",
+    },
+    {
+      color: "info",
+      icon: "leaderboard",
+      title: "Tổng số lớp",
+      count: "12",
+      textDescriptionColor: "info",
+      amount: "12",
+      label: "là tổng số lượng lớp",
+    },
+  ];
+
+  const detailedMarksfForSubjectOfClassBox = [
+    {
+      color: "primary",
+      icon: "leaderboard",
+      title: "Ít nhất",
+      count: "0-1 điểm",
+      textDescriptionColor: "primary",
+      amount: "0-1 điểm",
+      label: "chiếm tỉ lệ ít nhất",
+    },
+    {
+      color: "info",
+      icon: "leaderboard",
+      title: "Nhiều nhất",
+      count: "8-9 điểm",
+      textDescriptionColor: "info",
+      amount: "8-9 điểm",
+      label: "chiếm tỉ lệ cao nhất",
+    },
+    {
+      color: "success",
+      icon: "leaderboard",
+      title: "Điểm trung bình",
+      count: "8.0",
+      textDescriptionColor: "success",
+      amount: "8.0",
+      label: "là điểm trung bình",
+    },
+  ];
+
+  const averageTestMarksByClassBox = [
+    {
+      color: "primary",
+      icon: "leaderboard",
+      title: "Điểm thấp nhất",
+      count: "4.95",
+      textDescriptionColor: "primary",
+      amount: "12A1",
+      label: "có điểm TB thấp nhất",
+    },
+    {
+      color: "info",
+      icon: "leaderboard",
+      title: "Điểm trung bình",
+      count: "8.75",
+      textDescriptionColor: "info",
+      amount: "Điểm trung bình giữa các lớp",
+      label: "",
+    },
+    {
+      color: "success",
+      icon: "leaderboard",
+      title: "Điểm cao nhất",
+      count: "10",
+      textDescriptionColor: "success",
+      amount: "12A2",
+      label: "có điểm TB cao nhất",
+    },
+    {
+      color: "info",
+      icon: "leaderboard",
+      title: "Tổng số lớp",
+      count: "12",
+      textDescriptionColor: "info",
+      amount: "12",
+      label: "là tổng số lượng lớp",
+    },
+  ];
+
+  const averageMarksOfClassBox = [
+    {
+      color: "primary",
+      icon: "leaderboard",
+      title: "Điểm thấp nhất",
+      count: "4.95",
+      textDescriptionColor: "primary",
+      amount: "Ngữ Văn",
+      label: "có điểm TBM thấp nhất",
+    },
+    {
+      color: "info",
+      icon: "leaderboard",
+      title: "Điểm trung bình",
+      count: "8.75",
+      textDescriptionColor: "info",
+      amount: "Điểm trung bình môn",
+      label: "",
+    },
+    {
+      color: "success",
+      icon: "leaderboard",
+      title: "Điểm cao nhất",
+      count: "10",
+      textDescriptionColor: "success",
+      amount: "Hóa học",
+      label: "có điểm TBM cao nhất",
+    },
+    {
+      color: "info",
+      icon: "leaderboard",
+      title: "Sỉ số",
+      count: "40",
+      textDescriptionColor: "info",
+      amount: "40",
+      label: "là sỉ số lớp",
+    },
+  ];
   (React.useState < "middle") | ("tick" > "middle");
   const [tickPlacement, setTickPlacement] = React.useState("middle");
   const [tickLabelPlacement, setTickLabelPlacement] = React.useState("middle");
@@ -505,7 +651,7 @@ export default function MarkStatistics() {
                   </div>
                   <div className="w-full">
                     <div className="mt-8 grid gap-2 sm:grid-cols-1 md:grid-cols-3 custom">
-                      {markOfAlSchoolsBox.map((item, index) => (
+                      {markOfAllSchoolsBox.map((item, index) => (
                         <ComplexStatisticsCard
                           key={index}
                           color={item.color}
@@ -628,48 +774,20 @@ export default function MarkStatistics() {
                   </h4>
                 </div>
                 <div className="w-full custom mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-                  <ComplexStatisticsCard
-                    color="primary"
-                    icon="leaderboard"
-                    title="Điểm thấp nhất"
-                    count="4.95"
-                    percentage={{
-                      color: "primary",
-                      amount: "12A1",
-                      label: "có điểm TB thấp nhất",
-                    }}
-                  />
-                  <ComplexStatisticsCard
-                    icon="leaderboard"
-                    title="Điểm trung bình"
-                    count="6.75"
-                    percentage={{
-                      color: "info",
-                      amount: "Điểm trung bình giữa các lớp",
-                      label: "",
-                    }}
-                  />
-                  <ComplexStatisticsCard
-                    color="success"
-                    icon="leaderboard"
-                    title="Điểm cao nhất"
-                    count="10"
-                    percentage={{
-                      color: "success",
-                      amount: "12A2",
-                      label: "có TB cao nhất",
-                    }}
-                  />
-                  <ComplexStatisticsCard
-                    icon="leaderboard"
-                    title="Tổng số lớp"
-                    count="12 lớp"
-                    percentage={{
-                      color: "info",
-                      amount: "12",
-                      label: "là tổng số lớp lượng lớp",
-                    }}
-                  />
+                  {aSubjectForAGradeBox.map((item, index) => (
+                    <ComplexStatisticsCard
+                      key={index}
+                      color={item.color}
+                      icon={item.icon}
+                      title={item.title}
+                      count={item.count}
+                      percentage={{
+                        color: item.textDescriptionColor,
+                        amount: item.amount,
+                        label: item.label,
+                      }}
+                    />
+                  ))}
                 </div>
                 <div
                   className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
@@ -821,38 +939,20 @@ export default function MarkStatistics() {
                 </div>
                 <div className="w-full mt-5">
                   <div className="mt-8 grid gap-2 sm:grid-cols-1 md:grid-cols-3 custom">
-                    <ComplexStatisticsCard
-                      color="primary"
-                      icon="leaderboard"
-                      title="Ít nhất"
-                      count="0-1 điểm"
-                      percentage={{
-                        color: "primary",
-                        amount: "0-1 điểm",
-                        label: "chiếm tỉ lệ ít nhất",
-                      }}
-                    />
-                    <ComplexStatisticsCard
-                      icon="leaderboard"
-                      title="Nhiều nhất"
-                      count="8-9 điểm"
-                      percentage={{
-                        color: "info",
-                        amount: "8-9 điểm",
-                        label: "chiếm tỉ lệ cao nhất",
-                      }}
-                    />
-                    <ComplexStatisticsCard
-                      color="success"
-                      icon="leaderboard"
-                      title="Điểm trung bình"
-                      count="8.0"
-                      percentage={{
-                        color: "success",
-                        amount: "8.0",
-                        label: "là điểm trung bình",
-                      }}
-                    />
+                    {detailedMarksfForSubjectOfClassBox.map((item, index) => (
+                      <ComplexStatisticsCard
+                        key={index}
+                        color={item.color}
+                        icon={item.icon}
+                        title={item.title}
+                        count={item.count}
+                        percentage={{
+                          color: item.textDescriptionColor,
+                          amount: item.amount,
+                          label: item.label,
+                        }}
+                      />
+                    ))}
                   </div>
                   <div className="table w-full mt-8">
                     <div
@@ -980,48 +1080,20 @@ export default function MarkStatistics() {
                   </h4>
                 </div>
                 <div className="w-full custom mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-                  <ComplexStatisticsCard
-                    color="primary"
-                    icon="leaderboard"
-                    title="Điểm thấp nhất"
-                    count="4.95"
-                    percentage={{
-                      color: "primary",
-                      amount: "12A1",
-                      label: "có điểm TB thấp nhất",
-                    }}
-                  />
-                  <ComplexStatisticsCard
-                    icon="leaderboard"
-                    title="Điểm trung bình"
-                    count="6.75"
-                    percentage={{
-                      color: "info",
-                      amount: "Điểm trung bình giữa các lớp",
-                      label: "",
-                    }}
-                  />
-                  <ComplexStatisticsCard
-                    color="success"
-                    icon="leaderboard"
-                    title="Điểm cao nhất"
-                    count="10"
-                    percentage={{
-                      color: "success",
-                      amount: "12A2",
-                      label: "có TB cao nhất",
-                    }}
-                  />
-                  <ComplexStatisticsCard
-                    icon="leaderboard"
-                    title="Tổng số lớp"
-                    count="12 lớp"
-                    percentage={{
-                      color: "info",
-                      amount: "12",
-                      label: "là tổng số lớp lượng lớp",
-                    }}
-                  />
+                  {averageTestMarksByClassBox.map((item, index) => (
+                    <ComplexStatisticsCard
+                      key={index}
+                      color={item.color}
+                      icon={item.icon}
+                      title={item.title}
+                      count={item.count}
+                      percentage={{
+                        color: item.textDescriptionColor,
+                        amount: item.amount,
+                        label: item.label,
+                      }}
+                    />
+                  ))}
                 </div>
                 <div
                   className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
@@ -1159,7 +1231,7 @@ export default function MarkStatistics() {
                 </div>
                 <div className="flex justify-between mt-2">
                   <div className="text-sm">
-                    <span className="mr-2 font-bold">Giáo viên</span>
+                    <span className="mr-2 font-bold">Giáo viên:</span>
                     <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
                       Lương Hoàng Hướng
                     </span>
@@ -1172,48 +1244,20 @@ export default function MarkStatistics() {
                   </div>
                 </div>
                 <div className="w-full custom mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-                  <ComplexStatisticsCard
-                    color="primary"
-                    icon="leaderboard"
-                    title="Điểm thấp nhất"
-                    count="1.0"
-                    percentage={{
-                      color: "primary",
-                      amount: "Ngữ Văn",
-                      label: "có điểm TBM thấp nhất",
-                    }}
-                  />
-                  <ComplexStatisticsCard
-                    icon="leaderboard"
-                    title="Điểm trung bình"
-                    count="6.75"
-                    percentage={{
-                      color: "info",
-                      amount: "Điểm trung bình môn",
-                      label: "",
-                    }}
-                  />
-                  <ComplexStatisticsCard
-                    color="success"
-                    icon="leaderboard"
-                    title="Điểm cao nhất"
-                    count="10"
-                    percentage={{
-                      color: "success",
-                      amount: "Hóa học",
-                      label: "có TBM cao nhất",
-                    }}
-                  />
-                  <ComplexStatisticsCard
-                    icon="leaderboard"
-                    title="Sỉ số"
-                    count="40"
-                    percentage={{
-                      color: "info",
-                      amount: "40",
-                      label: "là sỉ số lớp",
-                    }}
-                  />
+                  {averageMarksOfClassBox.map((item, index) => (
+                    <ComplexStatisticsCard
+                      key={index}
+                      color={item.color}
+                      icon={item.icon}
+                      title={item.title}
+                      count={item.count}
+                      percentage={{
+                        color: item.textDescriptionColor,
+                        amount: item.amount,
+                        label: item.label,
+                      }}
+                    />
+                  ))}
                 </div>
                 <div
                   className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"

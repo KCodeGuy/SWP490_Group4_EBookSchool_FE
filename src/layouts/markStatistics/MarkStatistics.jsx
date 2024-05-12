@@ -667,7 +667,7 @@ export default function MarkStatistics() {
                       ))}
                     </div>
                     <div className="table w-full mt-8">
-                      <p className="text-base font-bold">THỐNG KÊ CHI TIẾT (HK1, 2023)</p>
+                      <p className="text-base font-bold h-3">THỐNG KÊ CHI TIẾT (HK1, 2023)</p>
                       <TableComponent
                         header={["Khối", "Số lượng", "Điểm", "Hạng"]}
                         data={aSubjectForEntireSchool}

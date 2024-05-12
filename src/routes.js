@@ -44,9 +44,9 @@ import ResetPassword from "layouts/authentication/reset-password";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
-import SchoolBook from "./layouts/shoolBook/schoolBook";
+import SchoolBook from "./layouts/shoolBook/SchoolBook";
 import Wiki from "./layouts/wiki/Wiki";
-import MarkManagement from "./layouts/MarkManagement/MarkManagement";
+import MarkManagement from "./layouts/markManagement/MarkManagement";
 import RoomManagement from "./layouts/roomManagement/RoomManagement";
 import ClassManagement from "./layouts/classManagement/ClassManagement";
 import NotificationManagement from "./layouts/notificationManagement/NotificationManagement";
@@ -83,14 +83,7 @@ const routes = [
     route: "/academicPerformanceStatistics",
     component: <AcademicPerformanceStatistics />,
   },
-  {
-    type: "collapse",
-    name: "Demo(KhoaTD)",
-    key: "demo",
-    icon: <Icon fontSize="small">assignment</Icon>,
-    route: "/demo",
-    component: <Demo />,
-  },
+
   {
     type: "collapse",
     name: "Room Management(UolLT)",
@@ -171,6 +164,14 @@ const routes = [
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/wiki",
     component: <Wiki />,
+  },
+  {
+    type: "collapse",
+    name: "Demo(KhoaTD)",
+    key: "demo",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/demo",
+    component: <Demo />,
   },
   {
     type: "collapse",

@@ -53,6 +53,7 @@ const formattedSemester = [
 ];
 
 let totalSlots = 16;
+
 export default function WeeklyTimeTable() {
   const [openModelAdd, setOpenModelAdd] = useState(false);
   const [openModalDetail, setOpenModalDetail] = useState(false);

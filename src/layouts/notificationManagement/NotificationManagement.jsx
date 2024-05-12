@@ -168,7 +168,7 @@ export default function NotificationManagement() {
                     placeholder="Nhập nội dung thông báo"
                     type="textArea"
                     control={control}
-                    rowTextArea={2}
+                    rowTextArea={4}
                     setValue={noSetValue}
                     label="Nội dung"
                     errors={errors}
@@ -251,7 +251,7 @@ export default function NotificationManagement() {
                   placeholder="Nhập nội dung thông báo"
                   type="textArea"
                   control={controlEditAction}
-                  rowTextArea={2}
+                  rowTextArea={4}
                   setValue={setValue}
                   label="Nội dung"
                   errors={errorsEditAction}

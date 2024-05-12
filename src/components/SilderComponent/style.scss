@@ -1,0 +1,32 @@
+/* Example CSS to customize dots background color */
+@import "../../assets/css/base.scss";
+.slick-dots {
+  margin-bottom: 5%;
+}
+.slick-dots li button::before {
+  font-size: 12px;
+  color: $primary-color; /* Change active dot color */
+}
+
+.slick-dots li.slick-active button::before {
+  color: $primary-hover-color; /* Change active dot color */
+}
+.slick-prev {
+  margin-left: 5%;
+  z-index: 100;
+}
+.slick-next {
+  margin-right: 5%;
+  z-index: 100;
+}
+
+.slick-prev::before,
+.slick-next::before {
+  font-size: 32px; /* Adjust as needed */
+  color: white; /* Change button color */
+}
+
+.slick-prev:hover,
+.slick-next:hover {
+  color: $primary-hover-color; /* Change active dot color */
+}

@@ -4,7 +4,6 @@ const { Typography, Box } = require("@mui/material");
 
 export function TabPanel(props) {
   const { children, value, index, ...other } = props;
-  console.log(value);
 
   return (
     <div

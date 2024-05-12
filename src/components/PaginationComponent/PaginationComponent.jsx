@@ -38,6 +38,7 @@ const PaginationComponent = ({ currentPage, totalPages, onPageChange, location }
             height: "40px",
             margin: "0 5px",
             cursor: "pointer",
+            fontSize: "14px",
           }}
         >
           {i}

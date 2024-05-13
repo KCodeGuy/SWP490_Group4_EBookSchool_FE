@@ -57,6 +57,7 @@ import WeeklyTimeTable from "./layouts/weeklyTimeTable";
 import MarkStatistics from "./layouts/markStatistics/MarkStatistics";
 import TakeAttendance from "layouts/takeAttendance";
 import AcademicPerformanceStatistics from "./layouts/academicPerformanceStatistics/AcademicPerformanceStatistics";
+import ConductStatistics from "./layouts/conductStatistics/ConductStatistics";
 
 const routes = [
   {
@@ -83,7 +84,14 @@ const routes = [
     route: "/academicPerformanceStatistics",
     component: <AcademicPerformanceStatistics />,
   },
-
+  {
+    type: "collapse",
+    name: "Conduct Statistics(HieuTTN)",
+    key: "conductStatistics",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/conductStatistics",
+    component: <ConductStatistics />,
+  },
   {
     type: "collapse",
     name: "Room Management(UolLT)",

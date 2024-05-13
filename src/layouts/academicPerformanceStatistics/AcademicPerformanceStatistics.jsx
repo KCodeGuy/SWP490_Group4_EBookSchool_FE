@@ -9,7 +9,6 @@ import "./style.scss";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { axisClasses } from "@mui/x-charts";
 import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { schoolYears } from "mock/schoolYear";
@@ -17,38 +16,12 @@ import { TabPanel } from "components/TabPanelComponent";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { studentClasses } from "mock/class";
-import { subjects } from "mock/subject";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 import TableComponent from "components/TableComponent/TableComponent";
-import { Square } from "@mui/icons-material";
 
 const semesters = ["Học kì I", "Học kì II", "Cả năm"];
 
 const grades = ["Khối 10", "Khối 11", "Khối 12"];
-
-const datasetAcademicPerformenceOfAllSchools = [
-  {
-    Giỏi: 59,
-    Khá: 57,
-    TB: 86,
-    Yếu: 21,
-    Khối: "Khối 10",
-  },
-  {
-    Giỏi: 59,
-    Khá: 57,
-    TB: 86,
-    Yếu: 21,
-    Khối: "Khối 11",
-  },
-  {
-    Giỏi: 59,
-    Khá: 57,
-    TB: 86,
-    Yếu: 21,
-    Khối: "Khối 12",
-  },
-];
 
 const datasetAcademicPerformenceOfGrades = [
   {
@@ -164,21 +137,6 @@ export default function AcademicPerformanceStatistics() {
   const handleStatisticSubjectSchool = () => {
     console.log("Call api by all school: ", { schoolYear, schoolSemester, schoolSubject });
   };
-
-  const handleStatisticSubjectGrads = () => {
-    console.log("Call api by grad: ", { schoolYear, schoolSemester, schoolSubject, grade });
-  };
-
-  const handleStatisticSubjectClass = () => {
-    console.log("Call api by class: ", {
-      schoolYear,
-      schoolSemester,
-      schoolSubject,
-      grade,
-      schoolClass,
-    });
-  };
-
   const [value, setValue] = React.useState(0);
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -579,23 +537,6 @@ export default function AcademicPerformanceStatistics() {
                     {semesters.map((item) => (
                       <MenuItem key={item} value={item}>
                         {item}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-school-class-lable">Lớp</InputLabel>
-                  <Select
-                    labelId="select-school-class-lable"
-                    id="select-school-class"
-                    value={schoolClass}
-                    className="h-11 mr-3"
-                    label="Lớp"
-                    onChange={handleSchoolClassSelectedChange}
-                  >
-                    {studentClasses.data.map((item) => (
-                      <MenuItem key={item.name} value={item.name}>
-                        {item.name}
                       </MenuItem>
                     ))}
                   </Select>

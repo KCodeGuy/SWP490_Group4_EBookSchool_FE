@@ -184,13 +184,7 @@ export default function AcademicPerformanceStatistics() {
     setValue(newValue);
   };
 
-  const tabLabels = [
-    "HỌC LỰC TOÀN TRƯỜNG",
-    "HỌC LỰC THEO KHỐI",
-    "HỌC LỰC THEO LỚP",
-    "TAB 4",
-    "TAB 5",
-  ];
+  const tabLabels = ["HỌC LỰC TOÀN TRƯỜNG", "HỌC LỰC THEO KHỐI", "HỌC LỰC THEO LỚP"];
 
   const academicPerformenceOfAllSchoolsBox = [
     {

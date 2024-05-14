@@ -259,7 +259,7 @@ export default function AcademicPerformanceStatistics() {
   const pieChartAcademicPerformanceInEntireSchool1 = [
     { value: 30, color: "#287cd4" },
     { value: 50, color: "#a5a5a5" },
-    { value: 20, color: "#f9c559" },
+    { value: 10, color: "#f9c559" },
     { value: 10, color: "#d70200" },
   ];
   const pieChartAcademicPerformanceInEntireSchool2 = [
@@ -423,6 +423,8 @@ export default function AcademicPerformanceStatistics() {
                         colors={palette}
                         series={[
                           {
+                            // arcLabelMinAngle: 180,
+                            arcLabel: (item) => `(${item.value}%)`,
                             data: pieChartAcademicPerformanceInEntireSchool1,
                             highlightScope: { faded: "global", highlighted: "item" },
                             faded: { innerRadius: 30, additionalRadius: -30, color: "gray" },

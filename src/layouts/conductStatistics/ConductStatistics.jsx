@@ -1,56 +1,35 @@
-import { Card, FormControl, Grid, InputLabel, MenuItem, Select, Tab, Tabs } from "@mui/material";
+import {
+  Box,
+  Card,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  Tab,
+  Tabs,
+  Typography,
+} from "@mui/material";
+import { PieChart } from "@mui/x-charts";
+import { BarChart } from "@mui/x-charts/BarChart";
+import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import MDBox from "components/MDBox";
+import { axisClasses } from "@mui/x-charts";
+import { TabPanel } from "components/TabPanelComponent";
+import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import React, { useState } from "react";
-import "./style.scss";
-
-import { BarChart } from "@mui/x-charts/BarChart";
-import { axisClasses } from "@mui/x-charts";
-import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import { PieChart } from "@mui/x-charts/PieChart";
-import { schoolYears } from "mock/schoolYear";
-import { TabPanel } from "components/TabPanelComponent";
-import ButtonComponent from "components/ButtonComponent/ButtonComponent";
-import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import { studentClasses } from "mock/class";
-import { subjects } from "mock/subject";
-import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 import TableComponent from "components/TableComponent/TableComponent";
-import { Square } from "@mui/icons-material";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import React, { useState } from "react";
+import { schoolYears } from "mock/schoolYear";
+import { studentClasses } from "mock/class";
 
 const semesters = ["Học kì I", "Học kì II", "Cả năm"];
-
 const grades = ["Khối 10", "Khối 11", "Khối 12"];
 
-const datasetAcademicPerformenceOfAllSchools = [
-  {
-    Giỏi: 59,
-    Khá: 57,
-    TB: 86,
-    Yếu: 21,
-    Khối: "Khối 10",
-  },
-  {
-    Giỏi: 59,
-    Khá: 57,
-    TB: 86,
-    Yếu: 21,
-    Khối: "Khối 11",
-  },
-  {
-    Giỏi: 59,
-    Khá: 57,
-    TB: 86,
-    Yếu: 21,
-    Khối: "Khối 12",
-  },
-];
-
-const datasetAcademicPerformenceOfGrades = [
+const datasetConductOfGrade = [
   {
     Giỏi: 14,
     Khá: 20,
@@ -130,7 +109,7 @@ const valueFormatter = (value) => `${value} học sinh`;
 const pieParams = { height: 200, margin: { right: 5 } };
 const palette = ["#287cd4", "#a5a5a5", "f9c559", "d70200"];
 
-export default function AcademicPerformanceStatistics() {
+export default function ComponentMark() {
   const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
@@ -184,133 +163,133 @@ export default function AcademicPerformanceStatistics() {
     setValue(newValue);
   };
 
-  const tabLabels = ["HỌC LỰC TOÀN TRƯỜNG", "HỌC LỰC THEO KHỐI", "HỌC LỰC THEO LỚP"];
+  const tabLabels = ["HẠNH KIỂM TOÀN TRƯỜNG", "HẠNH KIỂM THEO KHỐI", "HẠNH KIỂM THEO LỚP"];
 
-  const academicPerformenceOfAllSchoolsBox = [
+  const schoolWideConductBox = [
     {
       color: "primary",
       icon: "leaderboard",
-      title: "Học sinh giỏi nhiều nhất",
+      title: "Hạnh kiểm giỏi nhiều nhất",
       count: "Khối 10",
       textDescriptionColor: "primary",
       amount: "100%",
-      label: "là tỉ lệ HSG khối 10",
+      label: "là tỉ lệ HKG khối 10",
     },
     {
       color: "info",
       icon: "leaderboard",
-      title: "Học sinh khá nhiều nhất",
+      title: "Hạnh kiểm khá nhiều nhất",
       count: "Khối 10",
       textDescriptionColor: "info",
       amount: "100%",
-      label: "là tỉ lệ HSK khối 10",
+      label: "là tỉ lệ HKK khối 10",
     },
     {
       color: "success",
       icon: "leaderboard",
-      title: "Học sinh TB nhiều nhất",
+      title: "Hạnh kiểm TB nhiều nhất",
       count: "Khối 10",
       textDescriptionColor: "success",
       amount: "100%",
-      label: "là tỉ lệ HSTB khối 10",
+      label: "là tỉ lệ HKTB khối 10",
     },
     {
       color: "info",
       icon: "leaderboard",
-      title: "Học sinh yếu nhiều nhất",
+      title: "Hạnh kiểm yếu nhiều nhất",
       count: "Khối 10",
       textDescriptionColor: "info",
       amount: "100%",
-      label: "là tỉ lệ HSY khối 10",
+      label: "là tỉ lệ HKY khối 10",
     },
   ];
 
-  const academicPerformenceOfGradesBox = [
+  const conductOfGradeBox = [
     {
       color: "primary",
       icon: "leaderboard",
-      title: "Học sinh giỏi",
+      title: "Hạnh kiểm giỏi",
       count: "20%",
       textDescriptionColor: "primary",
-      amount: "Học sinh giỏi",
+      amount: "Hạnh kiểm giỏi",
       label: "có tỉ lệ thấp nhất",
     },
     {
       color: "info",
       icon: "leaderboard",
-      title: "Học sinh khá",
+      title: "Hạnh kiểm khá",
       count: "30%",
       textDescriptionColor: "info",
-      amount: "Học sinh khá",
+      amount: "Hạnh kiểm khá",
       label: "",
     },
     {
       color: "success",
       icon: "leaderboard",
-      title: "Học sinh trung bình",
+      title: "Hạnh kiểm trung bình",
       count: "40%",
       textDescriptionColor: "success",
-      amount: "Học sinh trung bình",
+      amount: "Hạnh kiểm trung bình",
       label: "",
     },
     {
       color: "info",
       icon: "leaderboard",
-      title: "Học sinh yếu",
+      title: "Hạnh kiểm yếu",
       count: "10%",
       textDescriptionColor: "info",
-      amount: "Học sinh yếu",
+      amount: "Hạnh kiểm yếu",
       label: "có tỉ lệ cao nhất",
     },
   ];
 
-  const [academicPerformenceOfGrades, setAcademicPerformenceOfGrades] = useState([
-    ["12A1", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A2", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A3", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A4", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A5", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A6", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A7", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A8", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A9", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A10", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A11", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A12", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
+  const [conductOfGrade, setConductOfGrade] = useState([
+    ["12A1", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HKG"],
+    ["12A2", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HKG"],
+    ["12A3", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HKG"],
+    ["12A4", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HKG"],
+    ["12A5", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HKG"],
+    ["12A6", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HKG"],
+    ["12A1", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HKG"],
+    ["12A2", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HKG"],
+    ["12A3", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HKG"],
+    ["12A4", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HKG"],
+    ["12A5", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HKG"],
+    ["12A6", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HKG"],
+    ["12A7", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HKG"],
   ]);
-  const [academicPerformenceOfAllSchools, setAcademicPerformenceOfAllSchools] = useState([
-    ["Khối 10", "500", "100", "200", "300", "400", "HSG"],
-    ["Khối 11", "500", "100", "200", "300", "400", "HSG"],
-    ["Khối 12", "500", "100", "200", "300", "400", "HSG"],
+  const [schoolWideConduct, setSchoolWideConduct] = useState([
+    ["Khối 10", "500", "100", "200", "300", "400", "HKG"],
+    ["Khối 11", "500", "100", "200", "300", "400", "HKG"],
+    ["Khối 12", "500", "100", "200", "300", "400", "HKG"],
   ]);
-  const [academicPerformanceStatisticsOfAClass, setAcademicPerformanceStatisticsOfAClass] =
-    useState([
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-    ]);
+  const [conductOfAClass, setConductOfAClass] = useState([
+    ["Lê Văn A", "CE161025", "HKG", "HKG", "HKG"],
+    ["Lê Văn A", "CE161025", "HKG", "HKG", "HKG"],
+    ["Lê Văn A", "CE161025", "HKG", "HKG", "HKG"],
+    ["Lê Văn A", "CE161025", "HKG", "HKG", "HKG"],
+    ["Lê Văn A", "CE161025", "HKG", "HKG", "HKG"],
+    ["Lê Văn A", "CE161025", "HKG", "HKG", "HKG"],
+    ["Lê Văn A", "CE161025", "HKG", "HKG", "HKG"],
+    ["Lê Văn A", "CE161025", "HKG", "HKG", "HKG"],
+    ["Lê Văn A", "CE161025", "HKG", "HKG", "HKG"],
+    ["Lê Văn A", "CE161025", "HKG", "HKG", "HKG"],
+    ["Lê Văn A", "CE161025", "HKG", "HKG", "HKG"],
+  ]);
 
-  const pieChartAcademicPerformanceInEntireSchool1 = [
+  const pieChartSchoolWideConduct1 = [
     { value: 30, color: "#287cd4" },
     { value: 50, color: "#a5a5a5" },
     { value: 20, color: "#f9c559" },
     { value: 10, color: "#d70200" },
   ];
-  const pieChartAcademicPerformanceInEntireSchool2 = [
+  const pieChartSchoolWideConduct2 = [
     { value: 30, color: "#287cd4" },
     { value: 50, color: "#a5a5a5" },
     { value: 20, color: "#f9c559" },
     { value: 10, color: "#d70200" },
   ];
-  const pieChartAcademicPerformanceInEntireSchool3 = [
+  const pieChartSchoolWideConduct3 = [
     { value: 30, color: "#287cd4" },
     { value: 50, color: "#a5a5a5" },
     { value: 20, color: "#f9c559" },
@@ -335,6 +314,7 @@ export default function AcademicPerformanceStatistics() {
     { value: 20, color: "#f9c559" },
     { value: 10, color: "#d70200" },
   ];
+
   (React.useState < "middle") | ("tick" > "middle");
   const [tickPlacement, setTickPlacement] = React.useState("middle");
   const [tickLabelPlacement, setTickLabelPlacement] = React.useState("middle");
@@ -413,13 +393,15 @@ export default function AcademicPerformanceStatistics() {
                 </ButtonComponent>
               </div>
               <div className="text-center mt-8">
-                <h4 className="text-xl font-bold">Thống kê học lực trường THPT Nguyễn Việt Hồng</h4>
+                <h4 className="text-xl font-bold">
+                  Thống kê hạnh kiểm trường THPT Nguyễn Việt Hồng
+                </h4>
                 <h4 className="text-xl font-bold">
                   Học kỳ: {schoolSemester}. Năm học: {schoolYear}
                 </h4>
               </div>
               <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4 custom">
-                {academicPerformenceOfAllSchoolsBox.map((item, index) => (
+                {schoolWideConductBox.map((item, index) => (
                   <ComplexStatisticsCard
                     key={index}
                     color={item.color}
@@ -465,7 +447,7 @@ export default function AcademicPerformanceStatistics() {
                         colors={palette}
                         series={[
                           {
-                            data: pieChartAcademicPerformanceInEntireSchool1,
+                            data: pieChartSchoolWideConduct1,
                             highlightScope: { faded: "global", highlighted: "item" },
                             faded: { innerRadius: 30, additionalRadius: -30, color: "gray" },
                           },
@@ -481,7 +463,7 @@ export default function AcademicPerformanceStatistics() {
                         colors={palette}
                         series={[
                           {
-                            data: pieChartAcademicPerformanceInEntireSchool2,
+                            data: pieChartSchoolWideConduct2,
                             highlightScope: { faded: "global", highlighted: "item" },
                             faded: { innerRadius: 30, additionalRadius: -30, color: "gray" },
                           },
@@ -497,7 +479,7 @@ export default function AcademicPerformanceStatistics() {
                         colors={palette}
                         series={[
                           {
-                            data: pieChartAcademicPerformanceInEntireSchool3,
+                            data: pieChartSchoolWideConduct3,
                             highlightScope: { faded: "global", highlighted: "item" },
                             faded: { innerRadius: 30, additionalRadius: -30, color: "gray" },
                           },
@@ -516,13 +498,13 @@ export default function AcademicPerformanceStatistics() {
                   header={[
                     "Khối",
                     "Số lượng",
-                    "Số HSG",
-                    "Số HSK",
-                    "Số HSTB",
-                    "Số HSY",
+                    "Số HKG",
+                    "Số HKK",
+                    "Số HKTB",
+                    "Số HKY",
                     "Nhiều nhất",
                   ]}
-                  data={academicPerformenceOfAllSchools}
+                  data={schoolWideConduct}
                   // onEdit={handleEdit}
                   onDetails={handleDetails}
                   // onDelete={handleDelete}
@@ -583,23 +565,6 @@ export default function AcademicPerformanceStatistics() {
                     ))}
                   </Select>
                 </FormControl>
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-school-class-lable">Lớp</InputLabel>
-                  <Select
-                    labelId="select-school-class-lable"
-                    id="select-school-class"
-                    value={schoolClass}
-                    className="h-11 mr-3"
-                    label="Lớp"
-                    onChange={handleSchoolClassSelectedChange}
-                  >
-                    {studentClasses.data.map((item) => (
-                      <MenuItem key={item.name} value={item.name}>
-                        {item.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
                 <ButtonComponent
                   type="success"
                   className="max-[639px]:w-full"
@@ -610,14 +575,14 @@ export default function AcademicPerformanceStatistics() {
               </div>
               <div className="text-center mt-8">
                 <h4 className="text-xl font-bold">
-                  Thống kê học lực khối {grade} trường THPT Nguyễn Việt Hồng
+                  Thống kê hạnh kiểm khối {grade} trường THPT Nguyễn Việt Hồng
                 </h4>
                 <h4 className="text-xl font-bold">
                   Học kỳ: {schoolSemester}. Năm học: {schoolYear}
                 </h4>
               </div>
               <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4 custom">
-                {academicPerformenceOfGradesBox.map((item, index) => (
+                {conductOfGradeBox.map((item, index) => (
                   <ComplexStatisticsCard
                     key={index}
                     color={item.color}
@@ -637,7 +602,7 @@ export default function AcademicPerformanceStatistics() {
                 style={{ background: "#E9F7FF" }}
               >
                 <BarChart
-                  dataset={datasetAcademicPerformenceOfGrades}
+                  dataset={datasetConductOfGrade}
                   xAxis={[{ scaleType: "band", dataKey: "Lớp", tickPlacement, tickLabelPlacement }]}
                   series={[
                     { dataKey: "Giỏi", label: "Giỏi", valueFormatter },
@@ -656,13 +621,13 @@ export default function AcademicPerformanceStatistics() {
                     "Lớp",
                     "Sỉ số",
                     "GVCN",
-                    "Tỉ lệ HSG",
-                    "Tỉ lệ HSK",
-                    "Tỉ lệ HSTB",
-                    "Tỉ lệ HSY",
+                    "Tỉ lệ HKG",
+                    "Tỉ lệ HKK",
+                    "Tỉ lệ HKTB",
+                    "Tỉ lệ HKY",
                     "Nhiều nhất",
                   ]}
-                  data={academicPerformenceOfGrades}
+                  data={conductOfGrade}
                   // onEdit={handleEdit}
                   onDetails={handleDetails}
                   // onDelete={handleDelete}
@@ -750,7 +715,7 @@ export default function AcademicPerformanceStatistics() {
               </div>
               <div className="text-center mt-8">
                 <h4 className="text-xl font-bold">
-                  Thống kê học lực lớp {schoolClass} trường THPT Nguyễn Việt Hồng
+                  Thống kê hạnh kiểm lớp {schoolClass} trường THPT Nguyễn Việt Hồng
                 </h4>
                 <h4 className="text-xl font-bold">
                   Học kỳ: {schoolSemester}. Năm học: {schoolYear}
@@ -850,7 +815,7 @@ export default function AcademicPerformanceStatistics() {
                 <p className="text-base font-bold">THỐNG KÊ CHI TIẾT ({grade})</p>
                 <TableComponent
                   header={["Họ và tên", "Mã học sinh", "HKI", "HKII", "Cả năm"]}
-                  data={academicPerformanceStatisticsOfAClass}
+                  data={conductOfAClass}
                   // onEdit={handleEdit}
                   onDetails={handleDetails}
                   // onDelete={handleDelete}

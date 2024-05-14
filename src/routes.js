@@ -44,9 +44,9 @@ import ResetPassword from "layouts/authentication/reset-password";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
-import SchoolBook from "./layouts/shoolBook/SchoolBook";
+import SchoolBook from "./layouts/shoolBook/schoolBook";
 import Wiki from "./layouts/wiki/Wiki";
-import MarkManagement from "./layouts/markManagement/MarkManagement";
+import MarkManagement from "./layouts/MarkManagement/MarkManagement";
 import RoomManagement from "./layouts/roomManagement/RoomManagement";
 import ClassManagement from "./layouts/classManagement/ClassManagement";
 import NotificationManagement from "./layouts/notificationManagement/NotificationManagement";
@@ -57,6 +57,7 @@ import WeeklyTimeTable from "./layouts/weeklyTimeTable";
 import MarkStatistics from "./layouts/markStatistics/MarkStatistics";
 import TakeAttendance from "layouts/takeAttendance";
 import AcademicPerformanceStatistics from "./layouts/academicPerformanceStatistics/AcademicPerformanceStatistics";
+import ConductStatistics from "./layouts/conductStatistics/ConductStatistics";
 
 const routes = [
   {
@@ -83,7 +84,14 @@ const routes = [
     route: "/academicPerformanceStatistics",
     component: <AcademicPerformanceStatistics />,
   },
-
+  {
+    type: "collapse",
+    name: "Conduct Statistics(HieuTTN)",
+    key: "conductStatistics",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/conductStatistics",
+    component: <ConductStatistics />,
+  },
   {
     type: "collapse",
     name: "Room Management(UolLT)",

@@ -324,25 +324,19 @@ export default function AccountManagement() {
                   <div role="tabpanel" hidden={currentTab == 1}>
                     {/* Form để nhập thêm thông tin */}
                     <form onSubmit={handleSubmit(handleAddInfomation)}>
-                      {/* Left column */}
-                      <div className="w-full flex">
+                      <div className="grid grid-cols-3 gap-4">
                         <InputBaseComponent
                           placeholder="Nhập họ và tên"
-                          className="w/1/3 mr-3"
                           type="text"
                           control={control}
                           setValue={noSetValue}
                           name="fullName"
                           label="Họ & Tên"
                           errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
+                          validationRules={{ required: "Không được bỏ trống!" }}
                         />
-
                         <InputBaseComponent
                           placeholder="Nhập email"
-                          className="w/1/3 mr-3"
                           type="email"
                           control={control}
                           setValue={noSetValue}
@@ -359,7 +353,6 @@ export default function AccountManagement() {
                         />
                         <InputBaseComponent
                           placeholder="Nhập số điện thoại"
-                          className="w/1/3"
                           type="text"
                           control={control}
                           setValue={noSetValue}
@@ -374,187 +367,123 @@ export default function AccountManagement() {
                             },
                           }}
                         />
-                      </div>
-                      <div className="flex">
                         <InputBaseComponent
                           placeholder="Nhập mã số căn cước"
-                          className="w/1/3 mr-3"
                           type="text"
                           control={control}
                           setValue={noSetValue}
                           name="citizenIdentification"
                           label="CCCD"
                           errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
+                          validationRules={{ required: "Không được bỏ trống!" }}
                         />
                         <InputBaseComponent
                           placeholder="Nhập ngày sinh"
-                          className="w/1/3 mr-3"
                           type="date"
                           control={control}
                           setValue={noSetValue}
                           name="birthday"
                           label="Ngày sinh"
                           errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
+                          validationRules={{ required: "Không được bỏ trống!" }}
                         />
                         <InputBaseComponent
                           name="countryside"
                           placeholder="Nhập quê quán"
                           type="textArea"
                           control={control}
-                          rowTextArea={2}
+                          rowTextArea={1}
                           setValue={noSetValue}
                           label="Quê quán"
                           errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
+                          validationRules={{ required: "Không được bỏ trống!" }}
                         />
-                      </div>
-
-                      <InputBaseComponent
-                        placeholder="Nhập gới tính"
-                        type="text"
-                        control={control}
-                        setValue={noSetValue}
-                        name="gender"
-                        label="Giới tính"
-                        errors={errors}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                        className="mt-4"
-                      />
-
-                      <InputBaseComponent
-                        placeholder="Nhập dân tộc"
-                        type="text"
-                        control={control}
-                        setValue={noSetValue}
-                        name="nation"
-                        label="Dân tộc"
-                        errors={errors}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                        className="mt-4"
-                      />
-                      <InputBaseComponent
-                        placeholder="Nhập tôn giáo"
-                        type="text"
-                        control={control}
-                        setValue={noSetValue}
-                        name="religion"
-                        label="Tôn giáo"
-                        errors={errors}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                        className="mt-4"
-                      />
-                      <InputBaseComponent
-                        placeholder="Nhập quốc tịch"
-                        type="text"
-                        control={control}
-                        setValue={noSetValue}
-                        name="nationality"
-                        label="Quốc tịch"
-                        errors={errors}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                        className="mt-4"
-                      />
-                      <InputBaseComponent
-                        placeholder="Nhập trạng thái"
-                        type="text"
-                        control={control}
-                        setValue={noSetValue}
-                        name="status"
-                        label="Trạng thái"
-                        errors={errors}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                        className="mt-4"
-                      />
-
-                      {/* Right column */}
-                      <div className="w-1/2">
                         <InputBaseComponent
-                          placeholder="Input horizontal Label"
-                          type="radio"
-                          horizontalLabel={true}
+                          placeholder="Nhập giới tính"
+                          type="text"
                           control={control}
                           setValue={noSetValue}
-                          options={radioOptions}
-                          name="mission"
-                          label=""
-                          noLabel={true}
+                          name="gender"
+                          label="Giới tính"
                           errors={errors}
-                          validationRules={{
-                            required: "Phải chọn 1 trong các options!",
-                          }}
+                          validationRules={{ required: "Không được bỏ trống!" }}
+                        />
+                        <InputBaseComponent
+                          placeholder="Nhập dân tộc"
+                          type="text"
+                          control={control}
+                          setValue={noSetValue}
+                          name="nation"
+                          label="Dân tộc"
+                          errors={errors}
+                          validationRules={{ required: "Không được bỏ trống!" }}
+                        />
+                        <InputBaseComponent
+                          placeholder="Nhập tôn giáo"
+                          type="text"
+                          control={control}
+                          setValue={noSetValue}
+                          name="religion"
+                          label="Tôn giáo"
+                          errors={errors}
+                          validationRules={{ required: "Không được bỏ trống!" }}
+                        />
+                        <InputBaseComponent
+                          placeholder="Nhập quốc tịch"
+                          type="text"
+                          control={control}
+                          setValue={noSetValue}
+                          name="nationality"
+                          label="Quốc tịch"
+                          errors={errors}
+                          validationRules={{ required: "Không được bỏ trống!" }}
                         />
                         <InputBaseComponent
                           name="insurance"
                           placeholder="Nhập mã BHXH"
                           type="textArea"
                           control={control}
-                          rowTextArea={2}
+                          rowTextArea={1}
                           setValue={noSetValue}
                           label="BHXH"
                           errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
+                          validationRules={{ required: "Không được bỏ trống!" }}
                         />
                         <InputBaseComponent
                           name="qualification"
                           placeholder="..."
                           type="textArea"
                           control={control}
-                          rowTextArea={2}
+                          rowTextArea={1}
                           setValue={noSetValue}
                           label="Trình độ chuyên môn"
                           errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
+                          validationRules={{ required: "Không được bỏ trống!" }}
                         />
                         <InputBaseComponent
                           name="politicalTheoretical"
                           placeholder="..."
                           type="textArea"
                           control={control}
-                          rowTextArea={2}
+                          rowTextArea={1}
                           setValue={noSetValue}
                           label="Trình độ LL chính trị"
                           errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
+                          validationRules={{ required: "Không được bỏ trống!" }}
                         />
                         <InputBaseComponent
                           name="educationalManagement"
                           placeholder="..."
                           type="textArea"
                           control={control}
-                          rowTextArea={2}
+                          rowTextArea={1}
                           setValue={noSetValue}
-                          label="Trình độ quản lý giáo dục"
+                          label="Trình độ QL giáo dục"
                           errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
+                          validationRules={{ required: "Không được bỏ trống!" }}
                         />
                         <InputBaseComponent
-                          name="ccomputerSkill"
+                          name="computerSkill"
                           placeholder="..."
                           type="textArea"
                           control={control}
@@ -562,9 +491,7 @@ export default function AccountManagement() {
                           setValue={noSetValue}
                           label="Trình độ tin học"
                           errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
+                          validationRules={{ required: "Không được bỏ trống!" }}
                         />
                         <InputBaseComponent
                           name="langue"
@@ -575,9 +502,7 @@ export default function AccountManagement() {
                           setValue={noSetValue}
                           label="Ngoại ngữ chính"
                           errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
+                          validationRules={{ required: "Không được bỏ trống!" }}
                         />
                         <InputBaseComponent
                           name="id"
@@ -588,9 +513,28 @@ export default function AccountManagement() {
                           setValue={noSetValue}
                           label="Mã số"
                           errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
+                          validationRules={{ required: "Không được bỏ trống!" }}
+                        />
+                        <InputBaseComponent
+                          placeholder="Nhập trạng thái"
+                          type="text"
+                          control={control}
+                          setValue={noSetValue}
+                          name="status"
+                          label="Trạng thái"
+                          errors={errors}
+                          validationRules={{ required: "Không được bỏ trống!" }}
+                        />
+                        <InputBaseComponent
+                          type="radio"
+                          horizontalLabel={true}
+                          control={control}
+                          setValue={noSetValue}
+                          options={radioOptions}
+                          name="mission"
+                          label="Chọn "
+                          errors={errors}
+                          validationRules={{ required: "Phải chọn 1 trong các options!" }}
                         />
                       </div>
                       <div className="mt-4 flex justify-end">

@@ -42,3 +42,40 @@ export const handleExportData = (data, sheetName = "Sheet", fileName = "Demo") =
     XLSX.writeFile(wb, `${fileName}.xlsx`);
   }
 };
+
+export const generateSchoolWeeks = (currentYear) => {
+  const schoolWeeks = [];
+  let startDate = new Date(currentYear, 0, 1); // January 1st of the given year
+
+  // Adjust the start date to the nearest Monday
+  const day = startDate.getDay();
+  const dayOffset = (day === 0 ? -6 : 1) - day; // If Sunday (0), move to next day; otherwise, move to Monday
+  startDate.setDate(startDate.getDate() + dayOffset);
+
+  for (let i = 0; i < 52; i++) {
+    const weekStart = new Date(startDate);
+    const weekEnd = new Date(startDate);
+    weekEnd.setDate(weekStart.getDate() + 6); // End date is 6 days after start date
+
+    const week = {
+      id: i + 1,
+      name: `Week ${i + 1}`,
+      startTime: formatDate(weekStart),
+      endTime: formatDate(weekEnd),
+    };
+
+    schoolWeeks.push(week);
+
+    // Move start date to the next week
+    startDate.setDate(startDate.getDate() + 7);
+  }
+
+  return schoolWeeks;
+};
+
+export const formatDate = (date) => {
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};

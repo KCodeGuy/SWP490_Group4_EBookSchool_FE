@@ -35,9 +35,9 @@ function BasicLayout({ image, children }) {
       <DefaultNavbar
         action={{
           type: "internal",
-          route: "/dashboard",
+          route: "/",
           label: "Trở lại",
-          color: "dark",
+          color: "info",
         }}
       />
       <MDBox

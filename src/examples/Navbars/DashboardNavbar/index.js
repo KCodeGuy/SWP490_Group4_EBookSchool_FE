@@ -52,6 +52,8 @@ import {
   setMiniSidenav,
   setOpenConfigurator,
 } from "context";
+import { Grid } from "@mui/material";
+import MDAvatar from "components/MDAvatar";
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const [navbarType, setNavbarType] = useState();
@@ -90,6 +92,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
   const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
   const handleCloseMenu = () => setOpenMenu(false);
+  const currentUser = JSON.parse(localStorage.getItem("user"));
 
   // Render the notifications menu
   const renderMenu = () => (
@@ -135,15 +138,19 @@ function DashboardNavbar({ absolute, light, isMini }) {
         </MDBox>
         {isMini ? null : (
           <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
-            <MDBox pr={1}>
-              <MDInput label="Search here" />
-            </MDBox>
-            <MDBox color={light ? "white" : "inherit"}>
-              <Link to="/authentication/sign-in/basic">
-                <IconButton sx={navbarIconButton} size="small" disableRipple>
-                  <Icon sx={iconsStyle}>account_circle</Icon>
-                </IconButton>
-              </Link>
+            <div className="flex items-center">
+              <IconButton
+                size="small"
+                disableRipple
+                color="inherit"
+                sx={navbarIconButton}
+                aria-controls="notification-menu"
+                aria-haspopup="true"
+                variant="contained"
+                onClick={handleOpenMenu}
+              >
+                <Icon sx={iconsStyle}>notifications</Icon>
+              </IconButton>
               <IconButton
                 size="small"
                 disableRipple
@@ -164,20 +171,22 @@ function DashboardNavbar({ absolute, light, isMini }) {
               >
                 <Icon sx={iconsStyle}>settings</Icon>
               </IconButton>
-              <IconButton
-                size="small"
-                disableRipple
-                color="inherit"
-                sx={navbarIconButton}
-                aria-controls="notification-menu"
-                aria-haspopup="true"
-                variant="contained"
-                onClick={handleOpenMenu}
-              >
-                <Icon sx={iconsStyle}>notifications</Icon>
-              </IconButton>
+
+              {currentUser && (
+                <Link to="/profile">
+                  <div className="flex items-center">
+                    <img
+                      className="w-12 h-12 object-contain object-center shadow-md rounded-full"
+                      src={currentUser.avatar}
+                      alt="user"
+                    />
+                    <span className="text-base font-medium ml-2">{currentUser.fullname}</span>
+                  </div>
+                </Link>
+              )}
+
               {renderMenu()}
-            </MDBox>
+            </div>
           </MDBox>
         )}
       </Toolbar>

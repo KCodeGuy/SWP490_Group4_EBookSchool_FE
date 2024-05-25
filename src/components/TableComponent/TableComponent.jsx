@@ -105,8 +105,8 @@ function TableComponent({
                   <td className="text-center">
                     <img
                       className="w-32 h-32 rounded-md mx-auto object-cover object-center"
-                      src="https://zpsocial-f55-org.zadn.vn/05b9313e4c9fadc1f48e.jpg"
-                      // src="https://scontent.fsgn5-9.fna.fbcdn.net/v/t1.6435-9/73423386_2452908634816054_193106849229176832_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=5f2048&_nc_ohc=WfKACIaCKmwQ7kNvgHPBa_8&_nc_ht=scontent.fsgn5-9.fna&oh=00_AYB84VdD325lXZkV7dmrDJdZBXdEBXkby5TiGMpnl5aZpA&oe=6665595C"
+                      // src="https://zpsocial-f55-org.zadn.vn/05b9313e4c9fadc1f48e.jpg"
+                      src="https://scontent.fsgn5-9.fna.fbcdn.net/v/t1.6435-9/73423386_2452908634816054_193106849229176832_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=5f2048&_nc_ohc=WfKACIaCKmwQ7kNvgHPBa_8&_nc_ht=scontent.fsgn5-9.fna&oh=00_AYB84VdD325lXZkV7dmrDJdZBXdEBXkby5TiGMpnl5aZpA&oe=6665595C"
                       alt="my-teacher"
                     />
                     {/* <div className="text-4xl primary-color">

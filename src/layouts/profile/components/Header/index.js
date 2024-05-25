@@ -37,8 +37,10 @@ import breakpoints from "assets/theme/base/breakpoints";
 // Images
 import burceMars from "assets/images/bruce-mars.jpg";
 import backgroundImage from "assets/images/bg-profile.jpeg";
+import ButtonComponent from "components/ButtonComponent/ButtonComponent";
+import { useNavigate } from "react-router-dom";
 
-function Header({ children }) {
+function Header({ children, currentUser, permissions }) {
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
   const [tabValue, setTabValue] = useState(0);
 
@@ -63,6 +65,11 @@ function Header({ children }) {
   }, [tabsOrientation]);
 
   const handleSetTabValue = (event, newValue) => setTabValue(newValue);
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/authentication/sign-in");
+  };
 
   return (
     <MDBox position="relative" mb={5}>
@@ -94,46 +101,26 @@ function Header({ children }) {
       >
         <Grid container spacing={3} alignItems="center">
           <Grid item>
-            <MDAvatar src={burceMars} alt="profile-image" size="xl" shadow="sm" />
+            <MDAvatar src={currentUser.avatar} alt="profile-image" size="xl" shadow="sm" />
           </Grid>
           <Grid item>
             <MDBox height="100%" mt={0.5} lineHeight={1}>
               <MDTypography variant="h5" fontWeight="medium">
-                Richard Davis
+                {currentUser.fullname}
               </MDTypography>
               <MDTypography variant="button" color="text" fontWeight="regular">
-                CEO / Co-Founder
+                {permissions || "No permission"} | {currentUser.id}
               </MDTypography>
             </MDBox>
           </Grid>
           <Grid item xs={12} md={6} lg={4} sx={{ ml: "auto" }}>
             <AppBar position="static">
-              <Tabs orientation={tabsOrientation} value={tabValue} onChange={handleSetTabValue}>
-                <Tab
-                  label="App"
-                  icon={
-                    <Icon fontSize="small" sx={{ mt: -0.25 }}>
-                      home
-                    </Icon>
-                  }
-                />
-                <Tab
-                  label="Message"
-                  icon={
-                    <Icon fontSize="small" sx={{ mt: -0.25 }}>
-                      email
-                    </Icon>
-                  }
-                />
-                <Tab
-                  label="Settings"
-                  icon={
-                    <Icon fontSize="small" sx={{ mt: -0.25 }}>
-                      settings
-                    </Icon>
-                  }
-                />
-              </Tabs>
+              <div className="flex items-center justify-end">
+                <ButtonComponent type="dark" onClick={handleLogout}>
+                  ĐĂNG XUẤT
+                </ButtonComponent>
+                <ButtonComponent>CẬP NHẬT</ButtonComponent>
+              </div>
             </AppBar>
           </Grid>
         </Grid>
@@ -151,6 +138,8 @@ Header.defaultProps = {
 // Typechecking props for the Header
 Header.propTypes = {
   children: PropTypes.node,
+  currentUser: PropTypes.object,
+  permissions: PropTypes.any,
 };
 
 export default Header;

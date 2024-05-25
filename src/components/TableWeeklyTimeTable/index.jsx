@@ -55,7 +55,7 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
                   ?.slots.find((s) => s.slot === slot);
                 return (
                   <td key={`${date}-${slot}`} className="cell-hover min-w-28">
-                    {slotData ? (
+                    {slotData.classroom ? (
                       <div className="mx-2 my-1 text-left">
                         <div
                           className="flex justify-between cursor-pointer hover:underline"
@@ -85,7 +85,6 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
                             <span className="font-bold error-color">(Vắng)</span>
                           )}
                         </p>
-                        <p>{renderSlotStatus(slotData.status)}</p>
                         <Link to="/takeAttendance">
                           <button className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color">
                             Điểm danh

@@ -29,23 +29,11 @@ import TableComponent from "../../components/TableComponent/TableComponent";
 import { studentClasses } from "../../mock/class";
 import { schoolYears } from "../../mock/schoolYear";
 import { studentWeeklyTimeTableDates, timeTablesAllSchool } from "../../mock/weeklyTimeTable";
+import { getStudentTimetable } from "services/TimeTableService";
+import { useMutation, useQuery } from "react-query";
+import { generateSchoolWeeks } from "utils/CommonFunctions";
 
-const schoolWeeks = [
-  { id: 1, name: "week 1", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 2, name: "week 2", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 3, name: "week 3", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 4, name: "week 4", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 5, name: "week 5", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 6, name: "week 6", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 7, name: "week 7", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 8, name: "week 8", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 9, name: "week 9", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 10, name: "week 10", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 11, name: "week 11", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 12, name: "week 12", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 13, name: "week 13", startTime: "20/1/2024", endTime: "28/1/2024" },
-];
-
+const weeks2024 = generateSchoolWeeks(2024);
 const formattedSemester = [
   { label: "Học kì 1", value: "HK1" },
   { label: "Học kì 2", value: "HK2" },
@@ -60,6 +48,7 @@ export default function WeeklyTimeTable() {
   const [currentSlot, setCurrentSlot] = useState({});
   const [currentRoom, setCurrentClass] = useState("12A1");
   const [currentSlotDate, setCurrentSlotDate] = useState("");
+  const [currentTimeTable, setCurrentTimeTable] = useState([]);
 
   const timeTableOfAllSchool = timeTablesAllSchool.data.map((item) => [
     // item.id,
@@ -71,6 +60,28 @@ export default function WeeklyTimeTable() {
     item.toDate,
   ]);
 
+  const [schoolWeek, setSchoolWeek] = React.useState(weeks2024[0].startTime);
+  const handleSchoolWeeksSelectedChange = (event) => {
+    setSchoolWeek(event.target.value);
+  };
+
+  const studentID = "HS0001";
+  const year = "2023-2024";
+  const fromDate = schoolWeek;
+  const accessToken =
+    "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IkdWMDAwNCIsImp0aSI6ImU0Nzc0Mzk0LTE4MmUtNDU3OS1hYTJhLWQzYTg3NmFkZGUzYiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6WyJBZGQgVGVhY2hlciIsIlVwZGF0ZSBUZWFjaGVyIiwiRGVsZXRlIFRlYWNoZXIiLCJHZXQgVGVhY2hlciIsIkFkZCBTdHVkZW50IiwiVXBkYXRlIFN0dWRlbnQiLCJEZWxldGUgU3R1ZGVudCIsIkdldCBTdHVkZW50IiwiQWRkIFN1YmplY3QiLCJVcGRhdGUgU3ViamVjdCIsIkRlbGV0ZSBTdWJqZWN0IiwiR2V0IFN1YmplY3QiLCJBZGQgQ2xhc3MiLCJVcGRhdGUgQ2xhc3MiLCJEZWxldGUgQ2xhc3MiLCJHZXQgQ2xhc3MiLCJBZGQgU2NoZWR1bGUiLCJVcGRhdGUgU2NoZWR1bGUiLCJEZWxldGUgU2NoZWR1bGUiLCJHZXQgU2NoZWR1bGUiLCJBZGQgUmVnaXN0ZXIgQm9vayIsIlVwZGF0ZSBSZWdpc3RlciBCb29rIiwiRGVsZXRlIFJlZ2lzdGVyIEJvb2siLCJHZXQgUmVnaXN0ZXIgQm9vayIsIkFkZCBBdHRlbmRhbmNlIiwiVXBkYXRlIEF0dGVuZGFuY2UiLCJEZWxldGUgQXR0ZW5kYW5jZSIsIkdldCBBdHRlbmRhbmNlIiwiR2V0IE1hcmsiLCJBZGQgTm90aWZpY2F0aW9uIiwiVXBkYXRlIE5vdGlmaWNhdGlvbiIsIkRlbGV0ZSBOb3RpZmljYXRpb24iLCJHZXQgTm90aWZpY2F0aW9uIiwiVXBkYXRlIFNldHRpbmciLCJHZXQgTG9nIl0sImV4cCI6MTcxOTExNjgxMCwiaXNzIjoiU0VQNDkwIiwiYXVkIjoiU0VQNDkwIn0.eZUoqfmhqNqS7Qamx56lpCvCuET-w2FcbAdRcFviQKg";
+
+  const { data, error, isLoading } = useQuery(
+    ["studentSchedule", { studentID, year, fromDate, accessToken }],
+    () => getStudentTimetable(studentID, year, fromDate, accessToken)
+  );
+
+  console.log(currentTimeTable);
+
+  const handleFilterTimetable = () => {
+    setCurrentTimeTable(data.data.details);
+  };
+
   const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
@@ -81,10 +92,6 @@ export default function WeeklyTimeTable() {
     setSchoolClass(event.target.value);
   };
 
-  const [schoolWeek, setSchoolWeek] = React.useState(schoolWeeks[0].name);
-  const handleSchoolWeeksSelectedChange = (event) => {
-    setSchoolWeek(event.target.value);
-  };
   const [currentTab, setCurrentTab] = useState(0);
   const {
     control,
@@ -126,6 +133,8 @@ export default function WeeklyTimeTable() {
   const handleAddWeeklyTimeTable = (data) => {
     console.log(data);
   };
+
+  console.log(schoolWeek);
 
   const formattedSchoolYear = schoolYears.data.map((year) => ({
     label: year.schoolYear,
@@ -184,19 +193,19 @@ export default function WeeklyTimeTable() {
                 <Select
                   labelId="select-school-week-lable"
                   id="select-school-class"
-                  value={schoolWeek}
+                  value={schoolWeek.startTime}
                   className="h-10 mr-2 max-[767px]:mb-4"
                   label="Tuần"
                   onChange={handleSchoolWeeksSelectedChange}
                 >
-                  {schoolWeeks.map((item, index) => (
-                    <MenuItem key={index} value={item.name}>
+                  {weeks2024.map((item, index) => (
+                    <MenuItem key={index} value={item.startTime}>
                       {item.startTime} - {item.endTime}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-              <ButtonComponent type="success">
+              <ButtonComponent type="success" onClick={handleFilterTimetable}>
                 <FilterAltIcon className="mr-1" /> TÌM KIẾM
               </ButtonComponent>
               <ButtonComponent
@@ -356,8 +365,8 @@ export default function WeeklyTimeTable() {
               </PopupComponent>
             </div>
           </div>
-          <p className="text-base font-bold mt-10">TẤT CẢ THỜI KHÓA BIỂU</p>
-          <TableComponent
+          {/* <p className="text-base font-bold mt-10">TẤT CẢ THỜI KHÓA BIỂU</p> */}
+          {/* <TableComponent
             header={["Năm học", "Học kì", "Lớp", "GVCN", "Từ ngày", "Đến"]}
             data={timeTableOfAllSchool}
             onEdit={(data) => console.log(data)}
@@ -365,7 +374,7 @@ export default function WeeklyTimeTable() {
             onDelete={(data) => console.log(data)}
             className="mt-4"
             itemsPerPage={5}
-          />
+          /> */}
           <div className="text-center mt-10">
             <h4 className="text-xl font-bold uppercase">THỜI KHÓA BIỂU lớp {schoolClass}</h4>
           </div>
@@ -392,7 +401,7 @@ export default function WeeklyTimeTable() {
             </div>
           </div>
           <TableWeeklyTimeTableComponent
-            data={studentWeeklyTimeTableDates.data.details}
+            data={currentTimeTable}
             onDetails={handleViewSlotDetail}
             className="mt-4"
           />

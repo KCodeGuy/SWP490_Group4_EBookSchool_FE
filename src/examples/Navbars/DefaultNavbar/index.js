@@ -114,13 +114,12 @@ function DefaultNavbar({ transparent, light, action }) {
           </MDTypography>
         </MDBox>
         <MDBox color="inherit" display={{ xs: "none", lg: "flex" }} m={0} p={0}>
-          <DefaultNavbarLink icon="donut_large" name="Trang chủ" route="/dashboard" light={light} />
-          <DefaultNavbarLink icon="person" name="Tài khoản" route="/profile" light={light} />
+          <DefaultNavbarLink icon="donut_large" name="Giới thiệu" route="/authentication/sign-in" />
+          <DefaultNavbarLink icon="key" name="Đăng nhập" route="/authentication/sign-in" />
           <DefaultNavbarLink
             icon="key"
-            name="Đăng nhập"
-            route="/authentication/sign-in"
-            light={light}
+            name="Quên mật khẩu"
+            route="/authentication/reset-password"
           />
         </MDBox>
         {action &&

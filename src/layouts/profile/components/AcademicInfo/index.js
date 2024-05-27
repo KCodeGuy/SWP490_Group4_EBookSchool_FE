@@ -22,44 +22,60 @@ import Switch from "@mui/material/Switch";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
+import MarkunreadIcon from "@mui/icons-material/Markunread";
 
 function AcademicInfo() {
   return (
     <Card sx={{ boxShadow: "none" }}>
       <MDBox p={2}>
         <MDTypography variant="h6" fontWeight="medium" textTransform="capitalize">
-          TRÌNH ĐỘ HỌC VẤN
+          THÔNG TIN HỌC VẤN
         </MDTypography>
       </MDBox>
       <MDBox pt={1} pb={2} px={2} lineHeight={1.25}>
-        <div className="flex items-center">
-          {/* <MarkunreadIcon /> */}
+        {/* <div className="flex items-center">
+          <MarkunreadIcon />
+          <span className="text-base font-bold mx-2">Họ tên cha: </span>
+          <span className="text-sm text-color">Nguyễn Văn B</span>
+        </div>
+        <div className="flex items-center mt-4">
+          <MarkunreadIcon />
+          <span className="text-base font-bold mx-2">Họ tên mẹ: </span>
+          <span className="text-sm text-color">Nguyễn Thị C</span>
+        </div>
+        <div className="flex items-center mt-4">
+          <MarkunreadIcon />
+          <span className="text-base font-bold mx-2">Nghề nghiệp cha: </span>
+          <span className="text-sm text-color">Làm nông</span>
+        </div>
+        <div className="flex items-center mt-4">
+          <MarkunreadIcon />
+          <span className="text-base font-bold mx-2">Nghề nghiệp cha: </span>
+          <span className="text-sm text-color">Làm nông</span>
+        </div>
+        <div className="flex items-center mt-4">
+          <MarkunreadIcon />
+          <span className="text-base font-bold mx-2">Khác: </span>
+          <span className="text-sm text-color">Không có thông tin</span>
+        </div> */}
+        <div className="flex items-center mt-4">
+          <MarkunreadIcon />
           <span className="text-base font-bold mx-2">Cử nhân: </span>
           <span className="text-sm text-color">Có</span>
         </div>
         <div className="flex items-center mt-4">
-          {/* <MarkunreadIcon /> */}
+          <MarkunreadIcon />
           <span className="text-base font-bold mx-2">Thạc sĩ: </span>
           <span className="text-sm text-color">Có</span>
         </div>
         <div className="flex items-center mt-4">
-          {/* <MarkunreadIcon /> */}
+          <MarkunreadIcon />
           <span className="text-base font-bold mx-2">Tiến sĩ: </span>
           <span className="text-sm text-color">Có</span>
         </div>
         <div className="flex items-center mt-4">
-          {/* <MarkunreadIcon /> */}
-          <span className="text-base font-bold mx-2">Giáo sư: </span>
-          <span className="text-sm text-color">Có</span>
-        </div>
-        <div className="flex items-center mt-4">
-          {/* <MarkunreadIcon /> */}
+          <MarkunreadIcon />
           <span className="text-base font-bold mx-2">Khác: </span>
-          <span className="text-sm text-color">Không có thông tin</span>
-        </div>
-        <div className="flex items-center mt-4">
-          {/* <MarkunreadIcon /> */}
-          <span className="text-base font-bold mx-2">Kinh nghiệm làm việc: </span>
           <span className="text-sm text-color">Không có thông tin</span>
         </div>
       </MDBox>

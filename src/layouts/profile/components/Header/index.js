@@ -66,10 +66,6 @@ function Header({ children, currentUser, permissions }) {
 
   const handleSetTabValue = (event, newValue) => setTabValue(newValue);
   const navigate = useNavigate();
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/authentication/sign-in");
-  };
 
   return (
     <MDBox position="relative" mb={5}>
@@ -106,19 +102,20 @@ function Header({ children, currentUser, permissions }) {
           <Grid item>
             <MDBox height="100%" mt={0.5} lineHeight={1}>
               <MDTypography variant="h5" fontWeight="medium">
-                {currentUser.fullname}
+                {/* {currentUser.fullname} */} Nguyễn Văn A
               </MDTypography>
               <MDTypography variant="button" color="text" fontWeight="regular">
-                {permissions || "No permission"} | {currentUser.id}
+                {/* {permissions || "No permission"} | {currentUser.id} */}
+                Giáo viên | GV0001
               </MDTypography>
             </MDBox>
           </Grid>
           <Grid item xs={12} md={6} lg={4} sx={{ ml: "auto" }}>
             <AppBar position="static">
               <div className="flex items-center justify-end">
-                <ButtonComponent type="dark" onClick={handleLogout}>
+                {/* <ButtonComponent type="dark" onClick={handleLogout}>
                   ĐĂNG XUẤT
-                </ButtonComponent>
+                </ButtonComponent> */}
                 <ButtonComponent>CẬP NHẬT</ButtonComponent>
               </div>
             </AppBar>

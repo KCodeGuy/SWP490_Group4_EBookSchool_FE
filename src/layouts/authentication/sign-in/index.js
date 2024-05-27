@@ -109,6 +109,7 @@ function Basic() {
         <MDBox pt={2} pb={3} px={3}>
           <span className="error-color text-base">
             {!currentUser.success ? currentUser.data : ""}
+            {/* Tên đăng nhập hoặc tài khoản không chính xác! */}
           </span>
           <form onSubmit={handleSubmit(handleSubmitLogin)} className="w-full">
             <InputBaseComponent
@@ -121,6 +122,10 @@ function Basic() {
               errors={errors}
               validationRules={{
                 required: "Không được bỏ trống!",
+                minLength: {
+                  value: 4,
+                  message: "Tên đăng nhập ít nhất 4 kí tự!",
+                },
               }}
             />
             <InputBaseComponent
@@ -132,20 +137,20 @@ function Basic() {
               label="Mật khẩu"
               errors={errors}
               validationRules={{
-                required: "Mật khẩu không được bỏ trống",
+                required: "Không được bỏ trống!",
                 minLength: {
                   value: 6,
-                  message: "Mật khẩu ít nhât 6 kí tự!",
+                  message: "Mật khẩu ít nhất 8 kí tự!",
                 },
                 maxLength: {
                   value: 20,
-                  message: "Mật khẩu dài nhất 20 kí tự",
+                  message: "Mật khẩu dài nhất 20 kí tự!",
                 },
               }}
             />
             <MDBox mt={1} mb={1} textAlign="center">
               <MDTypography variant="button" color="text">
-                Bạn đã quên mật khẩu?{" "}
+                Bạn đã{" "}
                 <MDTypography
                   component={Link}
                   to="/authentication/reset-password"
@@ -154,8 +159,9 @@ function Basic() {
                   fontWeight="medium"
                   textGradient
                 >
-                  Nhấn vào đây!
+                  quên mật khẩu?
                 </MDTypography>
+                , cập nhật ngay!
               </MDTypography>
             </MDBox>
             <ButtonComponent style={{ marginTop: "12px", width: "100%" }} action="submit">

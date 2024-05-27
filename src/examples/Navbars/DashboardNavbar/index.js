@@ -16,7 +16,7 @@ Coded by www.creative-tim.com
 import { useState, useEffect } from "react";
 
 // react-router components
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
@@ -54,8 +54,10 @@ import {
 } from "context";
 import { Grid } from "@mui/material";
 import MDAvatar from "components/MDAvatar";
+import { logoutUser } from "services/AuthService";
 
 function DashboardNavbar({ absolute, light, isMini }) {
+  const navigate = useNavigate();
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
@@ -171,18 +173,28 @@ function DashboardNavbar({ absolute, light, isMini }) {
               >
                 <Icon sx={iconsStyle}>settings</Icon>
               </IconButton>
-
               {currentUser && (
-                <Link to="/profile">
-                  <div className="flex items-center">
-                    <img
-                      className="w-12 h-12 object-contain object-center shadow-md rounded-full"
-                      src={currentUser.avatar}
-                      alt="user"
-                    />
-                    <span className="text-base font-medium ml-2">{currentUser.fullname}</span>
+                <div className="flex items-center text-base font-medium ml-2">
+                  <Link to="/profile">
+                    <div className="flex items-center">
+                      <img
+                        className="w-12 h-12 object-contain object-center shadow-md rounded-full"
+                        src={currentUser.avatar}
+                        alt="user"
+                      />
+                      <span className=" ml-2">Nguyễn Văn A</span>
+                    </div>
+                  </Link>
+                  <span className=" mx-2">|</span>
+                  <div
+                    onClick={() => {
+                      logoutUser();
+                      navigate("/authentication/sign-in");
+                    }}
+                  >
+                    Đăng xuất
                   </div>
-                </Link>
+                </div>
               )}
 
               {renderMenu()}

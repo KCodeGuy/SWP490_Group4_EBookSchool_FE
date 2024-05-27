@@ -32,8 +32,19 @@ import { studentWeeklyTimeTableDates, timeTablesAllSchool } from "../../mock/wee
 import { getStudentTimetable } from "services/TimeTableService";
 import { useMutation, useQuery } from "react-query";
 import { generateSchoolWeeks } from "utils/CommonFunctions";
+import { getTodayDate } from "utils/CommonFunctions";
+import { isTodaySunday } from "utils/CommonFunctions";
+import { getWeekForDate } from "utils/CommonFunctions";
 
-const weeks2024 = generateSchoolWeeks(2024);
+// Example usage
+const currentYear = new Date().getFullYear();
+const schoolWeeks = generateSchoolWeeks(currentYear);
+
+const weeks2024 = generateSchoolWeeks(currentYear);
+const { formattedDate, today } = getTodayDate();
+
+const currentWeek = getWeekForDate(schoolWeeks, today);
+
 const formattedSemester = [
   { label: "Học kì 1", value: "HK1" },
   { label: "Học kì 2", value: "HK2" },
@@ -48,7 +59,8 @@ export default function WeeklyTimeTable() {
   const [currentSlot, setCurrentSlot] = useState({});
   const [currentRoom, setCurrentClass] = useState("12A1");
   const [currentSlotDate, setCurrentSlotDate] = useState("");
-  const [currentTimeTable, setCurrentTimeTable] = useState([]);
+  const [currentWeekDate, setCurrentWeekDate] = useState(currentWeek);
+  console.log(currentWeekDate);
 
   const timeTableOfAllSchool = timeTablesAllSchool.data.map((item) => [
     // item.id,
@@ -60,27 +72,32 @@ export default function WeeklyTimeTable() {
     item.toDate,
   ]);
 
-  const [schoolWeek, setSchoolWeek] = React.useState(weeks2024[0].startTime);
+  const [schoolWeek, setSchoolWeek] = React.useState(currentWeekDate.startTime);
   const handleSchoolWeeksSelectedChange = (event) => {
     setSchoolWeek(event.target.value);
   };
 
   const studentID = "HS0001";
   const year = "2023-2024";
-  const fromDate = schoolWeek;
   const accessToken =
     "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IkdWMDAwNCIsImp0aSI6ImU0Nzc0Mzk0LTE4MmUtNDU3OS1hYTJhLWQzYTg3NmFkZGUzYiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6WyJBZGQgVGVhY2hlciIsIlVwZGF0ZSBUZWFjaGVyIiwiRGVsZXRlIFRlYWNoZXIiLCJHZXQgVGVhY2hlciIsIkFkZCBTdHVkZW50IiwiVXBkYXRlIFN0dWRlbnQiLCJEZWxldGUgU3R1ZGVudCIsIkdldCBTdHVkZW50IiwiQWRkIFN1YmplY3QiLCJVcGRhdGUgU3ViamVjdCIsIkRlbGV0ZSBTdWJqZWN0IiwiR2V0IFN1YmplY3QiLCJBZGQgQ2xhc3MiLCJVcGRhdGUgQ2xhc3MiLCJEZWxldGUgQ2xhc3MiLCJHZXQgQ2xhc3MiLCJBZGQgU2NoZWR1bGUiLCJVcGRhdGUgU2NoZWR1bGUiLCJEZWxldGUgU2NoZWR1bGUiLCJHZXQgU2NoZWR1bGUiLCJBZGQgUmVnaXN0ZXIgQm9vayIsIlVwZGF0ZSBSZWdpc3RlciBCb29rIiwiRGVsZXRlIFJlZ2lzdGVyIEJvb2siLCJHZXQgUmVnaXN0ZXIgQm9vayIsIkFkZCBBdHRlbmRhbmNlIiwiVXBkYXRlIEF0dGVuZGFuY2UiLCJEZWxldGUgQXR0ZW5kYW5jZSIsIkdldCBBdHRlbmRhbmNlIiwiR2V0IE1hcmsiLCJBZGQgTm90aWZpY2F0aW9uIiwiVXBkYXRlIE5vdGlmaWNhdGlvbiIsIkRlbGV0ZSBOb3RpZmljYXRpb24iLCJHZXQgTm90aWZpY2F0aW9uIiwiVXBkYXRlIFNldHRpbmciLCJHZXQgTG9nIl0sImV4cCI6MTcxOTExNjgxMCwiaXNzIjoiU0VQNDkwIiwiYXVkIjoiU0VQNDkwIn0.eZUoqfmhqNqS7Qamx56lpCvCuET-w2FcbAdRcFviQKg";
 
   const { data, error, isLoading } = useQuery(
-    ["studentSchedule", { studentID, year, fromDate, accessToken }],
-    () => getStudentTimetable(studentID, year, fromDate, accessToken)
+    ["studentSchedule", { studentID, year, schoolWeek, accessToken }],
+    () => getStudentTimetable(studentID, year, schoolWeek, accessToken)
   );
 
-  console.log(currentTimeTable);
+  const [currentTimeTable, setCurrentTimeTable] = useState([]);
 
-  const handleFilterTimetable = () => {
-    setCurrentTimeTable(data.data.details);
-  };
+  useEffect(() => {
+    if (data && data.data && data.data.details) {
+      setCurrentTimeTable(data.data.details);
+    } else {
+      setCurrentTimeTable([]);
+    }
+  }, [data]);
+
+  const handleFilterTimetable = () => {};
 
   const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
   const handleSchoolYearSelectedChange = (event) => {
@@ -133,8 +150,6 @@ export default function WeeklyTimeTable() {
   const handleAddWeeklyTimeTable = (data) => {
     console.log(data);
   };
-
-  console.log(schoolWeek);
 
   const formattedSchoolYear = schoolYears.data.map((year) => ({
     label: year.schoolYear,
@@ -193,12 +208,12 @@ export default function WeeklyTimeTable() {
                 <Select
                   labelId="select-school-week-lable"
                   id="select-school-class"
-                  value={schoolWeek.startTime}
+                  value={schoolWeek}
                   className="h-10 mr-2 max-[767px]:mb-4"
                   label="Tuần"
                   onChange={handleSchoolWeeksSelectedChange}
                 >
-                  {weeks2024.map((item, index) => (
+                  {schoolWeeks.map((item, index) => (
                     <MenuItem key={index} value={item.startTime}>
                       {item.startTime} - {item.endTime}
                     </MenuItem>
@@ -398,8 +413,30 @@ export default function WeeklyTimeTable() {
               <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
                 {schoolYear}
               </span>
+              <div>
+                {/* <ButtonComponent
+                  onClick={() => {
+                    if (currentWeekDate.id > 0) {
+                      setCurrentWeekDate(schoolWeeks[currentWeekDate.id - 1]);
+                      setSchoolWeek(currentWeekDate.startTime);
+                    }
+                  }}
+                >
+                  Previous
+                </ButtonComponent>
+                <ButtonComponent
+                  onClick={() => {
+                    if (currentWeekDate.id < currentWeekDate.length - 1)
+                      setCurrentWeekDate(schoolWeeks[currentWeekDate.id + 1]);
+                    setSchoolWeek(currentWeekDate.startTime);
+                  }}
+                >
+                  Next
+                </ButtonComponent> */}
+              </div>
             </div>
           </div>
+
           <TableWeeklyTimeTableComponent
             data={currentTimeTable}
             onDetails={handleViewSlotDetail}
@@ -454,16 +491,8 @@ export default function WeeklyTimeTable() {
                 icon={<AccessAlarmIcon />}
                 variantValue="success"
               />
-              <TextValueComponent
-                label="Lớp"
-                value={currentSlot.classRoom}
-                icon={<MapsHomeWorkIcon />}
-              />
-              <TextValueComponent
-                label="Phòng học"
-                value={currentSlot.classRoom}
-                icon={<LocationOnIcon />}
-              />
+              <TextValueComponent label="Lớp" value="12A12" icon={<MapsHomeWorkIcon />} />
+              <TextValueComponent label="Phòng" value="12A12" icon={<LocationOnIcon />} />
               <TextValueComponent
                 label="Giáo viên"
                 value={currentSlot.teacher}

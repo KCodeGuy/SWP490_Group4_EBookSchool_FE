@@ -849,13 +849,13 @@ export default function AccountManagement() {
               </form>
             </PopupComponent>
             <PopupComponent
-              title="XÓA MÔN HỌC"
+              title="XÓA TÀI KHOẢN"
               description="Hãy kiểm xác nhận thông tin trước khi xóa"
               icon={<DeleteIcon />}
               isOpen={modalDeleteOpen}
               onClose={handleCloseDeleteModal}
             >
-              <p>Bạn có chắc chắn muốn xóa môn học?</p>
+              <p>Bạn có chắc chắn muốn xóa tài khoản?</p>
               <div className="mt-4 flex justify-end">
                 <ButtonComponent type="error" action="button" onClick={handleCloseDeleteModal}>
                   HỦY BỎ

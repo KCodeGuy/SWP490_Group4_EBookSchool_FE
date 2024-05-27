@@ -42,6 +42,10 @@ export const handleExportData = (data, sheetName = "Sheet", fileName = "Demo") =
     XLSX.writeFile(wb, `${fileName}.xlsx`);
   }
 };
+// Utility function to check if a given date is Sunday
+export const isTodaySunday = (today) => {
+  return today.getDay() === 0;
+};
 
 export const generateSchoolWeeks = (currentYear) => {
   const schoolWeeks = [];
@@ -58,7 +62,7 @@ export const generateSchoolWeeks = (currentYear) => {
     weekEnd.setDate(weekStart.getDate() + 6); // End date is 6 days after start date
 
     const week = {
-      id: i + 1,
+      id: i,
       name: `Week ${i + 1}`,
       startTime: formatDate(weekStart),
       endTime: formatDate(weekEnd),
@@ -78,4 +82,36 @@ export const formatDate = (date) => {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
+};
+
+export const getTodayDate = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed in JavaScript
+  const day = String(today.getDate()).padStart(2, "0");
+  const formattedDate = `${day}/${month}/${year}`;
+  return { formattedDate, today };
+};
+
+// New function to check which week today falls into
+export const getWeekForDate = (weeks, date) => {
+  for (let i = 0; i < weeks.length; i++) {
+    const weekStart = new Date(dateFromFormat(weeks[i].startTime));
+    const weekEnd = new Date(dateFromFormat(weeks[i].endTime));
+
+    // Normalize times to compare dates only (ignore time part)
+    weekStart.setHours(0, 0, 0, 0);
+    weekEnd.setHours(23, 59, 59, 999);
+
+    if (date >= weekStart && date <= weekEnd) {
+      return weeks[i];
+    }
+  }
+  return null; // Return null if the date doesn't fall within any week
+};
+
+// Helper function to parse a date from the formatted string
+const dateFromFormat = (formattedDate) => {
+  const [day, month, year] = formattedDate.split("/").map(Number);
+  return new Date(year, month - 1, day); // Months are zero-indexed in JavaScript
 };

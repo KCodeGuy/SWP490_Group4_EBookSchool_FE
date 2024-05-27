@@ -22,7 +22,7 @@ const InputBaseComponent = ({
 }) => {
   const rules = validationRules || {};
   const isRequired = rules.required;
-  const customClassName = `flex flex-col mb-3 ${className}`;
+  const customClassName = `flex flex-col mb-2 ${className}`;
 
   const handleSetValue = (value) => {
     setValue(name, value); // Set the value for the input field with name

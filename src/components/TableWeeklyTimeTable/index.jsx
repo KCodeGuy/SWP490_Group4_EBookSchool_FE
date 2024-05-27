@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import AccessAlarmsIcon from "@mui/icons-material/AccessAlarms";
 import { Link } from "react-router-dom";
+import { getTodayDate } from "utils/CommonFunctions";
 
 const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
   const dates = data.map((item) => item.date);
   const defaultSlots = Array.from({ length: 10 }, (_, index) => index + 1);
+  const { formattedDate } = getTodayDate();
+
   const renderSlotStatus = (status) => {
     let formattedStatus = status.toLowerCase();
     switch (formattedStatus) {
@@ -30,12 +33,18 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
           <tr>
             <th className="w-20">Buổi</th>
             <th className="w-20">Tiết</th>
-            {dates.map((date) => (
-              <th key={date}>
-                {`${data.find((item) => item.date === date).weekDate}`}{" "}
-                <p className="font-normal">{date}</p>
-              </th>
-            ))}
+            {dates.map((date) => {
+              const isToday = date === formattedDate;
+              return (
+                <th
+                  key={date}
+                  className={isToday ? "font-bold italic bg-success-color" : "font-normal"}
+                >
+                  {`${data.find((item) => item.date === date).weekDate}`}{" "}
+                  <p className={isToday ? "font-bold italic" : "font-normal"}>{date}</p>
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody>
@@ -72,24 +81,25 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
                         </p>
                         <div className="flex justify-between mt-1 items-center">
                           <p className="mt-1 font-medium">{slotData.classRoom}</p>
-                          <Link to="/schoolBook">
+                          {/* <Link to="/schoolBook">
                             <button className="text-center text-white px-2 max-w-max h-6 leading-6 rounded bg-warning-color">
                               SĐB
                             </button>
-                          </Link>
+                          </Link> */}
                         </div>
                         <p>
-                          {slotData.isAttendance ? (
+                          {/* {slotData.isAttendance ? (
                             <span className="font-bold success-color">(Có mặt)</span>
                           ) : (
                             <span className="font-bold error-color">(Vắng)</span>
-                          )}
+                          )} */}
+                          <span className="font-bold success-color">(Có mặt)</span>
                         </p>
-                        <Link to="/takeAttendance">
+                        {/* <Link to="/takeAttendance">
                           <button className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color">
                             Điểm danh
                           </button>
-                        </Link>
+                        </Link> */}
                       </div>
                     ) : (
                       <p>_</p>

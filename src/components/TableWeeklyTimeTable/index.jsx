@@ -67,20 +67,18 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
                     {slotData.classroom ? (
                       <div className="mx-2 my-1 text-left">
                         <div
-                          className="flex justify-between cursor-pointer hover:underline"
+                          className="cursor-pointer hover:underline"
                           onClick={() => onDetails([slotData, date])}
                         >
-                          <p className="font-bold">
-                            {slotData.subject}{" "}
-                            <span className="warning-color">({slotData.teacher})</span>
-                          </p>
+                          <p className="font-bold">{slotData.subject} </p>
+                          <p className="warning-color">({slotData.teacher})</p>
                         </div>
                         <p className="text-center text-white px-1 max-w-max h-6 leading-6 rounded bg-success-color">
                           <AccessAlarmsIcon className="mb-1 mr-1" />
                           {slotData.slotTime}
                         </p>
                         <div className="flex justify-between mt-1 items-center">
-                          <p className="mt-1 font-medium">{slotData.classRoom}</p>
+                          <span className="font-bold error-color">(Vắng)</span>
                           {/* <Link to="/schoolBook">
                             <button className="text-center text-white px-2 max-w-max h-6 leading-6 rounded bg-warning-color">
                               SĐB
@@ -93,10 +91,9 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
                           ) : (
                             <span className="font-bold error-color">(Vắng)</span>
                           )} */}
-                          <span className="font-bold success-color">(Có mặt)</span>
                         </p>
                         {/* <Link to="/takeAttendance">
-                          <button className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color">
+                          <button className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color mt-3">
                             Điểm danh
                           </button>
                         </Link> */}

@@ -174,7 +174,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 <Icon sx={iconsStyle}>settings</Icon>
               </IconButton>
               {currentUser && (
-                <div className="flex items-center text-base font-medium ml-2">
+                <div className="flex items-center text-base font-medium ml-2 ">
                   <Link to="/profile">
                     <div className="flex items-center">
                       <img
@@ -182,11 +182,12 @@ function DashboardNavbar({ absolute, light, isMini }) {
                         src={currentUser.avatar}
                         alt="user"
                       />
-                      <span className=" ml-2">Nguyễn Văn A</span>
+                      <span className=" ml-2 hover:text-blue-400 transition">Nguyễn Văn A</span>
                     </div>
                   </Link>
                   <span className=" mx-2">|</span>
                   <div
+                    className="cursor-pointer hover:text-blue-400 transition"
                     onClick={() => {
                       logoutUser();
                       navigate("/authentication/sign-in");

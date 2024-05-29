@@ -70,14 +70,6 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Quản lí điểm",
-    key: "markManagement",
-    icon: <Icon fontSize="small">assignment</Icon>,
-    route: "/markManagement",
-    component: <MarkManagement />,
-  },
-  {
-    type: "collapse",
     name: "Thống kê điểm",
     key: "markStatistics",
     icon: <Icon fontSize="small">assignment</Icon>,
@@ -102,15 +94,15 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Room Management",
-    key: "roomManagement",
-    icon: <Icon fontSize="small">house</Icon>,
-    route: "/roomManagement",
-    component: <RoomManagement />,
+    name: "Quản lí điểm",
+    key: "markManagement",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/markManagement",
+    component: <MarkManagement />,
   },
   {
     type: "collapse",
-    name: "Class Management",
+    name: "Quản lí lớp",
     key: "classManagement",
     icon: <Icon fontSize="small">house</Icon>,
     route: "/classManagement",
@@ -124,14 +116,14 @@ const routes = [
     route: "/subjectManagement",
     component: <SubjectManagement />,
   },
-  // {
-  //   type: "collapse",
-  //   name: "Notification Management(UolLT)",
-  //   key: "notificationManagement",
-  //   icon: <Icon fontSize="small">house</Icon>,
-  //   route: "/notificationManagement",
-  //   component: <NotificationManagement />,
-  // },
+  {
+    type: "collapse",
+    name: "Quản lí thông báo",
+    key: "notificationManagement",
+    icon: <Icon fontSize="small">house</Icon>,
+    route: "/notificationManagement",
+    component: <NotificationManagement />,
+  },
 
   {
     type: "collapse",
@@ -142,14 +134,14 @@ const routes = [
     component: <AccountManagement />,
   },
 
-  // {
-  //   type: "collapse",
-  //   name: "School Book(KhoaTD)",
-  //   key: "schoolBook",
-  //   icon: <Icon fontSize="small">table</Icon>,
-  //   route: "/schoolBook",
-  //   component: <SchoolBook />,
-  // },
+  {
+    type: "collapse",
+    name: "Sổ đầu bài",
+    key: "schoolBook",
+    icon: <Icon fontSize="small">table</Icon>,
+    route: "/schoolBook",
+    component: <SchoolBook />,
+  },
   {
     type: "collapse",
     name: "Thời khóa biểu",
@@ -158,32 +150,17 @@ const routes = [
     route: "/weeklyTimeTable",
     component: <WeeklyTimeTable />,
   },
-  // {
-  //   type: "collapse",
-  //   name: "Take Attendance(KhoaTD)",
-  //   key: "takeAttendance",
-  //   icon: <Icon fontSize="small">assignment</Icon>,
-  //   route: "/takeAttendance",
-  //   component: <TakeAttendance />,
-  // },
-  // {
-  //   type: "collapse",
-  //   name: "Wiki(KhoaTD)",
-  //   key: "wiki",
-  //   icon: <Icon fontSize="small">dashboard</Icon>,
-  //   route: "/wiki",
-  //   component: <Wiki />,
-  // },
-  // {
-  //   type: "collapse",
-  //   name: "Demo(KhoaTD)",
-  //   key: "demo",
-  //   icon: <Icon fontSize="small">assignment</Icon>,
-  //   route: "/demo",
-  //   component: <Demo />,
-  // },
   {
     type: "collapse",
+    name: "Điểm danh",
+    key: "takeAttendance",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/takeAttendance",
+    component: <TakeAttendance />,
+  },
+
+  {
+    type: "title",
     name: "Đăng nhập",
     key: "sign-in",
     icon: <Icon fontSize="small">login</Icon>,
@@ -199,14 +176,32 @@ const routes = [
     component: <Profile />,
   },
 
-  // {
-  //   type: "collapse",
-  //   name: "Reset Password",
-  //   key: "reset-password",
-  //   icon: <Icon fontSize="small">assignment</Icon>,
-  //   route: "/authentication/reset-password",
-  //   component: <ResetPassword />,
-  // },
+  {
+    type: "collapse",
+    name: "Wiki",
+    key: "wiki",
+    icon: <Icon fontSize="small">dashboard</Icon>,
+    route: "/wiki",
+    component: <Wiki />,
+  },
+
+  {
+    type: "collapse",
+    name: "Demo",
+    key: "demo",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/demo",
+    component: <Demo />,
+  },
+
+  {
+    type: "title",
+    name: "Quên mật khẩu",
+    key: "reset-password",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/authentication/reset-password",
+    component: <ResetPassword />,
+  },
 ];
 
 export default routes;

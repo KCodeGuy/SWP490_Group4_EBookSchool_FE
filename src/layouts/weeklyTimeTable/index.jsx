@@ -380,8 +380,8 @@ export default function WeeklyTimeTable() {
               </PopupComponent>
             </div>
           </div>
-          {/* <p className="text-base font-bold mt-10">TẤT CẢ THỜI KHÓA BIỂU</p> */}
-          {/* <TableComponent
+          <p className="text-base font-bold mt-10">TẤT CẢ THỜI KHÓA BIỂU</p>
+          <TableComponent
             header={["Năm học", "Học kì", "Lớp", "GVCN", "Từ ngày", "Đến"]}
             data={timeTableOfAllSchool}
             onEdit={(data) => console.log(data)}
@@ -389,7 +389,7 @@ export default function WeeklyTimeTable() {
             onDelete={(data) => console.log(data)}
             className="mt-4"
             itemsPerPage={5}
-          /> */}
+          />
           <div className="text-center mt-10">
             <h4 className="text-xl font-bold uppercase">THỜI KHÓA BIỂU lớp {schoolClass}</h4>
           </div>

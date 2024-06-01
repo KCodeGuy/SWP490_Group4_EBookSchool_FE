@@ -78,25 +78,22 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
                           {slotData.slotTime}
                         </p>
                         <div className="flex justify-between mt-1 items-center">
-                          <span className="font-bold error-color">(Vắng)</span>
-                          {/* <Link to="/schoolBook">
-                            <button className="text-center text-white px-2 max-w-max h-6 leading-6 rounded bg-warning-color">
-                              SĐB
-                            </button>
-                          </Link> */}
-                        </div>
-                        <p>
-                          {/* {slotData.isAttendance ? (
+                          {slotData.isAttendance ? (
                             <span className="font-bold success-color">(Có mặt)</span>
                           ) : (
                             <span className="font-bold error-color">(Vắng)</span>
-                          )} */}
-                        </p>
-                        {/* <Link to="/takeAttendance">
+                          )}
+                          <Link to="/schoolBook">
+                            <button className="text-center text-white px-2 max-w-max h-6 leading-6 rounded bg-warning-color">
+                              SĐB
+                            </button>
+                          </Link>
+                        </div>
+                        <Link to="/takeAttendance">
                           <button className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color mt-3">
                             Điểm danh
                           </button>
-                        </Link> */}
+                        </Link>
                       </div>
                     ) : (
                       <p>_</p>

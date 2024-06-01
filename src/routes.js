@@ -160,7 +160,7 @@ const routes = [
   },
 
   {
-    type: "title",
+    type: "collapse",
     name: "Đăng nhập",
     key: "sign-in",
     icon: <Icon fontSize="small">login</Icon>,
@@ -195,7 +195,7 @@ const routes = [
   },
 
   {
-    type: "title",
+    type: "collapse",
     name: "Quên mật khẩu",
     key: "reset-password",
     icon: <Icon fontSize="small">assignment</Icon>,

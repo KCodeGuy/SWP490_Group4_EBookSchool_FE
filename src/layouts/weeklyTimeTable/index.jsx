@@ -28,22 +28,14 @@ import TextValueComponent from "../../components/TextValueComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import { studentClasses } from "../../mock/class";
 import { schoolYears } from "../../mock/schoolYear";
-import { studentWeeklyTimeTableDates, timeTablesAllSchool } from "../../mock/weeklyTimeTable";
+import { timeTablesAllSchool } from "../../mock/weeklyTimeTable";
 import { getStudentTimetable } from "services/TimeTableService";
-import { useMutation, useQuery } from "react-query";
+import { useQuery } from "react-query";
 import { generateSchoolWeeks } from "utils/CommonFunctions";
 import { getTodayDate } from "utils/CommonFunctions";
-import { isTodaySunday } from "utils/CommonFunctions";
 import { getWeekForDate } from "utils/CommonFunctions";
-
-// Example usage
-const currentYear = new Date().getFullYear();
-const schoolWeeks = generateSchoolWeeks(currentYear);
-
-const weeks2024 = generateSchoolWeeks(currentYear);
-const { formattedDate, today } = getTodayDate();
-
-const currentWeek = getWeekForDate(schoolWeeks, today);
+import { getCurrentSchoolYear } from "utils/CommonFunctions";
+import { isTodayInSchoolYear } from "utils/CommonFunctions";
 
 const formattedSemester = [
   { label: "Học kì 1", value: "HK1" },
@@ -51,17 +43,36 @@ const formattedSemester = [
   { label: "Cả năm", value: "Cả năm" },
 ];
 
-let totalSlots = 16;
-
 export default function WeeklyTimeTable() {
   const [openModelAdd, setOpenModelAdd] = useState(false);
   const [openModalDetail, setOpenModalDetail] = useState(false);
   const [currentSlot, setCurrentSlot] = useState({});
-  const [currentRoom, setCurrentClass] = useState("12A1");
   const [currentSlotDate, setCurrentSlotDate] = useState("");
-  const [currentWeekDate, setCurrentWeekDate] = useState(currentWeek);
-  console.log(currentWeekDate);
 
+  // // Example usage
+  const currentYear = getCurrentSchoolYear();
+  const [schoolYear, setSchoolYear] = React.useState(
+    schoolYears.data[schoolYears.data.length - 1].schoolYear
+  );
+  const handleSchoolYearSelectedChange = (event) => {
+    setSchoolYear(event.target.value);
+  };
+
+  const [schoolClass, setSchoolClass] = React.useState(studentClasses.data[0].name);
+  const handleSchoolClassSelectedChange = (event) => {
+    setSchoolClass(event.target.value);
+  };
+
+  const schoolWeeks = generateSchoolWeeks(schoolYear);
+  const { formattedDate, today } = getTodayDate();
+  let currentWeek;
+  if (isTodayInSchoolYear(schoolYear)) {
+    currentWeek = getWeekForDate(schoolWeeks, today);
+  } else {
+    currentWeek = schoolWeeks[0];
+  }
+
+  const [currentWeekDate, setCurrentWeekDate] = useState(currentWeek);
   const timeTableOfAllSchool = timeTablesAllSchool.data.map((item) => [
     // item.id,
     item.schoolYear,
@@ -78,35 +89,25 @@ export default function WeeklyTimeTable() {
   };
 
   const studentID = "HS0001";
-  const year = "2023-2024";
-  const accessToken =
-    "Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJJRCI6IkdWMDAwNCIsImp0aSI6ImU0Nzc0Mzk0LTE4MmUtNDU3OS1hYTJhLWQzYTg3NmFkZGUzYiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6WyJBZGQgVGVhY2hlciIsIlVwZGF0ZSBUZWFjaGVyIiwiRGVsZXRlIFRlYWNoZXIiLCJHZXQgVGVhY2hlciIsIkFkZCBTdHVkZW50IiwiVXBkYXRlIFN0dWRlbnQiLCJEZWxldGUgU3R1ZGVudCIsIkdldCBTdHVkZW50IiwiQWRkIFN1YmplY3QiLCJVcGRhdGUgU3ViamVjdCIsIkRlbGV0ZSBTdWJqZWN0IiwiR2V0IFN1YmplY3QiLCJBZGQgQ2xhc3MiLCJVcGRhdGUgQ2xhc3MiLCJEZWxldGUgQ2xhc3MiLCJHZXQgQ2xhc3MiLCJBZGQgU2NoZWR1bGUiLCJVcGRhdGUgU2NoZWR1bGUiLCJEZWxldGUgU2NoZWR1bGUiLCJHZXQgU2NoZWR1bGUiLCJBZGQgUmVnaXN0ZXIgQm9vayIsIlVwZGF0ZSBSZWdpc3RlciBCb29rIiwiRGVsZXRlIFJlZ2lzdGVyIEJvb2siLCJHZXQgUmVnaXN0ZXIgQm9vayIsIkFkZCBBdHRlbmRhbmNlIiwiVXBkYXRlIEF0dGVuZGFuY2UiLCJEZWxldGUgQXR0ZW5kYW5jZSIsIkdldCBBdHRlbmRhbmNlIiwiR2V0IE1hcmsiLCJBZGQgTm90aWZpY2F0aW9uIiwiVXBkYXRlIE5vdGlmaWNhdGlvbiIsIkRlbGV0ZSBOb3RpZmljYXRpb24iLCJHZXQgTm90aWZpY2F0aW9uIiwiVXBkYXRlIFNldHRpbmciLCJHZXQgTG9nIl0sImV4cCI6MTcxOTExNjgxMCwiaXNzIjoiU0VQNDkwIiwiYXVkIjoiU0VQNDkwIn0.eZUoqfmhqNqS7Qamx56lpCvCuET-w2FcbAdRcFviQKg";
+  const token = localStorage.getItem("authToken");
+  const accessToken = `Bearer ${token}`;
+  const parrams = { studentID, schoolYear, schoolWeek, accessToken };
 
-  const { data, error, isLoading } = useQuery(
-    ["studentSchedule", { studentID, year, schoolWeek, accessToken }],
-    () => getStudentTimetable(studentID, year, schoolWeek, accessToken)
-  );
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["studentSchedule", parrams],
+    queryFn: () =>
+      getStudentTimetable(
+        parrams.studentID,
+        parrams.schoolYear,
+        parrams.schoolWeek,
+        parrams.accessToken
+      ),
+  });
 
   const [currentTimeTable, setCurrentTimeTable] = useState([]);
 
-  useEffect(() => {
-    if (data && data.data && data.data.details) {
-      setCurrentTimeTable(data.data.details);
-    } else {
-      setCurrentTimeTable([]);
-    }
-  }, [data]);
-
-  const handleFilterTimetable = () => {};
-
-  const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
-  const handleSchoolYearSelectedChange = (event) => {
-    setSchoolYear(event.target.value);
-  };
-
-  const [schoolClass, setSchoolClass] = React.useState(studentClasses.data[0].name);
-  const handleSchoolClassSelectedChange = (event) => {
-    setSchoolClass(event.target.value);
+  const handleFilterTimetable = () => {
+    setCurrentTimeTable(data?.data.details);
   };
 
   const [currentTab, setCurrentTab] = useState(0);
@@ -404,7 +405,7 @@ export default function WeeklyTimeTable() {
               <div className="text-sm">
                 <span className="mr-2 font-bold">Tổng số tiết:</span>
                 <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                  {totalSlots}
+                  16
                 </span>
               </div>
             </div>

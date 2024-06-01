@@ -1,5 +1,6 @@
+import { API_HOST } from "./APIConfig";
 export const loginUser = async ({ username, password }) => {
-  const response = await fetch("http://localhost:1000/api/Auth/Login", {
+  const response = await fetch(`${API_HOST}/Auth/Login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

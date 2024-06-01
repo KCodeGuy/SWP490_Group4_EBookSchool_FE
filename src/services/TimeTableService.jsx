@@ -1,8 +1,8 @@
-// src/api.js
 import axios from "axios";
+import { API_HOST } from "./APIConfig";
 
 export const getStudentTimetable = async (studentID, schoolYear, fromDate, accessToken) => {
-  const response = await axios.get("http://localhost:1000/api/Schedules/Student", {
+  const response = await axios.get(`${API_HOST}/Schedules/Student`, {
     params: {
       studentID,
       schoolYear,

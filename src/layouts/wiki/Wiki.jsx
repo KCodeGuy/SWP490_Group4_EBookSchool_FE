@@ -30,10 +30,41 @@ import InputBaseComponent from "../../components/InputBaseComponent/InputBaseCom
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import SearchInputComponent from "components/SearchInputComponent/SearchInputComponent";
 import { studentClasses } from "mock/class";
-import { schoolYears } from "mock/schoolYear";
 import { subjects } from "mock/subject";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 
+const schoolYears = [
+  {
+    schoolYear: "2018",
+    fromDate: "2/9/2018",
+    toDate: "31/5/2018",
+  },
+  {
+    schoolYear: "2019",
+    fromDate: "2/9/2018",
+    toDate: "31/5/2019",
+  },
+  {
+    schoolYear: "2020",
+    fromDate: "2/9/2018",
+    toDate: "31/5/2019",
+  },
+  {
+    schoolYear: "2021",
+    fromDate: "2/9/2018",
+    toDate: "31/5/2019",
+  },
+  {
+    schoolYear: "2022",
+    fromDate: "2/9/2018",
+    toDate: "31/5/2019",
+  },
+  {
+    schoolYear: "2023",
+    fromDate: "2/9/2018",
+    toDate: "31/5/2019",
+  },
+];
 const Wiki = () => {
   const semesters = ["Học kì I", "Học kì II", "Cả năm"];
   const grades = ["Khối 10", "Khối 11", "Khối 12"];

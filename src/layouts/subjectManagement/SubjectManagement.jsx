@@ -20,6 +20,8 @@ import PopupComponent from "../../components/PopupComponent/PopupComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
+import { getAllSubjects } from "services/SubjectService";
+import { useQuery } from "react-query";
 
 // Subject Management (UolLT)
 export default function SubjectManagement() {
@@ -30,7 +32,12 @@ export default function SubjectManagement() {
   const [deletedSubject, setDeletedSubject] = useState({});
   const [currentTab, setCurrentTab] = useState(0);
 
-  const currentSubjects = subjects.data;
+  const token = localStorage.getItem("authToken");
+  const accessToken = `Bearer ${token}`;
+
+  const { data, error, isLoading } = useQuery(["subjectState", { accessToken }], () =>
+    getAllSubjects(accessToken)
+  );
 
   const markFactors = subject.data.points[0].componentPoints.map((obj) => [
     obj.id,
@@ -217,7 +224,7 @@ export default function SubjectManagement() {
               </FormControl>
               <div className="max-[639px]:mt-2">
                 <ButtonComponent type="success" onClick={handleStatistic}>
-                  <FilterAltIcon className="mr-1" /> Thống kế
+                  <FilterAltIcon className="mr-1" /> Tìm kiếm
                 </ButtonComponent>
               </div>
             </div>
@@ -460,9 +467,9 @@ export default function SubjectManagement() {
             </div>
           </div>
           <div>
-            <TableComponent
+            {/* <TableComponent
               header={["ID", "Tên môn học", "Khối", "Mô tả"]}
-              data={currentSubjects.map((item) => [
+              data={data.map((item) => [
                 item.id.toString(),
                 item.name.toString(),
                 item.grade.toString(),
@@ -472,7 +479,7 @@ export default function SubjectManagement() {
               onEdit={handleEdit}
               onDelete={handleDelete}
               className="mt-8"
-            />
+            /> */}
             <PopupComponent
               title="CẬP NHẬT"
               description="Hãy chỉnh sửa để bắt đầu năm học mới"

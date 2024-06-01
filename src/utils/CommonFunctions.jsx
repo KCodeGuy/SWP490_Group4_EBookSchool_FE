@@ -47,23 +47,32 @@ export const isTodaySunday = (today) => {
   return today.getDay() === 0;
 };
 
-export const generateSchoolWeeks = (currentYear) => {
+export const generateSchoolWeeks = (schoolYear) => {
   const schoolWeeks = [];
-  let startDate = new Date(currentYear, 0, 1); // January 1st of the given year
+  const [startYear, endYear] = schoolYear.split("-").map(Number);
+
+  // Start date is January 1st of the start year
+  let startDate = new Date(startYear, 0, 1);
 
   // Adjust the start date to the nearest Monday
   const day = startDate.getDay();
   const dayOffset = (day === 0 ? -6 : 1) - day; // If Sunday (0), move to next day; otherwise, move to Monday
   startDate.setDate(startDate.getDate() + dayOffset);
 
-  for (let i = 0; i < 52; i++) {
+  let weekCount = 0;
+
+  // Generate weeks until the end of the first week of the next year
+  while (
+    startDate.getFullYear() <= endYear ||
+    (startDate.getFullYear() === endYear && startDate.getDate() <= 7)
+  ) {
     const weekStart = new Date(startDate);
     const weekEnd = new Date(startDate);
     weekEnd.setDate(weekStart.getDate() + 6); // End date is 6 days after start date
 
     const week = {
-      id: i,
-      name: `Week ${i + 1}`,
+      id: weekCount,
+      name: `Week ${weekCount + 1}`,
       startTime: formatDate(weekStart),
       endTime: formatDate(weekEnd),
     };
@@ -72,6 +81,7 @@ export const generateSchoolWeeks = (currentYear) => {
 
     // Move start date to the next week
     startDate.setDate(startDate.getDate() + 7);
+    weekCount++;
   }
 
   return schoolWeeks;
@@ -93,6 +103,16 @@ export const getTodayDate = () => {
   return { formattedDate, today };
 };
 
+export const isTodayInSchoolYear = (schoolYear) => {
+  const { today } = getTodayDate();
+  const [startYear, endYear] = schoolYear.split("-").map(Number);
+
+  const schoolYearStart = new Date(startYear, 0, 1); // January 1st of start year
+  const schoolYearEnd = new Date(endYear, 11, 31); // December 31st of end year
+
+  return today >= schoolYearStart && today <= schoolYearEnd;
+};
+
 // New function to check which week today falls into
 export const getWeekForDate = (weeks, date) => {
   for (let i = 0; i < weeks.length; i++) {
@@ -111,7 +131,13 @@ export const getWeekForDate = (weeks, date) => {
 };
 
 // Helper function to parse a date from the formatted string
-const dateFromFormat = (formattedDate) => {
+export const dateFromFormat = (formattedDate) => {
   const [day, month, year] = formattedDate.split("/").map(Number);
   return new Date(year, month - 1, day); // Months are zero-indexed in JavaScript
+};
+
+export const getCurrentSchoolYear = () => {
+  const currentYear = new Date().getFullYear();
+  const nextYear = currentYear + 1;
+  return `${currentYear}-${nextYear}`;
 };

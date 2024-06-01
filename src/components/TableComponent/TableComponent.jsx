@@ -209,6 +209,7 @@ TableComponent.propTypes = {
 };
 
 TableComponent.defaultProps = {
+  data: [],
   itemsPerPage: 10, // Default items per page
   isOrdered: true, // Default to not showing row numbers
   showCheckboxes: false, // Default to not showing checkboxes

@@ -27,7 +27,7 @@ import { notifications } from "../../mock/notification";
 
 function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 3;
 
   const totalItems = notifications.data.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -42,7 +42,7 @@ function Dashboard() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="max-h-max">
+      <Card className="max-h-max mb-8">
         <MDBox p={5}>
           <Grid container spacing={3}>
             <Grid item xs={12}>
@@ -51,7 +51,7 @@ function Dashboard() {
                   {
                     title: "Trường THPT Nguyễn Việt Hồng",
                     description: "Tự hào trường top!",
-                    image: sliderImage2,
+                    image: sliderImage1,
                   },
                   {
                     title: "CÔ GIÁO ĐẠT THÀNH TÍCH TRONG CUỘC THI CODE",
@@ -155,7 +155,7 @@ function Dashboard() {
                       <div className="flex max-[639px]:flex-wrap ">
                         <img
                           className="w-40 h-34 object-cover object-right rounded-md max-[639px]:w-full"
-                          src="http://localhost:3000/static/media/slider1.a565f69373dc0a339eee.png"
+                          src="http://localhost:3000/SWP490_Group4_EBookSchool_FE/static/media/slider2.f3ddc522208fdad9e290.png"
                         />
                         <div className="text-base ml-4 w-full max-[639px]:ml-0 max-[639px]:mt-3">
                           <p className="font-bold uppercase">[{item.title}]</p>

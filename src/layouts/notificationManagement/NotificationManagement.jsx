@@ -103,10 +103,10 @@ export default function NotificationManagement() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="max-h-max">
+      <Card className="max-h-max mb-8">
         <MDBox p={5}>
           <div className="text-center mt-0">
-            <h4 className="text-xl font-bold">Quản lý thông báo</h4>
+            <h4 className="text-xl font-bold">QUẢN LÍ THÔNG BÁO</h4>
           </div>
           <div className="flex justify-end items-center">
             <SearchInputComponent
@@ -180,7 +180,7 @@ export default function NotificationManagement() {
                     <ButtonComponent type="error" action="reset" onClick={() => reset()}>
                       CLEAR
                     </ButtonComponent>
-                    <ButtonComponent action="submit">TẠO THÔNG BÁO</ButtonComponent>
+                    <ButtonComponent action="submit">TẠO</ButtonComponent>
                   </div>
                 </form>
               </PopupComponent>
@@ -188,22 +188,21 @@ export default function NotificationManagement() {
           </div>
           <div>
             <TableComponent
-              header={["ID", "Tên thông báo", "Ngày tạo", "Hình ảnh", "Nội dung"]}
+              header={["Tên thông báo", "Ngày tạo", "Hình ảnh", "Nội dung"]}
               data={currentData.map((item) => [
-                item.id.toString(),
                 item.title.toString(),
                 item.startDate.toString(),
                 item.thumbNail.toString(),
                 item.content.toString(),
               ])}
-              itemsPerPage={4}
+              itemsPerPage={10}
               onEdit={handleEdit}
               onDelete={handleDelete}
               className="mt-4"
             />
             <PopupComponent
               title="CẬP NHẬT"
-              description="Chỉnh sửa thông báo"
+              description="Cập nhật thông báo"
               icon={<EditIcon />}
               isOpen={modalEditOpen}
               onClose={() => setModalEditOpen(false)}
@@ -263,7 +262,7 @@ export default function NotificationManagement() {
                   <ButtonComponent type="error" action="reset" onClick={() => resetEditAction()}>
                     CLEAR
                   </ButtonComponent>
-                  <ButtonComponent action="submit">CHỈNH SỬA</ButtonComponent>
+                  <ButtonComponent action="submit">CẬP NHẬT</ButtonComponent>
                 </div>
               </form>
             </PopupComponent>

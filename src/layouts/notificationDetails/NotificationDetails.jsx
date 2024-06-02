@@ -13,7 +13,7 @@ export default function NotificationDetails() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="max-h-max">
+      <Card className="max-h-max mb-8">
         <MDBox p={5}>
           <div className="text-center mt-5 text-base">
             <div className="flex justify-between max-[639px]:flex-wrap">

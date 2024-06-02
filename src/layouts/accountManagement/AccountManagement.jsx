@@ -9,6 +9,8 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import DownloadIcon from "@mui/icons-material/Download";
 
 import "./style.scss";
 import { grades } from "../../mock/grade";
@@ -20,6 +22,7 @@ import PopupComponent from "../../components/PopupComponent/PopupComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
+import { accounts } from "mock/account";
 // Account management (UolLT)
 export default function AccountManagement() {
   //1. Modal form states open, close
@@ -196,10 +199,10 @@ export default function AccountManagement() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="max-h-max">
+      <Card className="max-h-max mb-8">
         <MDBox p={5}>
           <div className="text-center mt-0">
-            <h4 className="text-xl font-bold">Quản lí tài khoản</h4>
+            <h4 className="text-xl font-bold">QUẢN LÍ TÀI KHOẢN</h4>
           </div>
           <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
             {/* role Select */}
@@ -225,7 +228,7 @@ export default function AccountManagement() {
               </FormControl>
               <div className="max-[639px]:mt-2">
                 <ButtonComponent type="success" onClick={handleStatistic}>
-                  <FilterAltIcon className="mr-1" /> Thống kế
+                  <FilterAltIcon className="mr-1" /> Tìm kiếm
                 </ButtonComponent>
               </div>
             </div>
@@ -237,7 +240,11 @@ export default function AccountManagement() {
               <div className="ml-3">
                 <ButtonComponent className="" onClick={handleOpenAddModal}>
                   <AddCircleOutlineIcon className="text-3xl mr-1" />
-                  Tạo
+                  Tạo TKGV
+                </ButtonComponent>
+                <ButtonComponent className="" onClick={handleOpenAddModal}>
+                  <AddCircleOutlineIcon className="text-3xl mr-1" />
+                  Tạo TKHS
                 </ButtonComponent>
                 <PopupComponent
                   title="TẠO TÀI KHOẢN"
@@ -249,6 +256,7 @@ export default function AccountManagement() {
                     { label: "TẠO TÀI KHOẢN" },
                     { label: "THÊM THÔNG TIN" },
                     { label: "PHÂN QUYỀN" },
+                    { label: "TẠO BẰNG EXCEL" },
                   ]}
                   currentTab={currentTab}
                   onTabChange={handleTabChange}
@@ -296,6 +304,14 @@ export default function AccountManagement() {
                           errors={errors}
                           validationRules={{
                             required: "Không được bỏ trống!",
+                            minLength: {
+                              value: 6,
+                              message: "Mật khẩu ít nhất 8 kí tự!",
+                            },
+                            maxLength: {
+                              value: 20,
+                              message: "Mật khẩu dài nhất 20 kí tự!",
+                            },
                           }}
                         />
                         <InputBaseComponent
@@ -309,6 +325,14 @@ export default function AccountManagement() {
                           errors={errors}
                           validationRules={{
                             required: "Không được bỏ trống!",
+                            minLength: {
+                              value: 6,
+                              message: "Mật khẩu ít nhất 8 kí tự!",
+                            },
+                            maxLength: {
+                              value: 20,
+                              message: "Mật khẩu dài nhất 20 kí tự!",
+                            },
                           }}
                         />
                       </div>
@@ -316,7 +340,7 @@ export default function AccountManagement() {
                         <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
                           CLEAR
                         </ButtonComponent>
-                        <ButtonComponent action="submit">TẠO TÀI KHOÁN</ButtonComponent>
+                        <ButtonComponent action="submit">TẠO</ButtonComponent>
                       </div>
                     </form>
                   </div>
@@ -761,6 +785,32 @@ export default function AccountManagement() {
                       </div>
                     </form>
                   </div>
+                  <div role="tabpanel" hidden={currentTab == 3}>
+                    <ButtonComponent action="submit">
+                      <DownloadIcon className="mr-2" />
+                      TẢI FILE
+                    </ButtonComponent>
+                    <form onSubmit={handleSubmit(handleAddAccount)}>
+                      <InputBaseComponent
+                        name="timeTableFile"
+                        label="Tài khoản(Excel)"
+                        className="w-full mt-5"
+                        control={control}
+                        setValue={noSetValue}
+                        type="file"
+                        errors={errors}
+                        validationRules={{
+                          required: "Hãy chọn file!",
+                        }}
+                      />
+                      <div className="mt-5 flex justify-end">
+                        <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
+                          CLEAR
+                        </ButtonComponent>
+                        <ButtonComponent action="submit">TẠO</ButtonComponent>
+                      </div>
+                    </form>
+                  </div>
                 </PopupComponent>
               </div>
             </div>
@@ -768,12 +818,13 @@ export default function AccountManagement() {
           <div>
             {/* show data table */}
             <TableComponent
-              header={["ID", "Tên tài khoản", "Email", "Địa chỉ"]}
-              data={currentSubjects.map((item) => [
-                item.id.toString(),
-                item.name.toString(),
-                item.grade.toString(),
-                item.description.toString(),
+              header={["Tên đăng nhập", "Tên đầy đủ", "Mật khẩu", "Quyền", "Ngày tạo"]}
+              data={accounts.data.map((item) => [
+                item.userName.toString(),
+                item.fullName.toString(),
+                item.password.toString(),
+                item.role.toString(),
+                item.createdDate.toString(),
               ])}
               itemsPerPage={10}
               onEdit={handleEdit}

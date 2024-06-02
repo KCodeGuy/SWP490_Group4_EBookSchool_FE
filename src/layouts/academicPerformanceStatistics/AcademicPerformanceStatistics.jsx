@@ -151,7 +151,7 @@ export default function AcademicPerformanceStatistics() {
       title: "Học sinh giỏi nhiều nhất",
       count: "Khối 10",
       textDescriptionColor: "primary",
-      amount: "100%",
+      amount: "",
       label: "là tỉ lệ HSG khối 10",
     },
     {
@@ -300,7 +300,7 @@ export default function AcademicPerformanceStatistics() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card>
+      <Card className="mb-8">
         <MDBox p={5}>
           {/* DO NOT DELETE CODE AS ABOVE*/}
           <div className="w-full mb-10">

@@ -30,7 +30,7 @@ const students = {
   data: [
     {
       id: 1,
-      fullName: "Luong hoang huong",
+      fullName: "Nguyen Van A",
       birthday: "01/01/2024",
       birthplace: "Ninh Kiều, Cần Thơ",
       gender: "Nam",
@@ -40,7 +40,7 @@ const students = {
     },
     {
       id: 2,
-      fullName: "Quach luynl da",
+      fullName: "Tran Thi B",
       birthday: "01/01/2024",
       birthplace: "Ninh Kiều, Cần Thơ",
       gender: "Nam",
@@ -50,7 +50,7 @@ const students = {
     },
     {
       id: 3,
-      fullName: "Vo hong khanh",
+      fullName: "Nguyen Thi C",
       birthday: "01/01/2024",
       birthplace: "Ninh Kiều, Cần Thơ",
       gender: "Nam",
@@ -60,7 +60,7 @@ const students = {
     },
     {
       id: 4,
-      fullName: "Nguyen trung hieu",
+      fullName: "Quach Tuan D",
       birthday: "01/01/2024",
       birthplace: "Ninh Kiều, Cần Thơ",
       gender: "Nam",

@@ -93,7 +93,7 @@ export default function LogManagement() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="max-h-max">
+      <Card className="max-h-max mb-8">
         <MDBox p={5}>
           {/* DO NOT DELETE CODE AS ABOVE*/}
           {/* Your code here */}
@@ -143,7 +143,7 @@ export default function LogManagement() {
                 item.note.toString(),
                 item.date.toString(),
               ])}
-              itemsPerPage={4}
+              itemsPerPage={10}
               onDetails={handleEdit}
               className="mt-8"
             />

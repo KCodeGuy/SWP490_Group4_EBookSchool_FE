@@ -93,7 +93,7 @@ export default function TakeAttendance() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="max-h-max">
+      <Card className="max-h-max mb-8">
         <MDBox p={5}>
           <div className="flex justify-between items-center flex-wrap">
             <div>

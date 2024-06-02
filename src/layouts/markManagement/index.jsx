@@ -12,8 +12,14 @@ import TableMarkAllStudentsComponent from "../../components/TableMarkAllStudents
 import PopupMenu from "../../components/MenuComponent/MenuComponent";
 import { scoreByStudentsBySubjectEnlish } from "../../mock/score";
 import { countDuplicateItemsInArray } from "utils/CommonFunctions";
-import TableMarkOfSubjectComponent from "components/TableMarkOfSubjectComponent/TableMarkOfSubjectComponent";
+import TableMarkOfSubjectComponent from "../../components/TableMarkOfSubjectComponent/TableMarkOfSubjectComponent";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import PopupComponent from "components/PopupComponent/PopupComponent";
+import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent";
+import { useForm } from "react-hook-form";
+import DownloadIcon from "@mui/icons-material/Download";
+
 // Mark management (HieuTTN)
 
 const scoreByStudents = {
@@ -130,6 +136,19 @@ export default function MarkManagement() {
     },
   ];
 
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue: noSetValue,
+    formState: { errors },
+  } = useForm();
+
+  const handleImportMark = () => {};
+
+  //1. Modal form states open, close
+  const [modalAdd, setModalAdd] = useState(false);
+
   const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
@@ -167,7 +186,7 @@ export default function MarkManagement() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="max-h-max">
+      <Card className="max-h-max mb-8">
         <MDBox p={5}>
           {/* DO NOT DELETE CODE AS ABOVE*/}
           {/* Your code here */}
@@ -276,25 +295,68 @@ export default function MarkManagement() {
                 </Select>
               </FormControl>
             </div>
-
+            <div>
+              <ButtonComponent className="" onClick={() => setModalAdd(true)}>
+                <AddCircleOutlineIcon className="text-3xl mr-1" />
+                NHẬP ĐIỂM
+              </ButtonComponent>
+              <ButtonComponent type="success" onClick={() => setModalAdd(true)}>
+                <AddCircleOutlineIcon className="text-3xl mr-1" />
+                CẬP NHẬT
+              </ButtonComponent>
+            </div>
+            <PopupComponent
+              title="CẬP NHẬT"
+              description={`Cập nhật điểm bằng excel`}
+              icon={<AddCircleOutlineIcon />}
+              isOpen={modalAdd}
+              onClose={() => setModalAdd(false)}
+            >
+              {/* <ButtonComponent action="submit">
+                <DownloadIcon className="mr-2" />
+                TẢI FILE
+              </ButtonComponent> */}
+              <form onSubmit={handleSubmit(handleImportMark)}>
+                <InputBaseComponent
+                  name="markFile"
+                  label="File điểm(Excel)"
+                  className="w-full mt-2"
+                  control={control}
+                  setValue={noSetValue}
+                  type="file"
+                  errors={errors}
+                  validationRules={{
+                    required: "Hãy chọn file!",
+                  }}
+                />
+                <div className="mt-5 flex justify-end">
+                  <ButtonComponent type="error" action="reset" onClick={() => reset()}>
+                    CLEAR
+                  </ButtonComponent>
+                  <ButtonComponent action="submit">CẬP NHẬT</ButtonComponent>
+                </div>
+              </form>
+            </PopupComponent>
+            {/* 
             <PopupMenu
               items={menuItems}
               onChange={handleOnChange}
               // style={{ backgroundColor: "lightblue", color: "darkblue" }}
               className=" rounded flex justify-center items-center w-10"
-            />
+            /> */}
           </div>
 
           <>
-            <div className="text-center mt-5">
+            {/* <div className="text-center mt-5">
               <h4 className="text-xl font-bold">Bảng điểm tổng kết lớp 12A1</h4>
               <h4 className="text-xl font-bold">Học kỳ: HKI. Năm học: 2023-2024</h4>
             </div>
             <TableMarkAllStudentsComponent
               className="mt-4"
+              itemsPerPage={10}
               data={scoreByStudents.data}
               onViewDetails={handleViewDetails}
-            />
+            /> */}
             <>
               <div className="text-center mt-5">
                 <h4 className="text-xl font-bold">Bảng điểm môn Toán lớp 12A1</h4>
@@ -316,11 +378,11 @@ export default function MarkManagement() {
                   className="mt-1 text-left"
                   onDetails={handleDetails}
                 />
-                <div className="mt-3 flex flex-nowrap justify-end icon-custom">
+                {/* <div className="mt-3 flex flex-nowrap justify-end icon-custom">
                   <ButtonComponent type="primary" onClick={() => console.log("Lưu")}>
                     Lưu
                   </ButtonComponent>
-                </div>
+                </div> */}
               </div>
             </>
           </>

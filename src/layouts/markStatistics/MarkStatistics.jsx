@@ -538,7 +538,7 @@ export default function MarkStatistics() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card>
+      <Card className="mb-8">
         <MDBox p={5}>
           <div className="w-full mb-10">
             <Tabs

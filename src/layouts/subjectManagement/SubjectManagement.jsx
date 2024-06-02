@@ -197,7 +197,7 @@ export default function SubjectManagement() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="max-h-max">
+      <Card className="max-h-max mb-8">
         <MDBox p={5}>
           <div className="text-center mt-0">
             <h4 className="text-xl font-bold">Quản lí môn học</h4>
@@ -307,7 +307,7 @@ export default function SubjectManagement() {
                         <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
                           CLEAR
                         </ButtonComponent>
-                        <ButtonComponent action="submit">TẠO MÔN HỌC</ButtonComponent>
+                        <ButtonComponent action="submit">TẠO</ButtonComponent>
                       </div>
                     </form>
                   </div>
@@ -448,7 +448,7 @@ export default function SubjectManagement() {
                         <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
                           CLEAR
                         </ButtonComponent>
-                        <ButtonComponent action="submit">TẠO GIÁO ÁN</ButtonComponent>
+                        <ButtonComponent action="submit">TẠO</ButtonComponent>
                       </div>
                     </form>
                     <p className="text-sm font-bold">TẤT CẢ GIÁO ÁN (TOÁN)</p>

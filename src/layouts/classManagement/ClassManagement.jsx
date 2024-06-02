@@ -156,22 +156,15 @@ export default function ClassManagement() {
       );
     });
   };
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="max-h-max">
+      <Card className="max-h-max mb-8">
         <MDBox p={5}>
           {/* DO NOT DELETE CODE AS ABOVE*/}
           {/* Your code here */}
           <div className="text-center mt-0">
-            <h4 className="text-xl font-bold">Quản lý lớp học</h4>
+            <h4 className="text-xl font-bold">QUẢN LÍ LỚP HỌC</h4>
           </div>
           <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
             {/* School Year Select */}
@@ -207,7 +200,7 @@ export default function ClassManagement() {
               <div className="ml-3">
                 <ButtonComponent className="" onClick={handleOpenAddModal}>
                   <AddCircleOutlineIcon className="text-3xl mr-1" />
-                  Tạo lớp học
+                  Tạo
                 </ButtonComponent>
                 <PopupComponent
                   title="TẠO LỚP HỌC"
@@ -272,7 +265,7 @@ export default function ClassManagement() {
                       <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
                         CLEAR
                       </ButtonComponent>
-                      <ButtonComponent action="submit">TẠO LỚP HỌC</ButtonComponent>
+                      <ButtonComponent action="submit">TẠO</ButtonComponent>
                     </div>
                   </form>
                 </PopupComponent>
@@ -356,7 +349,7 @@ export default function ClassManagement() {
                   <ButtonComponent type="error" action="reset" onClick={handleClearEditForm}>
                     CLEAR
                   </ButtonComponent>
-                  <ButtonComponent action="submit">CHỈNH SỬA</ButtonComponent>
+                  <ButtonComponent action="submit">CẬP NHẬT</ButtonComponent>
                 </div>
               </form>
             </PopupComponent>

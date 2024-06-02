@@ -27,6 +27,7 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import Icon from "@mui/material/Icon";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -55,6 +56,8 @@ import {
 import { Grid } from "@mui/material";
 import MDAvatar from "components/MDAvatar";
 import { logoutUser } from "services/AuthService";
+import PopupComponent from "components/PopupComponent/PopupComponent";
+import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const navigate = useNavigate();
@@ -63,6 +66,13 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
+  const [modalLogout, setModalLogout] = useState(false);
+
+  const handleLogoutUser = () => {
+    logoutUser();
+    setModalLogout(false);
+    navigate("/authentication/sign-in");
+  };
 
   useEffect(() => {
     // Setting the navbar type
@@ -188,13 +198,30 @@ function DashboardNavbar({ absolute, light, isMini }) {
                   <span className=" mx-2">|</span>
                   <div
                     className="cursor-pointer hover:text-blue-400 transition"
-                    onClick={() => {
-                      logoutUser();
-                      navigate("/authentication/sign-in");
-                    }}
+                    onClick={() => setModalLogout(true)}
                   >
                     Đăng xuất
                   </div>
+                  <PopupComponent
+                    title="ĐĂNG XUẤT"
+                    icon={<LogoutIcon />}
+                    isOpen={modalLogout}
+                    onClose={() => setModalLogout(false)}
+                  >
+                    <p>Bạn có chắc chắn muốn đăng xuất?</p>
+                    <div className="mt-4 flex justify-end">
+                      <ButtonComponent
+                        type="error"
+                        action="button"
+                        onClick={() => setModalLogout(false)}
+                      >
+                        HỦY BỎ
+                      </ButtonComponent>
+                      <ButtonComponent action="button" onClick={handleLogoutUser}>
+                        <LogoutIcon className="mr-1" /> ĐĂNG XUẤT
+                      </ButtonComponent>
+                    </div>
+                  </PopupComponent>
                 </div>
               )}
 

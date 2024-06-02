@@ -322,7 +322,7 @@ export default function ComponentMark() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card>
+      <Card className="mb-8">
         <MDBox p={5}>
           {/* DO NOT DELETE CODE AS ABOVE*/}
           <div className="w-full mb-10">

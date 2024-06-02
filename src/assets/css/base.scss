@@ -122,3 +122,16 @@ $dark-hover-color: #505e77;
   text-overflow: ellipsis;
   -webkit-line-clamp: 2; /* Limit to 3 lines */
 }
+
+.animate-new {
+  animation: scaleObject 0.8s ease-in alternate infinite;
+}
+
+@keyframes scaleObject {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}

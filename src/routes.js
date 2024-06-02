@@ -58,6 +58,8 @@ import MarkStatistics from "./layouts/markStatistics/MarkStatistics";
 import TakeAttendance from "layouts/takeAttendance";
 import AcademicPerformanceStatistics from "./layouts/academicPerformanceStatistics/AcademicPerformanceStatistics";
 import ConductStatistics from "./layouts/conductStatistics/ConductStatistics";
+import NotificationDetails from "layouts/notificationDetails/NotificationDetails";
+import LogManagement from "layouts/logManagement/LogManagement";
 
 const routes = [
   {
@@ -144,6 +146,14 @@ const routes = [
   },
   {
     type: "collapse",
+    name: "Thông báo",
+    key: "notificationDetails",
+    icon: <Icon fontSize="small">table</Icon>,
+    route: "/notificationDetails",
+    component: <NotificationDetails />,
+  },
+  {
+    type: "collapse",
     name: "Thời khóa biểu",
     key: "weeklyTimeTable",
     icon: <Icon fontSize="small">assignment</Icon>,
@@ -201,6 +211,15 @@ const routes = [
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/authentication/reset-password",
     component: <ResetPassword />,
+  },
+
+  {
+    type: "collapse",
+    name: "Ghi log",
+    key: "logHistory",
+    icon: <Icon fontSize="small">house</Icon>,
+    route: "/logHistory",
+    component: <LogManagement />,
   },
 ];
 

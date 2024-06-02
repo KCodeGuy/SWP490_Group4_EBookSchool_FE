@@ -1,1 +1,1 @@
-export const API_HOST = "http://localhost:1000/api";
+export const API_HOST = "https://orbapi.click/api";

@@ -23,6 +23,7 @@
     "axios": "^1.6.8",
     "chart.js": "4.3.0",
     "chroma-js": "2.4.2",
+    "gh-pages": "^6.1.1",
     "prop-types": "15.8.1",
     "react": "18.2.0",
     "react-chartjs-2": "5.2.0",
@@ -46,6 +47,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start"
   },
   "eslintConfig": {
@@ -66,7 +69,9 @@
       "last 1 safari version"
     ]
   },
+  "homepage": "http://KCodeGuy.github.io/SWP490_Group4_EBookSchool_FE",
   "devDependencies": {
+    "ajv": "^7.2.4",
     "eslint": "8.39.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-import": "2.27.5",

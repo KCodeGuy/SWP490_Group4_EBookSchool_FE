@@ -35,7 +35,7 @@ import { generateSchoolWeeks } from "utils/CommonFunctions";
 import { getTodayDate } from "utils/CommonFunctions";
 import { getWeekForDate } from "utils/CommonFunctions";
 import { getCurrentSchoolYear } from "utils/CommonFunctions";
-import { isTodayInSchoolYear } from "utils/CommonFunctions";
+import { isTodayInSchoolYear } from "../../utils/CommonFunctions";
 
 const formattedSemester = [
   { label: "Học kì 1", value: "HK1" },
@@ -50,7 +50,6 @@ export default function WeeklyTimeTable() {
   const [currentSlotDate, setCurrentSlotDate] = useState("");
 
   // // Example usage
-  const currentYear = getCurrentSchoolYear();
   const [schoolYear, setSchoolYear] = React.useState(
     schoolYears.data[schoolYears.data.length - 1].schoolYear
   );
@@ -64,15 +63,14 @@ export default function WeeklyTimeTable() {
   };
 
   const schoolWeeks = generateSchoolWeeks(schoolYear);
+
   const { formattedDate, today } = getTodayDate();
   let currentWeek;
   if (isTodayInSchoolYear(schoolYear)) {
     currentWeek = getWeekForDate(schoolWeeks, today);
-  } else {
-    currentWeek = schoolWeeks[0];
   }
 
-  const [currentWeekDate, setCurrentWeekDate] = useState(currentWeek);
+  const [currentWeekDate, setCurrentWeekDate] = useState(schoolWeeks[0]);
   const timeTableOfAllSchool = timeTablesAllSchool.data.map((item) => [
     // item.id,
     item.schoolYear,
@@ -89,19 +87,13 @@ export default function WeeklyTimeTable() {
   };
 
   const studentID = "HS0001";
-  const token = localStorage.getItem("authToken");
-  const accessToken = `Bearer ${token}`;
-  const parrams = { studentID, schoolYear, schoolWeek, accessToken };
+  const accessToken = localStorage.getItem("authToken");
+  const param = { studentID, schoolYear, schoolWeek, accessToken };
 
   const { data, error, isLoading } = useQuery({
-    queryKey: ["studentSchedule", parrams],
+    queryKey: ["studentSchedule", param],
     queryFn: () =>
-      getStudentTimetable(
-        parrams.studentID,
-        parrams.schoolYear,
-        parrams.schoolWeek,
-        parrams.accessToken
-      ),
+      getStudentTimetable(param.studentID, param.schoolYear, param.schoolWeek, param.accessToken),
   });
 
   const [currentTimeTable, setCurrentTimeTable] = useState([]);

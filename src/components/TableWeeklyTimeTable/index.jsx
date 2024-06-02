@@ -115,8 +115,6 @@ TableWeeklyTimeTableComponent.propTypes = {
   onDetails: PropTypes.func,
 };
 
-TableWeeklyTimeTableComponent.defaultProps = {
-  //   isOrdered: true, // Default to not showing row numbers
-};
+TableWeeklyTimeTableComponent.defaultProps = {};
 
 export default TableWeeklyTimeTableComponent;

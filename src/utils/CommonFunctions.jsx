@@ -110,6 +110,7 @@ export const isTodayInSchoolYear = (schoolYear) => {
   const schoolYearStart = new Date(startYear, 0, 1); // January 1st of start year
   const schoolYearEnd = new Date(endYear, 11, 31); // December 31st of end year
 
+  console.log(today >= schoolYearStart && today <= schoolYearEnd);
   return today >= schoolYearStart && today <= schoolYearEnd;
 };
 

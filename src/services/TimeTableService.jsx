@@ -10,7 +10,7 @@ export const getStudentTimetable = async (studentID, schoolYear, fromDate, acces
     },
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   return response.data;

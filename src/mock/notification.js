@@ -1,4 +1,3 @@
-// KhoaTD: Mới add vào
 const notification = {
   code: 200,
   status: true,
@@ -7,7 +6,7 @@ const notification = {
     id: 1,
     title: "Thông báo lịch nghỉ tết năm 2024", // allow null
     startDate: "2024-03-04",
-    thumbNail: "Ảnh demo",
+    thumbNail: "ảnh demo",
     content: "Thông báo lịch nghỉ tết năm 2024",
   },
 };

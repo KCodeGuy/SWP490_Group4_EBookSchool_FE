@@ -10,8 +10,8 @@ import BorderColorIcon from "@mui/icons-material/BorderColor";
 
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent.jsx";
 import Footer from "../../examples/Footer/index.js";
-import { studentClasses } from "../../mock/class";
-import { schoolYears } from "../../mock/schoolYear";
+import { studentClasses } from "../../mock/class.js";
+import { schoolYears } from "../../mock/schoolYear.js";
 import { subjects } from "../../mock/subject.js";
 import { registerBooks } from "../../mock/registerBook.js";
 

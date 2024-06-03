@@ -60,6 +60,7 @@ import AcademicPerformanceStatistics from "./layouts/academicPerformanceStatisti
 import ConductStatistics from "./layouts/conductStatistics/ConductStatistics";
 import NotificationDetails from "layouts/notificationDetails/NotificationDetails";
 import LogManagement from "layouts/logManagement/LogManagement";
+import SystemSetting from "layouts/systemSetting";
 
 const routes = [
   {
@@ -112,7 +113,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Quản lí môn học",
+    name: "Quản lí môn",
     key: "subjectManagement",
     icon: <Icon fontSize="small">house</Icon>,
     route: "/subjectManagement",
@@ -220,6 +221,14 @@ const routes = [
     icon: <Icon fontSize="small">house</Icon>,
     route: "/logHistory",
     component: <LogManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Cài đặt hệ thống",
+    key: "systemSetting",
+    icon: <Icon fontSize="small">house</Icon>,
+    route: "/systemSetting",
+    component: <SystemSetting />,
   },
 ];
 

@@ -9,6 +9,8 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import DownloadIcon from "@mui/icons-material/Download";
 
 import "./style.scss";
 import { grades } from "../../mock/grade";
@@ -20,7 +22,7 @@ import PopupComponent from "../../components/PopupComponent/PopupComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
-import { getAllSubjects } from "services/SubjectService";
+import { getAllSubjects } from "../../services/SubjectService";
 import { useQuery } from "react-query";
 
 // Subject Management (UolLT)
@@ -35,9 +37,11 @@ export default function SubjectManagement() {
   const token = localStorage.getItem("authToken");
   const accessToken = `Bearer ${token}`;
 
-  const { data, error, isLoading } = useQuery(["subjectState", { accessToken }], () =>
-    getAllSubjects(accessToken)
-  );
+  // const { data, error, isLoading } = useQuery(["subjectState", { accessToken }], () =>
+  //   getAllSubjects(accessToken)
+  // );
+
+  // console.log(data);
 
   const markFactors = subject.data.points[0].componentPoints.map((obj) => [
     obj.id,
@@ -177,7 +181,7 @@ export default function SubjectManagement() {
 
   const handleChangeSearchValue = (txtSearch) => {
     console.log(txtSearch);
-    setCurrentData(filterSubjects(txtSearch, studentClasses.data));
+    // setCurrentData(filterSubjects(txtSearch, studentClasses.data));
   };
 
   const filterSubjects = (txtSearch, data) => {
@@ -200,7 +204,7 @@ export default function SubjectManagement() {
       <Card className="max-h-max mb-8">
         <MDBox p={5}>
           <div className="text-center mt-0">
-            <h4 className="text-xl font-bold">Quản lí môn học</h4>
+            <h4 className="text-xl font-bold">QUẢN LÍ MÔN HỌC</h4>
           </div>
           <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
             {/* School Year Select */}
@@ -244,7 +248,12 @@ export default function SubjectManagement() {
                   icon={<AddCircleOutlineIcon />}
                   isOpen={modalOpen}
                   onClose={handleCloseAddModal}
-                  tabs={[{ label: "TẠO MÔN" }, { label: "ĐIỂM THÀNH PHẦN" }, { label: "GIÁO ÁN" }]}
+                  tabs={[
+                    { label: "TẠO MÔN" },
+                    { label: "ĐIỂM THÀNH PHẦN" },
+                    { label: "GIÁO ÁN" },
+                    { label: "TẠO BẰNG EXCEL" },
+                  ]}
                   currentTab={currentTab}
                   onTabChange={handleTabChange}
                 >
@@ -398,7 +407,7 @@ export default function SubjectManagement() {
                   {/* Content for Tab 3 */}
                   <div role="tabpanel" hidden={currentTab == 2}>
                     {/* form nhập giáo án*/}
-                    <form onSubmit={handleSubmit(handleAddLesson)}>
+                    <form onSubmit={handleSubmit(handleAddMark)}>
                       <div className="flex">
                         <InputBaseComponent
                           placeholder="Nhập tên chủ đề"
@@ -462,14 +471,41 @@ export default function SubjectManagement() {
                       className="mt-1"
                     />
                   </div>
+
+                  <div role="tabpanel" hidden={currentTab == 3}>
+                    <ButtonComponent action="submit">
+                      <DownloadIcon className="mr-2" />
+                      TẢI FILE
+                    </ButtonComponent>
+                    <form onSubmit={handleSubmit(handleAddMark)}>
+                      <InputBaseComponent
+                        name="timeTableFile"
+                        label="Môn học(Excel)"
+                        className="w-full mt-5"
+                        control={control}
+                        setValue={noSetValue}
+                        type="file"
+                        errors={errors}
+                        validationRules={{
+                          required: "Hãy chọn file!",
+                        }}
+                      />
+                      <div className="mt-5 flex justify-end">
+                        <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
+                          CLEAR
+                        </ButtonComponent>
+                        <ButtonComponent action="submit">TẠO</ButtonComponent>
+                      </div>
+                    </form>
+                  </div>
                 </PopupComponent>
               </div>
             </div>
           </div>
           <div>
-            {/* <TableComponent
+            <TableComponent
               header={["ID", "Tên môn học", "Khối", "Mô tả"]}
-              data={data.map((item) => [
+              data={subjects.data.map((item) => [
                 item.id.toString(),
                 item.name.toString(),
                 item.grade.toString(),
@@ -479,7 +515,7 @@ export default function SubjectManagement() {
               onEdit={handleEdit}
               onDelete={handleDelete}
               className="mt-8"
-            /> */}
+            />
             <PopupComponent
               title="CẬP NHẬT"
               description="Hãy chỉnh sửa để bắt đầu năm học mới"

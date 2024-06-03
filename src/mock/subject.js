@@ -149,6 +149,48 @@ const subjects = {
       description: "Môn tiếng anh khối 12",
       grade: "Khối 12",
     },
+    {
+      id: 4,
+      name: "GDCD",
+      description: "Môn toán khối 12",
+      grade: "Khối 12",
+    },
+    {
+      id: 5,
+      name: "GDQP-An ninh",
+      description: "Môn toán khối 12",
+      grade: "Khối 12",
+    },
+    {
+      id: 6,
+      name: "Địa lý",
+      description: "Môn toán khối 12",
+      grade: "Khối 12",
+    },
+    {
+      id: 7,
+      name: "Lịch sử",
+      description: "Môn toán khối 12",
+      grade: "Khối 12",
+    },
+    {
+      id: 8,
+      name: "Vật lý",
+      description: "Môn toán khối 12",
+      grade: "Khối 12",
+    },
+    {
+      id: 9,
+      name: "Hóa học",
+      description: "Môn toán khối 12",
+      grade: "Khối 12",
+    },
+    {
+      id: 10,
+      name: "Tin học",
+      description: "Môn toán khối 12",
+      grade: "Khối 12",
+    },
   ],
 };
 

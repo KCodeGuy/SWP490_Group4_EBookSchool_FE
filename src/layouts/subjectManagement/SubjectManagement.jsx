@@ -37,11 +37,11 @@ export default function SubjectManagement() {
   const token = localStorage.getItem("authToken");
   const accessToken = `Bearer ${token}`;
 
-  // const { data, error, isLoading } = useQuery(["subjectState", { accessToken }], () =>
-  //   getAllSubjects(accessToken)
-  // );
+  const { data, error, isLoading } = useQuery(["subjectState", { accessToken }], () =>
+    getAllSubjects(accessToken)
+  );
 
-  // console.log(data);
+  console.log(data);
 
   const markFactors = subject.data.points[0].componentPoints.map((obj) => [
     obj.id,

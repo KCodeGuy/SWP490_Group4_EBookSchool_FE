@@ -275,7 +275,7 @@ export default function ClassManagement() {
           <div>
             <TableComponent
               header={["Tên lớp", "Năm học", "Phòng học", "Giáo viên chủ nhiệm"]}
-              data={data.data.map((item) => [
+              data={data?.data.map((item) => [
                 item.classroom.toString(),
                 item.schoolYear.toString(),
                 item.classroom.toString(),

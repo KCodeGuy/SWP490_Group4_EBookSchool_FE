@@ -62,6 +62,7 @@ import NotificationDetails from "layouts/notificationDetails/NotificationDetails
 import LogManagement from "layouts/logManagement/LogManagement";
 import SystemSetting from "layouts/systemSetting";
 import RegisterNotebookStatistics from "layouts/registerNotebookStatistics/RegisterNotebookStatistics";
+import AttendanceStatistics from "layouts/attendanceStatistics/AttendanceStatistics";
 
 const routes = [
   {
@@ -103,6 +104,14 @@ const routes = [
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/registerNotebookStatistics",
     component: <RegisterNotebookStatistics />,
+  },
+  {
+    type: "collapse",
+    name: "Thống kê lượt vắng",
+    key: "attendanceStatistics",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/attendanceStatistics",
+    component: <AttendanceStatistics />,
   },
   {
     type: "collapse",

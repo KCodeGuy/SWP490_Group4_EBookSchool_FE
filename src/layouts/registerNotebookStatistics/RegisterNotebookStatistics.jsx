@@ -499,7 +499,7 @@ export default function RegisterNotebookStatistics() {
                 <div className="mt-8 custom-table">
                   <p className="text-base font-bold">THỐNG KÊ CHI TIẾT {grade}</p>
                   <TableComponent
-                    header={["Lớp", "Số lượng", "Điểm TB", "Hạng"]}
+                    header={["Lớp", "Sỉ số", "Điểm TB", "Hạng"]}
                     data={aSchoolBookForAGrade}
                     // onEdit={handleEdit}
                     onDetails={handleDetails}

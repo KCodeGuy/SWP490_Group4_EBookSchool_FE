@@ -122,6 +122,20 @@ $dark-hover-color: #505e77;
   text-overflow: ellipsis;
   -webkit-line-clamp: 2; /* Limit to 3 lines */
 }
+.max-line-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 3; /* Limit to 3 lines */
+}
+.max-line-4 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 4; /* Limit to 3 lines */
+}
 
 .animate-new {
   animation: scaleObject 0.8s ease-in alternate infinite;
@@ -142,4 +156,8 @@ $dark-hover-color: #505e77;
 
 .css-irbhzg-MuiDrawer-docked .MuiDrawer-paper {
   background: #ffffff;
+}
+
+.Toastify__toast-body {
+  font-size: 14px !important;
 }

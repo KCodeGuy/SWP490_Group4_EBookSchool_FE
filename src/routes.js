@@ -61,6 +61,7 @@ import ConductStatistics from "./layouts/conductStatistics/ConductStatistics";
 import NotificationDetails from "layouts/notificationDetails/NotificationDetails";
 import LogManagement from "layouts/logManagement/LogManagement";
 import SystemSetting from "layouts/systemSetting";
+import RegisterNotebookStatistics from "layouts/registerNotebookStatistics/RegisterNotebookStatistics";
 
 const routes = [
   {
@@ -94,6 +95,14 @@ const routes = [
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/conductStatistics",
     component: <ConductStatistics />,
+  },
+  {
+    type: "collapse",
+    name: "Thống kê sổ đầu bài",
+    key: "registerNotebookStatistics",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/registerNotebookStatistics",
+    component: <RegisterNotebookStatistics />,
   },
   {
     type: "collapse",

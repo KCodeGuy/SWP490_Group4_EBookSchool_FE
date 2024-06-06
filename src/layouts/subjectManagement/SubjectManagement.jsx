@@ -15,7 +15,6 @@ import DownloadIcon from "@mui/icons-material/Download";
 import "./style.scss";
 import { grades } from "../../mock/grade";
 import { subjects, subject } from "../../mock/subject";
-import { studentClasses } from "../../mock/class";
 import { schoolYears } from "../../mock/schoolYear";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
@@ -37,11 +36,11 @@ export default function SubjectManagement() {
   const token = localStorage.getItem("authToken");
   const accessToken = `Bearer ${token}`;
 
-  // const { data, error, isLoading } = useQuery(["subjectState", { accessToken }], () =>
-  //   getAllSubjects(accessToken)
-  // );
+  const { data, error, isLoading } = useQuery(["subjectState", { accessToken }], () =>
+    getAllSubjects(accessToken)
+  );
 
-  // console.log(data);
+  console.log(data);
 
   const markFactors = subject.data.points[0].componentPoints.map((obj) => [
     obj.id,

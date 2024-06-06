@@ -9,17 +9,20 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import DownloadIcon from "@mui/icons-material/Download";
 
 import "./style.scss";
 import { grades } from "../../mock/grade";
 import { subjects, subject } from "../../mock/subject";
-import { studentClasses } from "../../mock/class";
 import { schoolYears } from "../../mock/schoolYear";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
+import { getAllSubjects } from "../../services/SubjectService";
+import { useQuery } from "react-query";
 
 // Subject Management (UolLT)
 export default function SubjectManagement() {
@@ -30,7 +33,14 @@ export default function SubjectManagement() {
   const [deletedSubject, setDeletedSubject] = useState({});
   const [currentTab, setCurrentTab] = useState(0);
 
-  const currentSubjects = subjects.data;
+  const token = localStorage.getItem("authToken");
+  const accessToken = `Bearer ${token}`;
+
+  const { data, error, isLoading } = useQuery(["subjectState", { accessToken }], () =>
+    getAllSubjects(accessToken)
+  );
+
+  console.log(data);
 
   const markFactors = subject.data.points[0].componentPoints.map((obj) => [
     obj.id,
@@ -165,7 +175,7 @@ export default function SubjectManagement() {
 
   const handleChangeSearchValue = (txtSearch) => {
     console.log(txtSearch);
-    setCurrentData(filterSubjects(txtSearch, studentClasses.data));
+    // setCurrentData(filterSubjects(txtSearch, studentClasses.data));
   };
 
   const filterSubjects = (txtSearch, data) => {
@@ -185,10 +195,10 @@ export default function SubjectManagement() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="max-h-max">
+      <Card className="max-h-max mb-8">
         <MDBox p={5}>
           <div className="text-center mt-0">
-            <h4 className="text-xl font-bold">Quản lí môn học</h4>
+            <h4 className="text-xl font-bold">QUẢN LÍ MÔN HỌC</h4>
           </div>
           <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
             {/* School Year Select */}
@@ -212,7 +222,7 @@ export default function SubjectManagement() {
               </FormControl>
               <div className="max-[639px]:mt-2">
                 <ButtonComponent type="success" onClick={handleStatistic}>
-                  <FilterAltIcon className="mr-1" /> Thống kế
+                  <FilterAltIcon className="mr-1" /> Tìm kiếm
                 </ButtonComponent>
               </div>
             </div>
@@ -232,7 +242,12 @@ export default function SubjectManagement() {
                   icon={<AddCircleOutlineIcon />}
                   isOpen={modalOpen}
                   onClose={handleCloseAddModal}
-                  tabs={[{ label: "TẠO MÔN" }, { label: "ĐIỂM THÀNH PHẦN" }, { label: "GIÁO ÁN" }]}
+                  tabs={[
+                    { label: "TẠO MÔN" },
+                    { label: "ĐIỂM THÀNH PHẦN" },
+                    { label: "GIÁO ÁN" },
+                    { label: "TẠO BẰNG EXCEL" },
+                  ]}
                   currentTab={currentTab}
                   onTabChange={handleTabChange}
                 >
@@ -279,7 +294,7 @@ export default function SubjectManagement() {
                         <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
                           CLEAR
                         </ButtonComponent>
-                        <ButtonComponent action="submit">TẠO MÔN HỌC</ButtonComponent>
+                        <ButtonComponent action="submit">TẠO</ButtonComponent>
                       </div>
                     </form>
                   </div>
@@ -370,7 +385,7 @@ export default function SubjectManagement() {
                   {/* Content for Tab 3 */}
                   <div role="tabpanel" hidden={currentTab == 2}>
                     {/* form nhập giáo án*/}
-                    <form onSubmit={handleSubmit(handleAddLesson)}>
+                    <form onSubmit={handleSubmit(handleAddMark)}>
                       <div className="flex">
                         <InputBaseComponent
                           placeholder="Nhập tên chủ đề"
@@ -407,7 +422,7 @@ export default function SubjectManagement() {
                         <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
                           CLEAR
                         </ButtonComponent>
-                        <ButtonComponent action="submit">TẠO GIÁO ÁN</ButtonComponent>
+                        <ButtonComponent action="submit">TẠO</ButtonComponent>
                       </div>
                     </form>
                     <p className="text-sm font-bold">TẤT CẢ GIÁO ÁN (TOÁN)</p>
@@ -421,6 +436,33 @@ export default function SubjectManagement() {
                       className="mt-1"
                     />
                   </div>
+
+                  <div role="tabpanel" hidden={currentTab == 3}>
+                    <ButtonComponent action="submit">
+                      <DownloadIcon className="mr-2" />
+                      TẢI FILE
+                    </ButtonComponent>
+                    <form onSubmit={handleSubmit(handleAddMark)}>
+                      <InputBaseComponent
+                        name="timeTableFile"
+                        label="Môn học(Excel)"
+                        className="w-full mt-5"
+                        control={control}
+                        setValue={noSetValue}
+                        type="file"
+                        errors={errors}
+                        validationRules={{
+                          required: "Hãy chọn file!",
+                        }}
+                      />
+                      <div className="mt-5 flex justify-end">
+                        <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
+                          CLEAR
+                        </ButtonComponent>
+                        <ButtonComponent action="submit">TẠO</ButtonComponent>
+                      </div>
+                    </form>
+                  </div>
                 </PopupComponent>
               </div>
             </div>
@@ -428,7 +470,7 @@ export default function SubjectManagement() {
           <div>
             <TableComponent
               header={["ID", "Tên môn học", "Khối", "Mô tả"]}
-              data={currentSubjects.map((item) => [
+              data={subjects.data.map((item) => [
                 item.id.toString(),
                 item.name.toString(),
                 item.grade.toString(),

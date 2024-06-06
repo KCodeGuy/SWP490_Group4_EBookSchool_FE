@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import AccessAlarmsIcon from "@mui/icons-material/AccessAlarms";
 import { Link } from "react-router-dom";
+import { getTodayDate } from "utils/CommonFunctions";
 
 const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
   const dates = data.map((item) => item.date);
   const defaultSlots = Array.from({ length: 10 }, (_, index) => index + 1);
+  const { formattedDate } = getTodayDate();
+
   const renderSlotStatus = (status) => {
     let formattedStatus = status.toLowerCase();
     switch (formattedStatus) {
@@ -30,12 +33,18 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
           <tr>
             <th className="w-20">Buổi</th>
             <th className="w-20">Tiết</th>
-            {dates.map((date) => (
-              <th key={date}>
-                {`${data.find((item) => item.date === date).weekDate}`}{" "}
-                <p className="font-normal">{date}</p>
-              </th>
-            ))}
+            {dates.map((date) => {
+              const isToday = date === formattedDate;
+              return (
+                <th
+                  key={date}
+                  className={isToday ? "font-bold italic bg-success-color" : "font-normal"}
+                >
+                  {`${data.find((item) => item.date === date).weekDate}`}{" "}
+                  <p className={isToday ? "font-bold italic" : "font-normal"}>{date}</p>
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody>
@@ -55,39 +64,33 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
                   ?.slots.find((s) => s.slot === slot);
                 return (
                   <td key={`${date}-${slot}`} className="cell-hover min-w-28">
-                    {slotData ? (
+                    {slotData.classroom ? (
                       <div className="mx-2 my-1 text-left">
                         <div
-                          className="flex justify-between cursor-pointer hover:underline"
+                          className="cursor-pointer hover:underline"
                           onClick={() => onDetails([slotData, date])}
                         >
-                          <p className="font-bold">
-                            {slotData.subject}{" "}
-                            <span className="warning-color">({slotData.teacher})</span>
-                          </p>
+                          <p className="font-bold">{slotData.subject} </p>
+                          <p className="warning-color">({slotData.teacher})</p>
                         </div>
                         <p className="text-center text-white px-1 max-w-max h-6 leading-6 rounded bg-success-color">
                           <AccessAlarmsIcon className="mb-1 mr-1" />
                           {slotData.slotTime}
                         </p>
                         <div className="flex justify-between mt-1 items-center">
-                          <p className="mt-1 font-medium">{slotData.classRoom}</p>
+                          {slotData.isAttendance ? (
+                            <span className="font-bold success-color">(Có mặt)</span>
+                          ) : (
+                            <span className="font-bold error-color">(Vắng)</span>
+                          )}
                           <Link to="/schoolBook">
                             <button className="text-center text-white px-2 max-w-max h-6 leading-6 rounded bg-warning-color">
                               SĐB
                             </button>
                           </Link>
                         </div>
-                        <p>
-                          {slotData.isAttendance ? (
-                            <span className="font-bold success-color">(Có mặt)</span>
-                          ) : (
-                            <span className="font-bold error-color">(Vắng)</span>
-                          )}
-                        </p>
-                        <p>{renderSlotStatus(slotData.status)}</p>
                         <Link to="/takeAttendance">
-                          <button className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color">
+                          <button className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color mt-3">
                             Điểm danh
                           </button>
                         </Link>
@@ -112,8 +115,6 @@ TableWeeklyTimeTableComponent.propTypes = {
   onDetails: PropTypes.func,
 };
 
-TableWeeklyTimeTableComponent.defaultProps = {
-  //   isOrdered: true, // Default to not showing row numbers
-};
+TableWeeklyTimeTableComponent.defaultProps = {};
 
 export default TableWeeklyTimeTableComponent;

@@ -25,6 +25,9 @@ function TableComponent({
   isShowImage,
   showCheckboxes,
   isCheckedAll,
+  isImage,
+  isLimitLine,
+  hiddenColumns,
   saveName = "Lưu",
 }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -69,6 +72,10 @@ function TableComponent({
     }
   };
 
+  const isColumnHidden = (index) => {
+    return hiddenColumns && hiddenColumns.includes(index);
+  };
+
   return (
     <div className={`max-[1023px]:overflow-scroll lg:overflow-auto ${className}`}>
       <table className="w-full">
@@ -103,20 +110,27 @@ function TableComponent({
                 {isOrdered && <td>{startIndex + rowIndex + 1}</td>}
                 {isShowImage && (
                   <td className="text-center">
-                    <img
-                      className="w-32 h-32 rounded-md mx-auto object-cover object-center"
-                      src="https://zpsocial-f55-org.zadn.vn/05b9313e4c9fadc1f48e.jpg"
-                      // src="https://scontent.fsgn5-9.fna.fbcdn.net/v/t1.6435-9/73423386_2452908634816054_193106849229176832_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=5f2048&_nc_ohc=WfKACIaCKmwQ7kNvgHPBa_8&_nc_ht=scontent.fsgn5-9.fna&oh=00_AYB84VdD325lXZkV7dmrDJdZBXdEBXkby5TiGMpnl5aZpA&oe=6665595C"
-                      alt="my-teacher"
-                    />
-                    {/* <div className="text-4xl primary-color">
+                    <div className="text-4xl primary-color">
                       <AccountCircleIcon />
-                    </div> */}
+                    </div>
                   </td>
                 )}
-                {row.map((cell, cellIndex) => (
-                  <td key={cellIndex}>{cell}</td>
-                ))}
+                {row.map(
+                  (cell, cellIndex) =>
+                    !isColumnHidden(cellIndex) && (
+                      <td key={cellIndex} className="px-2">
+                        {isImage === cellIndex ? (
+                          <img
+                            src={cell}
+                            alt="Thumbnail"
+                            className="w-28 h-28 rounded-sm object-cover object-center mx-auto my-2"
+                          />
+                        ) : (
+                          <div className="max-line-4 max-w-56 mx-auto">{cell}</div>
+                        )}
+                      </td>
+                    )
+                )}
                 {showCheckboxes && (
                   <td className="max-w-28">
                     <Checkbox
@@ -163,11 +177,13 @@ function TableComponent({
       </table>
       <div className="pagination border py-2 flex justify-between items-center px-3 w-full">
         <div>
-          <span className="mr-4 text-sm">Tổng: {data.length}</span>
+          <span className="mr-4 text-sm">
+            <span className="font-bold">Tổng:</span> {data.length}
+          </span>
           {showCheckboxes && <ButtonComponent onClick={handleSave}>{saveName}</ButtonComponent>}
         </div>
         <div className="text-sm">
-          <span>Số lượng: {itemsPerPage}</span>
+          <span className="font-bold">Số lượng: {itemsPerPage}</span>
           <span className="ml-4">
             {currentPage} / {totalPages}
           </span>
@@ -205,10 +221,14 @@ TableComponent.propTypes = {
   isShowImage: PropTypes.bool,
   showCheckboxes: PropTypes.bool,
   isCheckedAll: PropTypes.bool,
+  isImage: PropTypes.number,
+  hiddenColumns: PropTypes.array,
+  isLimitLine: PropTypes.object,
   saveName: PropTypes.string,
 };
 
 TableComponent.defaultProps = {
+  data: [],
   itemsPerPage: 10, // Default items per page
   isOrdered: true, // Default to not showing row numbers
   showCheckboxes: false, // Default to not showing checkboxes

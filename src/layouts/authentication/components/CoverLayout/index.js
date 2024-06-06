@@ -36,11 +36,10 @@ function CoverLayout({ coverHeight, image, children }) {
       <DefaultNavbar
         action={{
           type: "internal",
-          route: "/dashboard",
+          route: "/",
           label: "Trở lại",
+          color: "info",
         }}
-        transparent
-        light
       />
       <MDBox
         width="calc(100% - 2rem)"

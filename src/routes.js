@@ -44,9 +44,9 @@ import ResetPassword from "layouts/authentication/reset-password";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
-import SchoolBook from "./layouts/shoolBook/schoolBook";
+import SchoolBook from "./layouts/shoolBook";
 import Wiki from "./layouts/wiki/Wiki";
-import MarkManagement from "./layouts/MarkManagement/MarkManagement";
+import MarkManagement from "./layouts/markManagement";
 import RoomManagement from "./layouts/roomManagement/RoomManagement";
 import ClassManagement from "./layouts/classManagement/ClassManagement";
 import NotificationManagement from "./layouts/notificationManagement/NotificationManagement";
@@ -57,72 +57,17 @@ import WeeklyTimeTable from "./layouts/weeklyTimeTable";
 import MarkStatistics from "./layouts/markStatistics/MarkStatistics";
 import TakeAttendance from "layouts/takeAttendance";
 import AcademicPerformanceStatistics from "./layouts/academicPerformanceStatistics/AcademicPerformanceStatistics";
+import ConductStatistics from "./layouts/conductStatistics/ConductStatistics";
+import NotificationDetails from "layouts/notificationDetails/NotificationDetails";
+import LogManagement from "layouts/logManagement/LogManagement";
+import SystemSetting from "layouts/systemSetting";
+import { Title } from "chart.js";
 
 const routes = [
   {
-    type: "collapse",
-    name: "Mark Management(HieuTTN)",
-    key: "markManagement",
-    icon: <Icon fontSize="small">assignment</Icon>,
-    route: "/markManagement",
-    component: <MarkManagement />,
-  },
-  {
-    type: "collapse",
-    name: "Mark Statistics(HieuTTN)",
-    key: "markStatistics",
-    icon: <Icon fontSize="small">assignment</Icon>,
-    route: "/markStatistics",
-    component: <MarkStatistics />,
-  },
-  {
-    type: "collapse",
-    name: "Academic Performance Statistics(HieuTTN)",
-    key: "academicPerformanceStatistics",
-    icon: <Icon fontSize="small">assignment</Icon>,
-    route: "/academicPerformanceStatistics",
-    component: <AcademicPerformanceStatistics />,
-  },
-
-  {
-    type: "collapse",
-    name: "Room Management(UolLT)",
-    key: "roomManagement",
-    icon: <Icon fontSize="small">house</Icon>,
-    route: "/roomManagement",
-    component: <RoomManagement />,
-  },
-  {
-    type: "collapse",
-    name: "Class Management(UolLT)",
-    key: "classManagement",
-    icon: <Icon fontSize="small">house</Icon>,
-    route: "/classManagement",
-    component: <ClassManagement />,
-  },
-  {
-    type: "collapse",
-    name: "Notification Management(UolLT)",
-    key: "notificationManagement",
-    icon: <Icon fontSize="small">house</Icon>,
-    route: "/notificationManagement",
-    component: <NotificationManagement />,
-  },
-  {
-    type: "collapse",
-    name: "Subject Management(UolLT)",
-    key: "subjectManagement",
-    icon: <Icon fontSize="small">house</Icon>,
-    route: "/subjectManagement",
-    component: <SubjectManagement />,
-  },
-  {
-    type: "collapse",
-    name: "Account Management(UolLT)",
-    key: "accountManagement",
-    icon: <Icon fontSize="small">house</Icon>,
-    route: "/accountManagement",
-    component: <AccountManagement />,
+    type: "title",
+    title: "Học tập",
+    key: "studying",
   },
   {
     type: "collapse",
@@ -132,10 +77,9 @@ const routes = [
     route: "/dashboard",
     component: <Dashboard />,
   },
-
   {
     type: "collapse",
-    name: "School Book(KhoaTD)",
+    name: "Sổ đầu bài",
     key: "schoolBook",
     icon: <Icon fontSize="small">table</Icon>,
     route: "/schoolBook",
@@ -143,7 +87,15 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Weekly Time Table(KhoaTD)",
+    name: "Thông báo",
+    key: "notificationDetails",
+    icon: <Icon fontSize="small">table</Icon>,
+    route: "/notificationDetails/:notificationID",
+    component: <NotificationDetails />,
+  },
+  {
+    type: "collapse",
+    name: "Thời khóa biểu",
     key: "weeklyTimeTable",
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/weeklyTimeTable",
@@ -151,39 +103,120 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Take Attendance(KhoaTD)",
+    name: "Điểm danh",
     key: "takeAttendance",
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/takeAttendance",
     component: <TakeAttendance />,
   },
+
+  {
+    type: "title",
+    title: "Thống kê",
+    key: "statistic",
+  },
   {
     type: "collapse",
-    name: "Wiki(KhoaTD)",
+    name: "Thống kê điểm",
+    key: "markStatistics",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/markStatistics",
+    component: <MarkStatistics />,
+  },
+  {
+    type: "collapse",
+    name: "Thống kê học lực",
+    key: "academicPerformanceStatistics",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/academicPerformanceStatistics",
+    component: <AcademicPerformanceStatistics />,
+  },
+  {
+    type: "collapse",
+    name: "Thống kê hạnh kiểm",
+    key: "conductStatistics",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/conductStatistics",
+    component: <ConductStatistics />,
+  },
+  {
+    type: "title",
+    title: "Quản lí",
+    key: "management",
+  },
+  {
+    type: "collapse",
+    name: "Quản lí điểm",
+    key: "markManagement",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/markManagement",
+    component: <MarkManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Quản lí lớp",
+    key: "classManagement",
+    icon: <Icon fontSize="small">house</Icon>,
+    route: "/classManagement",
+    component: <ClassManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Quản lí môn",
+    key: "subjectManagement",
+    icon: <Icon fontSize="small">house</Icon>,
+    route: "/subjectManagement",
+    component: <SubjectManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Quản lí thông báo",
+    key: "notificationManagement",
+    icon: <Icon fontSize="small">house</Icon>,
+    route: "/notificationManagement",
+    component: <NotificationManagement />,
+  },
+
+  {
+    type: "collapse",
+    name: "Quản lí tài khoản",
+    key: "accountManagement",
+    icon: <Icon fontSize="small">house</Icon>,
+    route: "/accountManagement",
+    component: <AccountManagement />,
+  },
+
+  {
+    type: "title",
+    title: "Demo",
+    key: "demoExample",
+  },
+  {
+    type: "collapse",
+    name: "Wiki",
     key: "wiki",
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/wiki",
     component: <Wiki />,
   },
+
   {
     type: "collapse",
-    name: "Demo(KhoaTD)",
+    name: "Demo",
     key: "demo",
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/demo",
     component: <Demo />,
   },
+
   {
-    type: "collapse",
-    name: "Profile",
-    key: "profile",
-    icon: <Icon fontSize="small">person</Icon>,
-    route: "/profile",
-    component: <Profile />,
+    type: "title",
+    title: "Hệ thống",
+    key: "system",
   },
   {
     type: "collapse",
-    name: "Sign In",
+    name: "Đăng nhập",
     key: "sign-in",
     icon: <Icon fontSize="small">login</Icon>,
     route: "/authentication/sign-in",
@@ -191,11 +224,36 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Reset Password",
+    name: "Quên mật khẩu",
     key: "reset-password",
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/authentication/reset-password",
     component: <ResetPassword />,
+  },
+
+  {
+    type: "collapse",
+    name: "Ghi log",
+    key: "logHistory",
+    icon: <Icon fontSize="small">house</Icon>,
+    route: "/logHistory",
+    component: <LogManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Cài đặt hệ thống",
+    key: "systemSetting",
+    icon: <Icon fontSize="small">house</Icon>,
+    route: "/systemSetting",
+    component: <SystemSetting />,
+  },
+  {
+    type: "collapse",
+    name: "Thông tin tài khoản",
+    key: "profile",
+    icon: <Icon fontSize="small">person</Icon>,
+    route: "/profile",
+    component: <Profile />,
   },
 ];
 

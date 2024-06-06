@@ -16,7 +16,7 @@ Coded by www.creative-tim.com
 import { useState } from "react";
 
 // react-router-dom components
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -39,16 +39,20 @@ import MDButton from "components/MDButton";
 import BasicLayout from "layouts/authentication/components/BasicLayout";
 
 // Images
-import bgImage from "assets/images/bg-sign-in-basic.jpeg";
+import bgImage from "assets/images/slider2.png";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent";
 import { useForm, Controller } from "react-hook-form";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
+import { loginUser } from "../../../services/AuthService";
+import { useMutation } from "react-query";
+import { CircularProgress } from "@mui/material";
 
 function Basic() {
   const [rememberMe, setRememberMe] = useState(false);
+  const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState({});
 
-  const handleSetRememberMe = () => setRememberMe(!rememberMe);
   const {
     control,
     handleSubmit,
@@ -56,8 +60,28 @@ function Basic() {
     formState: { errors },
   } = useForm();
 
+  const mutation = useMutation(loginUser, {
+    onSuccess: (data) => {
+      if (data.success) {
+        // Redirect to the dashboard on success
+        console.log("Login success: ", data);
+        localStorage.setItem("authToken", data.data.accessToken); // Example: saving a token
+        localStorage.setItem("refreshToken", data.data.refreshToken); // Example: saving a token
+        localStorage.setItem("permissions", data.data.permissions); // Example: saving a token
+        localStorage.setItem("user", JSON.stringify(data.data.user)); // Example: saving use
+        navigate("/dashboard");
+      } else {
+        console.log("Login failed: ", data.data);
+      }
+      setCurrentUser(data);
+    },
+  });
+
   const handleSubmitLogin = (data) => {
     console.log(data); // You can do something with the form data here
+    const username = data.username;
+    const password = data.password;
+    mutation.mutate({ username, password });
   };
   return (
     <BasicLayout image={bgImage}>
@@ -81,84 +105,31 @@ function Basic() {
               Trường THSC&THPT Nguyen Van A
             </MDTypography>
           </MDBox>
-          {/* <Grid container spacing={3} justifyContent="center" sx={{ mb: 2 }}>
-            <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
-                <FacebookIcon color="inherit" />
-              </MDTypography>
-            </Grid>
-            <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
-                <GitHubIcon color="inherit" />
-              </MDTypography>
-            </Grid>
-            <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
-                <GoogleIcon color="inherit" />
-              </MDTypography>
-            </Grid>
-          </Grid> */}
         </MDBox>
         <MDBox pt={2} pb={3} px={3}>
-          {/* <MDBox component="form" role="form">
-            <MDBox mb={2}>
-              <MDInput type="email" label="Email" fullWidth />
-            </MDBox>
-            <MDBox mb={2}>
-              <MDInput type="password" label="Password" fullWidth />
-            </MDBox>
-            <MDBox display="flex" alignItems="center" ml={-1}>
-              <Switch checked={rememberMe} onChange={handleSetRememberMe} />
-              <MDTypography
-                variant="button"
-                fontWeight="regular"
-                color="text"
-                onClick={handleSetRememberMe}
-                sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}
-              >
-                &nbsp;&nbsp;Remember me
-              </MDTypography>
-            </MDBox>
-            <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="info" fullWidth>
-                sign in
-              </MDButton>
-            </MDBox>
-            <MDBox mt={3} mb={1} textAlign="center">
-              <MDTypography variant="button" color="text">
-                Don&apos;t have an account?{" "}
-                <MDTypography
-                  component={Link}
-                  to="/authentication/sign-up"
-                  variant="button"
-                  color="info"
-                  fontWeight="medium"
-                  textGradient
-                >
-                  Sign up
-                </MDTypography>
-              </MDTypography>
-            </MDBox>
-          </MDBox> */}
+          <span className="error-color text-base">
+            {!currentUser.success ? currentUser.data : ""}
+            {/* Tên đăng nhập hoặc tài khoản không chính xác! */}
+          </span>
           <form onSubmit={handleSubmit(handleSubmitLogin)} className="w-full">
             <InputBaseComponent
-              placeholder="Nhập địa chỉ email"
-              type="email"
+              placeholder="Tên đăng nhập..."
+              type="text"
               control={control}
               setValue={noSetValue}
-              name="email"
-              label="Email"
+              name="username"
+              label="Tên đăng nhập"
               errors={errors}
               validationRules={{
-                required: "Email không được bỏ trống!",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Email không đúng định dạng!",
+                required: "Không được bỏ trống!",
+                minLength: {
+                  value: 4,
+                  message: "Tên đăng nhập ít nhất 4 kí tự!",
                 },
               }}
             />
             <InputBaseComponent
-              placeholder="Nhập mật khẩu"
+              placeholder="Mật khẩu..."
               type="password"
               control={control}
               setValue={noSetValue}
@@ -166,20 +137,20 @@ function Basic() {
               label="Mật khẩu"
               errors={errors}
               validationRules={{
-                required: "Mật khẩu không được bỏ trống",
+                required: "Không được bỏ trống!",
                 minLength: {
-                  value: 8,
-                  message: "Mật khẩu ít nhât 8 kí tự!",
+                  value: 6,
+                  message: "Mật khẩu ít nhất 8 kí tự!",
                 },
                 maxLength: {
                   value: 20,
-                  message: "Mật khẩu dài nhất 20 kí tự",
+                  message: "Mật khẩu dài nhất 20 kí tự!",
                 },
               }}
             />
             <MDBox mt={1} mb={1} textAlign="center">
               <MDTypography variant="button" color="text">
-                Bạn đã quên mật khẩu?{" "}
+                Bạn đã{" "}
                 <MDTypography
                   component={Link}
                   to="/authentication/reset-password"
@@ -188,12 +159,13 @@ function Basic() {
                   fontWeight="medium"
                   textGradient
                 >
-                  Nhấn vào đây!
+                  quên mật khẩu?
                 </MDTypography>
+                , cập nhật ngay!
               </MDTypography>
             </MDBox>
             <ButtonComponent style={{ marginTop: "12px", width: "100%" }} action="submit">
-              ĐĂNG NHẬP
+              {mutation?.isLoading ? <CircularProgress size={20} color="inherit" /> : "ĐĂNG NHẬP"}
             </ButtonComponent>
           </form>
         </MDBox>

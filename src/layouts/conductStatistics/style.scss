@@ -1,0 +1,30 @@
+.customSquare {
+  .customSquare-1 {
+    div {
+      &:first-child {
+        background-color: #287cd4;
+      }
+    }
+  }
+  .customSquare-2 {
+    div {
+      &:first-child {
+        background-color: #a5a5a5;
+      }
+    }
+  }
+  .customSquare-3 {
+    div {
+      &:first-child {
+        background-color: #f9c559;
+      }
+    }
+  }
+  .customSquare-4 {
+    div {
+      &:first-child {
+        background-color: #d70200;
+      }
+    }
+  }
+}

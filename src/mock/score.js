@@ -325,6 +325,246 @@ const scoreByStudentsBySubjectEnlish = {
           },
         ],
       },
+      {
+        id: 3,
+        fullName: "Nguyễn Lê Văn A",
+        average: 10,
+        rank: 1,
+        scores: [
+          {
+            key: "Kiểm tra miệng",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 15 phút",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 1 tiết",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 9,
+          },
+        ],
+      },
+      {
+        id: 3,
+        fullName: "Nguyễn Lê Văn A",
+        average: 10,
+        rank: 1,
+        scores: [
+          {
+            key: "Kiểm tra miệng",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 15 phút",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 1 tiết",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 9,
+          },
+        ],
+      },
+      {
+        id: 3,
+        fullName: "Nguyễn Lê Văn A",
+        average: 10,
+        rank: 1,
+        scores: [
+          {
+            key: "Kiểm tra miệng",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 15 phút",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 1 tiết",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 9,
+          },
+        ],
+      },
+      {
+        id: 3,
+        fullName: "Nguyễn Lê Văn A",
+        average: 10,
+        rank: 1,
+        scores: [
+          {
+            key: "Kiểm tra miệng",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 15 phút",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 1 tiết",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 9,
+          },
+        ],
+      },
+      {
+        id: 3,
+        fullName: "Nguyễn Lê Văn A",
+        average: 10,
+        rank: 1,
+        scores: [
+          {
+            key: "Kiểm tra miệng",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 15 phút",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 1 tiết",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 9,
+          },
+        ],
+      },
+      {
+        id: 3,
+        fullName: "Nguyễn Lê Văn A",
+        average: 10,
+        rank: 1,
+        scores: [
+          {
+            key: "Kiểm tra miệng",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 15 phút",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra 1 tiết",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 10,
+          },
+          {
+            key: "Kiểm tra cuối kì",
+            value: 9,
+          },
+        ],
+      },
     ],
   },
 };

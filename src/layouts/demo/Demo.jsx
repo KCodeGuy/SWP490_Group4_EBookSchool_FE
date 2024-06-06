@@ -93,11 +93,7 @@ export default function Demo() {
 
           <div className="mt-10">
             <div>
-              <input
-                type="file"
-                accept=".xlsx, .xls"
-                onChange={(e) => handleImportData(e, setExcelData)}
-              />
+              <input type="file" onChange={(e) => console.log(e.target.files[0])} />
             </div>
 
             {excelData.length > 0 ? (

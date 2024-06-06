@@ -20,25 +20,32 @@ import PopupComponent from "../../components/PopupComponent/PopupComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
+import { getAllClasses } from "services/ClassService";
+import { useQuery } from "react-query";
 
 // Class management (UolLT)
 export default function ClassManagement() {
+  console.log("Render-component");
   //1. Modal form states open, close
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [deletedClass, setDeletedClass] = useState({});
-  const [currentData, setCurrentData] = useState(studentClasses.data);
+
+  const token = localStorage.getItem("authToken");
+  const accessToken = `Bearer ${token}`;
+
+  const { data, error, isLoading } = useQuery(["classState", { accessToken }], () =>
+    getAllClasses(accessToken)
+  );
+  // const [currentData, setCurrentData] = useState(data?.data);
 
   //2. Set data by Call API
   const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
   };
-  const [classroom, setClassRoom] = React.useState(classrooms.data[0].name);
-  const handleClassRoomSelectedChange = (event) => {
-    setClassRoom(event.target.value);
-  };
+
   const formattedSchoolYears = schoolYears.data.map((year) => ({
     label: year.schoolYear,
     value: year.schoolYear,
@@ -135,16 +142,14 @@ export default function ClassManagement() {
   };
 
   const handleChangeSearchValue = (txtSearch) => {
-    console.log(txtSearch);
-    setCurrentData(filterStudentClasses(txtSearch, studentClasses.data));
+    setCurrentData(filterStudentClasses(txtSearch, data.data));
   };
 
   const filterStudentClasses = (txtSearch, data) => {
     const search = txtSearch.trim().toLowerCase();
     return data.filter((classroom) => {
       return (
-        classroom.name.toLowerCase().includes(search) ||
-        (classroom.description && classroom.description.toLowerCase().includes(search)) ||
+        classroom.teacher.toLowerCase().includes(search) ||
         classroom.schoolYear.toLowerCase().includes(search) ||
         classroom.classroom.toLowerCase().includes(search)
       );
@@ -153,12 +158,12 @@ export default function ClassManagement() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="max-h-max">
+      <Card className="max-h-max mb-8">
         <MDBox p={5}>
           {/* DO NOT DELETE CODE AS ABOVE*/}
           {/* Your code here */}
           <div className="text-center mt-0">
-            <h4 className="text-xl font-bold">Quản lý lớp học</h4>
+            <h4 className="text-xl font-bold">QUẢN LÍ LỚP HỌC</h4>
           </div>
           <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
             {/* School Year Select */}
@@ -180,26 +185,9 @@ export default function ClassManagement() {
                   ))}
                 </Select>
               </FormControl>
-              <FormControl sx={{ minWidth: 120, marginLeft: "12px" }}>
-                <InputLabel id="select-class-room-lable">Phòng học</InputLabel>
-                <Select
-                  labelId="select-class-room-lable"
-                  id="select-class-room"
-                  value={classroom}
-                  className="h-11 mr-3"
-                  label="Phòng học"
-                  onChange={handleClassRoomSelectedChange}
-                >
-                  {classrooms.data.map((item, index) => (
-                    <MenuItem key={index} value={item.name.toString()}>
-                      {item.name.toString()}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <div className="max-[639px]:mt-2">
+              <div className="max-[639px]:mt-2 ml-3">
                 <ButtonComponent type="success" onClick={handleStatistic}>
-                  <FilterAltIcon className="mr-1" /> Thống kế
+                  <FilterAltIcon className="" /> Tìm kiếm
                 </ButtonComponent>
               </div>
             </div>
@@ -211,7 +199,7 @@ export default function ClassManagement() {
               <div className="ml-3">
                 <ButtonComponent className="" onClick={handleOpenAddModal}>
                   <AddCircleOutlineIcon className="text-3xl mr-1" />
-                  Tạo lớp học
+                  Tạo
                 </ButtonComponent>
                 <PopupComponent
                   title="TẠO LỚP HỌC"
@@ -276,7 +264,7 @@ export default function ClassManagement() {
                       <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
                         CLEAR
                       </ButtonComponent>
-                      <ButtonComponent action="submit">TẠO LỚP HỌC</ButtonComponent>
+                      <ButtonComponent action="submit">TẠO</ButtonComponent>
                     </div>
                   </form>
                 </PopupComponent>
@@ -285,13 +273,12 @@ export default function ClassManagement() {
           </div>
           <div>
             <TableComponent
-              header={["ID", "Tên lớp", "Năm học", "Phòng học", "Mô tả"]}
-              data={currentData.map((item) => [
-                item.id.toString(),
-                item.name.toString(),
+              header={["Tên lớp", "Năm học", "Phòng học", "Giáo viên chủ nhiệm"]}
+              data={data?.data.map((item) => [
+                item.classroom.toString(),
                 item.schoolYear.toString(),
                 item.classroom.toString(),
-                item.description.toString(),
+                item.teacher.toString(),
               ])}
               itemsPerPage={4}
               onEdit={handleEdit}
@@ -361,7 +348,7 @@ export default function ClassManagement() {
                   <ButtonComponent type="error" action="reset" onClick={handleClearEditForm}>
                     CLEAR
                   </ButtonComponent>
-                  <ButtonComponent action="submit">CHỈNH SỬA</ButtonComponent>
+                  <ButtonComponent action="submit">CẬP NHẬT</ButtonComponent>
                 </div>
               </form>
             </PopupComponent>

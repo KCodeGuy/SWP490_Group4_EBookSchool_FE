@@ -42,3 +42,112 @@ export const handleExportData = (data, sheetName = "Sheet", fileName = "Demo") =
     XLSX.writeFile(wb, `${fileName}.xlsx`);
   }
 };
+// Utility function to check if a given date is Sunday
+export const isTodaySunday = (today) => {
+  return today.getDay() === 0;
+};
+
+export const generateSchoolWeeks = (schoolYear) => {
+  const schoolWeeks = [];
+  const [startYear, endYear] = schoolYear.split("-").map(Number);
+
+  // Start date is January 1st of the start year
+  let startDate = new Date(startYear, 0, 1);
+
+  // Adjust the start date to the nearest Monday
+  const day = startDate.getDay();
+  const dayOffset = (day === 0 ? -6 : 1) - day; // If Sunday (0), move to next day; otherwise, move to Monday
+  startDate.setDate(startDate.getDate() + dayOffset);
+
+  let weekCount = 0;
+
+  // Generate weeks until the end of the first week of the next year
+  while (
+    startDate.getFullYear() <= endYear ||
+    (startDate.getFullYear() === endYear && startDate.getDate() <= 7)
+  ) {
+    const weekStart = new Date(startDate);
+    const weekEnd = new Date(startDate);
+    weekEnd.setDate(weekStart.getDate() + 6); // End date is 6 days after start date
+
+    const week = {
+      id: weekCount,
+      name: `Week ${weekCount + 1}`,
+      startTime: formatDate(weekStart),
+      endTime: formatDate(weekEnd),
+    };
+
+    schoolWeeks.push(week);
+
+    // Move start date to the next week
+    startDate.setDate(startDate.getDate() + 7);
+    weekCount++;
+  }
+
+  return schoolWeeks;
+};
+
+export const formatDate = (date) => {
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+export const getTodayDate = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed in JavaScript
+  const day = String(today.getDate()).padStart(2, "0");
+  const formattedDate = `${day}/${month}/${year}`;
+  return { formattedDate, today };
+};
+
+export const isTodayInSchoolYear = (schoolYear) => {
+  const { today } = getTodayDate();
+  const [startYear, endYear] = schoolYear.split("-").map(Number);
+
+  const schoolYearStart = new Date(startYear, 0, 1); // January 1st of start year
+  const schoolYearEnd = new Date(endYear, 11, 31); // December 31st of end year
+
+  return today >= schoolYearStart && today <= schoolYearEnd;
+};
+
+// New function to check which week today falls into
+export const getWeekForDate = (weeks, date) => {
+  for (let i = 0; i < weeks.length; i++) {
+    const weekStart = new Date(dateFromFormat(weeks[i].startTime));
+    const weekEnd = new Date(dateFromFormat(weeks[i].endTime));
+
+    // Normalize times to compare dates only (ignore time part)
+    weekStart.setHours(0, 0, 0, 0);
+    weekEnd.setHours(23, 59, 59, 999);
+
+    if (date >= weekStart && date <= weekEnd) {
+      return weeks[i];
+    }
+  }
+  return null; // Return null if the date doesn't fall within any week
+};
+
+// Helper function to parse a date from the formatted string
+export const dateFromFormat = (formattedDate) => {
+  const [day, month, year] = formattedDate.split("/").map(Number);
+  return new Date(year, month - 1, day); // Months are zero-indexed in JavaScript
+};
+
+export const getCurrentSchoolYear = () => {
+  const currentYear = new Date().getFullYear();
+  const nextYear = currentYear + 1;
+  return `${currentYear}-${nextYear}`;
+};
+
+export const getUsernameSubString = (text) => {
+  const regex = /Người dùng (\w+)/;
+  const match = text.match(regex);
+  if (match && match.length > 1) {
+    return match[1];
+  } else {
+    return null; // or handle the case where the admin name is not found
+  }
+};

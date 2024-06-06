@@ -17,6 +17,7 @@ import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AccessAlarmIcon from "@mui/icons-material/AccessAlarm";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Link } from "react-router-dom";
 
@@ -28,23 +29,14 @@ import TextValueComponent from "../../components/TextValueComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import { studentClasses } from "../../mock/class";
 import { schoolYears } from "../../mock/schoolYear";
-import { studentWeeklyTimeTableDates, timeTablesAllSchool } from "../../mock/weeklyTimeTable";
-
-const schoolWeeks = [
-  { id: 1, name: "week 1", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 2, name: "week 2", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 3, name: "week 3", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 4, name: "week 4", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 5, name: "week 5", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 6, name: "week 6", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 7, name: "week 7", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 8, name: "week 8", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 9, name: "week 9", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 10, name: "week 10", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 11, name: "week 11", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 12, name: "week 12", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 13, name: "week 13", startTime: "20/1/2024", endTime: "28/1/2024" },
-];
+import { timeTablesAllSchool } from "../../mock/weeklyTimeTable";
+import { getStudentTimetable } from "services/TimeTableService";
+import { useQuery } from "react-query";
+import { generateSchoolWeeks } from "utils/CommonFunctions";
+import { getTodayDate } from "utils/CommonFunctions";
+import { getWeekForDate } from "utils/CommonFunctions";
+import { getCurrentSchoolYear } from "utils/CommonFunctions";
+import { isTodayInSchoolYear } from "../../utils/CommonFunctions";
 
 const formattedSemester = [
   { label: "Học kì 1", value: "HK1" },
@@ -52,15 +44,36 @@ const formattedSemester = [
   { label: "Cả năm", value: "Cả năm" },
 ];
 
-let totalSlots = 16;
-
 export default function WeeklyTimeTable() {
   const [openModelAdd, setOpenModelAdd] = useState(false);
   const [openModalDetail, setOpenModalDetail] = useState(false);
+  const [openModalUpdate, setOpenModalUpdate] = useState(false);
+  const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [currentSlot, setCurrentSlot] = useState({});
-  const [currentRoom, setCurrentClass] = useState("12A1");
   const [currentSlotDate, setCurrentSlotDate] = useState("");
 
+  // // Example usage
+  const [schoolYear, setSchoolYear] = React.useState(
+    schoolYears.data[schoolYears.data.length - 1].schoolYear
+  );
+  const handleSchoolYearSelectedChange = (event) => {
+    setSchoolYear(event.target.value);
+  };
+
+  const [schoolClass, setSchoolClass] = React.useState(studentClasses.data[0].name);
+  const handleSchoolClassSelectedChange = (event) => {
+    setSchoolClass(event.target.value);
+  };
+
+  const schoolWeeks = generateSchoolWeeks(schoolYear);
+
+  const { formattedDate, today } = getTodayDate();
+  let currentWeek;
+  if (isTodayInSchoolYear(schoolYear)) {
+    currentWeek = getWeekForDate(schoolWeeks, today);
+  }
+
+  const [currentWeekDate, setCurrentWeekDate] = useState(schoolWeeks[0]);
   const timeTableOfAllSchool = timeTablesAllSchool.data.map((item) => [
     // item.id,
     item.schoolYear,
@@ -71,20 +84,27 @@ export default function WeeklyTimeTable() {
     item.toDate,
   ]);
 
-  const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
-  const handleSchoolYearSelectedChange = (event) => {
-    setSchoolYear(event.target.value);
-  };
-
-  const [schoolClass, setSchoolClass] = React.useState(studentClasses.data[0].name);
-  const handleSchoolClassSelectedChange = (event) => {
-    setSchoolClass(event.target.value);
-  };
-
-  const [schoolWeek, setSchoolWeek] = React.useState(schoolWeeks[0].name);
+  const [schoolWeek, setSchoolWeek] = React.useState(currentWeekDate.startTime);
   const handleSchoolWeeksSelectedChange = (event) => {
     setSchoolWeek(event.target.value);
   };
+
+  const studentID = "HS0001";
+  const accessToken = localStorage.getItem("authToken");
+  const param = { studentID, schoolYear, schoolWeek, accessToken };
+
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["studentSchedule", param],
+    queryFn: () =>
+      getStudentTimetable(param.studentID, param.schoolYear, param.schoolWeek, param.accessToken),
+  });
+
+  const [currentTimeTable, setCurrentTimeTable] = useState([]);
+
+  const handleFilterTimetable = () => {
+    setCurrentTimeTable(data?.data.details);
+  };
+
   const [currentTab, setCurrentTab] = useState(0);
   const {
     control,
@@ -123,8 +143,20 @@ export default function WeeklyTimeTable() {
     }
   };
 
+  const handleDelete = (item) => {
+    if (item) {
+      setModalDeleteOpen(true);
+    }
+  };
+
   const handleAddWeeklyTimeTable = (data) => {
     console.log(data);
+  };
+
+  const handleEdit = (item) => {
+    if (item) {
+      setOpenModalUpdate(true);
+    }
   };
 
   const formattedSchoolYear = schoolYears.data.map((year) => ({
@@ -140,7 +172,7 @@ export default function WeeklyTimeTable() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="max-h-max">
+      <Card className="max-h-max mb-8">
         <MDBox p={5}>
           <div className="flex justify-between items-center">
             <div>
@@ -190,13 +222,13 @@ export default function WeeklyTimeTable() {
                   onChange={handleSchoolWeeksSelectedChange}
                 >
                   {schoolWeeks.map((item, index) => (
-                    <MenuItem key={index} value={item.name}>
+                    <MenuItem key={index} value={item.startTime}>
                       {item.startTime} - {item.endTime}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-              <ButtonComponent type="success">
+              <ButtonComponent type="success" onClick={handleFilterTimetable}>
                 <FilterAltIcon className="mr-1" /> TÌM KIẾM
               </ButtonComponent>
               <ButtonComponent
@@ -214,142 +246,123 @@ export default function WeeklyTimeTable() {
                 onClick={() => setOpenModelAdd(true)}
               >
                 <AddCircleOutlineIcon className="text-3xl mr-1" />
-                TẠO TKB
+                TẠO
               </ButtonComponent>
               <PopupComponent
-                title="TẠO THỜI KHÓA BIỂU"
-                description={`Tạo thời khóa biểu bằng excel`}
+                title="TẠO KHÓA BIỂU"
+                description={`Tạo khóa biểu bằng excel`}
                 // rightNote={`Lớp: ${currentClass}`}
                 icon={<AddCircleOutlineIcon />}
                 isOpen={openModelAdd}
                 onClose={() => setOpenModelAdd(false)}
-                tabs={[{ label: "TẢI TEMPLATE" }, { label: "UPLOAD TEMPLATE" }]}
+                tabs={[{ label: "TẠO SLOT" }, { label: "TẠO BẰNG EXCEL" }]}
                 currentTab={currentTab}
                 onTabChange={handleTabChange}
               >
                 <div role="tabpanel" hidden={currentTab !== 0}>
                   <form onSubmit={handleSubmit(handleAddWeeklyTimeTable)}>
-                    <InputBaseComponent
-                      name="schoolYear"
-                      label="Năm học"
-                      className="w-full"
-                      control={control}
-                      setValue={noSetValue}
-                      type="select"
-                      options={formattedSchoolYear}
-                      errors={errors}
-                      validationRules={{
-                        required: "Hãy chọn năm học!",
-                      }}
-                    />
-                    <div className="w-full flex">
+                    <div className="flex">
                       <InputBaseComponent
-                        name="schoolClass"
+                        name="classID"
                         label="Lớp học"
-                        className="w-1/2 mr-3"
+                        placeholder="Nhập tên lớp học..."
+                        className="w-1/2 mr-2"
                         control={control}
                         setValue={noSetValue}
-                        type="select"
-                        options={formattedSchoolClass}
+                        type="text"
                         errors={errors}
                         validationRules={{
-                          required: "Hãy chọn lớp học!",
+                          required: "Không được bỏ trống!",
                         }}
                       />
                       <InputBaseComponent
-                        name="semester"
-                        label="Kì học"
+                        name="subjectID"
+                        label="Môn học"
+                        placeholder="Nhập tên môn học..."
                         className="w-1/2"
                         control={control}
                         setValue={noSetValue}
-                        type="select"
-                        options={formattedSemester}
+                        type="text"
                         errors={errors}
                         validationRules={{
-                          required: "Hãy chọn kì học!",
+                          required: "Không được bỏ trống!",
                         }}
                       />
                     </div>
+                    <div className="w-full flex">
+                      <InputBaseComponent
+                        name="teacherID"
+                        label="Giáo viên"
+                        placeholder="Nhập mã giáo viên..."
+                        className="w-1/2 mr-2"
+                        control={control}
+                        setValue={noSetValue}
+                        type="text"
+                        errors={errors}
+                        validationRules={{
+                          required: "Không được bỏ trống!",
+                        }}
+                      />
+                      <InputBaseComponent
+                        name="slotLesssonPlane"
+                        label="Tiết theo giáo án"
+                        placeholder="Nhập tiết theo giáo án"
+                        className="w-1/2"
+                        control={control}
+                        setValue={noSetValue}
+                        type="number"
+                        errors={errors}
+                        validationRules={{
+                          required: "Không được bỏ trống!",
+                        }}
+                      />
+                    </div>
+
+                    <InputBaseComponent
+                      name="slotDate"
+                      label="Chọn ngày"
+                      placeholder="Chọn ngày..."
+                      className="w-full"
+                      control={control}
+                      setValue={noSetValue}
+                      type="date"
+                      errors={errors}
+                      validationRules={{
+                        required: "Không được bỏ trống!",
+                      }}
+                    />
+
                     <div className="flex justify-end mt-4">
                       <ButtonComponent type="error" action="reset" onClick={() => reset()}>
                         CLEAR
                       </ButtonComponent>
-                      <ButtonComponent action="submit">
-                        <DownloadIcon className="mr-2" />
-                        TẢI FILE
-                      </ButtonComponent>
+                      <ButtonComponent action="submit">TẠO</ButtonComponent>
                     </div>
                   </form>
                 </div>
-                <div role="tabpanel" hidden={currentTab !== 0}>
-                  <form
-                    onSubmit={handleSubmitUploadAction((data) => console.log("Upload: ", data))}
-                  >
-                    <InputBaseComponent
-                      name="schoolYearUpload"
-                      label="Năm học"
-                      className="w-full"
-                      control={controlUploadAction}
-                      setValue={noSetUploadValue}
-                      type="select"
-                      options={formattedSchoolYear}
-                      errors={errorsUploadAction}
-                      validationRules={{
-                        required: "Hãy chọn năm học!",
-                      }}
-                    />
-                    <div className="w-full flex">
-                      <InputBaseComponent
-                        name="schoolClassUpload"
-                        label="Lớp học"
-                        className="w-1/2 mr-3"
-                        control={controlUploadAction}
-                        setValue={noSetUploadValue}
-                        type="select"
-                        options={formattedSchoolClass}
-                        errors={errorsUploadAction}
-                        validationRules={{
-                          required: "Hãy chọn lớp học!",
-                        }}
-                      />
-                      <InputBaseComponent
-                        name="semesterUpload"
-                        label="Kì học"
-                        className="w-1/2"
-                        control={controlUploadAction}
-                        setValue={noSetUploadValue}
-                        type="select"
-                        options={formattedSemester}
-                        errors={errorsUploadAction}
-                        validationRules={{
-                          required: "Hãy chọn kì học!",
-                        }}
-                      />
-                    </div>
+                <div role="tabpanel" hidden={currentTab == 1}>
+                  <ButtonComponent action="submit">
+                    <DownloadIcon className="mr-2" />
+                    TẢI FILE
+                  </ButtonComponent>
+                  <form onSubmit={handleSubmit(handleAddWeeklyTimeTable)}>
                     <InputBaseComponent
                       name="timeTableFile"
-                      label="Mẫu thời khóa biểu"
-                      className="w-full"
-                      control={controlUploadAction}
-                      setValue={noSetUploadValue}
+                      label="Thời Khóa biểu(Excel)"
+                      className="w-full mt-5"
+                      control={control}
+                      setValue={noSetValue}
                       type="file"
-                      errors={errorsUploadAction}
+                      errors={errors}
                       validationRules={{
                         required: "Hãy chọn file!",
                       }}
                     />
-                    <div className="flex justify-end mt-4">
-                      <ButtonComponent
-                        type="error"
-                        action="reset"
-                        onClick={() => resetUploadAction()}
-                      >
+                    <div className="mt-5 flex justify-end">
+                      <ButtonComponent type="error" action="reset" onClick={() => reset()}>
                         CLEAR
                       </ButtonComponent>
-                      <ButtonComponent action="submit">
-                        <FileUploadIcon className="mr-2" />
-                        UPLOAD FILE
-                      </ButtonComponent>
+                      <ButtonComponent action="submit">TẠO</ButtonComponent>
                     </div>
                   </form>
                 </div>
@@ -360,9 +373,9 @@ export default function WeeklyTimeTable() {
           <TableComponent
             header={["Năm học", "Học kì", "Lớp", "GVCN", "Từ ngày", "Đến"]}
             data={timeTableOfAllSchool}
-            onEdit={(data) => console.log(data)}
+            onEdit={handleEdit}
             // onDetails={() => console.log(data)}
-            onDelete={(data) => console.log(data)}
+            onDelete={handleDelete}
             className="mt-4"
             itemsPerPage={5}
           />
@@ -380,7 +393,7 @@ export default function WeeklyTimeTable() {
               <div className="text-sm">
                 <span className="mr-2 font-bold">Tổng số tiết:</span>
                 <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                  {totalSlots}
+                  16
                 </span>
               </div>
             </div>
@@ -389,13 +402,85 @@ export default function WeeklyTimeTable() {
               <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
                 {schoolYear}
               </span>
+              <div>
+                {/* <ButtonComponent
+                  onClick={() => {
+                    if (currentWeekDate.id > 0) {
+                      setCurrentWeekDate(schoolWeeks[currentWeekDate.id - 1]);
+                      setSchoolWeek(currentWeekDate.startTime);
+                    }
+                  }}
+                >
+                  Previous
+                </ButtonComponent>
+                <ButtonComponent
+                  onClick={() => {
+                    if (currentWeekDate.id < currentWeekDate.length - 1)
+                      setCurrentWeekDate(schoolWeeks[currentWeekDate.id + 1]);
+                    setSchoolWeek(currentWeekDate.startTime);
+                  }}
+                >
+                  Next
+                </ButtonComponent> */}
+              </div>
             </div>
           </div>
+
           <TableWeeklyTimeTableComponent
-            data={studentWeeklyTimeTableDates.data.details}
+            data={currentTimeTable}
             onDetails={handleViewSlotDetail}
+            onDelete={handleDelete}
             className="mt-4"
           />
+          <PopupComponent
+            title="CẬP NHẬT KHÓA BIỂU"
+            description={`Cập nhật biểu bằng excel`}
+            icon={<AddCircleOutlineIcon />}
+            isOpen={openModalUpdate}
+            onClose={() => setOpenModalUpdate(false)}
+          >
+            <form onSubmit={handleSubmit(handleAddWeeklyTimeTable)}>
+              <InputBaseComponent
+                name="timeTableFile"
+                label="Thời Khóa biểu(Excel)"
+                className="w-full mt-2"
+                control={control}
+                setValue={noSetValue}
+                type="file"
+                errors={errors}
+                validationRules={{
+                  required: "Hãy chọn file!",
+                }}
+              />
+              <div className="mt-5 flex justify-end">
+                <ButtonComponent type="error" action="reset" onClick={() => reset()}>
+                  CLEAR
+                </ButtonComponent>
+                <ButtonComponent action="submit">CẬP NHẬT</ButtonComponent>
+              </div>
+            </form>
+          </PopupComponent>
+          <PopupComponent
+            title="XÓA THỜI KHÓA BIỂU"
+            description="Hãy kiểm xác nhận thông tin trước khi xóa"
+            icon={<DeleteIcon />}
+            isOpen={modalDeleteOpen}
+            onClose={() => setModalDeleteOpen(false)}
+          >
+            <p>Bạn có chắc chắn muốn xóa thời khóa biểu?</p>
+            <div className="mt-4 flex justify-end">
+              <ButtonComponent
+                type="error"
+                action="button"
+                onClick={() => setModalDeleteOpen(false)}
+              >
+                HỦY BỎ
+              </ButtonComponent>
+              <ButtonComponent action="button" onClick={handleDelete}>
+                XÓA
+              </ButtonComponent>
+            </div>
+          </PopupComponent>
           <div className="mt-5 text-base">
             <p className="font-bold">Ghi chú:</p>
             <ul className="list-disc ml-5">
@@ -445,16 +530,8 @@ export default function WeeklyTimeTable() {
                 icon={<AccessAlarmIcon />}
                 variantValue="success"
               />
-              <TextValueComponent
-                label="Lớp"
-                value={currentSlot.classRoom}
-                icon={<MapsHomeWorkIcon />}
-              />
-              <TextValueComponent
-                label="Phòng học"
-                value={currentSlot.classRoom}
-                icon={<LocationOnIcon />}
-              />
+              <TextValueComponent label="Lớp" value="12A12" icon={<MapsHomeWorkIcon />} />
+              <TextValueComponent label="Phòng" value="12A12" icon={<LocationOnIcon />} />
               <TextValueComponent
                 label="Giáo viên"
                 value={currentSlot.teacher}

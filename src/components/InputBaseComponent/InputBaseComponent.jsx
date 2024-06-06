@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Controller } from "react-hook-form";
 
@@ -18,13 +18,16 @@ const InputBaseComponent = ({
   disabled,
   setValue,
   validationRules,
+  getSelectedFile,
   options,
 }) => {
   const rules = validationRules || {};
   const isRequired = rules.required;
-  const customClassName = `flex flex-col mb-3 ${className}`;
+  const customClassName = `flex flex-col mb-2 ${className}`;
 
+  const [selectedFile, setSelectedFile] = useState(null);
   const handleSetValue = (value) => {
+    setSelectedFile(value); // Store the selected file in state
     setValue(name, value); // Set the value for the input field with name
   };
 
@@ -121,6 +124,18 @@ const InputBaseComponent = ({
                 }}
                 placeholder={placeholder}
               />
+            ) : type === "file" ? (
+              <input
+                id={name}
+                className={`outline-none px-3 border py-2 rounded w-full
+              ${errors[name] ? "border-red-400" : "border-blue-500"}`}
+                type={type}
+                onChange={(e) => {
+                  field.onChange(e);
+                  handleSetValue(e.target.files[0]); // Pass the selected file to handleSetValue
+                }}
+                placeholder={placeholder}
+              />
             ) : (
               <input
                 id={name}
@@ -161,6 +176,7 @@ InputBaseComponent.propTypes = {
   disabled: PropTypes.bool,
   setValue: PropTypes.func,
   horizontalLabel: PropTypes.bool,
+  getSelectedFile: PropTypes.any,
 };
 
 export default InputBaseComponent;

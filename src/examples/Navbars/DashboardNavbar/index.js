@@ -16,7 +16,7 @@ Coded by www.creative-tim.com
 import { useState, useEffect } from "react";
 
 // react-router components
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
@@ -27,6 +27,7 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import Icon from "@mui/material/Icon";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -52,13 +53,26 @@ import {
   setMiniSidenav,
   setOpenConfigurator,
 } from "context";
+import { Grid } from "@mui/material";
+import MDAvatar from "components/MDAvatar";
+import { logoutUser } from "services/AuthService";
+import PopupComponent from "components/PopupComponent/PopupComponent";
+import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 
 function DashboardNavbar({ absolute, light, isMini }) {
+  const navigate = useNavigate();
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
+  const [modalLogout, setModalLogout] = useState(false);
+
+  const handleLogoutUser = () => {
+    logoutUser();
+    setModalLogout(false);
+    navigate("/authentication/sign-in");
+  };
 
   useEffect(() => {
     // Setting the navbar type
@@ -90,6 +104,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
   const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
   const handleCloseMenu = () => setOpenMenu(false);
+  const currentUser = JSON.parse(localStorage.getItem("user"));
 
   // Render the notifications menu
   const renderMenu = () => (
@@ -135,15 +150,19 @@ function DashboardNavbar({ absolute, light, isMini }) {
         </MDBox>
         {isMini ? null : (
           <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
-            <MDBox pr={1}>
-              <MDInput label="Search here" />
-            </MDBox>
-            <MDBox color={light ? "white" : "inherit"}>
-              <Link to="/authentication/sign-in/basic">
-                <IconButton sx={navbarIconButton} size="small" disableRipple>
-                  <Icon sx={iconsStyle}>account_circle</Icon>
-                </IconButton>
-              </Link>
+            <div className="flex items-center">
+              <IconButton
+                size="small"
+                disableRipple
+                color="inherit"
+                sx={navbarIconButton}
+                aria-controls="notification-menu"
+                aria-haspopup="true"
+                variant="contained"
+                onClick={handleOpenMenu}
+              >
+                <Icon sx={iconsStyle}>notifications</Icon>
+              </IconButton>
               <IconButton
                 size="small"
                 disableRipple
@@ -164,20 +183,50 @@ function DashboardNavbar({ absolute, light, isMini }) {
               >
                 <Icon sx={iconsStyle}>settings</Icon>
               </IconButton>
-              <IconButton
-                size="small"
-                disableRipple
-                color="inherit"
-                sx={navbarIconButton}
-                aria-controls="notification-menu"
-                aria-haspopup="true"
-                variant="contained"
-                onClick={handleOpenMenu}
-              >
-                <Icon sx={iconsStyle}>notifications</Icon>
-              </IconButton>
+              {currentUser && (
+                <div className="flex items-center text-base font-medium ml-2 ">
+                  <Link to="/profile">
+                    <div className="flex items-center">
+                      <img
+                        className="w-12 h-12 object-contain object-center shadow-md rounded-full"
+                        src={currentUser.avatar}
+                        alt="user"
+                      />
+                      <span className=" ml-2 hover:text-blue-400 transition">Nguyễn Văn A</span>
+                    </div>
+                  </Link>
+                  <span className=" mx-2">|</span>
+                  <div
+                    className="cursor-pointer hover:text-blue-400 transition"
+                    onClick={() => setModalLogout(true)}
+                  >
+                    Đăng xuất
+                  </div>
+                  <PopupComponent
+                    title="ĐĂNG XUẤT"
+                    icon={<LogoutIcon />}
+                    isOpen={modalLogout}
+                    onClose={() => setModalLogout(false)}
+                  >
+                    <p>Bạn có chắc chắn muốn đăng xuất?</p>
+                    <div className="mt-4 flex justify-end">
+                      <ButtonComponent
+                        type="error"
+                        action="button"
+                        onClick={() => setModalLogout(false)}
+                      >
+                        HỦY BỎ
+                      </ButtonComponent>
+                      <ButtonComponent action="button" onClick={handleLogoutUser}>
+                        <LogoutIcon className="mr-1" /> ĐĂNG XUẤT
+                      </ButtonComponent>
+                    </div>
+                  </PopupComponent>
+                </div>
+              )}
+
               {renderMenu()}
-            </MDBox>
+            </div>
           </MDBox>
         )}
       </Toolbar>

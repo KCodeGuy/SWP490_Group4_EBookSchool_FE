@@ -4,18 +4,10 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import CreateIcon from "@mui/icons-material/Create";
-import React, { useEffect, useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import HomeWorkIcon from "@mui/icons-material/HomeWork";
 import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
-
-import {
-  Card,
-  CardActionArea,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Typography,
-} from "@mui/material";
+import { Card } from "@mui/material";
 import sliderImage1 from "../../assets/images/slider1.png";
 import sliderImage2 from "../../assets/images/slider2.png";
 import sliderImage3 from "../../assets/images/slider3.png";
@@ -23,26 +15,48 @@ import SliderComponent from "../../components/SilderComponent";
 import PaginationComponent from "components/PaginationComponent/PaginationComponent";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
-import { notifications } from "../../mock/notification";
+import { getAllNotifications } from "services/NotificationService";
+import { useQuery } from "react-query";
+import { useNavigate } from "react-router-dom";
 
-function Dashboard() {
+const token = localStorage.getItem("authToken");
+const accessToken = `Bearer ${token}`;
+
+const Dashboard = React.memo(() => {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
+  const navigate = useNavigate();
 
-  const totalItems = notifications.data.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const paginatedData = notifications.data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+  // Call API Get all notifications
+  const { data, error, isLoading } = useQuery(["notificationDetails", { accessToken }], () =>
+    getAllNotifications(accessToken)
   );
-  const handlePageChange = (page) => {
+
+  const notifications = useMemo(() => (Array.isArray(data?.data) ? data.data : []), [data]);
+  const totalItems = notifications.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const paginatedData = useMemo(
+    () => notifications.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage),
+    [notifications, currentPage, itemsPerPage]
+  );
+
+  const handlePageChange = useCallback((page) => {
     setCurrentPage(page);
-  };
+  }, []);
+
+  const handleNotificationDetails = useCallback(
+    (id) => {
+      if (id) {
+        navigate(`/notificationDetails/${id}`);
+      }
+    },
+    [navigate]
+  );
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="max-h-max">
+      <Card className="max-h-max mb-8">
         <MDBox p={5}>
           <Grid container spacing={3}>
             <Grid item xs={12}>
@@ -51,7 +65,7 @@ function Dashboard() {
                   {
                     title: "Trường THPT Nguyễn Việt Hồng",
                     description: "Tự hào trường top!",
-                    image: sliderImage2,
+                    image: sliderImage1,
                   },
                   {
                     title: "CÔ GIÁO ĐẠT THÀNH TÍCH TRONG CUỘC THI CODE",
@@ -69,7 +83,7 @@ function Dashboard() {
           </Grid>
 
           <Grid container marginTop={10} spacing={2}>
-            <div className="w-full text-center font-bold  text-base mb-6">
+            <div className="w-full text-center font-bold text-base mb-6">
               <p className="animate-pulse uppercase text-2xl primary-color ">
                 <HomeWorkIcon className="mb-1 mr-2" />
                 TRƯỜNG THPT NGUYỄN VIỆT HỒNG
@@ -85,51 +99,19 @@ function Dashboard() {
               </p>
             </div>
             <Grid item xs={12} md={3} className="text-center">
-              <p
-                className="text-5xl font-bold primary-color"
-                data-duration="2000"
-                data-to-value="50"
-                data-from-value="0"
-                data-delimiter=","
-              >
-                50+
-              </p>
+              <p className="text-5xl font-bold primary-color">50+</p>
               <p className="text-lg mt-2 font-medium">GIÁO VIÊN</p>
             </Grid>
             <Grid item xs={12} md={3} className="text-center">
-              <p
-                className="text-5xl font-bold primary-color"
-                data-duration="2000"
-                data-to-value="12"
-                data-from-value="0"
-                data-delimiter=","
-              >
-                12+
-              </p>
+              <p className="text-5xl font-bold primary-color">12+</p>
               <p className="text-lg mt-2 font-medium">TUỔI</p>
             </Grid>
             <Grid item xs={12} md={3} className="text-center">
-              <p
-                className="text-5xl font-bold primary-color"
-                data-duration="2000"
-                data-to-value="98"
-                data-from-value="0"
-                data-delimiter=","
-              >
-                98+
-              </p>
+              <p className="text-5xl font-bold primary-color">98+</p>
               <p className="text-lg mt-2 font-medium">TRÚNG TUYỂN ĐẠI HỌC</p>
             </Grid>
             <Grid item xs={12} md={3} className="text-center">
-              <p
-                className="text-5xl font-bold primary-color"
-                data-duration="2000"
-                data-to-value="20"
-                data-from-value="0"
-                data-delimiter=","
-              >
-                20+
-              </p>
+              <p className="text-5xl font-bold primary-color">20+</p>
               <p className="text-lg mt-2 font-medium">SỰ KIỆN/NĂM</p>
             </Grid>
           </Grid>
@@ -146,37 +128,42 @@ function Dashboard() {
                     Mới nhất
                   </div>
                 </div>
-                {paginatedData.map((item, index) => (
-                  <Grid key={index} item xs={12} marginTop={1}>
-                    <Card
-                      sx={{ overflow: "hidden", padding: "12px", marginBottom: "12px" }}
-                      // className="hover:-translate-y-2 animation-button"
-                    >
-                      <div className="flex max-[639px]:flex-wrap ">
-                        <img
-                          className="w-40 h-34 object-cover object-right rounded-md max-[639px]:w-full"
-                          src="http://localhost:3000/static/media/slider1.a565f69373dc0a339eee.png"
-                        />
-                        <div className="text-base ml-4 w-full max-[639px]:ml-0 max-[639px]:mt-3">
-                          <p className="font-bold uppercase">[{item.title}]</p>
-                          <p className="max-line-2 text-sm text-color text-justify h-11 leading-6">
-                            {item.content}
-                          </p>
-                          <div className="flex justify-between items-end mt-2">
-                            <p>
-                              <EventAvailableIcon className="mr-2" />
-                              {item.startDate}
+                {paginatedData.length > 0 ? (
+                  paginatedData.map((item, index) => (
+                    <Grid key={index} item xs={12} marginTop={1}>
+                      <Card sx={{ overflow: "hidden", padding: "12px", marginBottom: "12px" }}>
+                        <div className="flex max-[639px]:flex-wrap">
+                          <img
+                            className="w-40 h-32 object-cover object-right rounded-md max-[639px]:w-full"
+                            src={item.thumbnail}
+                            alt="Ảnh bìa"
+                          />
+                          <div className="text-base ml-4 w-full max-[639px]:ml-0 max-[639px]:mt-3">
+                            <p className="font-bold uppercase text-blue-500 ">[{item.title}]</p>
+                            <p className="max-line-3 text-sm text-color text-justify h-11 leading-6">
+                              {item.content}
                             </p>
-                            <ButtonComponent size="sm">
-                              <CreateIcon className="mr-1 mb-1" />
-                              CHI TIẾT
-                            </ButtonComponent>
+                            <div className="flex justify-between items-end mt-2">
+                              <p className="font-bowl">
+                                <EventAvailableIcon className="mr-2" />
+                                {item.createAt}
+                              </p>
+                              <ButtonComponent
+                                size="sm"
+                                onClick={() => handleNotificationDetails(item.id)}
+                              >
+                                <CreateIcon className="mr-1 mb-1" />
+                                CHI TIẾT
+                              </ButtonComponent>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </Card>
-                  </Grid>
-                ))}
+                      </Card>
+                    </Grid>
+                  ))
+                ) : (
+                  <div className="text-center text-base">Loading...</div>
+                )}
                 <PaginationComponent
                   location="center"
                   currentPage={currentPage}
@@ -185,13 +172,12 @@ function Dashboard() {
                 />
               </Grid>
             </Grid>
-            {/* <Grid item xs={12} md={5}></Grid> */}
           </Grid>
         </MDBox>
       </Card>
       <Footer />
     </DashboardLayout>
   );
-}
+});
 
 export default Dashboard;

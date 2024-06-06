@@ -11,7 +11,7 @@ import MDTypography from "components/MDTypography";
 import CoverLayout from "layouts/authentication/components/CoverLayout";
 
 // Images
-import bgImage from "assets/images/bg-sign-up-cover.jpeg";
+import bgImage from "assets/images/slider2.png";
 import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent";
 import { useForm, Controller } from "react-hook-form";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
@@ -34,7 +34,7 @@ function Cover() {
   };
 
   return (
-    <CoverLayout image={bgImage}>
+    <CoverLayout>
       <Card>
         <MDBox
           variant="gradient"
@@ -58,29 +58,29 @@ function Cover() {
         </MDBox>
         <MDBox pt={2} pb={3} px={3}>
           {!isMatchedPassword ? (
-            <p className="error-color mb-1">Mật khẩu nhập lại không khớp!</p>
+            <span className="text-base error-color mb-1">Mật khẩu nhập lại không khớp!</span>
           ) : (
             ""
           )}
           <form onSubmit={handleSubmit(handleSubmitLogin)} className="w-full">
             <InputBaseComponent
-              placeholder="Nhập địa chỉ email"
-              type="email"
+              placeholder="Tên đăng nhập..."
+              type="text"
               control={control}
-              name="email"
+              name="username"
               setValue={noSetValue}
-              label="Email"
+              label="Tên đăng nhập"
               errors={errors}
               validationRules={{
-                required: "Email không được bỏ trống!",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Email không đúng định dạng!",
+                required: "Không được bỏ trống!",
+                minLength: {
+                  value: 4,
+                  message: "Tên đăng nhập ít nhất 4 kí tự!",
                 },
               }}
             />
             <InputBaseComponent
-              placeholder="Nhập mật khẩu mới"
+              placeholder="Nhập mật khẩu mới..."
               type="password"
               control={control}
               setValue={noSetValue}
@@ -88,19 +88,19 @@ function Cover() {
               label="Mật khẩu"
               errors={errors}
               validationRules={{
-                required: "Mật khẩu không được bỏ trống",
+                required: "không được bỏ trống!",
                 minLength: {
                   value: 8,
-                  message: "Mật khẩu ít nhât 8 kí tự!",
+                  message: "Mật khẩu ít nhất 8 kí tự!",
                 },
                 maxLength: {
                   value: 20,
-                  message: "Mật khẩu dài nhất 20 kí tự",
+                  message: "Mật khẩu dài nhất 20 kí tự!",
                 },
               }}
             />
             <InputBaseComponent
-              placeholder="Nhập lại mật khẩu mới"
+              placeholder="Nhập lại mật khẩu mới..."
               type="password"
               control={control}
               name="passwordReset"
@@ -108,14 +108,14 @@ function Cover() {
               label="Nhập lại"
               errors={errors}
               validationRules={{
-                required: "Mật khẩu không được bỏ trống",
+                required: "Không được bỏ trống!",
                 minLength: {
                   value: 8,
                   message: "Mật khẩu ít nhât 8 kí tự!",
                 },
                 maxLength: {
                   value: 20,
-                  message: "Mật khẩu dài nhất 20 kí tự",
+                  message: "Mật khẩu dài nhất 20 kí tự!",
                 },
               }}
             />
@@ -135,7 +135,7 @@ function Cover() {
               </MDTypography>
             </MDBox>
             <ButtonComponent style={{ marginTop: "12px", width: "100%" }} action="submit">
-              ĐỔI MẬT KHẨU
+              CẬP NHẬT
             </ButtonComponent>
           </form>
         </MDBox>

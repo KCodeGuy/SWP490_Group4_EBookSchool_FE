@@ -61,6 +61,8 @@ import ConductStatistics from "./layouts/conductStatistics/ConductStatistics";
 import NotificationDetails from "layouts/notificationDetails/NotificationDetails";
 import LogManagement from "layouts/logManagement/LogManagement";
 import SystemSetting from "layouts/systemSetting";
+import RegisterNotebookStatistics from "layouts/registerNotebookStatistics/RegisterNotebookStatistics";
+import AttendanceStatistics from "layouts/attendanceStatistics/AttendanceStatistics";
 import { Title } from "chart.js";
 
 const routes = [
@@ -143,6 +145,22 @@ const routes = [
     type: "title",
     title: "Quản lí",
     key: "management",
+  },
+  {
+    type: "collapse",
+    name: "Thống kê sổ đầu bài",
+    key: "registerNotebookStatistics",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/registerNotebookStatistics",
+    component: <RegisterNotebookStatistics />,
+  },
+  {
+    type: "collapse",
+    name: "Thống kê lượt vắng",
+    key: "attendanceStatistics",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/attendanceStatistics",
+    component: <AttendanceStatistics />,
   },
   {
     type: "collapse",

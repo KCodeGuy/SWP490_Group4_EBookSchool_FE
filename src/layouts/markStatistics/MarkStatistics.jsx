@@ -273,18 +273,13 @@ export default function MarkStatistics() {
     "Điểm TBCM THEO LỚP",
   ];
   const [aSubjectForAGrade, setASubjectForAGrade] = useState([
-    ["12A1", "10.0", "1"],
-    ["12A2", "10.0", "3"],
-    ["12A3", "10.0", "2"],
-    ["12A4", "10.0", "5"],
-    ["12A5", "10.0", "4"],
-    ["12A6", "10.0", "1"],
-    ["12A7", "10.0", "1"],
-    ["12A8", "10.0", "1"],
-    ["12A9", "10.0", "1"],
-    ["12A10", "10.0", "1"],
-    ["12A11", "10.0", "1"],
-    ["12A12", "10.0", "1"],
+    ["12A1", "40", "10.0", "1"],
+    ["12A2", "40", "10.0", "1"],
+    ["12A3", "40", "10.0", "1"],
+    ["12A4", "40", "10.0", "1"],
+    ["12A5", "40", "10.0", "1"],
+    ["12A6", "40", "10.0", "1"],
+    ["12A7", "40", "10.0", "1"],
   ]);
 
   const [aSubjectForEntireSchool, setASubjectForEntireSchool] = useState([
@@ -342,7 +337,7 @@ export default function MarkStatistics() {
     console.log("Call api by all school: ", { schoolYear, schoolSemester, schoolSubject });
   };
 
-  const handleStatisticSubjectGrads = () => {
+  const handleStatisticSubjectGrades = () => {
     console.log("Call api by grad: ", { schoolYear, schoolSemester, schoolSubject, grade });
   };
 
@@ -759,7 +754,7 @@ export default function MarkStatistics() {
                 <ButtonComponent
                   type="success"
                   className="max-[639px]:w-full"
-                  onClick={handleStatisticSubjectGrads}
+                  onClick={handleStatisticSubjectGrades}
                 >
                   <FilterAltIcon className="mr-1" /> Thống kê
                 </ButtonComponent>
@@ -805,7 +800,7 @@ export default function MarkStatistics() {
                 <div className="mt-8 custom-table">
                   <p className="text-base font-bold">THỐNG KÊ CHI TIẾT ({schoolSubject})</p>
                   <TableComponent
-                    header={["Lớp", "Điểm TB", "Hạng"]}
+                    header={["Lớp", "Số lượng", "Điểm TB", "Hạng"]}
                     data={aSubjectForAGrade}
                     // onEdit={handleEdit}
                     onDetails={handleDetails}
@@ -1065,7 +1060,7 @@ export default function MarkStatistics() {
                 <ButtonComponent
                   type="success"
                   className="max-[639px]:w-full"
-                  onClick={handleStatisticSubjectGrads}
+                  onClick={handleStatisticSubjectGrades}
                 >
                   <FilterAltIcon className="mr-1" /> Thống kê
                 </ButtonComponent>
@@ -1217,7 +1212,7 @@ export default function MarkStatistics() {
                 <ButtonComponent
                   type="success"
                   className="max-[639px]:w-full"
-                  onClick={handleStatisticSubjectGrads}
+                  onClick={handleStatisticSubjectGrades}
                 >
                   <FilterAltIcon className="mr-1" /> Thống kê
                 </ButtonComponent>

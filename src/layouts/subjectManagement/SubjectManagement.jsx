@@ -50,12 +50,7 @@ export default function SubjectManagement() {
     subject.data.points[0].semeaster,
   ]);
 
-  const lessonPlan = subject.data.lessonPlans.map((obj) => [
-    obj.id,
-    obj.title,
-    obj.description,
-    obj.slot,
-  ]);
+  const lessonPlan = subject.data.lessonPlans.map((obj) => [obj.id, obj.title, obj.slot]);
 
   //2. Set data by Call API
   const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
@@ -271,34 +266,18 @@ export default function SubjectManagement() {
                           required: "Không được bỏ trống!",
                         }}
                       />
-                      <div className="flex">
-                        <InputBaseComponent
-                          label="Năm học"
-                          name="selectYearEdit"
-                          className="w-1/2 mr-2"
-                          control={control}
-                          setValue={noSetValue}
-                          type="select"
-                          options={formattedSchoolYears}
-                          errors={errors}
-                          validationRules={{
-                            required: "Hãy chọn năm học!",
-                          }}
-                        />
-                        <InputBaseComponent
-                          label="Khối"
-                          name="selectGradeEdit"
-                          className="w-1/2 mr-2"
-                          control={control}
-                          setValue={noSetValue}
-                          type="select"
-                          options={formattedGrades}
-                          errors={errors}
-                          validationRules={{
-                            required: "Hãy chọn khối!",
-                          }}
-                        />
-                      </div>
+                      <InputBaseComponent
+                        label="Khối"
+                        name="selectGradeEdit"
+                        control={control}
+                        setValue={noSetValue}
+                        type="select"
+                        options={formattedGrades}
+                        errors={errors}
+                        validationRules={{
+                          required: "Hãy chọn khối!",
+                        }}
+                      />
                       <InputBaseComponent
                         placeholder="Nhập mô tả môn học"
                         type="text"
@@ -340,7 +319,7 @@ export default function SubjectManagement() {
                         />
                         <InputBaseComponent
                           className="w-1/2"
-                          placeholder="Chọ kì học"
+                          placeholder="Chọn kì học"
                           type="select"
                           options={semesters}
                           control={control}
@@ -410,7 +389,7 @@ export default function SubjectManagement() {
                       <div className="flex">
                         <InputBaseComponent
                           placeholder="Nhập tên chủ đề"
-                          className="w-1/3 mr-3"
+                          className="w-1/2 mr-2"
                           type="text"
                           control={control}
                           setValue={noSetValue}
@@ -422,20 +401,7 @@ export default function SubjectManagement() {
                           }}
                         />
                         <InputBaseComponent
-                          className="w-1/3 mr-3"
-                          placeholder="Nhập mô tả"
-                          type="text"
-                          control={control}
-                          setValue={noSetValue}
-                          name="description"
-                          label="Mô tả"
-                          errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
-                        />
-                        <InputBaseComponent
-                          className="w-1/3"
+                          className="w-1/2"
                           placeholder="Nhập thứ tự tiết"
                           type="number"
                           control={control}
@@ -461,7 +427,7 @@ export default function SubjectManagement() {
                     </form>
                     <p className="text-sm font-bold">TẤT CẢ GIÁO ÁN (TOÁN)</p>
                     <TableComponent
-                      header={["ID", "Tên chủ đề", "Mô tả", "Thứ tự"]}
+                      header={["ID", "Tên chủ đề", "Thứ tự"]}
                       data={lessonPlan}
                       isOrdered={false}
                       itemsPerPage={5}
@@ -535,34 +501,18 @@ export default function SubjectManagement() {
                     required: "Không được bỏ trống!",
                   }}
                 />
-                <div className="flex">
-                  <InputBaseComponent
-                    label="Năm học"
-                    name="selectYearEdit"
-                    className="w-1/2 mr-2"
-                    control={controlEditAction}
-                    type="select"
-                    options={formattedSchoolYears}
-                    setValue={noSetValue}
-                    errors={errorsEditAction}
-                    validationRules={{
-                      required: "Hãy chọn năm học!",
-                    }}
-                  />
-                  <InputBaseComponent
-                    label="Khối"
-                    name="selectGradeEdit"
-                    className="w-1/2 mr-2"
-                    control={controlEditAction}
-                    setValue={noSetValue}
-                    type="select"
-                    options={formattedGrades}
-                    errors={errors}
-                    validationRules={{
-                      required: "Hãy chọn khối!",
-                    }}
-                  />
-                </div>
+                <InputBaseComponent
+                  label="Khối"
+                  name="selectGradeEdit"
+                  control={controlEditAction}
+                  setValue={noSetValue}
+                  type="select"
+                  options={formattedGrades}
+                  errors={errors}
+                  validationRules={{
+                    required: "Hãy chọn khối!",
+                  }}
+                />
                 <InputBaseComponent
                   placeholder="Nhập mô tả"
                   type="text"

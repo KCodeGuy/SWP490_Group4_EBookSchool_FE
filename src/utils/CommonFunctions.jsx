@@ -110,7 +110,6 @@ export const isTodayInSchoolYear = (schoolYear) => {
   const schoolYearStart = new Date(startYear, 0, 1); // January 1st of start year
   const schoolYearEnd = new Date(endYear, 11, 31); // December 31st of end year
 
-  console.log(today >= schoolYearStart && today <= schoolYearEnd);
   return today >= schoolYearStart && today <= schoolYearEnd;
 };
 
@@ -141,4 +140,14 @@ export const getCurrentSchoolYear = () => {
   const currentYear = new Date().getFullYear();
   const nextYear = currentYear + 1;
   return `${currentYear}-${nextYear}`;
+};
+
+export const getUsernameSubString = (text) => {
+  const regex = /Người dùng (\w+)/;
+  const match = text.match(regex);
+  if (match && match.length > 1) {
+    return match[1];
+  } else {
+    return null; // or handle the case where the admin name is not found
+  }
 };

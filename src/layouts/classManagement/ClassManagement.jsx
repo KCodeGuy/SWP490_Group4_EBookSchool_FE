@@ -40,7 +40,6 @@ export default function ClassManagement() {
   );
   // const [currentData, setCurrentData] = useState(data?.data);
 
-  console.log(data);
   //2. Set data by Call API
   const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
   const handleSchoolYearSelectedChange = (event) => {

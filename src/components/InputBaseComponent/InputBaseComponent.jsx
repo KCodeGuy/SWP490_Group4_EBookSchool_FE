@@ -18,6 +18,7 @@ const InputBaseComponent = ({
   disabled,
   setValue,
   validationRules,
+  getSelectedFile,
   options,
 }) => {
   const rules = validationRules || {};
@@ -25,7 +26,6 @@ const InputBaseComponent = ({
   const customClassName = `flex flex-col mb-2 ${className}`;
 
   const [selectedFile, setSelectedFile] = useState(null);
-
   const handleSetValue = (value) => {
     setSelectedFile(value); // Store the selected file in state
     setValue(name, value); // Set the value for the input field with name
@@ -176,6 +176,7 @@ InputBaseComponent.propTypes = {
   disabled: PropTypes.bool,
   setValue: PropTypes.func,
   horizontalLabel: PropTypes.bool,
+  getSelectedFile: PropTypes.any,
 };
 
 export default InputBaseComponent;

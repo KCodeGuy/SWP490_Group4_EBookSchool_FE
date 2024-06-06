@@ -24,19 +24,23 @@ import {
   deleteNotification,
   updateNotification,
 } from "../../services/NotificationService";
+import { useNavigate } from "react-router-dom";
 
 // Notification Management (UolLT)
+// Get access token
+const token = localStorage.getItem("authToken");
+const accessToken = `Bearer ${token}`;
+
 export default function NotificationManagement() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [deleteData, setDeleteData] = useState({});
   const [currentData, setCurrentData] = useState([]);
-  const queryClient = useQueryClient();
+  const [fileThumbnail, setFileThumbnail] = useState(null);
+  const navigate = useNavigate();
 
-  // Get access token
-  const token = localStorage.getItem("authToken");
-  const accessToken = `Bearer ${token}`;
+  const queryClient = useQueryClient();
 
   // Call API Get all notifications
   const { data, error, isLoading } = useQuery(["notificationState", { accessToken }], () =>
@@ -45,6 +49,12 @@ export default function NotificationManagement() {
   useEffect(() => {
     setCurrentData(data?.data);
   }, [data]);
+
+  const handleNotificationDetails = (data) => {
+    if (data) {
+      navigate(`/notificationDetails/${data[0]}`);
+    }
+  };
 
   // React-hook-form for adding action
   const {
@@ -64,12 +74,18 @@ export default function NotificationManagement() {
     formState: { errors: errorsEditAction },
   } = useForm();
 
-  // Call API add notification
   const addNotificationMutation = useMutation(
     (notificationData) => addNotification(accessToken, notificationData),
     {
-      onSuccess: () => {
+      onSuccess: (response) => {
         queryClient.invalidateQueries("notificationState");
+        if (response && response.success) {
+          toast.success("Tạo thông báo thành công!");
+        } else {
+          toast.error(`${response.data}!`);
+        }
+        reset();
+        setModalOpen(false);
       },
     }
   );
@@ -80,13 +96,7 @@ export default function NotificationManagement() {
       content: data.content,
       thumbnail: data.thumbnail,
     };
-    addNotificationMutation.mutate(notificationData, {
-      onSuccess: () => {
-        reset();
-        setModalOpen(false);
-        toast.success("Tạo thông báo thành công!");
-      },
-    });
+    addNotificationMutation.mutate(notificationData);
   };
 
   // Call API update notification
@@ -96,21 +106,29 @@ export default function NotificationManagement() {
       setValue("nameEdit", rowItem[1]);
       setValue("thumbnailEdit", rowItem[2]);
       setValue("contentEdit", rowItem[6]);
+      setFileThumbnail(rowItem[2]);
       setModalEditOpen(true);
     } else {
       setModalEditOpen(false);
     }
   };
-  const editNotificationMutation = useMutation(
+
+  const updateNotificationMutation = useMutation(
     (notificationData) => updateNotification(accessToken, notificationData),
     {
-      onSuccess: () => {
+      onSuccess: (response) => {
         queryClient.invalidateQueries("notificationState");
+        if (response && response.success) {
+          toast.success("Cập nhật thông báo thành công!");
+        } else {
+          toast.error(`${response.data}!`);
+        }
+        reset();
+        setModalEditOpen(false);
       },
     }
   );
 
-  // Call API delete notification
   const handleEditNotification = (data) => {
     const notificationData = {
       id: data.idEdit,
@@ -118,20 +136,20 @@ export default function NotificationManagement() {
       content: data.contentEdit,
       thumbnail: data.thumbnailEdit,
     };
-    editNotificationMutation.mutate(notificationData, {
-      onSuccess: () => {
-        reset();
-        toast.success("Cập nhật thông báo thành công!");
-        setModalEditOpen(false);
-      },
-    });
+    updateNotificationMutation.mutate(notificationData);
   };
 
   const deleteNotificationMutation = useMutation(
     (notificationId) => deleteNotification(accessToken, notificationId),
     {
-      onSuccess: () => {
+      onSuccess: (response) => {
         queryClient.invalidateQueries("notificationState");
+        if (response && response.success) {
+          toast.success("Xóa thông báo thành công!");
+        } else {
+          toast.error("Xóa thông báo thất bại!");
+        }
+        setModalDeleteOpen(false);
       },
     }
   );
@@ -142,18 +160,11 @@ export default function NotificationManagement() {
         id: rowItem[0],
       });
       setModalDeleteOpen(true);
-    } else {
-      setModalDeleteOpen(false);
     }
   };
 
   const handleDeleteAPI = () => {
-    deleteNotificationMutation.mutate(deleteData.id, {
-      onSuccess: () => {
-        toast.success("Xóa thông báo thành công!");
-        setModalDeleteOpen(false);
-      },
-    });
+    deleteNotificationMutation.mutate(deleteData.id);
   };
 
   // Handle search function
@@ -224,6 +235,7 @@ export default function NotificationManagement() {
                       required: "Không được bỏ trống!",
                     }}
                   />
+
                   <InputBaseComponent
                     className="w-96"
                     name="content"
@@ -242,31 +254,46 @@ export default function NotificationManagement() {
                     <ButtonComponent type="error" action="reset" onClick={() => reset()}>
                       CLEAR
                     </ButtonComponent>
-                    <ButtonComponent action="submit">TẠO</ButtonComponent>
+                    <ButtonComponent action="submit">
+                      <AddCircleOutlineIcon className="mr-1" />
+                      TẠO
+                    </ButtonComponent>
                   </div>
                 </form>
               </PopupComponent>
             </div>
           </div>
           <div>
-            <TableComponent
-              header={["Tiêu đề", "Ảnh bìa", "Ngày tạo", "Ngày cập nhật", "Người tạo", "Nội dung"]}
-              data={currentData?.map((item) => [
-                item.id.toString(),
-                item.title.toString(),
-                item.thumbnail.toString(),
-                item.createAt.toString(),
-                item.updateAt.toString(),
-                item.createBy.toString(),
-                item.content.toString(),
-              ])}
-              itemsPerPage={10}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              hiddenColumns={[0]}
-              isImage={2}
-              className="mt-4"
-            />
+            {isLoading ? (
+              <div className="text-center">Loading...</div>
+            ) : (
+              <TableComponent
+                header={[
+                  "Tiêu đề",
+                  "Ảnh bìa",
+                  "Ngày tạo",
+                  "Ngày cập nhật",
+                  "Người tạo",
+                  "Nội dung",
+                ]}
+                data={currentData?.map((item) => [
+                  item.id.toString(),
+                  item.title.toString(),
+                  item.thumbnail.toString(),
+                  item.createAt.toString(),
+                  item.updateAt.toString(),
+                  item.createBy.toString(),
+                  item.content.toString(),
+                ])}
+                itemsPerPage={10}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onDetails={handleNotificationDetails}
+                hiddenColumns={[0]}
+                isImage={2}
+                className="mt-4"
+              />
+            )}
             <PopupComponent
               title="CẬP NHẬT"
               description="Cập nhật thông báo"
@@ -288,18 +315,27 @@ export default function NotificationManagement() {
                   }}
                 />
 
-                <InputBaseComponent
-                  placeholder="Chọn file"
-                  type="file"
-                  control={controlEditAction}
-                  name="thumbnailEdit"
-                  label="Ảnh bìa"
-                  setValue={setValue}
-                  errors={errorsEditAction}
-                  validationRules={{
-                    required: "Không được bỏ trống!",
-                  }}
-                />
+                <div className="flex">
+                  <InputBaseComponent
+                    placeholder="Chọn file"
+                    type="file"
+                    control={controlEditAction}
+                    name="thumbnailEdit"
+                    label="Ảnh bìa"
+                    setValue={setValue}
+                    errors={errorsEditAction}
+                    validationRules={{
+                      required: "Không được bỏ trống!",
+                    }}
+                  />
+                  {fileThumbnail && (
+                    <img
+                      className="w-24 ml-2 h-24 rounded-md object-cover object-center"
+                      src={fileThumbnail}
+                      alt="Ảnh bìa"
+                    />
+                  )}
+                </div>
                 <InputBaseComponent
                   name="contentEdit"
                   placeholder="Nhập nội dung thông báo"

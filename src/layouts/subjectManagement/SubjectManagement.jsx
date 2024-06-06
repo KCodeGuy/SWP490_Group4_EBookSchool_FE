@@ -15,7 +15,6 @@ import DownloadIcon from "@mui/icons-material/Download";
 import "./style.scss";
 import { grades } from "../../mock/grade";
 import { subjects, subject } from "../../mock/subject";
-import { studentClasses } from "../../mock/class";
 import { schoolYears } from "../../mock/schoolYear";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";

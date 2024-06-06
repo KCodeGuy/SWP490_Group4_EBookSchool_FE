@@ -1,5 +1,5 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import { Card } from "@mui/material";
@@ -12,11 +12,9 @@ import EditIcon from "@mui/icons-material/Edit";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import LockClockIcon from "@mui/icons-material/LockClock";
 import AccessAlarmIcon from "@mui/icons-material/AccessAlarm";
+import HistoryIcon from "@mui/icons-material/History";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
-import { classrooms } from "../../mock/classroom";
-import { studentClasses } from "../../mock/class";
-import { logHistories } from "../../mock/log";
 import { schoolYears } from "../../mock/schoolYear";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
@@ -24,23 +22,32 @@ import TableComponent from "../../components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
 import TextValueComponent from "components/TextValueComponent";
+import { getAllLogs } from "services/LogService";
+import { useQuery } from "react-query";
 
-const data = logHistories.data;
+const logActions = ["CREATE", "UPDATE", "DELETE", "OTHERS"];
+const token = localStorage.getItem("authToken");
+const accessToken = `Bearer ${token}`;
 
 // Class management (UolLT)
 export default function LogManagement() {
   //1. Modal form states open, close
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [currentLog, setCurrentLog] = useState({});
-  const [currentData, setCurrentData] = useState(data);
+  const [currentData, setCurrentData] = useState([]);
 
-  const token = localStorage.getItem("authToken");
-  const accessToken = `Bearer ${token}`;
+  const { data, error, isLoading } = useQuery(["logState", { accessToken }], () =>
+    getAllLogs(accessToken)
+  );
+
+  useEffect(() => {
+    setCurrentData(data?.data);
+  }, [data]);
 
   //2. Set data by Call API
-  const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
-  const handleSchoolYearSelectedChange = (event) => {
-    setSchoolYear(event.target.value);
+  const [logAction, setLogAction] = React.useState(logActions[0]);
+  const handleLogChange = (event) => {
+    setLogAction(event.target.value);
   };
 
   //5. Functions handle editing
@@ -49,7 +56,6 @@ export default function LogManagement() {
   };
   const handleEdit = (rowItem) => {
     if (rowItem) {
-      console.log(rowItem);
       setModalEditOpen(true);
       setCurrentLog(rowItem);
     } else {
@@ -57,22 +63,32 @@ export default function LogManagement() {
     }
   };
   const handleStatistic = () => {
-    console.log("Call api: ", { schoolYear });
+    setCurrentData(filterLogByAction(logAction, data?.data));
   };
 
   const handleChangeSearchValue = (txtSearch) => {
-    setCurrentData(filterStudentClasses(txtSearch, data));
+    setCurrentData(filterLog(txtSearch, data?.data));
   };
 
-  const filterStudentClasses = (txtSearch, data) => {
+  const filterLog = (txtSearch, data) => {
     const search = txtSearch.trim().toLowerCase();
-    return data.filter((item) => {
-      return (
-        item.title.toLowerCase().includes(search) ||
-        item.note.toLowerCase().includes(search) ||
-        item.accountID.toLowerCase().includes(search)
-      );
-    });
+    if (data) {
+      return data.filter((item) => {
+        return (
+          item.type.toLowerCase().includes(search) ||
+          item.note.toLowerCase().includes(search) ||
+          item.date.toLowerCase().includes(search)
+        );
+      });
+    }
+  };
+
+  const filterLogByAction = (action, data) => {
+    if (data) {
+      return data.filter((item) => {
+        return item.type.toLowerCase() === action.toLowerCase();
+      });
+    }
   };
 
   const renderStyleByLogType = (logType) => {
@@ -90,6 +106,7 @@ export default function LogManagement() {
     }
     return logTypeStyle;
   };
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -97,25 +114,26 @@ export default function LogManagement() {
         <MDBox p={5}>
           {/* DO NOT DELETE CODE AS ABOVE*/}
           {/* Your code here */}
-          <div className="text-center mt-0">
-            <h4 className="text-xl font-bold">GHI LOG</h4>
+          <div className="flex justify-center items-center text-3xl mx-auto w-full">
+            <HistoryIcon />
+            <h4 className="text-xl font-bold ml-3">GHI LOG</h4>
           </div>
           <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
             {/* School Year Select */}
             <div className="flex justify-start max-[639px]:flex-wrap">
               <FormControl sx={{ minWidth: 120 }}>
-                <InputLabel id="select-school-year-lable">Năm học</InputLabel>
+                <InputLabel id="select-school-year-lable">Thao tác</InputLabel>
                 <Select
                   labelId="select-school-year-lable"
                   id="elect-school-year"
-                  value={schoolYear}
+                  value={logAction}
                   className="h-11 mr-0"
-                  label="Năm học"
-                  onChange={handleSchoolYearSelectedChange}
+                  label="Thao tác"
+                  onChange={handleLogChange}
                 >
-                  {schoolYears.data.map((item, index) => (
-                    <MenuItem key={index} value={item.schoolYear.toString()}>
-                      {item.schoolYear.toString()}
+                  {logActions.map((item, index) => (
+                    <MenuItem key={index} value={item}>
+                      {item.toString()}
                     </MenuItem>
                   ))}
                 </Select>
@@ -134,19 +152,23 @@ export default function LogManagement() {
             </div>
           </div>
           <div>
-            <TableComponent
-              header={["Tài khoản", "Loại thao tác", "Tên thao tác", "Ghi chú", "Thời gian"]}
-              data={data.map((item) => [
-                item.accountID.toString(),
-                item.type.toString(),
-                item.title.toString(),
-                item.note.toString(),
-                item.date.toString(),
-              ])}
-              itemsPerPage={10}
-              onDetails={handleEdit}
-              className="mt-8"
-            />
+            {isLoading ? (
+              <div>Loading...</div>
+            ) : (
+              <TableComponent
+                header={["Mã log", "Loại thao tác", "Ghi chú", "Thời gian"]}
+                data={currentData?.map((item) => [
+                  item.id.toString(),
+                  item.type.toString(),
+                  item.note.toString(),
+                  item.date.toString(),
+                ])}
+                itemsPerPage={20}
+                onDetails={handleEdit}
+                className="mt-8"
+              />
+            )}
+
             <PopupComponent
               title="CHI TIẾT"
               description="Chi tiết lịch sử ghi log"
@@ -156,17 +178,17 @@ export default function LogManagement() {
             >
               <div className="max-w-md">
                 <TextValueComponent
-                  label="Thời gian"
-                  value={currentLog[4]}
+                  label="Mã log"
+                  value={currentLog[0]}
                   icon={<AccessAlarmIcon />}
                 />
                 <TextValueComponent
-                  label="Người dùng"
-                  value={currentLog[0]}
-                  icon={<AccountCircleIcon />}
+                  label="Thời gian"
+                  value={currentLog[3]}
+                  icon={<AccessAlarmIcon />}
                 />
                 <TextValueComponent
-                  label="Loại thao tác"
+                  label="Thao tác"
                   value={currentLog[1]}
                   icon={<AccessAlarmIcon />}
                   customValue={renderStyleByLogType(currentLog[1])}
@@ -179,7 +201,7 @@ export default function LogManagement() {
                 />
                 <TextValueComponent
                   label="Ghi chú"
-                  value={currentLog[3]}
+                  value={currentLog[2]}
                   icon={<AccountCircleIcon />}
                 />
               </div>

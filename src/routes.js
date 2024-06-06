@@ -61,8 +61,14 @@ import ConductStatistics from "./layouts/conductStatistics/ConductStatistics";
 import NotificationDetails from "layouts/notificationDetails/NotificationDetails";
 import LogManagement from "layouts/logManagement/LogManagement";
 import SystemSetting from "layouts/systemSetting";
+import { Title } from "chart.js";
 
 const routes = [
+  {
+    type: "title",
+    title: "Học tập",
+    key: "studying",
+  },
   {
     type: "collapse",
     name: "Dashboard",
@@ -70,6 +76,44 @@ const routes = [
     icon: <Icon fontSize="small">home</Icon>,
     route: "/dashboard",
     component: <Dashboard />,
+  },
+  {
+    type: "collapse",
+    name: "Sổ đầu bài",
+    key: "schoolBook",
+    icon: <Icon fontSize="small">table</Icon>,
+    route: "/schoolBook",
+    component: <SchoolBook />,
+  },
+  {
+    type: "collapse",
+    name: "Thông báo",
+    key: "notificationDetails",
+    icon: <Icon fontSize="small">table</Icon>,
+    route: "/notificationDetails/:notificationID",
+    component: <NotificationDetails />,
+  },
+  {
+    type: "collapse",
+    name: "Thời khóa biểu",
+    key: "weeklyTimeTable",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/weeklyTimeTable",
+    component: <WeeklyTimeTable />,
+  },
+  {
+    type: "collapse",
+    name: "Điểm danh",
+    key: "takeAttendance",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/takeAttendance",
+    component: <TakeAttendance />,
+  },
+
+  {
+    type: "title",
+    title: "Thống kê",
+    key: "statistic",
   },
   {
     type: "collapse",
@@ -94,6 +138,11 @@ const routes = [
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/conductStatistics",
     component: <ConductStatistics />,
+  },
+  {
+    type: "title",
+    title: "Quản lí",
+    key: "management",
   },
   {
     type: "collapse",
@@ -138,55 +187,10 @@ const routes = [
   },
 
   {
-    type: "collapse",
-    name: "Sổ đầu bài",
-    key: "schoolBook",
-    icon: <Icon fontSize="small">table</Icon>,
-    route: "/schoolBook",
-    component: <SchoolBook />,
+    type: "title",
+    title: "Demo",
+    key: "demoExample",
   },
-  {
-    type: "collapse",
-    name: "Thông báo",
-    key: "notificationDetails",
-    icon: <Icon fontSize="small">table</Icon>,
-    route: "/notificationDetails",
-    component: <NotificationDetails />,
-  },
-  {
-    type: "collapse",
-    name: "Thời khóa biểu",
-    key: "weeklyTimeTable",
-    icon: <Icon fontSize="small">assignment</Icon>,
-    route: "/weeklyTimeTable",
-    component: <WeeklyTimeTable />,
-  },
-  {
-    type: "collapse",
-    name: "Điểm danh",
-    key: "takeAttendance",
-    icon: <Icon fontSize="small">assignment</Icon>,
-    route: "/takeAttendance",
-    component: <TakeAttendance />,
-  },
-
-  {
-    type: "collapse",
-    name: "Đăng nhập",
-    key: "sign-in",
-    icon: <Icon fontSize="small">login</Icon>,
-    route: "/authentication/sign-in",
-    component: <SignIn />,
-  },
-  {
-    type: "collapse",
-    name: "Thông tin tài khoản",
-    key: "profile",
-    icon: <Icon fontSize="small">person</Icon>,
-    route: "/profile",
-    component: <Profile />,
-  },
-
   {
     type: "collapse",
     name: "Wiki",
@@ -205,6 +209,19 @@ const routes = [
     component: <Demo />,
   },
 
+  {
+    type: "title",
+    title: "Hệ thống",
+    key: "system",
+  },
+  {
+    type: "collapse",
+    name: "Đăng nhập",
+    key: "sign-in",
+    icon: <Icon fontSize="small">login</Icon>,
+    route: "/authentication/sign-in",
+    component: <SignIn />,
+  },
   {
     type: "collapse",
     name: "Quên mật khẩu",
@@ -229,6 +246,14 @@ const routes = [
     icon: <Icon fontSize="small">house</Icon>,
     route: "/systemSetting",
     component: <SystemSetting />,
+  },
+  {
+    type: "collapse",
+    name: "Thông tin tài khoản",
+    key: "profile",
+    icon: <Icon fontSize="small">person</Icon>,
+    route: "/profile",
+    component: <Profile />,
   },
 ];
 

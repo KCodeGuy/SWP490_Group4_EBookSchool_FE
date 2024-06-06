@@ -123,7 +123,7 @@ function TableComponent({
                           <img
                             src={cell}
                             alt="Thumbnail"
-                            className="w-28 h-28 rounded-sm object-cover object-center mx-auto"
+                            className="w-28 h-28 rounded-sm object-cover object-center mx-auto my-2"
                           />
                         ) : (
                           <div className="max-line-4 max-w-56 mx-auto">{cell}</div>

@@ -11,12 +11,21 @@ const getAllNotifications = async (accessToken) => {
   return res.data;
 };
 
+const getNotificationByID = async (accessToken, notificationID) => {
+  const res = await axios.get(`${API_HOST}/Notifications/${notificationID}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `${accessToken}`,
+    },
+  });
+  return res.data;
+};
+
 const addNotification = async (accessToken, data) => {
   const formData = new FormData();
   formData.append("title", data.title);
   formData.append("thumbnail", data.thumbnail);
   formData.append("content", data.content);
-
   try {
     const res = await axios.post(`${API_HOST}/Notifications`, formData, {
       headers: {
@@ -24,7 +33,6 @@ const addNotification = async (accessToken, data) => {
         Authorization: `${accessToken}`,
       },
     });
-
     return res.data;
   } catch (error) {
     console.error("Error adding notification:", error);
@@ -48,7 +56,7 @@ const updateNotification = async (accessToken, data) => {
 
     return res.data;
   } catch (error) {
-    console.error("Error adding notification:", error);
+    console.error("Error updating notification:", error);
     throw error;
   }
 };
@@ -63,9 +71,15 @@ const deleteNotification = async (accessToken, notificationID) => {
     });
     return res.data;
   } catch (error) {
-    console.error("Error adding notification:", error);
+    console.error("Error deleting notification:", error);
     throw error;
   }
 };
 
-export { getAllNotifications, addNotification, updateNotification, deleteNotification };
+export {
+  getAllNotifications,
+  addNotification,
+  updateNotification,
+  deleteNotification,
+  getNotificationByID,
+};

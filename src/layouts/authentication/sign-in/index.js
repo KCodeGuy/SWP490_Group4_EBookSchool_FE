@@ -37,6 +37,8 @@ import MDButton from "components/MDButton";
 
 // Authentication layout components
 import BasicLayout from "layouts/authentication/components/BasicLayout";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Images
 import bgImage from "assets/images/slider2.png";
@@ -45,8 +47,12 @@ import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent
 import { useForm, Controller } from "react-hook-form";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import { loginUser } from "../../../services/AuthService";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { CircularProgress } from "@mui/material";
+import { getTeacherByID } from "services/TeacherService";
+import { getStudentByID } from "services/StudentService";
+import { getUserRole } from "utils/handleUser";
+import { getAllClasses } from "services/ClassService";
 
 function Basic() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -63,28 +69,32 @@ function Basic() {
   const mutation = useMutation(loginUser, {
     onSuccess: (data) => {
       if (data.success) {
-        // Redirect to the dashboard on success
-        console.log("Login success: ", data);
         localStorage.setItem("authToken", data.data.accessToken); // Example: saving a token
         localStorage.setItem("refreshToken", data.data.refreshToken); // Example: saving a token
         localStorage.setItem("permissions", data.data.permissions); // Example: saving a token
         localStorage.setItem("user", JSON.stringify(data.data.user)); // Example: saving use
+        const userRole = getUserRole(
+          data.data.user.id.toString(),
+          data.data.permissions.toString()
+        );
+        localStorage.setItem("userRole", userRole); // Example: saving use
         navigate("/dashboard");
+        // toast.success("Đăng nhập thành công!");
       } else {
-        console.log("Login failed: ", data.data);
+        toast.error(data.data);
       }
       setCurrentUser(data);
     },
   });
 
   const handleSubmitLogin = (data) => {
-    console.log(data); // You can do something with the form data here
     const username = data.username;
     const password = data.password;
     mutation.mutate({ username, password });
   };
   return (
     <BasicLayout image={bgImage}>
+      <ToastContainer autoClose={3000} />
       <Card>
         <MDBox
           variant="gradient"
@@ -107,10 +117,9 @@ function Basic() {
           </MDBox>
         </MDBox>
         <MDBox pt={2} pb={3} px={3}>
-          <span className="error-color text-base">
+          {/* <span className="error-color text-base">
             {!currentUser.success ? currentUser.data : ""}
-            {/* Tên đăng nhập hoặc tài khoản không chính xác! */}
-          </span>
+          </span> */}
           <form onSubmit={handleSubmit(handleSubmitLogin)} className="w-full">
             <InputBaseComponent
               placeholder="Tên đăng nhập..."

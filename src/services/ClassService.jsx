@@ -1,7 +1,7 @@
 import axios from "axios";
 import { API_HOST } from "./APIConfig";
 
-export const getAllClasses = async (accessToken) => {
+const getAllClasses = async (accessToken) => {
   const res = await axios.get(`${API_HOST}/Classes`, {
     headers: {
       "Content-Type": "application/json",
@@ -10,3 +10,5 @@ export const getAllClasses = async (accessToken) => {
   });
   return res.data;
 };
+
+export { getAllClasses };

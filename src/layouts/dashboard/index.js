@@ -18,9 +18,11 @@ import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import { getAllNotifications } from "services/NotificationService";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
+import { getAllClasses } from "services/ClassService";
 
 const token = localStorage.getItem("authToken");
 const accessToken = `Bearer ${token}`;
+const userRole = localStorage.getItem("userRole");
 
 const Dashboard = React.memo(() => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,6 +33,14 @@ const Dashboard = React.memo(() => {
   const { data, error, isLoading } = useQuery(["notificationDetails", { accessToken }], () =>
     getAllNotifications(accessToken)
   );
+
+  const { data: classes } = useQuery(["currentClasses", { accessToken }], () =>
+    getAllClasses(accessToken)
+  );
+
+  if (classes) {
+    localStorage.setItem("currentClasses", JSON.stringify(classes?.data));
+  }
 
   const notifications = useMemo(() => (Array.isArray(data?.data) ? data.data : []), [data]);
   const totalItems = notifications.length;

@@ -4,7 +4,7 @@ import AccessAlarmsIcon from "@mui/icons-material/AccessAlarms";
 import { Link } from "react-router-dom";
 import { getTodayDate } from "utils/CommonFunctions";
 
-const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
+const TableWeeklyTimeTableComponent = ({ data, onDetails, className, userRole }) => {
   const dates = data.map((item) => item.date);
   const defaultSlots = Array.from({ length: 10 }, (_, index) => index + 1);
   const { formattedDate } = getTodayDate();
@@ -83,17 +83,25 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails, className }) => {
                           ) : (
                             <span className="font-bold error-color">(Vắng)</span>
                           )}
-                          <Link to="/schoolBook">
-                            <button className="text-center text-white px-2 max-w-max h-6 leading-6 rounded bg-warning-color">
-                              SĐB
+                          {userRole !== "Student" ? (
+                            <Link to="/schoolBook">
+                              <button className="text-center text-white px-2 max-w-max h-6 leading-6 rounded bg-warning-color">
+                                SĐB
+                              </button>
+                            </Link>
+                          ) : (
+                            ""
+                          )}
+                        </div>
+                        {userRole === "SubjectTeacher" || userRole === "Principal" ? (
+                          <Link to="/takeAttendance">
+                            <button className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color mt-3">
+                              Điểm danh
                             </button>
                           </Link>
-                        </div>
-                        <Link to="/takeAttendance">
-                          <button className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color mt-3">
-                            Điểm danh
-                          </button>
-                        </Link>
+                        ) : (
+                          ""
+                        )}
                       </div>
                     ) : (
                       <p>_</p>
@@ -113,6 +121,7 @@ TableWeeklyTimeTableComponent.propTypes = {
   data: PropTypes.any,
   className: PropTypes.string,
   onDetails: PropTypes.func,
+  userRole: PropTypes.string,
 };
 
 TableWeeklyTimeTableComponent.defaultProps = {};

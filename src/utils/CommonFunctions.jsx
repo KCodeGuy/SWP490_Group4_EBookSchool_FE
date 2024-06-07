@@ -76,9 +76,7 @@ export const generateSchoolWeeks = (schoolYear) => {
       startTime: formatDate(weekStart),
       endTime: formatDate(weekEnd),
     };
-
     schoolWeeks.push(week);
-
     // Move start date to the next week
     startDate.setDate(startDate.getDate() + 7);
     weekCount++;
@@ -150,4 +148,9 @@ export const getUsernameSubString = (text) => {
   } else {
     return null; // or handle the case where the admin name is not found
   }
+};
+
+export const getClassFromClassRoom = (inputString) => {
+  const match = inputString.match(/\d+\w+/);
+  return match ? match[0] : "";
 };

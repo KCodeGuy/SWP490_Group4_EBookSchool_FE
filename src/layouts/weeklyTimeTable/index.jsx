@@ -53,7 +53,7 @@ export default function WeeklyTimeTable() {
   const [currentSlot, setCurrentSlot] = useState({});
   const [currentSlotDate, setCurrentSlotDate] = useState("");
   const [currentTimeTable, setCurrentTimeTable] = useState([]);
-  console.log("Re-render");
+  // console.log("Re-render");
 
   let accessToken, currentUser, userRole, userID, currentClasses;
   accessToken = localStorage.getItem("authToken");
@@ -130,7 +130,6 @@ export default function WeeklyTimeTable() {
 
   const handleViewSlotDetail = ([slotDetails, date]) => {
     if (slotDetails) {
-      console.log(slotDetails);
       setCurrentSlot(slotDetails);
       setCurrentSlotDate(date);
       setOpenModalDetail(true);
@@ -152,6 +151,8 @@ export default function WeeklyTimeTable() {
       setOpenModalUpdate(true);
     }
   };
+
+  const handleDownloadTemplate = () => {};
 
   return (
     <DashboardLayout>
@@ -336,7 +337,7 @@ export default function WeeklyTimeTable() {
                   </form>
                 </div>
                 <div role="tabpanel" hidden={currentTab == 1}>
-                  <ButtonComponent action="submit">
+                  <ButtonComponent action="submit" onClick={handleDownloadTemplate}>
                     <DownloadIcon className="mr-2" />
                     TẢI FILE
                   </ButtonComponent>
@@ -513,11 +514,7 @@ export default function WeeklyTimeTable() {
             <p className="font-bold">Ghi chú:</p>
             <ul className="list-disc ml-5">
               <li>
-                <span className="success-color">(Completed): </span>
-                <span className="italic">Tiết học đã kết thúc khi thời gian học kết thúc.</span>
-              </li>
-              <li>
-                <span className="error-color">(Not-started): </span>
+                <span className="error-color">(Chưa bắt đầu): </span>
                 <span className="italic">
                   Tiết học này chưa bắt đầu, tiết học sẽ bắt đầu khi đến ngày học.
                 </span>

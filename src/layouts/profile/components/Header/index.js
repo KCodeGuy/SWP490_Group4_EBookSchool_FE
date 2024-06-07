@@ -133,9 +133,14 @@ function Header({ children, currentUser, permissions }) {
           <Grid item xs={12} md={6} lg={4} sx={{ ml: "auto" }}>
             <AppBar position="static">
               <div className="flex items-center justify-end">
-                {/* <ButtonComponent type="dark" onClick={handleLogout}>
-                  ĐĂNG XUẤT
-                </ButtonComponent> */}
+                <ButtonComponent
+                  type="success"
+                  onClick={() => {
+                    navigate("/authentication/reset-password");
+                  }}
+                >
+                  ĐỔI MẬT KHẨU?
+                </ButtonComponent>
                 <ButtonComponent onClick={() => setModalEditOpen(true)}>CẬP NHẬT</ButtonComponent>
                 <PopupComponent
                   title="CẬP NHẬT"

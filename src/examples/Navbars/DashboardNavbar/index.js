@@ -67,6 +67,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
   const [modalLogout, setModalLogout] = useState(false);
+  const currentUser = JSON.parse(localStorage.getItem("user"));
 
   const handleLogoutUser = () => {
     logoutUser();
@@ -104,7 +105,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
   const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
   const handleCloseMenu = () => setOpenMenu(false);
-  const currentUser = JSON.parse(localStorage.getItem("user"));
 
   // Render the notifications menu
   const renderMenu = () => (
@@ -185,14 +185,16 @@ function DashboardNavbar({ absolute, light, isMini }) {
               </IconButton>
               {currentUser && (
                 <div className="flex items-center text-base font-medium ml-2 ">
-                  <Link to="/profile">
+                  <Link to={currentUser.id.includes("HS") ? "/sudentProfile" : "/profile"}>
                     <div className="flex items-center">
                       <img
                         className="w-12 h-12 object-contain object-center shadow-md rounded-full"
-                        src={currentUser.avatar}
+                        src={currentUser?.avatar}
                         alt="user"
                       />
-                      <span className=" ml-2 hover:text-blue-400 transition">Nguyễn Văn A</span>
+                      <span className=" ml-2 hover:text-blue-400 transition">
+                        {currentUser?.fullname}
+                      </span>
                     </div>
                   </Link>
                   <span className=" mx-2">|</span>

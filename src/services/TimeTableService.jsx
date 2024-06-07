@@ -39,21 +39,37 @@ export const getTimetable = async (
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  console.log(response.data);
   return response.data;
 };
 
-export const getSubjectTeacherTimetable = async (teacherID, schoolYear, fromDate, accessToken) => {
-  const response = await axios.get(`${API_HOST}/Schedules/SubjectTeacher`, {
-    params: {
-      teacherID,
-      schoolYear,
-      fromDate,
-    },
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  return response.data;
+export const addTimeTableByExcel = async (accessToken, scheduleFile) => {
+  const formData = new FormData();
+  formData.append("scheduleFile", scheduleFile);
+  try {
+    const res = await axios.post(`${API_HOST}/Schedules/Excel`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error adding notification:", error);
+    throw error;
+  }
+};
+
+export const downloadTemplateTimetable = async (fileName) => {
+  try {
+    const res = await axios.get(`${API_HOST}/Schedules/template_schedule.xlsx`, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error adding notification:", error);
+    throw error;
+  }
 };

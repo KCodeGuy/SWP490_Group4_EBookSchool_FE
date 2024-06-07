@@ -1,5 +1,7 @@
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { CircularProgress, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import { Card } from "@mui/material";
@@ -15,6 +17,7 @@ import AccessAlarmIcon from "@mui/icons-material/AccessAlarm";
 import HistoryIcon from "@mui/icons-material/History";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
+import noDataImage3 from "../../assets/images/noDataImage3.avif";
 import { schoolYears } from "../../mock/schoolYear";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
@@ -41,7 +44,9 @@ export default function LogManagement() {
   );
 
   useEffect(() => {
-    setCurrentData(data?.data);
+    if (data?.success) {
+      setCurrentData(data?.data);
+    }
   }, [data]);
 
   //2. Set data by Call API
@@ -153,8 +158,13 @@ export default function LogManagement() {
           </div>
           <div>
             {isLoading ? (
-              <div>Loading...</div>
-            ) : (
+              <div className="text-center primary-color my-10 text-xl italic font-medium">
+                <div className="mx-auto flex items-center justify-center">
+                  <p className="mr-3">Loading</p>
+                  <CircularProgress size={24} color="inherit" />
+                </div>
+              </div>
+            ) : data?.success && currentData.length > 0 ? (
               <TableComponent
                 header={["Mã log", "Loại thao tác", "Ghi chú", "Thời gian"]}
                 data={currentData?.map((item) => [
@@ -167,6 +177,15 @@ export default function LogManagement() {
                 onDetails={handleEdit}
                 className="mt-8"
               />
+            ) : (
+              <div className="text-center primary-color my-10 text-xl italic font-medium">
+                <img
+                  className="w-60 h-60 object-cover object-center mx-auto"
+                  src={noDataImage3}
+                  alt="Chưa có dữ liệu!"
+                />
+                Chưa có dữ liệu!
+              </div>
             )}
 
             <PopupComponent

@@ -24,6 +24,8 @@ import CakeIcon from "@mui/icons-material/Cake";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import GroupIcon from "@mui/icons-material/Group";
 import BoyIcon from "@mui/icons-material/Boy";
+import DomainIcon from "@mui/icons-material/Domain";
+import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
 import Switch from "@mui/material/Switch";
 import PropTypes from "prop-types";
 
@@ -61,6 +63,14 @@ function DetailsInfo({ currentUser, permissions }) {
           </span>
         </div>
         <div className="flex items-center mt-4">
+          <DomainIcon />
+          <span className="text-base font-bold mx-2">Nơi sinh: </span>
+          <span className="text-sm text-color">
+            {/* Chỗ này phải là nơi sinh */}
+            {currentUser ? currentUser.birthplace : "Chưa có thông tin!"}
+          </span>
+        </div>
+        <div className="flex items-center mt-4">
           <BoyIcon />
           <span className="text-base font-bold mx-2">Giới tính: </span>
           <span className="text-sm text-color">
@@ -76,19 +86,20 @@ function DetailsInfo({ currentUser, permissions }) {
           </span>
         </div>
         <div className="flex items-center mt-4">
+          <MilitaryTechIcon />
+          <span className="text-base font-bold mx-2">Con liệt sĩ, thương binh: </span>
+          {}
+          <span className="text-sm text-color">
+            {currentUser ? (currentUser.isMartyrs ? "Có" : "Không") : "Chưa có thông tin!"}
+          </span>
+        </div>
+        <div className="flex items-center mt-4">
           <PhoneIphoneIcon />
           <span className="text-base font-bold mx-2">Số điện thoại: </span>
           <span className="text-sm text-color">
             {currentUser ? currentUser.phone : "Chưa có thông tin!"}
           </span>
         </div>
-        {/* <div className="flex items-center mt-4">
-          <MarkunreadIcon />
-          <span className="text-base font-bold mx-2">Email: </span>
-          <span className="text-sm text-color">
-            {currentUser.email ? currentUser.email : "Chưa có thông tin!"}
-          </span>
-        </div> */}
         <div className="flex items-center mt-4">
           <LocationOnIcon />
           <span className="text-base font-bold mx-2">Địa chỉ: </span>

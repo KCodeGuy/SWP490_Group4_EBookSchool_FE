@@ -1,8 +1,8 @@
 import axios from "axios";
 import { API_HOST } from "./APIConfig";
 
-const getAllTeachers = async (accessToken) => {
-  const res = await axios.get(`${API_HOST}/Teachers`, {
+const getTeacherByID = async (accessToken, teacherID) => {
+  const res = await axios.get(`${API_HOST}/Teachers/${teacherID}`, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `${accessToken}`,
@@ -11,14 +11,4 @@ const getAllTeachers = async (accessToken) => {
   return res.data;
 };
 
-const getTeacherByID = async (accessToken, id) => {
-  const res = await axios.get(`${API_HOST}/Teachers/${id}`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `${accessToken}`,
-    },
-  });
-  return res.data;
-};
-
-export { getAllTeachers, getTeacherByID };
+export { getTeacherByID };

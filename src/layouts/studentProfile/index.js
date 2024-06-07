@@ -32,15 +32,14 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import ProfileInfoCard from "examples/Cards/InfoCards/ProfileInfoCard";
 // Overview page components
-import Header from "layouts/profile/components/Header";
-import AcademicInfo from "./components/AcademicInfo";
+import Header from "layouts/studentProfile/components/Header";
+import ParentInfo from "./components/ParentInfo";
 import CommonInfo from "./components/CommonInfo";
 import { Card, Switch } from "@mui/material";
 import DetailsInfo from "./components/DetailsInfo";
-import { getTeacherByID } from "services/TeacherService";
 import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import PropTypes from "prop-types";
+import { getStudentByID } from "services/StudentService";
 
 const token = localStorage.getItem("authToken");
 const accessToken = `Bearer ${token}`;
@@ -49,17 +48,16 @@ function Overview() {
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const permissions = localStorage.getItem("permissions");
   const [currentData, setCurrentData] = useState();
-  const teacherID = currentUser.id;
+  const studentID = currentUser.id;
 
-  const { data, error, isLoading } = useQuery(["teacherState", { accessToken, teacherID }], () =>
-    getTeacherByID(accessToken, teacherID)
+  const { data, error, isLoading } = useQuery(["studentState", { accessToken, studentID }], () =>
+    getStudentByID(accessToken, studentID)
   );
 
   useEffect(() => {
     console.dir(data?.data);
     setCurrentData(data?.data);
   }, [data]);
-
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -76,7 +74,7 @@ function Overview() {
               <Divider orientation="vertical" sx={{ mx: 0 }} />
             </Grid>
             <Grid item xs={12} md={4}>
-              <AcademicInfo currentUser={currentData} permissions={permissions} />
+              <ParentInfo currentUser={currentData} permissions={permissions} />
             </Grid>
           </Grid>
         </MDBox>

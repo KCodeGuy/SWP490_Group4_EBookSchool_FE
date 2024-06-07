@@ -121,12 +121,12 @@ function Header({ children, currentUser, permissions }) {
           <Grid item>
             <MDBox height="100%" mt={0.5} lineHeight={1}>
               <MDTypography variant="h5" fontWeight="medium">
+                {/* {currentUser.fullname} */}{" "}
                 {currentUser ? currentUser.fullname : "Chưa có thông tin!"}
               </MDTypography>
               <MDTypography variant="button" color="text" fontWeight="regular">
                 {/* {permissions || "No permission"} | {currentUser.id} */}
-                Giáo viên | {currentUser ? currentUser.id : "Chưa có thông tin!"} |{" "}
-                {currentUser ? currentUser.email : "Chưa có thông tin!"}
+                Học Sinh | {currentUser ? currentUser.id : "Chưa có thông tin!"}
               </MDTypography>
             </MDBox>
           </Grid>

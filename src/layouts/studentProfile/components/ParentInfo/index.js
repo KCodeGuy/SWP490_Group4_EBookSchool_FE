@@ -34,7 +34,7 @@ function ParenrInfo({ currentUser, permissions }) {
     <Card sx={{ boxShadow: "none" }}>
       <MDBox p={2}>
         <MDTypography variant="h6" fontWeight="medium" textTransform="capitalize">
-          THÔNG TIN HỌC VẤN
+          THÔNG TIN PHỤ HUYNH
         </MDTypography>
       </MDBox>
       <MDBox pt={1} pb={2} px={2} lineHeight={1.25}>

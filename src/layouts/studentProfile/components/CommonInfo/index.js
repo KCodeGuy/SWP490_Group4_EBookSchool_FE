@@ -81,9 +81,7 @@ function CommonInfo({ currentUser, permissions }) {
         {/* <div className="flex items-center mt-4">
           <FaceIcon />
           <span className="text-base font-bold mx-2">Ảnh đại diện: </span>
-          <span className="text-sm text-color">
-            {currentUser ? currentUser.avatar : "Chưa có thông tin!"}
-          </span>
+          <span className="text-sm text-color">Giáo viên</span>
         </div> */}
       </MDBox>
     </Card>

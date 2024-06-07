@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Card } from "@mui/material";
+import { Card, CircularProgress } from "@mui/material";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import MDBox from "components/MDBox";
@@ -13,6 +13,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import EditIcon from "@mui/icons-material/Edit";
 import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
 
+import noDataImage3 from "../../assets/images/noDataImage3.avif";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
@@ -47,7 +48,9 @@ export default function NotificationManagement() {
     getAllNotifications(accessToken)
   );
   useEffect(() => {
-    setCurrentData(data?.data);
+    if (data?.success) {
+      setCurrentData(data?.data);
+    }
   }, [data]);
 
   const handleNotificationDetails = (data) => {
@@ -265,8 +268,13 @@ export default function NotificationManagement() {
           </div>
           <div>
             {isLoading ? (
-              <div className="text-center">Loading...</div>
-            ) : (
+              <div className="text-center primary-color my-10 text-xl italic font-medium">
+                <div className="mx-auto flex items-center justify-center">
+                  <p className="mr-3">Loading</p>
+                  <CircularProgress size={24} color="inherit" />
+                </div>
+              </div>
+            ) : data?.success ? (
               <TableComponent
                 header={[
                   "Tiêu đề",
@@ -293,6 +301,15 @@ export default function NotificationManagement() {
                 isImage={2}
                 className="mt-4"
               />
+            ) : (
+              <div className="text-center primary-color my-10 text-xl italic font-medium">
+                <img
+                  className="w-60 h-60 object-cover object-center mx-auto"
+                  src={noDataImage3}
+                  alt="Chưa có dữ liệu!"
+                />
+                Chưa có dữ liệu!
+              </div>
             )}
             <PopupComponent
               title="CẬP NHẬT"

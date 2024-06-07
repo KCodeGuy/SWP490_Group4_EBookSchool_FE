@@ -121,26 +121,21 @@ function Header({ children, currentUser, permissions }) {
           <Grid item>
             <MDBox height="100%" mt={0.5} lineHeight={1}>
               <MDTypography variant="h5" fontWeight="medium">
+                {/* {currentUser.fullname} */}{" "}
                 {currentUser ? currentUser.fullname : "Chưa có thông tin!"}
               </MDTypography>
               <MDTypography variant="button" color="text" fontWeight="regular">
                 {/* {permissions || "No permission"} | {currentUser.id} */}
-                Giáo viên | {currentUser ? currentUser.id : "Chưa có thông tin!"} |{" "}
-                {currentUser ? currentUser.email : "Chưa có thông tin!"}
+                Học Sinh | {currentUser ? currentUser.id : "Chưa có thông tin!"}
               </MDTypography>
             </MDBox>
           </Grid>
           <Grid item xs={12} md={6} lg={4} sx={{ ml: "auto" }}>
             <AppBar position="static">
               <div className="flex items-center justify-end">
-                <ButtonComponent
-                  type="success"
-                  onClick={() => {
-                    navigate("/authentication/reset-password");
-                  }}
-                >
-                  ĐỔI MẬT KHẨU?
-                </ButtonComponent>
+                {/* <ButtonComponent type="dark" onClick={handleLogout}>
+                  ĐĂNG XUẤT
+                </ButtonComponent> */}
                 <ButtonComponent onClick={() => setModalEditOpen(true)}>CẬP NHẬT</ButtonComponent>
                 <PopupComponent
                   title="CẬP NHẬT"

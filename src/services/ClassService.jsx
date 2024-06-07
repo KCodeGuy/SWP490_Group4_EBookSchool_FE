@@ -21,30 +21,15 @@ const getClassByID = async (accessToken, classID) => {
   return res.data;
 };
 
-// const addClass = async (accessToken, data) => {
-//   const formData = new FormData();
-//   formData.append("classroom", data.classroom);
-//   formData.append("schoolYear", data.schoolYear);
-//   formData.append("teacher", data.teacherID);
-//   try {
-//     const res = await axios.post(`${API_HOST}/Classes`, formData, {
-//       headers: {
-//         "Content-Type": "multipart/form-data",
-//         Authorization: `${accessToken}`,
-//       },
-//     });
-
-//     return res.data;
-//   } catch (error) {
-//     console.error("Error adding class:", error);
-//     throw error;
-//   }
-// };
 const addClass = async (accessToken, data) => {
+  const formData = new FormData();
+  formData.append("classroom", data.classroom);
+  formData.append("schoolYear", data.schoolYear);
+  formData.append("teacher", data.teacherID);
   try {
-    const res = await axios.post(`${API_HOST}/Classes`, data, {
+    const res = await axios.post(`${API_HOST}/Classes`, formData, {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
         Authorization: `${accessToken}`,
       },
     });
@@ -55,6 +40,22 @@ const addClass = async (accessToken, data) => {
     throw error;
   }
 };
+//test add class
+// const addClass = async (accessToken, data) => {
+//   try {
+//     const res = await axios.post(`${API_HOST}/Classes`, data, {
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `${accessToken}`,
+//       },
+//     });
+
+//     return res.data;
+//   } catch (error) {
+//     console.error("Error adding class:", error);
+//     throw error;
+//   }
+// };
 
 const updateClass = async (accessToken, data) => {
   const formData = new FormData();

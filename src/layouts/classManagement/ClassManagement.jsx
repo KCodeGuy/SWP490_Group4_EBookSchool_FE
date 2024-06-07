@@ -319,7 +319,7 @@ export default function ClassManagement() {
               <TableComponent
                 header={["Tên lớp", "Năm học", "Phòng học", "Giáo viên chủ nhiệm"]}
                 data={currentData?.map((item) => [
-                  //item.id.toString(),
+                  item.id.toString(),
                   item.classroom.toString(),
                   item.schoolYear.toString(),
                   item.classroom.toString(),
@@ -327,6 +327,7 @@ export default function ClassManagement() {
                 ])}
                 itemsPerPage={4}
                 onEdit={handleEdit}
+                hiddenColumns={[0]}
                 onDelete={handleDelete}
                 className="mt-8"
               />

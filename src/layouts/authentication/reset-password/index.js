@@ -11,7 +11,7 @@ import MDTypography from "components/MDTypography";
 import CoverLayout from "layouts/authentication/components/CoverLayout";
 
 // Images
-import bgImage from "assets/images/slider2.png";
+import bgImage from "assets/images/bg-sign-up-cover.jpeg";
 import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent";
 import { useForm, Controller } from "react-hook-form";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
@@ -34,7 +34,7 @@ function Cover() {
   };
 
   return (
-    <CoverLayout>
+    <CoverLayout image={bgImage}>
       <Card>
         <MDBox
           variant="gradient"

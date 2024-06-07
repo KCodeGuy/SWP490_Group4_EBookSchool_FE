@@ -30,7 +30,6 @@ const accessToken = `Bearer ${token}`;
 
 // Class management (UolLT)
 export default function ClassManagement() {
-  console.log("Render-component");
   //1. Modal form states open, close
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
@@ -168,6 +167,7 @@ export default function ClassManagement() {
 
   const handleDelete = (rowItem) => {
     if (rowItem) {
+      console.log(rowItem);
       setDeletedData({
         id: rowItem[0],
       });
@@ -319,14 +319,15 @@ export default function ClassManagement() {
               <TableComponent
                 header={["Tên lớp", "Năm học", "Phòng học", "Giáo viên chủ nhiệm"]}
                 data={currentData?.map((item) => [
-                  //item.id.toString(),
+                  item.id.toString(),
                   item.classroom.toString(),
                   item.schoolYear.toString(),
                   item.classroom.toString(),
                   item.teacher.toString(),
                 ])}
-                itemsPerPage={4}
+                itemsPerPage={10}
                 onEdit={handleEdit}
+                hiddenColumns={[0]}
                 onDelete={handleDelete}
                 className="mt-8"
               />

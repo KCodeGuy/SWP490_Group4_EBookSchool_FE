@@ -1,7 +1,9 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
+import { ToastContainer, toast } from "react-toastify";
 import { Card } from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
@@ -20,8 +22,11 @@ import PopupComponent from "../../components/PopupComponent/PopupComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
-import { getAllClasses } from "services/ClassService";
-import { useQuery } from "react-query";
+import { getAllClasses, addClass, updateClass, deleteClass } from "../../services/ClassService";
+import { useNavigate } from "react-router-dom";
+//get access token
+const token = localStorage.getItem("authToken");
+const accessToken = `Bearer ${token}`;
 
 // Class management (UolLT)
 export default function ClassManagement() {
@@ -30,14 +35,26 @@ export default function ClassManagement() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
-  const [deletedClass, setDeletedClass] = useState({});
+  const [deletedData, setDeletedData] = useState({});
+  const [currentData, setCurrentData] = useState([]);
+  const navigate = useNavigate();
 
-  const token = localStorage.getItem("authToken");
-  const accessToken = `Bearer ${token}`;
-
+  const queryClient = useQueryClient();
+  //call api get all
   const { data, error, isLoading } = useQuery(["classState", { accessToken }], () =>
     getAllClasses(accessToken)
   );
+
+  // useEffect(() => {
+  //   setCurrentData(data?.data);
+  // }, [data]);
+  useEffect(() => {
+    if (Array.isArray(data?.data)) {
+      setCurrentData(data.data);
+    } else {
+      setCurrentData([]);
+    }
+  }, [data]);
   // const [currentData, setCurrentData] = useState(data?.data);
 
   //2. Set data by Call API
@@ -69,22 +86,27 @@ export default function ClassManagement() {
     formState: { errors: errorsEditAction },
   } = useForm();
 
-  //4. Functions handle adding
-  const handleOpenAddModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseAddModal = () => {
-    setModalOpen(false);
-  };
+  const addClassMutation = useMutation((classData) => addClass(accessToken, classData), {
+    onSuccess: (response) => {
+      queryClient.invalidateQueries("classState");
+      if (response && response.success) {
+        toast.success("Tạo lớp học thành công!");
+      } else {
+        toast.error(`${response.data}!`);
+      }
+      reset();
+      setModalOpen(false);
+    },
+  });
 
   const handleAddClass = (data) => {
-    console.log("Call API add class: ", data);
-    // Call API add class here
-  };
-
-  const handleClearAddForm = () => {
-    reset(); // Reset the form of adding modal
+    const classData = {
+      teacher: data.teacher,
+      schoolYear: data.schoolYear,
+      classroom: data.classroom,
+      students: data.students,
+    };
+    addClassMutation.mutate(classData);
   };
 
   //5. Functions handle editing
@@ -94,15 +116,32 @@ export default function ClassManagement() {
   const handleEdit = (rowItem) => {
     if (rowItem) {
       setValue("idEdit", rowItem[0]);
-      setValue("nameEdit", rowItem[1]);
-      setValue("classroomEdit", rowItem[3]);
+      setValue("nameEdit", rowItem[0]);
+      setValue("classroomEdit", rowItem[0]);
       setValue("selectOptionEdit", rowItem[2]);
-      setValue("descriptionEdit", rowItem[4]);
+      setValue("teacherEdit", rowItem[3]);
       setModalEditOpen(true);
     } else {
       setModalEditOpen(false);
     }
   };
+
+  const updateClassMutation = useMutation(
+    (classData) => updateNotification(accessToken, classData),
+    {
+      onSuccess: (response) => {
+        queryClient.invalidateQueries("classState");
+        if (response && response.success) {
+          toast.success("Cập nhật lớp học thành công!");
+        } else {
+          toast.error(`${response.data}!`);
+        }
+        reset();
+        setModalEditOpen(false);
+      },
+    }
+  );
+
   const handleEditClass = (data) => {
     console.log("Call API edit class: ", data);
     // Call API edit class here
@@ -111,38 +150,39 @@ export default function ClassManagement() {
     resetEditAction();
   };
 
-  //6. Functions handle deleting
-  const handleCloseDeleteModal = () => {
-    setModalDeleteOpen(false);
-  };
-
   const handleStatistic = () => {
     console.log("Call api: ", { schoolYear, classroom });
   };
+  //delete api
+  const deleteClassMutation = useMutation((classId) => deleteClass(accessToken, classId), {
+    onSuccess: (response) => {
+      queryClient.invalidateQueries("classState");
+      if (response && response.success) {
+        toast.success("Xóa lớp học thành công!");
+      } else {
+        toast.error("Xóa lớp học thất bại!");
+      }
+      setModalDeleteOpen(false);
+    },
+  });
 
   const handleDelete = (rowItem) => {
     if (rowItem) {
-      setDeletedClass({
-        idEdit: rowItem[0],
-        nameEdit: rowItem[1],
-        classroomEdit: rowItem[3],
-        selectOptionEdit: rowItem[2],
-        descriptionEdit: rowItem[4],
+      setDeletedData({
+        id: rowItem[0],
       });
       setModalDeleteOpen(true);
-    } else {
-      setModalDeleteOpen(false);
     }
   };
 
   const handleDeleteAPI = () => {
-    setModalDeleteOpen(false);
-    console.log("Call API delete class: ", deletedClass);
-    // Call API delete class here
+    console.log("Deleted ID:", deletedData.id);
+    deleteClassMutation.mutate(deletedData.id);
   };
 
+  //search value
   const handleChangeSearchValue = (txtSearch) => {
-    setCurrentData(filterStudentClasses(txtSearch, data.data));
+    setCurrentData(filterStudentClasses(txtSearch, data?.data));
   };
 
   const filterStudentClasses = (txtSearch, data) => {
@@ -157,6 +197,7 @@ export default function ClassManagement() {
   };
   return (
     <DashboardLayout>
+      <ToastContainer autoClose={3000} />
       <DashboardNavbar />
       <Card className="max-h-max mb-8">
         <MDBox p={5}>
@@ -197,7 +238,7 @@ export default function ClassManagement() {
                 placeHolder="Nhập từ khóa..."
               />
               <div className="ml-3">
-                <ButtonComponent className="" onClick={handleOpenAddModal}>
+                <ButtonComponent className="" onClick={() => setModalOpen(true)}>
                   <AddCircleOutlineIcon className="text-3xl mr-1" />
                   Tạo
                 </ButtonComponent>
@@ -206,16 +247,16 @@ export default function ClassManagement() {
                   description="Hãy tạo lớp học để bắt đầu năm học mới"
                   icon={<AddCircleOutlineIcon />}
                   isOpen={modalOpen}
-                  onClose={handleCloseAddModal}
+                  onClose={() => setModalOpen(false)}
                 >
                   <form onSubmit={handleSubmit(handleAddClass)}>
                     <InputBaseComponent
-                      placeholder="Nhập tên phòng học"
+                      placeholder="Nhập tên lớp học"
                       type="text"
                       control={control}
                       setValue={noSetValue}
                       name="name"
-                      label="Tên phòng"
+                      label="Tên lớp"
                       errors={errors}
                       validationRules={{
                         required: "Không được bỏ trống!",
@@ -249,19 +290,19 @@ export default function ClassManagement() {
                       />
                     </div>
                     <InputBaseComponent
-                      placeholder="Nhập mô tả phòng"
+                      placeholder="Nhập giáo viên chủ nhiệm"
                       type="text"
                       control={control}
                       setValue={noSetValue}
-                      name="description"
-                      label="Mô tả"
+                      name="homeroomteacher"
+                      label="GV chủ nhiệm"
                       errors={errors}
                       validationRules={{
                         required: "Không được bỏ trống!",
                       }}
                     />
                     <div className="mt-4 flex justify-end">
-                      <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
+                      <ButtonComponent type="error" action="reset" onClick={() => reset()}>
                         CLEAR
                       </ButtonComponent>
                       <ButtonComponent action="submit">TẠO</ButtonComponent>
@@ -272,19 +313,24 @@ export default function ClassManagement() {
             </div>
           </div>
           <div>
-            <TableComponent
-              header={["Tên lớp", "Năm học", "Phòng học", "Giáo viên chủ nhiệm"]}
-              data={data?.data.map((item) => [
-                item.classroom.toString(),
-                item.schoolYear.toString(),
-                item.classroom.toString(),
-                item.teacher.toString(),
-              ])}
-              itemsPerPage={4}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              className="mt-8"
-            />
+            {isLoading ? (
+              <div className="text-center">Loading...</div>
+            ) : (
+              <TableComponent
+                header={["Tên lớp", "Năm học", "Phòng học", "Giáo viên chủ nhiệm"]}
+                data={currentData?.map((item) => [
+                  //item.id.toString(),
+                  item.classroom.toString(),
+                  item.schoolYear.toString(),
+                  item.classroom.toString(),
+                  item.teacher.toString(),
+                ])}
+                itemsPerPage={4}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                className="mt-8"
+              />
+            )}
             <PopupComponent
               title="CẬP NHẬT"
               description="Hãy chỉnh sửa để bắt đầu năm học mới"
@@ -294,11 +340,11 @@ export default function ClassManagement() {
             >
               <form onSubmit={handleSubmitEditAction(handleEditClass)}>
                 <InputBaseComponent
-                  placeholder="Nhập tên phòng học"
+                  placeholder="Nhập tên lớp học"
                   type="text"
                   control={controlEditAction}
                   name="nameEdit"
-                  label="Tên phòng"
+                  label="Tên lớp"
                   setValue={setValue}
                   errors={errorsEditAction}
                   validationRules={{
@@ -333,11 +379,11 @@ export default function ClassManagement() {
                   />
                 </div>
                 <InputBaseComponent
-                  placeholder="Nhập mô tả phòng"
+                  placeholder="Nhập giáo viên chủ nhiệm"
                   type="text"
                   control={controlEditAction}
-                  name="descriptionEdit"
-                  label="Mô tả"
+                  name="teacherEdit"
+                  label="Giáo viên chủ nhiệm"
                   setValue={setValue}
                   errors={errorsEditAction}
                   validationRules={{
@@ -357,11 +403,15 @@ export default function ClassManagement() {
               description="Hãy kiểm xác nhận thông tin trước khi xóa"
               icon={<DeleteIcon />}
               isOpen={modalDeleteOpen}
-              onClose={handleCloseDeleteModal}
+              onClose={() => setModalDeleteOpen(false)}
             >
               <p>Bạn có chắc chắn muốn xóa lớp học?</p>
               <div className="mt-4 flex justify-end">
-                <ButtonComponent type="error" action="button" onClick={handleCloseDeleteModal}>
+                <ButtonComponent
+                  type="error"
+                  action="button"
+                  onClick={() => setModalDeleteOpen(false)}
+                >
                   HỦY BỎ
                 </ButtonComponent>
                 <ButtonComponent action="button" onClick={handleDeleteAPI}>

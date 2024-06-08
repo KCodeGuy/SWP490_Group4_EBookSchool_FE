@@ -43,11 +43,20 @@ import PopupComponent from "components/PopupComponent/PopupComponent";
 import { EditNotifications } from "@mui/icons-material";
 import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent";
 import { useForm } from "react-hook-form";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { updateTeacher } from "services/TeacherService";
+import { ToastContainer, toast } from "react-toastify";
+
+const accessToken = localStorage.getItem("authToken");
 
 function Header({ children, currentUser, permissions }) {
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
   const [tabValue, setTabValue] = useState(0);
   const [modalEditOpen, setModalEditOpen] = useState(false);
+  const [avatar, setAvatar] = useState(null);
+
+  const queryClient = useQueryClient();
+
   // React-hook-form for editing action
   const {
     control: controlEditAction,
@@ -57,7 +66,70 @@ function Header({ children, currentUser, permissions }) {
     formState: { errors: errorsEditAction },
   } = useForm();
 
-  const handleEdit = () => {};
+  useEffect(() => {
+    // Set form values with currentUser data
+    if (currentUser) {
+      setValue("id", currentUser.id);
+      setValue("fullName", currentUser.fullname);
+      setValue("birthday", currentUser.birthday.split("T")[0]);
+      setValue("gender", currentUser.gender);
+      setValue("nation", currentUser.nation);
+      setValue("email", currentUser.email);
+      setValue("phone", currentUser.phone);
+      setValue("isBachelor", currentUser.isBachelor);
+      setValue("isMaster", currentUser.isMaster);
+      setValue("isDoctor", currentUser.isDoctor);
+      setValue("isProfessor", currentUser.isProfessor);
+      setValue("address", currentUser.address);
+      setValue("avatar", currentUser.avatar);
+      setAvatar(currentUser.avatar);
+    }
+  }, [currentUser, setValue]);
+
+  // const handleEdit = (data) => {
+  //   // Handle form submission for editing user data
+  //   console.log("Form Data:", data);
+  // };
+
+  const updateTeacherMutation = useMutation(
+    (teacherData) => updateTeacher(accessToken, teacherData),
+    {
+      onSuccess: (response) => {
+        queryClient.invalidateQueries("teacherState");
+        if (response && response.success) {
+          toast.success("Cập nhật giáo viên thành công!");
+        } else {
+          toast.error(`${response.data}!`);
+        }
+        resetEditAction();
+        setModalEditOpen(false);
+      },
+      onError: (error) => {
+        console.error("Error updating teacher:", error);
+        toast.error("Cập nhật giáo viên thất bại!");
+      },
+    }
+  );
+
+  const handleEdit = (data) => {
+    const teacherData = {
+      id: data.id,
+      fullName: data.fullName,
+      birthday: data.birthday,
+      gender: data.gender,
+      nation: data.nation,
+      email: data.email,
+      phone: data.phone,
+      isBachelor: data.isBachelor,
+      isMaster: data.isMaster,
+      isDoctor: data.isDoctor,
+      isProfessor: data.isProfessor,
+      address: data.address,
+      avatar: data.avatar, // Assuming the avatar input returns a FileList
+    };
+    updateTeacherMutation.mutate(teacherData);
+  };
+
   useEffect(() => {
     // A function that sets the orientation state of the tabs.
     function handleTabsOrientation() {
@@ -155,7 +227,7 @@ function Header({ children, currentUser, permissions }) {
                         type="text"
                         className="w-1/2 mr-2"
                         control={controlEditAction}
-                        name="nameEdit"
+                        name="fullName"
                         placeholder="Nguyen Van A"
                         label="Họ và tên"
                         setValue={setValue}
@@ -169,7 +241,7 @@ function Header({ children, currentUser, permissions }) {
                         className="w-1/2 mr-2"
                         control={controlEditAction}
                         setValue={setValue}
-                        name="startDateEdit"
+                        name="birthday"
                         label="Ngày sinh"
                         errors={errorsEditAction}
                         validationRules={{
@@ -181,7 +253,7 @@ function Header({ children, currentUser, permissions }) {
                         className="w-1/2"
                         control={controlEditAction}
                         setValue={setValue}
-                        name="sex"
+                        name="gender"
                         placeholder="Nam"
                         label="Giới tính"
                         errors={errorsEditAction}
@@ -232,61 +304,84 @@ function Header({ children, currentUser, permissions }) {
                       />
                     </div>
                     <div className="flex">
-                      <InputBaseComponent
-                        type="text"
+                      {/* <InputBaseComponent
+                        type="checkbox"
                         label="Cử nhân"
                         className="w-1/2 mr-2"
                         control={controlEditAction}
                         setValue={setValue}
-                        name="bachelor"
+                        name="isBachelor"
                         placeholder="Có"
                         errors={errorsEditAction}
                         validationRules={{
                           required: "Không được bỏ trống!",
                         }}
+                      /> */}
+                      <InputBaseComponent
+                        type="checkbox"
+                        horizontalLabel={true}
+                        control={controlEditAction}
+                        setValue={setValue}
+                        name="isBachelor"
+                        label="Cử nhân"
+                        errors={errorsEditAction}
                       />
 
-                      <InputBaseComponent
-                        type="text"
+                      {/* <InputBaseComponent
+                        type="checkbox"
                         label="Thạc sĩ"
                         className="w-1/2"
                         control={controlEditAction}
                         setValue={setValue}
-                        name="master"
+                        name="isMaster"
                         placeholder="Có"
                         errors={errorsEditAction}
                         validationRules={{
                           required: "Không được bỏ trống!",
                         }}
+                      /> */}
+                      <InputBaseComponent
+                        type="checkbox"
+                        horizontalLabel={true}
+                        control={controlEditAction}
+                        setValue={setValue}
+                        name="isMaster"
+                        label="Thạc sĩ"
+                        errors={errorsEditAction}
                       />
                     </div>
                     <div className="flex">
-                      <InputBaseComponent
-                        type="text"
+                      {/* <InputBaseComponent
+                        type="checkbox"
                         label="Tiến sĩ"
                         className="w-1/2 mr-2"
                         control={controlEditAction}
                         setValue={setValue}
-                        name="doctor"
+                        name="isDoctor"
                         placeholder="Có"
                         errors={errorsEditAction}
                         validationRules={{
                           required: "Không được bỏ trống!",
                         }}
+                      /> */}
+                      <InputBaseComponent
+                        type="checkbox"
+                        horizontalLabel={true}
+                        control={controlEditAction}
+                        setValue={setValue}
+                        name="isDoctor"
+                        label="Tiến sĩ"
+                        errors={errorsEditAction}
                       />
 
                       <InputBaseComponent
-                        type="text"
-                        label="Giáo sư"
-                        className="w-1/2"
+                        type="checkbox"
+                        horizontalLabel={true}
                         control={controlEditAction}
                         setValue={setValue}
-                        name="professor"
-                        placeholder="Có"
+                        name="isProfessor"
+                        label="Giáo sư"
                         errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
                       />
                     </div>
                     <div className="flex"></div>
@@ -391,15 +486,22 @@ function Header({ children, currentUser, permissions }) {
                         className="w-full"
                         control={controlEditAction}
                         setValue={setValue}
-                        name="thumbnailEdit"
+                        name="avatar"
                         label="Ảnh đại diện"
                         errors={errorsEditAction}
                         validationRules={{
                           required: "Không được bỏ trống!",
                         }}
                       />
+                      {avatar && (
+                        <img
+                          className="w-24 ml-2 h-24 rounded-md object-cover object-center"
+                          src={avatar}
+                          alt="avatar"
+                        />
+                      )}
                     </div>
-                    <InputBaseComponent
+                    {/* <InputBaseComponent
                       type="textArea"
                       className="w-full"
                       control={controlEditAction}
@@ -410,7 +512,7 @@ function Header({ children, currentUser, permissions }) {
                       // validationRules={{
                       //   required: "Không được bỏ trống!",
                       // }}
-                    />
+                    /> */}
                     <div className="mt-4 flex justify-end">
                       <ButtonComponent
                         type="error"

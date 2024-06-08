@@ -22,4 +22,4 @@ const getTeacherByID = async (accessToken, teacherID) => {
   return res.data;
 };
 
-export { getTeacherByID };
+export { getTeacherByID, getAllTeachers };

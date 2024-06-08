@@ -13,9 +13,8 @@ import { useQuery } from "react-query";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 
 // Get access token
-const token = localStorage.getItem("authToken");
+const accessToken = localStorage.getItem("authToken");
 const permissions = localStorage.getItem("permissions");
-const accessToken = `Bearer ${token}`;
 
 export default function NotificationDetails() {
   const { notificationID } = useParams();

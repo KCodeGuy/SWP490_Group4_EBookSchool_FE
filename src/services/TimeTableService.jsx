@@ -47,7 +47,7 @@ export const addTimeTableByExcel = async (accessToken, file) => {
   console.log(accessToken);
 
   const formData = new FormData();
-  formData.append("scheduleFile", file);
+  formData.append("File", file);
   try {
     const res = await axios.post(`${API_HOST}/Schedules/Excel`, formData, {
       headers: {
@@ -63,17 +63,19 @@ export const addTimeTableByExcel = async (accessToken, file) => {
   }
 };
 
-// export const addTimeTableManually = async (accessToken, data) => {
-//   try {
-//     const res = await axios.get(`${API_HOST}/Schedules/template_schedule.xlsx`, {
-//       headers: {
-//         "Content-Type": "multipart/form-data",
-//         Authorization: `${accessToken}`,
-//       },
-//     });
-//     return res.data;
-//   } catch (error) {
-//     console.error("Error adding notification:", error);
-//     throw error;
-//   }
-// };
+export const addTimeTableManually = async (accessToken, slotData) => {
+  console.log(slotData);
+  try {
+    const res = await axios.post(`${API_HOST}/Schedules`, slotData, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.error("Error adding notification:", error);
+    throw error;
+  }
+};

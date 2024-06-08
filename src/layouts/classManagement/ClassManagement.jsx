@@ -24,9 +24,9 @@ import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
 import { getAllClasses, addClass, updateClass, deleteClass } from "../../services/ClassService";
 import { useNavigate } from "react-router-dom";
+import { getAllTeachers } from "services/TeacherService";
 //get access token
-const token = localStorage.getItem("authToken");
-const accessToken = `Bearer ${token}`;
+const accessToken = localStorage.getItem("authToken");
 const students = ["HS0001", "HS0002", "HS0003", "HS0004", "HS0005", "HS0006", "HS0007"];
 
 // Class management (UolLT)
@@ -43,6 +43,11 @@ export default function ClassManagement() {
   //call api get all
   const { data, error, isLoading } = useQuery(["classState", { accessToken }], () =>
     getAllClasses(accessToken)
+  );
+
+  //call api get all
+  const { data: allTeachers } = useQuery(["teacherState", { accessToken }], () =>
+    getAllTeachers(accessToken)
   );
 
   // useEffect(() => {

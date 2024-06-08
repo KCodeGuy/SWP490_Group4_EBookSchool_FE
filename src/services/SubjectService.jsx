@@ -5,7 +5,7 @@ const getAllSubjects = async (accessToken) => {
   const res = await axios.get(`${API_HOST}/Subjects`, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   return res.data;
@@ -16,7 +16,7 @@ const deleteSubject = async (accessToken, subjectID) => {
     const res = await axios.delete(`${API_HOST}/Subjects/${subjectID}`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
     return res.data;

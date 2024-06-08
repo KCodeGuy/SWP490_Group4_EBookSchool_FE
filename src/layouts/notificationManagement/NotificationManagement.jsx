@@ -29,8 +29,7 @@ import { useNavigate } from "react-router-dom";
 
 // Notification Management (UolLT)
 // Get access token
-const token = localStorage.getItem("authToken");
-const accessToken = `Bearer ${token}`;
+const accessToken = localStorage.getItem("authToken");
 
 export default function NotificationManagement() {
   const [modalOpen, setModalOpen] = useState(false);

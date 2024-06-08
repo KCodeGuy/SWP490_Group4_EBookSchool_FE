@@ -29,8 +29,7 @@ import { getAllLogs } from "services/LogService";
 import { useQuery } from "react-query";
 
 const logActions = ["CREATE", "UPDATE", "DELETE", "OTHERS"];
-const token = localStorage.getItem("authToken");
-const accessToken = `Bearer ${token}`;
+const accessToken = localStorage.getItem("authToken");
 
 // Class management (UolLT)
 export default function LogManagement() {

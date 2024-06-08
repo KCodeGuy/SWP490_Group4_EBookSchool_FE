@@ -75,6 +75,7 @@ function Basic() {
         localStorage.setItem("user", JSON.stringify(data.data.user)); // Example: saving use
         const userRole = getUserRole(
           data.data.user.id.toString(),
+          data.data.user.username.toString(),
           data.data.permissions.toString()
         );
         localStorage.setItem("userRole", userRole); // Example: saving use

@@ -20,8 +20,7 @@ import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { getAllClasses } from "services/ClassService";
 
-const token = localStorage.getItem("authToken");
-const accessToken = `Bearer ${token}`;
+const accessToken = localStorage.getItem("authToken");
 const userRole = localStorage.getItem("userRole");
 
 const Dashboard = React.memo(() => {

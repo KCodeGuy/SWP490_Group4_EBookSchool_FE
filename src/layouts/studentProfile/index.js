@@ -41,8 +41,7 @@ import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getStudentByID } from "services/StudentService";
 
-const token = localStorage.getItem("authToken");
-const accessToken = `Bearer ${token}`;
+const accessToken = localStorage.getItem("authToken");
 
 function Overview() {
   const currentUser = JSON.parse(localStorage.getItem("user"));

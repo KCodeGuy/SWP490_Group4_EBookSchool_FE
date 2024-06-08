@@ -28,8 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { getAllTeachers } from "services/TeacherService";
 
 //get access token
-const token = localStorage.getItem("authToken");
-const accessToken = `Bearer ${token}`;
+const accessToken = localStorage.getItem("authToken");
 const students = ["HS0001", "HS0002", "HS0003", "HS0004", "HS0005", "HS0006", "HS0007"];
 
 export default function ClassManagement() {
@@ -48,7 +47,6 @@ export default function ClassManagement() {
   const { data: currentTeacher } = useQuery(["teacherState", { accessToken }], () =>
     getAllTeachers(accessToken)
   );
-
   useEffect(() => {
     if (Array.isArray(data?.data)) {
       setCurrentData(data.data);

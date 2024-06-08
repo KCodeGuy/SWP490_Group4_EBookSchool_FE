@@ -5,7 +5,7 @@ const getAllNotifications = async (accessToken) => {
   const res = await axios.get(`${API_HOST}/Notifications`, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   return res.data;
@@ -15,7 +15,7 @@ const getNotificationByID = async (accessToken, notificationID) => {
   const res = await axios.get(`${API_HOST}/Notifications/${notificationID}`, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   return res.data;
@@ -26,11 +26,13 @@ const addNotification = async (accessToken, data) => {
   formData.append("title", data.title);
   formData.append("thumbnail", data.thumbnail);
   formData.append("content", data.content);
+
+  console.log(data.thumbnail);
   try {
     const res = await axios.post(`${API_HOST}/Notifications`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: `${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
     return res.data;
@@ -50,7 +52,7 @@ const updateNotification = async (accessToken, data) => {
     const res = await axios.put(`${API_HOST}/Notifications/${data.id}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: `${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
 
@@ -66,7 +68,7 @@ const deleteNotification = async (accessToken, notificationID) => {
     const res = await axios.delete(`${API_HOST}/Notifications/${notificationID}`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
     return res.data;

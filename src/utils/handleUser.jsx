@@ -1,4 +1,4 @@
-const getUserRole = (userID, permission) => {
+const getUserRole = (userID, userName, permission) => {
   let userRole;
   if (userID.includes("HS")) {
     userRole = "Student";
@@ -6,7 +6,7 @@ const getUserRole = (userID, permission) => {
     userRole = "SubjectTeacher";
   } else if (permission.includes("Add Teacher") && permission.includes("Delete Teacher")) {
     userRole = "Principal";
-  } else if (userID.includes("homeroomteacher")) {
+  } else if (userID.includes("homeroomteacher") || userName.toLowerCase() == "homeroomteacher") {
     userRole = "HomeroomTeacher";
   } else {
     userRole = "Headteacher";

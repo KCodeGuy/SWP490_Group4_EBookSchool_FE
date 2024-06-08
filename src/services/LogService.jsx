@@ -5,7 +5,7 @@ const getAllLogs = async (accessToken) => {
   const res = await axios.get(`${API_HOST}/Logs`, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   return res.data;

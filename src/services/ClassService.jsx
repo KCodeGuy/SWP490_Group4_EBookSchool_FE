@@ -5,7 +5,7 @@ const getAllClasses = async (accessToken) => {
   const res = await axios.get(`${API_HOST}/Classes`, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   return res.data;
@@ -15,7 +15,7 @@ const getClassByID = async (accessToken, classID) => {
   const res = await axios.get(`${API_HOST}/Classes/${classID}`, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
   return res.data;
@@ -26,7 +26,7 @@ const addClass = async (accessToken, classData) => {
     const response = await axios.post(`${API_HOST}/Classes`, classData, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
     console.log(response.data);
@@ -42,8 +42,8 @@ const updateClass = async (accessToken, classData) => {
   try {
     const res = await axios.put(`${API_HOST}/Classes/${classData.id}`, classData, {
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `${accessToken}`,
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${accessToken}`,
       },
     });
 
@@ -60,7 +60,7 @@ const deleteClass = async (accessToken, classID) => {
     const res = await axios.delete(`${API_HOST}/Classes/${classID}`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
     return res.data;

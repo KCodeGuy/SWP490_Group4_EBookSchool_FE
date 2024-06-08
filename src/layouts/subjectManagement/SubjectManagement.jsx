@@ -26,8 +26,7 @@ import SearchInputComponent from "../../components/SearchInputComponent/SearchIn
 import { getAllSubjects, deleteSubject } from "../../services/SubjectService";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 //get access token
-const token = localStorage.getItem("authToken");
-const accessToken = `Bearer ${token}`;
+const accessToken = localStorage.getItem("authToken");
 
 // Subject Management (UolLT)
 export default function SubjectManagement() {

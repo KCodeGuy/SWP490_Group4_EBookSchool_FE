@@ -172,7 +172,7 @@ function Header({ children, currentUser, permissions }) {
                     navigate("/authentication/reset-password");
                   }}
                 >
-                  ĐỔI MẬT KHẨU?
+                  ĐỔI MẬT KHẨU
                 </ButtonComponent>
                 <ButtonComponent onClick={openEditModal}>CẬP NHẬT</ButtonComponent>
                 <PopupComponent

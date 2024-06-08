@@ -42,16 +42,20 @@ export const getTimetable = async (
   return response.data;
 };
 
-export const addTimeTableByExcel = async (accessToken, scheduleFile) => {
+export const addTimeTableByExcel = async (accessToken, file) => {
+  console.log(file);
+  console.log(accessToken);
+
   const formData = new FormData();
-  formData.append("scheduleFile", scheduleFile);
+  formData.append("scheduleFile", file);
   try {
     const res = await axios.post(`${API_HOST}/Schedules/Excel`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: `${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
+    console.log(res.data);
     return res.data;
   } catch (error) {
     console.error("Error adding notification:", error);
@@ -59,17 +63,17 @@ export const addTimeTableByExcel = async (accessToken, scheduleFile) => {
   }
 };
 
-export const downloadTemplateTimetable = async (fileName) => {
-  try {
-    const res = await axios.get(`${API_HOST}/Schedules/template_schedule.xlsx`, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `${accessToken}`,
-      },
-    });
-    return res.data;
-  } catch (error) {
-    console.error("Error adding notification:", error);
-    throw error;
-  }
-};
+// export const addTimeTableManually = async (accessToken, data) => {
+//   try {
+//     const res = await axios.get(`${API_HOST}/Schedules/template_schedule.xlsx`, {
+//       headers: {
+//         "Content-Type": "multipart/form-data",
+//         Authorization: `${accessToken}`,
+//       },
+//     });
+//     return res.data;
+//   } catch (error) {
+//     console.error("Error adding notification:", error);
+//     throw error;
+//   }
+// };

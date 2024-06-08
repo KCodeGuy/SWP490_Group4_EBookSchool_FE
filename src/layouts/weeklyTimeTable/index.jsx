@@ -21,7 +21,7 @@ import AccessAlarmIcon from "@mui/icons-material/AccessAlarm";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import noDataImage from "../../assets/images/noDataImage.png";
 import noDataImage2 from "../../assets/images/noDataImage2.png";
@@ -35,15 +35,16 @@ import TableComponent from "../../components/TableComponent/TableComponent";
 import { schoolYears } from "../../mock/schoolYear";
 import { timeTablesAllSchool } from "../../mock/weeklyTimeTable";
 import { getStudentTimetable } from "services/TimeTableService";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { generateSchoolWeeks } from "utils/CommonFunctions";
 import { getTodayDate } from "utils/CommonFunctions";
 import { getWeekForDate } from "utils/CommonFunctions";
 import { isTodayInSchoolYear } from "../../utils/CommonFunctions";
 import { getSSubjectTeacherTimetable } from "services/TimeTableService";
 import { getSTimetable } from "services/TimeTableService";
-import { getTimetable } from "../../services/TimeTableService";
+import { addTimeTableByExcel, getTimetable } from "../../services/TimeTableService";
 import { getUserRole } from "utils/handleUser";
+import { ORB_HOST } from "../../services/APIConfig";
 
 export default function WeeklyTimeTable() {
   const [openModelAdd, setOpenModelAdd] = useState(false);
@@ -53,6 +54,8 @@ export default function WeeklyTimeTable() {
   const [currentSlot, setCurrentSlot] = useState({});
   const [currentSlotDate, setCurrentSlotDate] = useState("");
   const [currentTimeTable, setCurrentTimeTable] = useState([]);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   // console.log("Re-render");
 
   let accessToken, currentUser, userRole, userID, currentClasses;
@@ -105,7 +108,7 @@ export default function WeeklyTimeTable() {
   const { data, isError, isLoading, refetch } = useQuery({
     queryKey: ["timetable", { userID, schoolYear, schoolWeek, accessToken, userRole, schoolClass }],
     queryFn: () => getTimetable(userID, schoolYear, schoolWeek, accessToken, userRole, schoolClass),
-    enabled: false, // Disable automatic fetching
+    enabled: false,
   });
 
   const handleFilterTimetable = () => {
@@ -142,17 +145,40 @@ export default function WeeklyTimeTable() {
     }
   };
 
-  const handleAddWeeklyTimeTable = (data) => {
+  const handleAddTimetableManually = (data) => {
     console.log(data);
   };
 
+  //-----------------------------------------
+  const addTimeTableMutationByExcel = useMutation(
+    (templateFile) => addTimeTableByExcel(accessToken, templateFile),
+    {
+      onSuccess: (response) => {
+        queryClient.invalidateQueries("timeTableState");
+        if (response && response.success) {
+          toast.success("Tạo thời khóa biểu thành công!");
+        } else {
+          toast.error(`${response.data}!`);
+        }
+        reset();
+        setOpenModelAdd(false);
+      },
+    }
+  );
+
+  const handleAddTimetableByExcel = (data) => {
+    addTimeTableMutationByExcel.mutate(data.timeTableFile);
+  };
+  //-----------------------------------------
   const handleEdit = (item) => {
     if (item) {
       setOpenModalUpdate(true);
     }
   };
 
-  const handleDownloadTemplate = () => {};
+  const handleDownloadFile = () => {
+    window.location.href = `${ORB_HOST}/Templates/template_schedule.xlsx`;
+  };
 
   return (
     <DashboardLayout>
@@ -256,7 +282,7 @@ export default function WeeklyTimeTable() {
                 onTabChange={handleTabChange}
               >
                 <div role="tabpanel" hidden={currentTab !== 0}>
-                  <form onSubmit={handleSubmit(handleAddWeeklyTimeTable)}>
+                  <form onSubmit={handleSubmit(handleAddTimetableManually)}>
                     <div className="flex">
                       <InputBaseComponent
                         name="classID"
@@ -337,11 +363,11 @@ export default function WeeklyTimeTable() {
                   </form>
                 </div>
                 <div role="tabpanel" hidden={currentTab == 1}>
-                  <ButtonComponent action="submit" onClick={handleDownloadTemplate}>
+                  <ButtonComponent action="submit" onClick={handleDownloadFile}>
                     <DownloadIcon className="mr-2" />
                     TẢI FILE
                   </ButtonComponent>
-                  <form onSubmit={handleSubmit(handleAddWeeklyTimeTable)}>
+                  <form onSubmit={handleSubmit(handleAddTimetableByExcel)}>
                     <InputBaseComponent
                       name="timeTableFile"
                       label="Thời Khóa biểu(Excel)"
@@ -468,7 +494,7 @@ export default function WeeklyTimeTable() {
             isOpen={openModalUpdate}
             onClose={() => setOpenModalUpdate(false)}
           >
-            <form onSubmit={handleSubmit(handleAddWeeklyTimeTable)}>
+            <form onSubmit={handleSubmit(handleAddTimetableManually)}>
               <InputBaseComponent
                 name="timeTableFile"
                 label="Thời Khóa biểu(Excel)"

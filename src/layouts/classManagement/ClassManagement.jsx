@@ -27,6 +27,7 @@ import { useNavigate } from "react-router-dom";
 //get access token
 const token = localStorage.getItem("authToken");
 const accessToken = `Bearer ${token}`;
+const students = ["HS0001", "HS0002", "HS0003", "HS0004", "HS0005", "HS0006", "HS0007"];
 
 // Class management (UolLT)
 export default function ClassManagement() {

@@ -1,18 +1,3 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useState, useEffect } from "react";
 
 // prop-types is a library for typechecking of props.
@@ -48,6 +33,7 @@ function Header({ children, currentUser, permissions }) {
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
   const [tabValue, setTabValue] = useState(0);
   const [modalEditOpen, setModalEditOpen] = useState(false);
+
   // React-hook-form for editing action
   const {
     control: controlEditAction,
@@ -57,7 +43,32 @@ function Header({ children, currentUser, permissions }) {
     formState: { errors: errorsEditAction },
   } = useForm();
 
-  const handleEdit = () => {};
+  const handleEdit = (data) => {
+    console.log("Form submitted with data: ", data);
+  };
+
+  const openEditModal = () => {
+    console.dir(currentUser);
+    if (currentUser) {
+      setValue("nameEdit", currentUser.fullname);
+      setValue("email", currentUser.email);
+      setValue("sex", currentUser.sex);
+      setValue("parent", currentUser.parent);
+      setValue("parents", currentUser.parents);
+      setValue("jobdad", currentUser.jobdad);
+      setValue("mom", currentUser.mom);
+      setValue("momsd", currentUser.momsd);
+      setValue("jobmom", currentUser.jobmom);
+      setValue("phone", currentUser.phone);
+      setValue("startDateEdit", currentUser.startDateEdit);
+      setValue("nation", currentUser.nation);
+      setValue("thumbnailEdit", currentUser.thumbnailEdit);
+      setValue("address", currentUser.address);
+      setValue("others", currentUser.others);
+    }
+    setModalEditOpen(true);
+  };
+
   useEffect(() => {
     // A function that sets the orientation state of the tabs.
     function handleTabsOrientation() {
@@ -121,22 +132,27 @@ function Header({ children, currentUser, permissions }) {
           <Grid item>
             <MDBox height="100%" mt={0.5} lineHeight={1}>
               <MDTypography variant="h5" fontWeight="medium">
-                {/* {currentUser.fullname} */}{" "}
                 {currentUser ? currentUser.fullname : "Chưa có thông tin!"}
               </MDTypography>
               <MDTypography variant="button" color="text" fontWeight="regular">
                 {/* {permissions || "No permission"} | {currentUser.id} */}
-                Học Sinh | {currentUser ? currentUser.id : "Chưa có thông tin!"}
+                Giáo viên | {currentUser ? currentUser.id : "Chưa có thông tin!"} |{" "}
+                {currentUser ? currentUser.email : "Chưa có thông tin!"}
               </MDTypography>
             </MDBox>
           </Grid>
           <Grid item xs={12} md={6} lg={4} sx={{ ml: "auto" }}>
             <AppBar position="static">
               <div className="flex items-center justify-end">
-                {/* <ButtonComponent type="dark" onClick={handleLogout}>
-                  ĐĂNG XUẤT
-                </ButtonComponent> */}
-                <ButtonComponent onClick={() => setModalEditOpen(true)}>CẬP NHẬT</ButtonComponent>
+                <ButtonComponent
+                  type="success"
+                  onClick={() => {
+                    navigate("/authentication/reset-password");
+                  }}
+                >
+                  ĐỔI MẬT KHẨU?
+                </ButtonComponent>
+                <ButtonComponent onClick={openEditModal}>CẬP NHẬT</ButtonComponent>
                 <PopupComponent
                   title="CẬP NHẬT"
                   description="Cập nhật tài khoản"

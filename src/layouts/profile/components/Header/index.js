@@ -139,7 +139,7 @@ function Header({ children, currentUser, permissions }) {
                     navigate("/authentication/reset-password");
                   }}
                 >
-                  ĐỔI MẬT KHẨU?
+                  ĐỔI MẬT KHẨU
                 </ButtonComponent>
                 <ButtonComponent onClick={() => setModalEditOpen(true)}>CẬP NHẬT</ButtonComponent>
                 <PopupComponent
@@ -165,13 +165,12 @@ function Header({ children, currentUser, permissions }) {
                         }}
                       />
                       <InputBaseComponent
-                        type="email"
-                        className="w-1/2  mr-2"
+                        type="date"
+                        className="w-1/2 mr-2"
                         control={controlEditAction}
                         setValue={setValue}
-                        name="email"
-                        placeholder="hs@gmail.com"
-                        label="Email"
+                        name="startDateEdit"
+                        label="Ngày sinh"
                         errors={errorsEditAction}
                         validationRules={{
                           required: "Không được bỏ trống!",
@@ -179,7 +178,7 @@ function Header({ children, currentUser, permissions }) {
                       />
                       <InputBaseComponent
                         type="text"
-                        className="w-1/2 mr-2"
+                        className="w-1/2"
                         control={controlEditAction}
                         setValue={setValue}
                         name="sex"
@@ -191,8 +190,107 @@ function Header({ children, currentUser, permissions }) {
                         }}
                       />
                     </div>
+                    <div className="flex">
+                      <InputBaseComponent
+                        type="text"
+                        label="Dân tộc"
+                        className="w-1/2 mr-2"
+                        control={controlEditAction}
+                        setValue={setValue}
+                        name="nation"
+                        placeholder="Kinh"
+                        errors={errorsEditAction}
+                        validationRules={{
+                          required: "Không được bỏ trống!",
+                        }}
+                      />
+                      <InputBaseComponent
+                        type="email"
+                        className="w-1/2 mr-2"
+                        control={controlEditAction}
+                        setValue={setValue}
+                        name="email"
+                        placeholder="gv@gmail.com"
+                        label="Email"
+                        errors={errorsEditAction}
+                        validationRules={{
+                          required: "Không được bỏ trống!",
+                        }}
+                      />
+                      <InputBaseComponent
+                        type="text"
+                        label="Số điện thoại"
+                        className="w-1/2"
+                        control={controlEditAction}
+                        setValue={setValue}
+                        name="phone"
+                        placeholder="0234123470"
+                        errors={errorsEditAction}
+                        validationRules={{
+                          required: "Không được bỏ trống!",
+                        }}
+                      />
+                    </div>
+                    <div className="flex">
+                      <InputBaseComponent
+                        type="text"
+                        label="Cử nhân"
+                        className="w-1/2 mr-2"
+                        control={controlEditAction}
+                        setValue={setValue}
+                        name="bachelor"
+                        placeholder="Có"
+                        errors={errorsEditAction}
+                        validationRules={{
+                          required: "Không được bỏ trống!",
+                        }}
+                      />
+
+                      <InputBaseComponent
+                        type="text"
+                        label="Thạc sĩ"
+                        className="w-1/2"
+                        control={controlEditAction}
+                        setValue={setValue}
+                        name="master"
+                        placeholder="Có"
+                        errors={errorsEditAction}
+                        validationRules={{
+                          required: "Không được bỏ trống!",
+                        }}
+                      />
+                    </div>
+                    <div className="flex">
+                      <InputBaseComponent
+                        type="text"
+                        label="Tiến sĩ"
+                        className="w-1/2 mr-2"
+                        control={controlEditAction}
+                        setValue={setValue}
+                        name="doctor"
+                        placeholder="Có"
+                        errors={errorsEditAction}
+                        validationRules={{
+                          required: "Không được bỏ trống!",
+                        }}
+                      />
+
+                      <InputBaseComponent
+                        type="text"
+                        label="Giáo sư"
+                        className="w-1/2"
+                        control={controlEditAction}
+                        setValue={setValue}
+                        name="professor"
+                        placeholder="Có"
+                        errors={errorsEditAction}
+                        validationRules={{
+                          required: "Không được bỏ trống!",
+                        }}
+                      />
+                    </div>
                     <div className="flex"></div>
-                    <div className="flex justify-between">
+                    {/* <div className="flex justify-between">
                       <InputBaseComponent
                         type="text"
                         className="w-1/2 mr-2"
@@ -232,9 +330,8 @@ function Header({ children, currentUser, permissions }) {
                           required: "Không được bỏ trống!",
                         }}
                       />
-                    </div>
-
-                    <div className="flex justify-between">
+                    </div> */}
+                    {/* <div className="flex justify-between">
                       <InputBaseComponent
                         type="text"
                         className="w-1/2 mr-2"
@@ -274,48 +371,20 @@ function Header({ children, currentUser, permissions }) {
                           required: "Không được bỏ trống!",
                         }}
                       />
-                    </div>
-
-                    <div className="flex">
-                      <InputBaseComponent
-                        type="text"
-                        label="Số điện thoại"
-                        className="w-1/2 mr-2"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="phone"
-                        placeholder="0234123470"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
-                      <InputBaseComponent
-                        type="date"
-                        className="w-1/2 mr-2"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="startDateEdit"
-                        label="Ngày sinh"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
-                      <InputBaseComponent
-                        type="text"
-                        label="Dân tộc"
-                        className="w-1/2"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="nation"
-                        placeholder="Kinh"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
-                    </div>
+                    </div> */}
+                    <InputBaseComponent
+                      type="text"
+                      className=""
+                      control={controlEditAction}
+                      setValue={setValue}
+                      name="address"
+                      placeholder="600 Nguyen van cu"
+                      label="Địa chỉ"
+                      errors={errorsEditAction}
+                      validationRules={{
+                        required: "Không được bỏ trống!",
+                      }}
+                    />
                     <div className="flex">
                       <InputBaseComponent
                         type="file"
@@ -331,20 +400,6 @@ function Header({ children, currentUser, permissions }) {
                       />
                     </div>
                     <InputBaseComponent
-                      type="text"
-                      className=""
-                      control={controlEditAction}
-                      setValue={setValue}
-                      name="address"
-                      placeholder="600 Nguyen van cu"
-                      label="Địa chỉ"
-                      errors={errorsEditAction}
-                      validationRules={{
-                        required: "Không được bỏ trống!",
-                      }}
-                    />
-
-                    <InputBaseComponent
                       type="textArea"
                       className="w-full"
                       control={controlEditAction}
@@ -352,9 +407,9 @@ function Header({ children, currentUser, permissions }) {
                       name="others"
                       label="Thông tin khác"
                       errors={errorsEditAction}
-                      validationRules={{
-                        required: "Không được bỏ trống!",
-                      }}
+                      // validationRules={{
+                      //   required: "Không được bỏ trống!",
+                      // }}
                     />
                     <div className="mt-4 flex justify-end">
                       <ButtonComponent

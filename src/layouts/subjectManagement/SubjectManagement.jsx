@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import { Card, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
@@ -9,8 +9,10 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import { ToastContainer, toast } from "react-toastify";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import DownloadIcon from "@mui/icons-material/Download";
+import { useNavigate } from "react-router-dom";
 
 import "./style.scss";
 import { grades } from "../../mock/grade";
@@ -21,8 +23,11 @@ import PopupComponent from "../../components/PopupComponent/PopupComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
-import { getAllSubjects } from "../../services/SubjectService";
-import { useQuery } from "react-query";
+import { getAllSubjects, deleteSubject } from "../../services/SubjectService";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+//get access token
+const token = localStorage.getItem("authToken");
+const accessToken = `Bearer ${token}`;
 
 // Subject Management (UolLT)
 export default function SubjectManagement() {
@@ -30,17 +35,24 @@ export default function SubjectManagement() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
-  const [deletedSubject, setDeletedSubject] = useState({});
   const [currentTab, setCurrentTab] = useState(0);
+  const [deletedData, setDeletedData] = useState({});
+  const [currentData, setCurrentData] = useState([]);
+  const navigate = useNavigate();
 
-  const token = localStorage.getItem("authToken");
-  const accessToken = `Bearer ${token}`;
-
+  const queryClient = useQueryClient();
+  //call api get all
   const { data, error, isLoading } = useQuery(["subjectState", { accessToken }], () =>
     getAllSubjects(accessToken)
   );
 
-  console.log(data);
+  useEffect(() => {
+    if (Array.isArray(data?.data)) {
+      setCurrentData(data.data);
+    } else {
+      setCurrentData([]);
+    }
+  }, [data]);
 
   const markFactors = subject.data.points[0].componentPoints.map((obj) => [
     obj.id,
@@ -127,9 +139,9 @@ export default function SubjectManagement() {
     if (rowItem) {
       setValue("idEdit", rowItem[0]);
       setValue("nameEdit", rowItem[1]);
-      setValue("selectGradeEdit", rowItem[3]);
+      setValue("selectGradeEdit", rowItem[2]);
       setValue("selectYearEdit", rowItem[2]);
-      setValue("descriptionEdit", rowItem[2]);
+      setValue("descriptionEdit", rowItem[3]);
       setModalEditOpen(true);
     } else {
       setModalEditOpen(false);
@@ -152,30 +164,35 @@ export default function SubjectManagement() {
     console.log("Call api: ", { schoolYear });
   };
 
+  const deleteSubjectMutation = useMutation((subjectId) => deleteSubject(accessToken, subjectId), {
+    onSuccess: (response) => {
+      queryClient.invalidateQueries("subjectState");
+      if (response && response.success) {
+        toast.success("Xóa môn học thành công!");
+      } else {
+        toast.error("Xóa môn học thất bại!");
+      }
+      setModalDeleteOpen(false);
+    },
+    onError: (error) => {
+      console.error("Error deleting subject:", error);
+      toast.error("Đã xảy ra lỗi khi xóa môn học!");
+    },
+  });
+
   const handleDelete = (rowItem) => {
     if (rowItem) {
-      setDeletedSubject({
-        idEdit: rowItem[0],
-        nameEdit: rowItem[1],
-        selectGradeEdit: rowItem[3],
-        selectYearEdit: rowItem[2],
-        descriptionEdit: rowItem[2],
-      });
+      setDeletedData({ id: rowItem[0] });
       setModalDeleteOpen(true);
-    } else {
-      setModalDeleteOpen(false);
     }
   };
 
   const handleDeleteAPI = () => {
-    setModalDeleteOpen(false);
-    console.log("Call API delete subject: ", deletedSubject);
-    // Call API delete subject here
+    deleteSubjectMutation.mutate(deletedData.id);
   };
 
   const handleChangeSearchValue = (txtSearch) => {
-    console.log(txtSearch);
-    // setCurrentData(filterSubjects(txtSearch, studentClasses.data));
+    setCurrentData(filterSubjects(txtSearch, data?.data));
   };
 
   const filterSubjects = (txtSearch, data) => {
@@ -183,7 +200,7 @@ export default function SubjectManagement() {
     return data.filter((subject) => {
       return (
         (subject.title && subject.title.toLowerCase().includes(search)) ||
-        (subject.description && subject.description.toLowerCase().includes(search))
+        (subject.grade && subject.grade.toLowerCase().includes(search))
       );
     });
   };
@@ -194,6 +211,7 @@ export default function SubjectManagement() {
 
   return (
     <DashboardLayout>
+      <ToastContainer autoClose={3000} />
       <DashboardNavbar />
       <Card className="max-h-max mb-8">
         <MDBox p={5}>
@@ -468,19 +486,23 @@ export default function SubjectManagement() {
             </div>
           </div>
           <div>
-            <TableComponent
-              header={["ID", "Tên môn học", "Khối", "Mô tả"]}
-              data={subjects.data.map((item) => [
-                item.id.toString(),
-                item.name.toString(),
-                item.grade.toString(),
-                item.description.toString(),
-              ])}
-              itemsPerPage={10}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              className="mt-8"
-            />
+            {isLoading ? (
+              <div className="text-center">Loading...</div>
+            ) : (
+              <TableComponent
+                header={["Tên môn học", "Khối"]}
+                data={currentData?.map((item) => [
+                  item.id.toString(),
+                  item.name.toString(),
+                  item.grade.toString(),
+                ])}
+                itemsPerPage={10}
+                hiddenColumns={[0]}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                className="mt-8"
+              />
+            )}
             <PopupComponent
               title="CẬP NHẬT"
               description="Hãy chỉnh sửa để bắt đầu năm học mới"
@@ -538,11 +560,15 @@ export default function SubjectManagement() {
               description="Hãy kiểm xác nhận thông tin trước khi xóa"
               icon={<DeleteIcon />}
               isOpen={modalDeleteOpen}
-              onClose={handleCloseDeleteModal}
+              onClose={() => setModalDeleteOpen(false)}
             >
               <p>Bạn có chắc chắn muốn xóa môn học?</p>
               <div className="mt-4 flex justify-end">
-                <ButtonComponent type="error" action="button" onClick={handleCloseDeleteModal}>
+                <ButtonComponent
+                  type="error"
+                  action="button"
+                  onClick={() => setModalDeleteOpen(false)}
+                >
                   HỦY BỎ
                 </ButtonComponent>
                 <ButtonComponent action="button" onClick={handleDeleteAPI}>

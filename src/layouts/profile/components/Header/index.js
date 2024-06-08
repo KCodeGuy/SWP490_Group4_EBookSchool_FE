@@ -304,21 +304,9 @@ function Header({ children, currentUser, permissions }) {
                       />
                     </div>
                     <div className="flex">
-                      {/* <InputBaseComponent
-                        type="checkbox"
-                        label="Cử nhân"
-                        className="w-1/2 mr-2"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isBachelor"
-                        placeholder="Có"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      /> */}
                       <InputBaseComponent
                         type="checkbox"
+                        className="mr-3"
                         horizontalLabel={true}
                         control={controlEditAction}
                         setValue={setValue}
@@ -326,22 +314,9 @@ function Header({ children, currentUser, permissions }) {
                         label="Cử nhân"
                         errors={errorsEditAction}
                       />
-
-                      {/* <InputBaseComponent
-                        type="checkbox"
-                        label="Thạc sĩ"
-                        className="w-1/2"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isMaster"
-                        placeholder="Có"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      /> */}
                       <InputBaseComponent
                         type="checkbox"
+                        className="mr-3"
                         horizontalLabel={true}
                         control={controlEditAction}
                         setValue={setValue}
@@ -349,23 +324,9 @@ function Header({ children, currentUser, permissions }) {
                         label="Thạc sĩ"
                         errors={errorsEditAction}
                       />
-                    </div>
-                    <div className="flex">
-                      {/* <InputBaseComponent
-                        type="checkbox"
-                        label="Tiến sĩ"
-                        className="w-1/2 mr-2"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isDoctor"
-                        placeholder="Có"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      /> */}
                       <InputBaseComponent
                         type="checkbox"
+                        className="mr-3"
                         horizontalLabel={true}
                         control={controlEditAction}
                         setValue={setValue}
@@ -385,88 +346,7 @@ function Header({ children, currentUser, permissions }) {
                       />
                     </div>
                     <div className="flex"></div>
-                    {/* <div className="flex justify-between">
-                      <InputBaseComponent
-                        type="text"
-                        className="w-1/2 mr-2"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="parent"
-                        placeholder="Nguyen Van B"
-                        label="Họ tên cha"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
-                      <InputBaseComponent
-                        type="text"
-                        className="w-1/2 mr-2"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="parents"
-                        placeholder="0234123471"
-                        label="SDT cha"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
-                      <InputBaseComponent
-                        type="text"
-                        className="w-1/2"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        placeholder="Làm nông"
-                        name="jobdad"
-                        label="Nghe nghiệp cha"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
-                    </div> */}
-                    {/* <div className="flex justify-between">
-                      <InputBaseComponent
-                        type="text"
-                        className="w-1/2 mr-2"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="mom"
-                        label="Họ tên mẹ"
-                        placeholder="Lê thị B"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
-                      <InputBaseComponent
-                        type="text"
-                        className="w-1/2 mr-2"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="momsd"
-                        label="SDT mẹ"
-                        placeholder="0234123472"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
-                      <InputBaseComponent
-                        type="text"
-                        className="w-1/2"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="jobmom"
-                        placeholder="Giáo viên"
-                        label="Nghe nghiệp mẹ"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
-                    </div> */}
+
                     <InputBaseComponent
                       type="text"
                       className=""

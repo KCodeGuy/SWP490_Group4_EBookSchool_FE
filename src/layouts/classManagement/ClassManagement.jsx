@@ -12,6 +12,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 
 import "./style.scss";
 import { classrooms } from "../../mock/classroom";
@@ -24,14 +25,14 @@ import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
 import { getAllClasses, addClass, updateClass, deleteClass } from "../../services/ClassService";
 import { useNavigate } from "react-router-dom";
+import { getAllTeachers } from "services/TeacherService";
+
 //get access token
 const token = localStorage.getItem("authToken");
 const accessToken = `Bearer ${token}`;
 const students = ["HS0001", "HS0002", "HS0003", "HS0004", "HS0005", "HS0006", "HS0007"];
 
-// Class management (UolLT)
 export default function ClassManagement() {
-  //1. Modal form states open, close
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
@@ -40,14 +41,14 @@ export default function ClassManagement() {
   const navigate = useNavigate();
 
   const queryClient = useQueryClient();
-  //call api get all
   const { data, error, isLoading } = useQuery(["classState", { accessToken }], () =>
     getAllClasses(accessToken)
   );
 
-  // useEffect(() => {
-  //   setCurrentData(data?.data);
-  // }, [data]);
+  const { data: currentTeacher } = useQuery(["teacherState", { accessToken }], () =>
+    getAllTeachers(accessToken)
+  );
+
   useEffect(() => {
     if (Array.isArray(data?.data)) {
       setCurrentData(data.data);
@@ -55,20 +56,22 @@ export default function ClassManagement() {
       setCurrentData([]);
     }
   }, [data]);
-  // const [currentData, setCurrentData] = useState(data?.data);
 
-  //2. Set data by Call API
-  const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
+  const [schoolYear, setSchoolYear] = useState(schoolYears.data[0].schoolYear);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
   };
+
+  const formattedTeachers = currentTeacher?.data.map((teacher) => ({
+    label: `${teacher.fullname}(${teacher.id})`,
+    value: teacher.id,
+  }));
 
   const formattedSchoolYears = schoolYears.data.map((year) => ({
     label: year.schoolYear,
     value: year.schoolYear,
   }));
 
-  //3.1 React-hook-from of adding action
   const {
     control,
     handleSubmit,
@@ -77,7 +80,6 @@ export default function ClassManagement() {
     formState: { errors },
   } = useForm();
 
-  //3.1 React-hook-from of editing action
   const {
     control: controlEditAction,
     handleSubmit: handleSubmitEditAction,
@@ -86,13 +88,14 @@ export default function ClassManagement() {
     formState: { errors: errorsEditAction },
   } = useForm();
 
+  //call api add class
   const addClassMutation = useMutation((classData) => addClass(accessToken, classData), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("classState");
       if (response && response.success) {
         toast.success("Tạo lớp học thành công!");
       } else {
-        toast.error(`${response.data}!`);
+        toast.error(`${response.data} !`);
       }
       reset();
       setModalOpen(false);
@@ -101,59 +104,68 @@ export default function ClassManagement() {
 
   const handleAddClass = (data) => {
     const classData = {
-      teacher: data.teacher,
-      schoolYear: data.schoolYear,
       classroom: data.classroom,
-      students: data.students,
+      schoolYear: data.schoolYear,
+      teacherID: data.teacherID,
+      students: students,
     };
+    console.log(classData);
     addClassMutation.mutate(classData);
   };
 
-  //5. Functions handle editing
   const handleCloseEditModal = () => {
     setModalEditOpen(false);
   };
+
+  // Xử lí show lên form edit thôi
   const handleEdit = (rowItem) => {
+    console.log(rowItem);
     if (rowItem) {
       setValue("idEdit", rowItem[0]);
-      setValue("nameEdit", rowItem[0]);
-      setValue("classroomEdit", rowItem[0]);
-      setValue("selectOptionEdit", rowItem[2]);
-      setValue("teacherEdit", rowItem[3]);
+      setValue("classroomEdit", rowItem[1]);
+      setValue("schoolYearEdit", rowItem[2]);
+      setValue("teacherIDEdit", rowItem[4]);
       setModalEditOpen(true);
     } else {
       setModalEditOpen(false);
     }
   };
 
-  const updateClassMutation = useMutation(
-    (classData) => updateNotification(accessToken, classData),
-    {
-      onSuccess: (response) => {
-        queryClient.invalidateQueries("classState");
-        if (response && response.success) {
-          toast.success("Cập nhật lớp học thành công!");
-        } else {
-          toast.error(`${response.data}!`);
-        }
-        reset();
-        setModalEditOpen(false);
-      },
-    }
-  );
+  const updateClassMutation = useMutation((classData) => updateClass(accessToken, classData), {
+    onSuccess: (response) => {
+      queryClient.invalidateQueries("classState");
+      if (response && response.success) {
+        toast.success("Cập nhật lớp học thành công!");
+      } else {
+        toast.error(`${response.data} !`);
+      }
+      reset();
+      setModalOpen(false);
+    },
+  });
 
-  const handleEditClass = (data) => {
-    console.log("Call API edit class: ", data);
-    // Call API edit class here
+  // Xử lí get dữ liệu khi submit
+  const handleUpdateClass = (data) => {
+    console.log("Submit data", data);
+    const classData = {
+      id: data.idEdit,
+      classroom: data.classroomEdit,
+      schoolYear: data.schoolYearEdit,
+      teacherID: data.teacherIDEdit,
+      students: students,
+    };
+    console.log("Data gửi đi: ", classData);
+    updateClassMutation.mutate(classData);
   };
+
   const handleClearEditForm = () => {
     resetEditAction();
   };
 
   const handleStatistic = () => {
-    console.log("Call api: ", { schoolYear, classroom });
+    setCurrentData(filterByButton(schoolYear, data?.data));
   };
-  //delete api
+
   const deleteClassMutation = useMutation((classId) => deleteClass(accessToken, classId), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("classState");
@@ -168,7 +180,6 @@ export default function ClassManagement() {
 
   const handleDelete = (rowItem) => {
     if (rowItem) {
-      console.log(rowItem);
       setDeletedData({
         id: rowItem[0],
       });
@@ -177,38 +188,47 @@ export default function ClassManagement() {
   };
 
   const handleDeleteAPI = () => {
-    console.log("Deleted ID:", deletedData.id);
     deleteClassMutation.mutate(deletedData.id);
   };
 
-  //search value
   const handleChangeSearchValue = (txtSearch) => {
     setCurrentData(filterStudentClasses(txtSearch, data?.data));
   };
 
+  const filterByButton = (action, data) => {
+    if (data) {
+      return data.filter((item) => {
+        return item.schoolYear.toLowerCase() === action.toLowerCase();
+      });
+    }
+  };
+
   const filterStudentClasses = (txtSearch, data) => {
     const search = txtSearch.trim().toLowerCase();
-    return data.filter((classroom) => {
-      return (
-        classroom.teacher.toLowerCase().includes(search) ||
-        classroom.schoolYear.toLowerCase().includes(search) ||
-        classroom.classroom.toLowerCase().includes(search)
-      );
-    });
+    if (data) {
+      return data.filter((classroom) => {
+        return (
+          classroom.teacher.toLowerCase().includes(search) ||
+          classroom.schoolYear.toLowerCase().includes(search) ||
+          classroom.classroom.toLowerCase().includes(search)
+        );
+      });
+    }
   };
+
   return (
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
       <DashboardNavbar />
       <Card className="max-h-max mb-8">
         <MDBox p={5}>
-          {/* DO NOT DELETE CODE AS ABOVE*/}
-          {/* Your code here */}
-          <div className="text-center mt-0">
-            <h4 className="text-xl font-bold">QUẢN LÍ LỚP HỌC</h4>
+          <div className="text-center mt-0 ">
+            <div className="flex justify-center items-center text-3xl mx-auto w-full">
+              <MeetingRoomIcon />
+              <h4 className="text-xl font-bold ml-3">QUẢN LÍ LỚP HỌC</h4>
+            </div>
           </div>
           <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
-            {/* School Year Select */}
             <div className="flex justify-start max-[639px]:flex-wrap">
               <FormControl sx={{ minWidth: 120 }}>
                 <InputLabel id="select-school-year-lable">Năm học</InputLabel>
@@ -251,22 +271,31 @@ export default function ClassManagement() {
                   onClose={() => setModalOpen(false)}
                 >
                   <form onSubmit={handleSubmit(handleAddClass)}>
-                    <InputBaseComponent
-                      placeholder="Nhập tên lớp học"
-                      type="text"
-                      control={control}
-                      setValue={noSetValue}
-                      name="name"
-                      label="Tên lớp"
-                      errors={errors}
-                      validationRules={{
-                        required: "Không được bỏ trống!",
-                      }}
-                    />
                     <div className="flex">
                       <InputBaseComponent
+                        placeholder="Nhập tên lớp học"
+                        type="text"
+                        control={control}
+                        setValue={noSetValue}
+                        name="classroom"
+                        className="w-1/2 mr-2"
+                        label="Tên lớp"
+                        errors={errors}
+                        validationRules={{
+                          required: "Không được bỏ trống!",
+                          minLength: {
+                            value: 4,
+                            message: "tên lớp ít nhât 4 kí tự!",
+                          },
+                          maxLength: {
+                            value: 10,
+                            message: "Tên lớp nhiều nhất 10 kí tự!",
+                          },
+                        }}
+                      />
+                      <InputBaseComponent
                         label="Năm học"
-                        name="selectOption"
+                        name="schoolYear"
                         className="w-1/2 mr-2"
                         control={control}
                         setValue={noSetValue}
@@ -277,26 +306,14 @@ export default function ClassManagement() {
                           required: "Hãy chọn năm học!",
                         }}
                       />
-                      <InputBaseComponent
-                        placeholder="Nhập phòng học"
-                        type="text"
-                        control={control}
-                        setValue={noSetValue}
-                        name="classroom"
-                        label="Phòng học"
-                        errors={errors}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
                     </div>
                     <InputBaseComponent
-                      placeholder="Nhập giáo viên chủ nhiệm"
-                      type="text"
+                      label="GV chủ nhiệm"
+                      name="teacherID"
                       control={control}
                       setValue={noSetValue}
-                      name="homeroomteacher"
-                      label="GV chủ nhiệm"
+                      type="select"
+                      options={formattedTeachers}
                       errors={errors}
                       validationRules={{
                         required: "Không được bỏ trống!",
@@ -340,23 +357,24 @@ export default function ClassManagement() {
               isOpen={modalEditOpen}
               onClose={handleCloseEditModal}
             >
-              <form onSubmit={handleSubmitEditAction(handleEditClass)}>
-                <InputBaseComponent
-                  placeholder="Nhập tên lớp học"
-                  type="text"
-                  control={controlEditAction}
-                  name="nameEdit"
-                  label="Tên lớp"
-                  setValue={setValue}
-                  errors={errorsEditAction}
-                  validationRules={{
-                    required: "Không được bỏ trống!",
-                  }}
-                />
+              <form onSubmit={handleSubmitEditAction(handleUpdateClass)}>
                 <div className="flex">
                   <InputBaseComponent
+                    placeholder="Nhập tên lớp học"
+                    type="text"
+                    control={controlEditAction}
+                    className="w-1/2 mr-2"
+                    name="classroomEdit"
+                    label="Tên lớp"
+                    setValue={setValue}
+                    errors={errorsEditAction}
+                    validationRules={{
+                      required: "Không được bỏ trống!",
+                    }}
+                  />
+                  <InputBaseComponent
                     label="Năm học"
-                    name="selectOptionEdit"
+                    name="schoolYearEdit"
                     className="w-1/2 mr-2"
                     control={controlEditAction}
                     type="select"
@@ -367,26 +385,14 @@ export default function ClassManagement() {
                       required: "Hãy chọn năm học!",
                     }}
                   />
-                  <InputBaseComponent
-                    placeholder="Nhập phòng học"
-                    type="text"
-                    control={controlEditAction}
-                    name="classroomEdit"
-                    label="Phòng học"
-                    setValue={setValue}
-                    errors={errorsEditAction}
-                    validationRules={{
-                      required: "Không được bỏ trống!",
-                    }}
-                  />
                 </div>
                 <InputBaseComponent
-                  placeholder="Nhập giáo viên chủ nhiệm"
-                  type="text"
-                  control={controlEditAction}
-                  name="teacherEdit"
                   label="Giáo viên chủ nhiệm"
+                  name="teacherIDEdit"
+                  control={controlEditAction}
                   setValue={setValue}
+                  type="select"
+                  options={formattedTeachers}
                   errors={errorsEditAction}
                   validationRules={{
                     required: "Không được bỏ trống!",

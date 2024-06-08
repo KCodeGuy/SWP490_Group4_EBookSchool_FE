@@ -32,6 +32,7 @@ const accessToken = localStorage.getItem("authToken");
 const students = ["HS0001", "HS0002", "HS0003", "HS0004", "HS0005", "HS0006", "HS0007"];
 
 export default function ClassManagement() {
+  console.log("Re-render");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);

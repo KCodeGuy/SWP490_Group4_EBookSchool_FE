@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import { Card, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
@@ -23,6 +23,15 @@ import TableComponent from "../../components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
 import { accounts } from "mock/account";
+import { getAllTeachers } from "services/TeacherService";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { ToastContainer, toast } from "react-toastify";
+import { deleteTeacher } from "services/TeacherService";
+import { getTeacherByID } from "services/TeacherService";
+import { createTeacher } from "services/TeacherService";
+
+const accessToken = localStorage.getItem("authToken");
+
 // Account management (UolLT)
 export default function AccountManagement() {
   //1. Modal form states open, close
@@ -77,6 +86,23 @@ export default function AccountManagement() {
     label: grade.name,
     value: grade.name,
   }));
+
+  const [accounts, setAccounts] = useState();
+  const [username, setUsername] = useState();
+  const [teacherID, setTeacherID] = useState();
+  const [avatar, setAvatar] = useState(null);
+
+  const queryClient = useQueryClient();
+
+  const { data, error, isLoading } = useQuery(["getTeachers", { accessToken }], () =>
+    getAllTeachers(accessToken)
+  );
+  useEffect(() => {
+    if (data?.success) {
+      setAccounts(data?.data);
+    }
+  }, [data]);
+
   //3.1 React-hook-from of adding action
   const {
     control,
@@ -114,9 +140,53 @@ export default function AccountManagement() {
     // Call API add subject here
   };
 
+  // Add nè
+  const addTeacherMutation = useMutation((data) => createTeacher(accessToken, data), {
+    onSuccess: (response) => {
+      queryClient.invalidateQueries("addTeacher");
+      if (response && response.success) {
+        toast.success("Tạo giáo viên thành công!");
+      } else {
+        toast.error(`${response.data}!`);
+      }
+      reset();
+      setModalOpen(false);
+    },
+  });
+
   const handleAddRole = (data) => {
-    console.log("Call API add lesson: ", data);
-    // Call API add subject here
+    const permissionKeys = Object.keys(data).filter((key) => key.startsWith("is") && data[key]);
+    const roleKeys = Object.keys(data).filter((key) => key.startsWith("role") && data[key]);
+
+    const permissions = permissionKeys.map((key) => {
+      return key
+        .replace("is", "")
+        .replace(/([A-Z])/g, " $1")
+        .trim();
+    });
+
+    const roles = roleKeys.map((key) => {
+      return key
+        .replace("role", "")
+        .replace(/([A-Z])/g, " $1")
+        .trim();
+    });
+
+    const otherValues = Object.keys(data)
+      .filter((key) => !key.startsWith("is") && !key.startsWith("role"))
+      .reduce((obj, key) => {
+        obj[key] = data[key];
+        return obj;
+      }, {});
+
+    const newObj = {
+      permissions,
+      roles,
+      otherValues,
+    };
+
+    console.log("New Object:", newObj);
+    addTeacherMutation.mutate(newObj);
   };
 
   const handleClearAddForm = () => {
@@ -127,14 +197,11 @@ export default function AccountManagement() {
   const handleCloseEditModal = () => {
     setModalEditOpen(false);
   };
+
   const handleEdit = (rowItem) => {
-    console.log(rowItem);
+    console.dir(rowItem);
     if (rowItem) {
-      setValue("idEdit", rowItem[0]);
-      setValue("nameEdit", rowItem[1]);
-      setValue("selectGradeEdit", rowItem[3]);
-      setValue("selectYearEdit", rowItem[2]);
-      setValue("descriptionEdit", rowItem[2]);
+      setTeacherID(rowItem[0]);
       setModalEditOpen(true);
     } else {
       setModalEditOpen(false);
@@ -148,6 +215,42 @@ export default function AccountManagement() {
     resetEditAction();
   };
 
+  const {
+    data: teacherData,
+    error: teacherError,
+    isLoading: teacherLoading,
+  } = useQuery(
+    ["teacherState", { accessToken, teacherID }],
+    () => getTeacherByID(accessToken, teacherID),
+    {
+      enabled: !!teacherID, // Only run the query if teacherID is defined
+    }
+  );
+
+  useEffect(() => {
+    if (teacherData?.data) {
+      console.dir(teacherData.data);
+      setValue("id", teacherData.data.id);
+      setValue("fullName", teacherData.data.fullname);
+      setValue("birthday", teacherData.data.birthday.split("T")[0]);
+      setValue("gender", teacherData.data.gender);
+      setValue("nation", teacherData.data.nation);
+      setValue("email", teacherData.data.email);
+      setValue("phone", teacherData.data.phone);
+      setValue("isBachelor", teacherData.data.isBachelor);
+      setValue("isMaster", teacherData.data.isMaster);
+      setValue("isDoctor", teacherData.data.isDoctor);
+      setValue("isProfessor", teacherData.data.isProfessor);
+      setValue("address", teacherData.data.address);
+      setValue("avatar", teacherData.data.avatar);
+      setAvatar(teacherData.data.avatar);
+    }
+  }, [teacherData, setValue]);
+
+  useEffect(() => {
+    queryClient.invalidateQueries(["teacherState", { accessToken, teacherID }]);
+  }, [teacherID]);
+
   //6. Functions handle deleting
   const handleCloseDeleteModal = () => {
     setModalDeleteOpen(false);
@@ -157,26 +260,37 @@ export default function AccountManagement() {
     console.log("Call api: ", { schoolYear });
   };
 
+  useEffect(() => {
+    if (data?.success) {
+      setAccounts(data?.data);
+    }
+  }, [data]);
+
+  const deleteTeacherMutation = useMutation((username) => deleteTeacher(accessToken, username), {
+    onSuccess: (response) => {
+      if (response && response.success) {
+        toast.success("Xóa giáo viên thành công!");
+        queryClient.invalidateQueries(["getTeachers", { accessToken }]); // Invalidate the getTeachers query
+      } else {
+        toast.error("Xóa giáo viên thất bại!");
+      }
+      setModalDeleteOpen(false);
+    },
+  });
+
   const handleDelete = (rowItem) => {
     if (rowItem) {
-      setDeletedSubject({
-        idEdit: rowItem[0],
-        nameEdit: rowItem[1],
-        selectGradeEdit: rowItem[3],
-        selectYearEdit: rowItem[2],
-        descriptionEdit: rowItem[2],
-      });
+      setUsername(rowItem[1]);
       setModalDeleteOpen(true);
-    } else {
-      setModalDeleteOpen(false);
     }
   };
 
   const handleDeleteAPI = () => {
-    setModalDeleteOpen(false);
-    console.log("Call API delete subject: ", deletedSubject);
-    // Call API delete subject here
+    deleteTeacherMutation.mutate(username);
   };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading data</div>;
 
   const handleChangeSearchValue = (txtSearch) => {
     console.log(txtSearch);
@@ -255,6 +369,7 @@ export default function AccountManagement() {
                   tabs={[
                     { label: "TẠO TÀI KHOẢN" },
                     { label: "THÊM THÔNG TIN" },
+                    { label: "VAI TRÒ" },
                     { label: "PHÂN QUYỀN" },
                     { label: "TẠO BẰNG EXCEL" },
                   ]}
@@ -269,7 +384,7 @@ export default function AccountManagement() {
                         type="text"
                         control={control}
                         setValue={noSetValue}
-                        name="name"
+                        name="username"
                         label="Tên tài khoản"
                         errors={errors}
                         validationRules={{
@@ -277,25 +392,30 @@ export default function AccountManagement() {
                         }}
                       />
                       <InputBaseComponent
-                        placeholder="Nhập email"
-                        type="email"
+                        placeholder="Nhập mật khẩu"
+                        // className="w-1/2 mr-3"
+                        type="password"
                         control={control}
                         setValue={noSetValue}
-                        name="email"
-                        label="Email"
+                        name="password"
+                        label="Mật khẩu"
                         errors={errors}
                         validationRules={{
                           required: "Không được bỏ trống!",
-                          pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "Email không đúng định dạng!",
+                          minLength: {
+                            value: 6,
+                            message: "Mật khẩu ít nhất 8 kí tự!",
+                          },
+                          maxLength: {
+                            value: 20,
+                            message: "Mật khẩu dài nhất 20 kí tự!",
                           },
                         }}
                       />
-                      <div className="flex">
+                      {/* <div className="flex">
                         <InputBaseComponent
                           placeholder="Nhập mật khẩu"
-                          className="w-1/2 mr-3"
+                          // className="w-1/2 mr-3"
                           type="password"
                           control={control}
                           setValue={noSetValue}
@@ -335,13 +455,7 @@ export default function AccountManagement() {
                             },
                           }}
                         />
-                      </div>
-                      <div className="mt-4 flex justify-end">
-                        <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
-                          CLEAR
-                        </ButtonComponent>
-                        <ButtonComponent action="submit">TẠO</ButtonComponent>
-                      </div>
+                      </div> */}
                     </form>
                   </div>
                   {/* Content for Tab 2 */}
@@ -406,8 +520,8 @@ export default function AccountManagement() {
                           type="text"
                           control={control}
                           setValue={noSetValue}
-                          name="citizenIdentification"
-                          label="CCCD"
+                          name="address"
+                          label="Địa chỉ"
                           errors={errors}
                           validationRules={{
                             required: "Không được bỏ trống!",
@@ -421,19 +535,6 @@ export default function AccountManagement() {
                           setValue={noSetValue}
                           name="birthday"
                           label="Ngày sinh"
-                          errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
-                        />
-                        <InputBaseComponent
-                          name="countryside"
-                          placeholder="Nhập quê quán"
-                          type="textArea"
-                          control={control}
-                          rowTextArea={2}
-                          setValue={noSetValue}
-                          label="Quê quán"
                           errors={errors}
                           validationRules={{
                             required: "Không được bỏ trống!",
@@ -468,324 +569,503 @@ export default function AccountManagement() {
                         }}
                         className="mt-4"
                       />
+
                       <InputBaseComponent
-                        placeholder="Nhập tôn giáo"
-                        type="text"
+                        type="checkbox"
+                        horizontalLabel={true}
                         control={control}
                         setValue={noSetValue}
-                        name="religion"
-                        label="Tôn giáo"
+                        name="bachelor"
+                        label="Cử nhân"
                         errors={errors}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                        className="mt-4"
-                      />
-                      <InputBaseComponent
-                        placeholder="Nhập quốc tịch"
-                        type="text"
-                        control={control}
-                        setValue={noSetValue}
-                        name="nationality"
-                        label="Quốc tịch"
-                        errors={errors}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                        className="mt-4"
-                      />
-                      <InputBaseComponent
-                        placeholder="Nhập trạng thái"
-                        type="text"
-                        control={control}
-                        setValue={noSetValue}
-                        name="status"
-                        label="Trạng thái"
-                        errors={errors}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                        className="mt-4"
                       />
 
-                      {/* Right column */}
-                      <div className="w-1/2">
-                        <InputBaseComponent
-                          placeholder="Input horizontal Label"
-                          type="radio"
-                          horizontalLabel={true}
-                          control={control}
-                          setValue={noSetValue}
-                          options={radioOptions}
-                          name="mission"
-                          label=""
-                          noLabel={true}
-                          errors={errors}
-                          validationRules={{
-                            required: "Phải chọn 1 trong các options!",
-                          }}
-                        />
-                        <InputBaseComponent
-                          name="insurance"
-                          placeholder="Nhập mã BHXH"
-                          type="textArea"
-                          control={control}
-                          rowTextArea={2}
-                          setValue={noSetValue}
-                          label="BHXH"
-                          errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
-                        />
-                        <InputBaseComponent
-                          name="qualification"
-                          placeholder="..."
-                          type="textArea"
-                          control={control}
-                          rowTextArea={2}
-                          setValue={noSetValue}
-                          label="Trình độ chuyên môn"
-                          errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
-                        />
-                        <InputBaseComponent
-                          name="politicalTheoretical"
-                          placeholder="..."
-                          type="textArea"
-                          control={control}
-                          rowTextArea={2}
-                          setValue={noSetValue}
-                          label="Trình độ LL chính trị"
-                          errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
-                        />
-                        <InputBaseComponent
-                          name="educationalManagement"
-                          placeholder="..."
-                          type="textArea"
-                          control={control}
-                          rowTextArea={2}
-                          setValue={noSetValue}
-                          label="Trình độ quản lý giáo dục"
-                          errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
-                        />
-                        <InputBaseComponent
-                          name="ccomputerSkill"
-                          placeholder="..."
-                          type="textArea"
-                          control={control}
-                          rowTextArea={1}
-                          setValue={noSetValue}
-                          label="Trình độ tin học"
-                          errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
-                        />
-                        <InputBaseComponent
-                          name="langue"
-                          placeholder="..."
-                          type="textArea"
-                          control={control}
-                          rowTextArea={1}
-                          setValue={noSetValue}
-                          label="Ngoại ngữ chính"
-                          errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
-                        />
-                        <InputBaseComponent
-                          name="id"
-                          placeholder="Nhập mã số"
-                          type="textArea"
-                          control={control}
-                          rowTextArea={1}
-                          setValue={noSetValue}
-                          label="Mã số"
-                          errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
-                        />
-                      </div>
-                      <div className="mt-4 flex justify-end">
-                        <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
-                          CLEAR
-                        </ButtonComponent>
-                        <ButtonComponent action="submit">THÊM THÔNG TIN</ButtonComponent>
-                      </div>
+                      <InputBaseComponent
+                        type="checkbox"
+                        horizontalLabel={true}
+                        control={control}
+                        setValue={noSetValue}
+                        name="master"
+                        label="Thạc sĩ"
+                        errors={errors}
+                      />
+
+                      <InputBaseComponent
+                        type="checkbox"
+                        horizontalLabel={true}
+                        control={control}
+                        setValue={noSetValue}
+                        name="doctor"
+                        label="Tiến sĩ"
+                        errors={errors}
+                      />
+
+                      <InputBaseComponent
+                        type="checkbox"
+                        horizontalLabel={true}
+                        control={control}
+                        setValue={noSetValue}
+                        name="professor"
+                        label="Giáo sư"
+                        errors={errors}
+                      />
+
+                      <InputBaseComponent
+                        type="file"
+                        className="w-full"
+                        control={control}
+                        setValue={noSetValue}
+                        name="avatar"
+                        label="Ảnh đại diện"
+                        errors={errors}
+                        validationRules={{
+                          required: "Không được bỏ trống!",
+                        }}
+                      />
                     </form>
                   </div>
                   {/* Content for Tab 3 */}
                   <div role="tabpanel" hidden={currentTab == 2}>
                     {/* phân quyền*/}
                     <form onSubmit={handleSubmit(handleAddRole)}>
-                      <div className="flex w-full">
-                        {/* Left column */}
-                        <div className="w-1/2 mr-3">
-                          {/* box trên */}
-                          <div className="border-2 border-gray-300 rounded-xl w-full p-5">
-                            <InputBaseComponent
-                              placeholder="Nhập email"
-                              type="textArea"
-                              control={control}
-                              horizontalLabel={true}
-                              setValue={noSetValue}
-                              rowTextArea={1}
-                              name="email"
-                              label="Email"
-                              errors={errors}
-                              validationRules={{
-                                required: "Không được bỏ trống!",
-                                pattern: {
-                                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                  message: "Email không đúng định dạng!",
-                                },
-                              }}
-                            />
-                            <InputBaseComponent
-                              placeholder="Nhập họ & tên"
-                              type="text"
-                              horizontalLabel={true}
-                              control={control}
-                              setValue={noSetValue}
-                              name="name"
-                              label="Họ & Tên"
-                              errors={errors}
-                              validationRules={{
-                                required: "Không được bỏ trống!",
-                              }}
-                            />
-                          </div>
-                          {/* box dưới */}
-                          <div className="border-2 border-gray-300 flex rounded-xl justify-center p-5 mt-5">
-                            <FormControl sx={{ minWidth: 120, marginRight: "0px" }}>
-                              <InputLabel id="select-role-label" className="ml-3">
-                                Chức vụ
-                              </InputLabel>
-                              <Select
-                                labelId="select-role-label"
-                                id="select-role"
-                                value={selectedRole}
-                                className="h-10 mx-3"
-                                label="Chức vụ"
-                                onChange={handleRoleChange}
-                              >
-                                {roles.map((role) => (
-                                  <MenuItem key={role} value={role}>
-                                    {role}
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                            </FormControl>
-                          </div>
-                        </div>
-                        {/* Right column */}
-                        <div className="w-1/2">
-                          <div className="flex mt-3">
-                            {/* Left in right column */}
-                            <div className="w-1/2 mr-3">
-                              <InputBaseComponent
-                                type="checkbox"
-                                horizontalLabel={true}
-                                control={control}
-                                setValue={noSetValue}
-                                name="editAttendence"
-                                label="Chỉnh sữa điểm danh"
-                                errors={errors}
-                              />
-                              <InputBaseComponent
-                                type="checkbox"
-                                horizontalLabel={true}
-                                control={control}
-                                setValue={noSetValue}
-                                name="editAttendence"
-                                label="Chỉnh sữa báo cáo"
-                                errors={errors}
-                              />
-                              <InputBaseComponent
-                                type="checkbox"
-                                horizontalLabel={true}
-                                control={control}
-                                setValue={noSetValue}
-                                name="editAttendence"
-                                label="Chỉnh sữa điểm số"
-                                errors={errors}
-                              />
-                              <InputBaseComponent
-                                type="checkbox"
-                                horizontalLabel={true}
-                                control={control}
-                                setValue={noSetValue}
-                                name="editAttendence"
-                                label="Chỉnh sữa thời khóa biểu"
-                                errors={errors}
-                              />
-                            </div>
-                            {/* Right in right column */}
-                            <div className="w-1/2">
-                              <InputBaseComponent
-                                type="checkbox"
-                                horizontalLabel={true}
-                                control={control}
-                                setValue={noSetValue}
-                                name="editAttendence"
-                                label="Chỉnh sữa điểm một kì"
-                                errors={errors}
-                              />
-                              <InputBaseComponent
-                                type="checkbox"
-                                horizontalLabel={true}
-                                control={control}
-                                setValue={noSetValue}
-                                name="changeSlot"
-                                label="Chỉnh sữa đổi tiết học"
-                                errors={errors}
-                              />
-                              <InputBaseComponent
-                                type="checkbox"
-                                horizontalLabel={true}
-                                control={control}
-                                setValue={noSetValue}
-                                name="editAttendence"
-                                label="Chỉnh sữa đổi giờ học"
-                                errors={errors}
-                              />
-                              <InputBaseComponent
-                                type="checkbox"
-                                horizontalLabel={true}
-                                control={control}
-                                setValue={noSetValue}
-                                name="changeSlot"
-                                label="Chỉnh sữa tiết học"
-                                errors={errors}
-                              />
-                            </div>
-                          </div>
-                          <div className="mt-5 flex justify-end">
-                            <ButtonComponent
-                              type="error"
-                              action="reset"
-                              onClick={handleClearAddForm}
-                            >
-                              CLEAR
-                            </ButtonComponent>
-                            <ButtonComponent action="submit">XÁC NHẬN</ButtonComponent>
-                          </div>
-                        </div>
-                      </div>
+                      <InputBaseComponent
+                        type="checkbox"
+                        className="w-full"
+                        horizontalLabel={true}
+                        control={control}
+                        setValue={noSetValue}
+                        name="roleAmin"
+                        label="Hiệu trưởng/Hiệu phó"
+                        errors={errors}
+                      />
+                      <InputBaseComponent
+                        type="checkbox"
+                        className="w-full"
+                        horizontalLabel={true}
+                        control={control}
+                        setValue={noSetValue}
+                        name="roleSupervisor"
+                        label="Tổng phụ trách"
+                        errors={errors}
+                      />
+                      <InputBaseComponent
+                        type="checkbox"
+                        className="w-full"
+                        horizontalLabel={true}
+                        control={control}
+                        setValue={noSetValue}
+                        name="roleHomeroomTeacher"
+                        label="Giáo viên chủ nhiệm"
+                        errors={errors}
+                      />
+                      <InputBaseComponent
+                        type="checkbox"
+                        className="w-full"
+                        horizontalLabel={true}
+                        control={control}
+                        setValue={noSetValue}
+                        name="roleSubjectTeacher"
+                        label="Giáo viên bộ môn"
+                        errors={errors}
+                      />
+                      <InputBaseComponent
+                        type="checkbox"
+                        className="w-full"
+                        horizontalLabel={true}
+                        control={control}
+                        setValue={noSetValue}
+                        name="roleStudent"
+                        label="Học sinh"
+                        errors={errors}
+                      />
                     </form>
                   </div>
                   <div role="tabpanel" hidden={currentTab == 3}>
+                    {/* phân quyền*/}
+                    <form onSubmit={handleSubmit(handleAddRole)}>
+                      <div className="flex w-full flex-wrap">
+                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                          {/* Left in right column */}
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isGetTeacher"
+                            label="Xem giáo viên"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isAddTeacher"
+                            label="Thêm giáo viên"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isUpdateTeacher"
+                            label="Chỉnh sửa giáo viên"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isDeleteTeacher"
+                            label="Xóa giáo viên"
+                            errors={errors}
+                          />
+                        </div>
+                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                          {/* Left in right column */}
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isGetStudent"
+                            label="Xem học sinh"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isAddStudent"
+                            label="Thêm học sinh"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isUpdateStudent"
+                            label="Chỉnh sửa học sinh"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isDeleteStudent"
+                            label="Xóa học sinh"
+                            errors={errors}
+                          />
+                        </div>
+                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                          {/* Left in right column */}
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isGetSubject"
+                            label="Xem môn học"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isAddSubject"
+                            label="Thêm môn học"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isUpdateSubject"
+                            label="Chỉnh sửa môn học"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isDeleteSubject"
+                            label="Xóa môn học"
+                            errors={errors}
+                          />
+                        </div>
+                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                          {/* Left in right column */}
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isGetClass"
+                            label="Xem lớp"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isAddClass"
+                            label="Thêm lớp"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isUpdateClass"
+                            label="Chỉnh sửa lớp"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isDeleteClass"
+                            label="Xóa lớp"
+                            errors={errors}
+                          />
+                        </div>
+                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                          {/* Left in right column */}
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isGetSchedule"
+                            label="Xem thời khóa biểu"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isAddSchedule"
+                            label="Thêm thời khóa biểu"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isUpdateSchedule"
+                            label="Chỉnh sửa thời khóa biểu"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isDeleteSchedule"
+                            label="Xóa thời khóa biểu"
+                            errors={errors}
+                          />
+                        </div>
+                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                          {/* Left in right column */}
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isGetRegisterBook"
+                            label="Xem sổ đầu bài"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isAddRegisterBook"
+                            label="Thêm sổ đầu bài"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isUpdateRegisterBook"
+                            label="Chỉnh sửa sổ đầu bài"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isDeleteRegisterBook"
+                            label="Xóa sổ đầu bài"
+                            errors={errors}
+                          />
+                        </div>
+                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                          {/* Left in right column */}
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isGetAttendance"
+                            label="Xem điểm danh"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isAddAttendance"
+                            label="Thêm điểm danh"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isUpdateAttendance"
+                            label="Chỉnh sửa điểm danh"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isDeleteAttendance"
+                            label="Xóa điểm danh"
+                            errors={errors}
+                          />
+                        </div>
+                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                          {/* Left in right column */}
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isGetMark"
+                            label="Xem điểm"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isAddMark"
+                            label="Thêm điểm"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isUpdateMark"
+                            label="Chỉnh sửa điểm"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isDeleteMark"
+                            label="Xóa điểm"
+                            errors={errors}
+                          />
+                        </div>
+                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                          {/* Left in right column */}
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isGetNotification"
+                            label="Xem thông báo"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isAddNotification"
+                            label="Thêm thông báo"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isUpdateNotification"
+                            label="Chỉnh sửa thông báo"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isDeleteNotification"
+                            label="Xóa thông báo"
+                            errors={errors}
+                          />
+                        </div>
+                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                          {/* Left in right column */}
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isUpdateSetting"
+                            label="Cài đặt"
+                            errors={errors}
+                          />
+                          <InputBaseComponent
+                            type="checkbox"
+                            horizontalLabel={true}
+                            control={control}
+                            setValue={noSetValue}
+                            name="isGetLog"
+                            label="Xem lịch sử hoạt động"
+                            errors={errors}
+                          />
+                        </div>
+                      </div>
+                      <div className="mt-5 flex justify-end">
+                        <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
+                          CLEAR
+                        </ButtonComponent>
+                        <ButtonComponent action="submit">XÁC NHẬN</ButtonComponent>
+                      </div>
+                    </form>
+                  </div>
+                  <div role="tabpanel" hidden={currentTab == 4}>
                     <ButtonComponent action="submit">
                       <DownloadIcon className="mr-2" />
                       TẢI FILE
@@ -817,20 +1097,22 @@ export default function AccountManagement() {
           </div>
           <div>
             {/* show data table */}
-            <TableComponent
-              header={["Tên đăng nhập", "Tên đầy đủ", "Mật khẩu", "Quyền", "Ngày tạo"]}
-              data={accounts.data.map((item) => [
-                item.userName.toString(),
-                item.fullName.toString(),
-                item.password.toString(),
-                item.role.toString(),
-                item.createdDate.toString(),
-              ])}
-              itemsPerPage={10}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              className="mt-8"
-            />
+            {accounts != null && accounts.length > 0 ? (
+              <TableComponent
+                header={["Mã giáo viên", "Tên đăng nhập", "Tên đầy đủ", "Email", "Số điện thoại"]}
+                data={accounts.map((item) => [
+                  item.id,
+                  item.username,
+                  item.fullname,
+                  item.email,
+                  item.phone,
+                ])}
+                itemsPerPage={10}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                className="mt-8"
+              />
+            ) : null}
             <PopupComponent
               title="CẬP NHẬT"
               description="Hãy chỉnh sửa để bắt đầu năm học mới"

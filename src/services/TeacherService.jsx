@@ -21,6 +21,52 @@ const getTeacherByID = async (accessToken, teacherID) => {
   return res.data;
 };
 
+const createTeacher = async (accessToken, data) => {
+  const formData = new FormData();
+  formData.append("username", data.otherValues.username);
+  formData.append("fullName", data.otherValues.fullName);
+  formData.append("birthday", data.otherValues.birthday);
+  formData.append("gender", data.otherValues.gender);
+  formData.append("nation", data.otherValues.nation);
+  formData.append("email", data.otherValues.email);
+  formData.append("phone", data.otherValues.phone);
+  formData.append("isBachelor", data.otherValues.bachelor ?? false);
+  formData.append("isMaster", data.otherValues.master ?? false);
+  formData.append("isDoctor", data.otherValues.doctor ?? false);
+  formData.append("isProfessor", data.otherValues.professor ?? false);
+  formData.append("address", data.otherValues.address);
+  formData.append("Password", data.otherValues.password);
+  formData.append("avatar", data.otherValues.avatar);
+
+  if (data.permissions && Array.isArray(data.permissions)) {
+    data.permissions.forEach((permission, index) => {
+      formData.append(`Permissions[${index}]`, permission);
+    });
+  }
+
+  if (data.roles && Array.isArray(data.roles)) {
+    data.roles.forEach((role, index) => {
+      formData.append(`Roles[${index}]`, role);
+    });
+  }
+
+  console.dir(formData);
+
+  try {
+    const res = await axios.post(`${API_HOST}/Teachers`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw error;
+  }
+};
+
 const updateTeacher = async (accessToken, data) => {
   const formData = new FormData();
   formData.append("fullName", data.fullName);
@@ -52,4 +98,19 @@ const updateTeacher = async (accessToken, data) => {
   }
 };
 
-export { getTeacherByID, getAllTeachers, updateTeacher };
+const deleteTeacher = async (accessToken, username) => {
+  try {
+    const res = await axios.delete(`${API_HOST}/Teachers/${username}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error deleting notification:", error);
+    throw error;
+  }
+};
+
+export { getTeacherByID, getAllTeachers, updateTeacher, deleteTeacher, createTeacher };

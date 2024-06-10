@@ -11,6 +11,40 @@ const getAllSubjects = async (accessToken) => {
   return res.data;
 };
 
+const addSubject = async (accessToken, subjectData) => {
+  try {
+    const response = await axios.post(`${API_HOST}/Subjects`, subjectData, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding subject:", error);
+    throw error;
+  }
+};
+
+const updateSubject = async (accessToken, subjectData) => {
+  console.log("Subject data", subjectData);
+  try {
+    const res = await axios.put(`${API_HOST}/Subjects/${subjectData.id}`, subjectData, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.error("Error updating subject:", error);
+    throw error;
+  }
+};
+
 const deleteSubject = async (accessToken, subjectID) => {
   try {
     const res = await axios.delete(`${API_HOST}/Subjects/${subjectID}`, {
@@ -26,4 +60,4 @@ const deleteSubject = async (accessToken, subjectID) => {
   }
 };
 
-export { getAllSubjects, deleteSubject };
+export { getAllSubjects, addSubject, updateSubject, deleteSubject };

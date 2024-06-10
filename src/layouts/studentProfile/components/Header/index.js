@@ -1,54 +1,33 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useState, useEffect } from "react";
-
-// prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
-
-// @mui material components
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 import AppBar from "@mui/material/AppBar";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Icon from "@mui/material/Icon";
-
-// Material Dashboard 2 React components
-import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
-import MDAvatar from "components/MDAvatar";
-
-// Material Dashboard 2 React base styles
-import breakpoints from "assets/theme/base/breakpoints";
-
-// Images
-import burceMars from "assets/images/bruce-mars.jpg";
-import backgroundImage from "assets/images/bg-profile.jpeg";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
-import { useNavigate } from "react-router-dom";
 import PopupComponent from "components/PopupComponent/PopupComponent";
 import { EditNotifications } from "@mui/icons-material";
 import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import MDBox from "components/MDBox";
+import MDTypography from "components/MDTypography";
+import MDAvatar from "components/MDAvatar";
+import breakpoints from "assets/theme/base/breakpoints";
+import backgroundImage from "assets/images/bg-profile.jpeg";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { ToastContainer, toast } from "react-toastify";
+import { updateStudent } from "services/StudentService";
+
+const accessToken = localStorage.getItem("authToken");
 
 function Header({ children, currentUser, permissions }) {
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
   const [tabValue, setTabValue] = useState(0);
   const [modalEditOpen, setModalEditOpen] = useState(false);
-  // React-hook-form for editing action
+  const [avatar, setAvatar] = useState(null);
+
+  const queryClient = useQueryClient();
+
   const {
     control: controlEditAction,
     handleSubmit: handleSubmitEditAction,
@@ -57,24 +36,82 @@ function Header({ children, currentUser, permissions }) {
     formState: { errors: errorsEditAction },
   } = useForm();
 
-  const handleEdit = () => {};
+  const updateStudentMutation = useMutation(
+    (studentData) => updateStudent(accessToken, studentData),
+    {
+      onSuccess: (response) => {
+        queryClient.invalidateQueries("studentState");
+        if (response && response.success) {
+          toast.success("Cập nhật học sinh thành công!");
+        } else {
+          toast.error(`${response.data}!`);
+        }
+        resetEditAction();
+        setModalEditOpen(false);
+      },
+      onError: (error) => {
+        console.error("Error updating student:", error);
+        toast.error("Cập nhật học sinh thất bại!");
+      },
+    }
+  );
+
+  const handleEdit = (data) => {
+    const studentData = {
+      id: data.id,
+      fullName: data.fullName,
+      birthday: data.birthday,
+      birthplace: data.birthplace,
+      gender: data.gender,
+      nation: data.nation,
+      email: data.email,
+      phone: data.phone,
+      fatherFullName: data.fatherFullName,
+      fatherPhone: data.fatherPhone,
+      fatherProfession: data.fatherProfession,
+      motherFullName: data.motherFullName,
+      motherPhone: data.motherPhone,
+      motherProfession: data.motherProfession,
+      address: data.address,
+      avatar: data.avatar, // Assuming the avatar input returns a FileList
+    };
+    updateStudentMutation.mutate(studentData);
+  };
+
+  const openEditModal = () => {
+    if (currentUser) {
+      setValue("id", currentUser.id);
+      setValue("fullName", currentUser.fullname);
+      setValue("email", currentUser.email);
+      setValue("gender", currentUser.gender);
+      setValue("fatherFullName", currentUser.fatherFullName);
+      setValue("fatherPhone", currentUser.fatherPhone);
+      setValue("fatherProfession", currentUser.fatherProfession);
+      setValue("motherFullName", currentUser.motherFullName);
+      setValue("motherPhone", currentUser.motherPhone);
+      setValue("motherProfession", currentUser.motherProfession);
+      setValue("phone", currentUser.phone);
+      setValue("birthday", currentUser.birthday.split("T")[0]);
+      setValue("birthplace", currentUser.birthplace);
+      setValue("nation", currentUser.nation);
+      setValue("avatar", currentUser.avatar);
+      setValue("address", currentUser.address);
+      // setValue("otherInfo", currentUser.otherInfo);
+
+      setAvatar(currentUser.avatar);
+    }
+    setModalEditOpen(true);
+  };
+
   useEffect(() => {
-    // A function that sets the orientation state of the tabs.
     function handleTabsOrientation() {
       return window.innerWidth < breakpoints.values.sm
         ? setTabsOrientation("vertical")
         : setTabsOrientation("horizontal");
     }
 
-    /** 
-     The event listener that's calling the handleTabsOrientation function when resizing the window.
-    */
     window.addEventListener("resize", handleTabsOrientation);
-
-    // Call the handleTabsOrientation function to set the state with the initial value.
     handleTabsOrientation();
-
-    // Remove event listener on cleanup
     return () => window.removeEventListener("resize", handleTabsOrientation);
   }, [tabsOrientation]);
 
@@ -121,22 +158,26 @@ function Header({ children, currentUser, permissions }) {
           <Grid item>
             <MDBox height="100%" mt={0.5} lineHeight={1}>
               <MDTypography variant="h5" fontWeight="medium">
-                {/* {currentUser.fullname} */}{" "}
                 {currentUser ? currentUser.fullname : "Chưa có thông tin!"}
               </MDTypography>
               <MDTypography variant="button" color="text" fontWeight="regular">
-                {/* {permissions || "No permission"} | {currentUser.id} */}
-                Học Sinh | {currentUser ? currentUser.id : "Chưa có thông tin!"}
+                Giáo viên | {currentUser ? currentUser.id : "Chưa có thông tin!"} |{" "}
+                {currentUser ? currentUser.email : "Chưa có thông tin!"}
               </MDTypography>
             </MDBox>
           </Grid>
           <Grid item xs={12} md={6} lg={4} sx={{ ml: "auto" }}>
             <AppBar position="static">
               <div className="flex items-center justify-end">
-                {/* <ButtonComponent type="dark" onClick={handleLogout}>
-                  ĐĂNG XUẤT
-                </ButtonComponent> */}
-                <ButtonComponent onClick={() => setModalEditOpen(true)}>CẬP NHẬT</ButtonComponent>
+                <ButtonComponent
+                  type="success"
+                  onClick={() => {
+                    navigate("/authentication/reset-password");
+                  }}
+                >
+                  ĐỔI MẬT KHẨU
+                </ButtonComponent>
+                <ButtonComponent onClick={openEditModal}>CẬP NHẬT</ButtonComponent>
                 <PopupComponent
                   title="CẬP NHẬT"
                   description="Cập nhật tài khoản"
@@ -150,7 +191,7 @@ function Header({ children, currentUser, permissions }) {
                         type="text"
                         className="w-1/2 mr-2"
                         control={controlEditAction}
-                        name="nameEdit"
+                        name="fullName"
                         placeholder="Nguyen Van A"
                         label="Họ và tên"
                         setValue={setValue}
@@ -174,12 +215,52 @@ function Header({ children, currentUser, permissions }) {
                       />
                       <InputBaseComponent
                         type="text"
+                        className="w-1/2"
+                        control={controlEditAction}
+                        setValue={setValue}
+                        name="gender"
+                        placeholder="Nam"
+                        label="Giới tính"
+                        errors={errorsEditAction}
+                        validationRules={{
+                          required: "Không được bỏ trống!",
+                        }}
+                      />
+                    </div>
+                    <div className="flex">
+                      <InputBaseComponent
+                        type="date"
                         className="w-1/2 mr-2"
                         control={controlEditAction}
                         setValue={setValue}
-                        name="sex"
-                        placeholder="Nam"
-                        label="Giới tính"
+                        name="birthday"
+                        label="Ngày sinh"
+                        errors={errorsEditAction}
+                        validationRules={{
+                          required: "Không được bỏ trống!",
+                        }}
+                      />
+                      <InputBaseComponent
+                        type="text"
+                        label="Dân tộc"
+                        className="w-1/2 mr-2"
+                        control={controlEditAction}
+                        setValue={setValue}
+                        name="nation"
+                        placeholder="Kinh"
+                        errors={errorsEditAction}
+                        validationRules={{
+                          required: "Không được bỏ trống!",
+                        }}
+                      />
+                      <InputBaseComponent
+                        type="text"
+                        label="Số điện thoại"
+                        className="w-1/2"
+                        control={controlEditAction}
+                        setValue={setValue}
+                        name="phone"
+                        placeholder="0234123470"
                         errors={errorsEditAction}
                         validationRules={{
                           required: "Không được bỏ trống!",
@@ -193,7 +274,7 @@ function Header({ children, currentUser, permissions }) {
                         className="w-1/2 mr-2"
                         control={controlEditAction}
                         setValue={setValue}
-                        name="parent"
+                        name="fatherFullName"
                         placeholder="Nguyen Van B"
                         label="Họ tên cha"
                         errors={errorsEditAction}
@@ -206,22 +287,23 @@ function Header({ children, currentUser, permissions }) {
                         className="w-1/2 mr-2"
                         control={controlEditAction}
                         setValue={setValue}
-                        name="parents"
-                        placeholder="0234123471"
-                        label="SDT cha"
+                        placeholder="Làm nông"
+                        name="fatherProfession"
+                        label="Nghề nghiệp cha"
                         errors={errorsEditAction}
                         validationRules={{
                           required: "Không được bỏ trống!",
                         }}
                       />
+
                       <InputBaseComponent
                         type="text"
                         className="w-1/2"
                         control={controlEditAction}
                         setValue={setValue}
-                        placeholder="Làm nông"
-                        name="jobdad"
-                        label="Nghe nghiệp cha"
+                        name="fatherPhone"
+                        placeholder="0234123471"
+                        label="SĐT cha"
                         errors={errorsEditAction}
                         validationRules={{
                           required: "Không được bỏ trống!",
@@ -235,7 +317,7 @@ function Header({ children, currentUser, permissions }) {
                         className="w-1/2 mr-2"
                         control={controlEditAction}
                         setValue={setValue}
-                        name="mom"
+                        name="motherFullName"
                         label="Họ tên mẹ"
                         placeholder="Lê thị B"
                         errors={errorsEditAction}
@@ -248,83 +330,42 @@ function Header({ children, currentUser, permissions }) {
                         className="w-1/2 mr-2"
                         control={controlEditAction}
                         setValue={setValue}
-                        name="momsd"
-                        label="SDT mẹ"
+                        name="motherProfession"
+                        placeholder="Giáo viên"
+                        label="Nghề nghiệp mẹ"
+                        errors={errorsEditAction}
+                        validationRules={{
+                          required: "Không được bỏ trống!",
+                        }}
+                      />
+
+                      <InputBaseComponent
+                        type="text"
+                        className="w-1/2"
+                        control={controlEditAction}
+                        setValue={setValue}
+                        name="motherPhone"
+                        label="SĐT mẹ"
                         placeholder="0234123472"
                         errors={errorsEditAction}
                         validationRules={{
                           required: "Không được bỏ trống!",
                         }}
                       />
-                      <InputBaseComponent
-                        type="text"
-                        className="w-1/2"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="jobmom"
-                        placeholder="Giáo viên"
-                        label="Nghe nghiệp mẹ"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
                     </div>
-
-                    <div className="flex">
-                      <InputBaseComponent
-                        type="text"
-                        label="Số điện thoại"
-                        className="w-1/2 mr-2"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="phone"
-                        placeholder="0234123470"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
-                      <InputBaseComponent
-                        type="date"
-                        className="w-1/2 mr-2"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="startDateEdit"
-                        label="Ngày sinh"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
-                      <InputBaseComponent
-                        type="text"
-                        label="Dân tộc"
-                        className="w-1/2"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="nation"
-                        placeholder="Kinh"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
-                    </div>
-                    <div className="flex">
-                      <InputBaseComponent
-                        type="file"
-                        className="w-full"
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="thumbnailEdit"
-                        label="Ảnh đại diện"
-                        errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
-                    </div>
+                    <InputBaseComponent
+                      type="text"
+                      className=""
+                      control={controlEditAction}
+                      setValue={setValue}
+                      name="birthplace"
+                      placeholder="Cần Thơ"
+                      label="Nơi sinh"
+                      errors={errorsEditAction}
+                      validationRules={{
+                        required: "Không được bỏ trống!",
+                      }}
+                    />
                     <InputBaseComponent
                       type="text"
                       className=""
@@ -339,18 +380,39 @@ function Header({ children, currentUser, permissions }) {
                       }}
                     />
 
-                    <InputBaseComponent
+                    <div className="flex">
+                      <InputBaseComponent
+                        type="file"
+                        className="w-full"
+                        control={controlEditAction}
+                        setValue={setValue}
+                        name="avatar"
+                        label="Ảnh đại diện"
+                        errors={errorsEditAction}
+                        validationRules={{
+                          required: "Không được bỏ trống!",
+                        }}
+                      />
+                      {avatar && (
+                        <img
+                          className="w-24 ml-2 h-24 rounded-md object-cover object-center"
+                          src={avatar}
+                          alt="avatar"
+                        />
+                      )}
+                    </div>
+                    {/* <InputBaseComponent
                       type="textArea"
                       className="w-full"
                       control={controlEditAction}
                       setValue={setValue}
-                      name="others"
+                      name="otherInfo"
                       label="Thông tin khác"
                       errors={errorsEditAction}
                       validationRules={{
                         required: "Không được bỏ trống!",
                       }}
-                    />
+                    /> */}
                     <div className="mt-4 flex justify-end">
                       <ButtonComponent
                         type="error"
@@ -373,12 +435,10 @@ function Header({ children, currentUser, permissions }) {
   );
 }
 
-// Setting default props for the Header
 Header.defaultProps = {
   children: "",
 };
 
-// Typechecking props for the Header
 Header.propTypes = {
   children: PropTypes.node,
   currentUser: PropTypes.object,

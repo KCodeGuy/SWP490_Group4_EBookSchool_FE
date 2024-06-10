@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import { Card, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { Card, CircularProgress, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
 import { useForm } from "react-hook-form";
@@ -13,8 +13,10 @@ import { ToastContainer, toast } from "react-toastify";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import DownloadIcon from "@mui/icons-material/Download";
 import { useNavigate } from "react-router-dom";
+import BookIcon from "@mui/icons-material/Book";
 
 import "./style.scss";
+import noDataImage3 from "../../assets/images/noDataImage3.avif";
 import { grades } from "../../mock/grade";
 import { subjects, subject } from "../../mock/subject";
 import { schoolYears } from "../../mock/schoolYear";
@@ -23,10 +25,81 @@ import PopupComponent from "../../components/PopupComponent/PopupComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
-import { getAllSubjects, deleteSubject } from "../../services/SubjectService";
+import {
+  getAllSubjects,
+  addSubject,
+  updateSubject,
+  deleteSubject,
+} from "../../services/SubjectService";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 //get access token
 const accessToken = localStorage.getItem("authToken");
+
+const lessonPlans = [
+  {
+    slot: 1,
+    title: "string 0",
+  },
+  {
+    slot: 2,
+    title: "string 1",
+  },
+  {
+    slot: 3,
+    title: "string 2",
+  },
+];
+
+const componentScores = [
+  {
+    name: "Miệng",
+    scoreFactor: 1,
+    count: 3,
+    semester: "Học kỳ I",
+  },
+  {
+    name: "15p",
+    scoreFactor: 1,
+    count: 2,
+    semester: "Học kỳ I",
+  },
+  {
+    name: "1 Tiết",
+    scoreFactor: 2,
+    count: 1,
+    semester: "Học kỳ I",
+  },
+  {
+    name: "Cuối kỳ",
+    scoreFactor: 3,
+    count: 1,
+    semester: "Học kỳ I",
+  },
+  {
+    name: "Miệng",
+    scoreFactor: 1,
+    count: 3,
+    semester: "Học kỳ II",
+  },
+  {
+    name: "15p",
+    scoreFactor: 1,
+    count: 2,
+    semester: "Học kỳ II",
+  },
+  {
+    name: "1 Tiết",
+    scoreFactor: 2,
+    count: 1,
+    semester: "Học kỳ II",
+  },
+  {
+    name: "Cuối kỳ",
+    scoreFactor: 3,
+    count: 1,
+    semester: "Học kỳ II",
+  },
+];
 
 // Subject Management (UolLT)
 export default function SubjectManagement() {
@@ -35,6 +108,7 @@ export default function SubjectManagement() {
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
+  const [markFactors, setMarkFactors] = useState([]);
   const [deletedData, setDeletedData] = useState({});
   const [currentData, setCurrentData] = useState([]);
   const navigate = useNavigate();
@@ -53,14 +127,6 @@ export default function SubjectManagement() {
     }
   }, [data]);
 
-  const markFactors = subject.data.points[0].componentPoints.map((obj) => [
-    obj.id,
-    obj.name,
-    obj.count,
-    obj.scoreFactor,
-    subject.data.points[0].semeaster,
-  ]);
-
   const lessonPlan = subject.data.lessonPlans.map((obj) => [obj.id, obj.title, obj.slot]);
 
   //2. Set data by Call API
@@ -69,19 +135,31 @@ export default function SubjectManagement() {
     setSchoolYear(event.target.value);
   };
 
+  const [grade, setGrade] = React.useState(grades.data[0].name);
+  const handleGradeSelectedChange = (event) => {
+    setGrade(event.target.value);
+  };
+
   const semesters = [
-    { label: "Học kì I", value: "HK1" },
-    { label: "Học kì II", value: "HK2" },
-    { label: "Cả năm", value: "cả năm" },
+    { label: "Học kì I", value: "Học kỳ I" },
+    { label: "Học kì II", value: "Học kỳ II" },
   ];
+
+  const nameScore = [
+    { label: "Kiểm tra miệng", value: "Miệng" },
+    { label: "Kiểm tra 15 phút", value: "15p" },
+    { label: "Kiểm tra 1 tiết", value: "1 Tiết" },
+    { label: "Kiểm tra học kì", value: "Cuối kỳ" },
+  ];
+
   const formattedSchoolYears = schoolYears.data.map((year) => ({
     label: year.schoolYear,
     value: year.schoolYear,
   }));
 
-  const formattedGrades = grades.data.map((grade) => ({
-    label: grade.name,
-    value: grade.name,
+  const formattedGrades = grades.data.map((name) => ({
+    label: name.name,
+    value: name.name,
   }));
   //3.1 React-hook-from of adding action
   const {
@@ -110,16 +188,41 @@ export default function SubjectManagement() {
     setModalOpen(false);
   };
 
+  const addSubjectsMutation = useMutation((subjectData) => addSubject(accessToken, subjectData), {
+    onSuccess: (response) => {
+      queryClient.invalidateQueries("subjectState");
+      if (response && response.success) {
+        toast.success("Tạo môn học thành công!");
+      } else {
+        toast.error(`${response.data} !`);
+      }
+      reset();
+      setModalOpen(false);
+    },
+  });
+
   const handleAddSubject = (data) => {
-    console.log("Call API add subject: ", data);
-    // Call API add subject here
+    const classData = {
+      name: data.name,
+      grade: data.grade,
+      lessonPlans: lessonPlans,
+      componentScores: componentScores,
+    };
+    // console.log(classData);
+    addSubjectsMutation.mutate(classData);
   };
 
   const handleAddMark = (data) => {
-    console.log("Call API add mark: ", data);
-    // Call API add subject here
-  };
+    // Generate a new id for the data
+    const id = markFactors.length;
 
+    // Create a new markFactor object with the id and other data
+    const newMarkFactor = { id, ...data };
+
+    // Update the markFactors state by appending the new markFactor
+    setMarkFactors((prevMarkFactors) => [...prevMarkFactors, newMarkFactor]);
+  };
+  console.log("markFactors: ", markFactors);
   const handleAddLesson = (data) => {
     console.log("Call API add lesson: ", data);
     // Call API add subject here
@@ -134,22 +237,47 @@ export default function SubjectManagement() {
     setModalEditOpen(false);
   };
   const handleEdit = (rowItem) => {
-    console.log(rowItem);
+    // console.log(rowItem);
     if (rowItem) {
       setValue("idEdit", rowItem[0]);
       setValue("nameEdit", rowItem[1]);
-      setValue("selectGradeEdit", rowItem[2]);
-      setValue("selectYearEdit", rowItem[2]);
-      setValue("descriptionEdit", rowItem[3]);
+      setValue("gradeEdit", rowItem[2]);
       setModalEditOpen(true);
     } else {
       setModalEditOpen(false);
     }
   };
-  const handleEditSubject = (data) => {
-    console.log("Call API edit subject: ", data);
-    // Call API edit subject here
+
+  const updateSubjectMutation = useMutation(
+    (subjectData) => updateSubject(accessToken, subjectData),
+    {
+      onSuccess: (response) => {
+        queryClient.invalidateQueries("subjectState");
+        if (response && response.success) {
+          toast.success("Cập nhật môn học thành công!");
+        } else {
+          toast.error(`${response.data} !`);
+        }
+        reset();
+        setModalOpen(false);
+      },
+    }
+  );
+
+  // Xử lí get dữ liệu khi submit
+  const handleUpdateSubject = (data) => {
+    console.log("Submit data", data);
+    const subjectData = {
+      id: data.idEdit,
+      name: data.nameEdit,
+      grade: data.gradeEdit,
+      lessonPlans: lessonPlans,
+      componentScores: componentScores,
+    };
+    console.log("Data gửi đi: ", subjectData);
+    updateSubjectMutation.mutate(subjectData);
   };
+
   const handleClearEditForm = () => {
     resetEditAction();
   };
@@ -160,7 +288,7 @@ export default function SubjectManagement() {
   };
 
   const handleStatistic = () => {
-    console.log("Call api: ", { schoolYear });
+    setCurrentData(filterByButton(grade, data?.data));
   };
 
   const deleteSubjectMutation = useMutation((subjectId) => deleteSubject(accessToken, subjectId), {
@@ -194,6 +322,14 @@ export default function SubjectManagement() {
     setCurrentData(filterSubjects(txtSearch, data?.data));
   };
 
+  const filterByButton = (action, data) => {
+    if (data) {
+      return data.filter((item) => {
+        return item.grade.toLowerCase() === action.toLowerCase();
+      });
+    }
+  };
+
   const filterSubjects = (txtSearch, data) => {
     const search = txtSearch.trim().toLowerCase();
     return data.filter((subject) => {
@@ -208,31 +344,41 @@ export default function SubjectManagement() {
     setCurrentTab(newValue);
   };
 
+  const hanldeDeleteMarkFactor = (data) => {
+    console.log(data);
+    markFactors.forEach((item) => {
+      console.log(item);
+    });
+  };
+
   return (
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
       <DashboardNavbar />
       <Card className="max-h-max mb-8">
         <MDBox p={5}>
-          <div className="text-center mt-0">
-            <h4 className="text-xl font-bold">QUẢN LÍ MÔN HỌC</h4>
+          <div className="text-center mt-0 ">
+            <div className="flex justify-center items-center text-3xl mx-auto w-full">
+              <BookIcon />
+              <h4 className="text-xl font-bold ml-3">QUẢN LÍ MÔN HỌC</h4>
+            </div>
           </div>
           <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
             {/* School Year Select */}
             <div className="flex justify-start max-[639px]:flex-wrap">
               <FormControl sx={{ minWidth: 120, marginRight: "12px" }}>
-                <InputLabel id="select-school-year-lable">Năm học</InputLabel>
+                <InputLabel id="select-school-year-lable">Khối</InputLabel>
                 <Select
                   labelId="select-school-year-lable"
                   id="elect-school-year"
-                  value={schoolYear}
+                  value={grade}
                   className="h-11 mr-0"
                   label="Năm học"
-                  onChange={handleSchoolYearSelectedChange}
+                  onChange={handleGradeSelectedChange}
                 >
-                  {schoolYears.data.map((item, index) => (
-                    <MenuItem key={index} value={item.schoolYear.toString()}>
-                      {item.schoolYear.toString()}
+                  {grades.data.map((item, index) => (
+                    <MenuItem key={index} value={item.name.toString()}>
+                      {item.name.toString()}
                     </MenuItem>
                   ))}
                 </Select>
@@ -271,42 +417,34 @@ export default function SubjectManagement() {
                   {/* Content for Tab 1 */}
                   <div role="tabpanel" hidden={currentTab !== 0}>
                     <form onSubmit={handleSubmit(handleAddSubject)}>
-                      <InputBaseComponent
-                        placeholder="Nhập tên môn học"
-                        type="text"
-                        control={control}
-                        setValue={noSetValue}
-                        name="name"
-                        label="Tên môn học"
-                        errors={errors}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
-                      <InputBaseComponent
-                        label="Khối"
-                        name="selectGradeEdit"
-                        control={control}
-                        setValue={noSetValue}
-                        type="select"
-                        options={formattedGrades}
-                        errors={errors}
-                        validationRules={{
-                          required: "Hãy chọn khối!",
-                        }}
-                      />
-                      <InputBaseComponent
-                        placeholder="Nhập mô tả môn học"
-                        type="text"
-                        control={control}
-                        setValue={noSetValue}
-                        name="description"
-                        label="Mô tả"
-                        errors={errors}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
-                      />
+                      <div className="flex">
+                        <InputBaseComponent
+                          placeholder="Nhập tên môn học"
+                          type="text"
+                          control={control}
+                          className="w-1/2 mr-2"
+                          setValue={noSetValue}
+                          name="name"
+                          label="Tên môn học"
+                          errors={errors}
+                          validationRules={{
+                            required: "Không được bỏ trống!",
+                          }}
+                        />
+                        <InputBaseComponent
+                          label="Khối"
+                          name="grade"
+                          control={control}
+                          className="w-1/2 mr-2"
+                          setValue={noSetValue}
+                          type="select"
+                          options={formattedGrades}
+                          errors={errors}
+                          validationRules={{
+                            required: "Hãy chọn khối!",
+                          }}
+                        />
+                      </div>
                       <div className="mt-4 flex justify-end">
                         <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
                           CLEAR
@@ -323,12 +461,13 @@ export default function SubjectManagement() {
                       <div className="flex w-full">
                         <InputBaseComponent
                           className="w-1/2 mr-3"
-                          placeholder="Nhập tên cột điểm"
-                          type="text"
+                          placeholder="Chọn cột điểm"
+                          type="select"
+                          options={nameScore}
                           control={control}
                           setValue={noSetValue}
-                          name="nameMark"
-                          label="Tên cột điểm"
+                          name="nameScore"
+                          label="Chọn cột điểm"
                           errors={errors}
                           validationRules={{
                             required: "Không được bỏ trống!",
@@ -390,12 +529,17 @@ export default function SubjectManagement() {
                     </form>
                     <p className="text-sm font-bold">TẤT CẢ CỘT ĐIỂM (TOÁN)</p>
                     <TableComponent
-                      header={["ID", "Tên", "Số lượng", "Hệ số", "Kì học"]}
-                      data={markFactors}
+                      header={[, "Tên", "Số lượng", "Hệ số", "Kì học"]}
+                      data={markFactors?.map((item) => [
+                        item.nameScore.toString(),
+                        item.semester.toString(),
+                        item.count.toString(),
+                        item.scoreFactor.toString(),
+                      ])}
                       isOrdered={false}
                       itemsPerPage={5}
                       // onEdit={handleEdit}
-                      onDelete={handleDelete}
+                      onDelete={hanldeDeleteMarkFactor}
                       className="mt-1"
                     />
                   </div>
@@ -486,8 +630,13 @@ export default function SubjectManagement() {
           </div>
           <div>
             {isLoading ? (
-              <div className="text-center">Loading...</div>
-            ) : (
+              <div className="text-center primary-color my-10 text-xl italic font-medium">
+                <div className="mx-auto flex items-center justify-center">
+                  <p className="mr-3">Loading</p>
+                  <CircularProgress size={24} color="inherit" />
+                </div>
+              </div>
+            ) : data?.success ? (
               <TableComponent
                 header={["Tên môn học", "Khối"]}
                 data={currentData?.map((item) => [
@@ -495,12 +644,21 @@ export default function SubjectManagement() {
                   item.name.toString(),
                   item.grade.toString(),
                 ])}
-                itemsPerPage={10}
+                itemsPerPage={15}
                 hiddenColumns={[0]}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 className="mt-8"
               />
+            ) : (
+              <div className="text-center primary-color my-10 text-xl italic font-medium">
+                <img
+                  className="w-60 h-60 object-cover object-center mx-auto"
+                  src={noDataImage3}
+                  alt="Chưa có dữ liệu!"
+                />
+                Chưa có dữ liệu!
+              </div>
             )}
             <PopupComponent
               title="CẬP NHẬT"
@@ -509,7 +667,7 @@ export default function SubjectManagement() {
               isOpen={modalEditOpen}
               onClose={handleCloseEditModal}
             >
-              <form onSubmit={handleSubmitEditAction(handleEditSubject)}>
+              <form onSubmit={handleSubmitEditAction(handleUpdateSubject)}>
                 <InputBaseComponent
                   placeholder="Nhập tên môn học"
                   type="text"
@@ -524,7 +682,7 @@ export default function SubjectManagement() {
                 />
                 <InputBaseComponent
                   label="Khối"
-                  name="selectGradeEdit"
+                  name="gradeEdit"
                   control={controlEditAction}
                   setValue={noSetValue}
                   type="select"
@@ -532,18 +690,6 @@ export default function SubjectManagement() {
                   errors={errors}
                   validationRules={{
                     required: "Hãy chọn khối!",
-                  }}
-                />
-                <InputBaseComponent
-                  placeholder="Nhập mô tả"
-                  type="text"
-                  control={controlEditAction}
-                  name="descriptionEdit"
-                  label="Nhập mô tả"
-                  setValue={setValue}
-                  errors={errorsEditAction}
-                  validationRules={{
-                    required: "Không được bỏ trống!",
                   }}
                 />
                 <div className="mt-4 flex justify-end">

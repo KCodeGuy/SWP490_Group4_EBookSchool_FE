@@ -88,14 +88,7 @@ const routes = [
     route: "/schoolBook",
     component: <SchoolBook />,
   },
-  {
-    type: "collapse",
-    name: "Thông báo",
-    key: "notificationDetails",
-    icon: <Icon fontSize="small">notifications</Icon>,
-    route: "/notificationDetails/:notificationID",
-    component: <NotificationDetails />,
-  },
+
   {
     type: "collapse",
     name: "Thời khóa biểu",
@@ -111,6 +104,14 @@ const routes = [
     icon: <Icon fontSize="small">grading</Icon>,
     route: "/takeAttendance/:attendanceID",
     component: <TakeAttendance />,
+  },
+  {
+    type: "collapse",
+    name: "Thông báo",
+    key: "notificationDetails",
+    icon: <Icon fontSize="small">notifications</Icon>,
+    route: "/notificationDetails/:notificationID",
+    component: <NotificationDetails />,
   },
 
   {

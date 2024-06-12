@@ -334,7 +334,7 @@ export default function SubjectManagement() {
     const search = txtSearch.trim().toLowerCase();
     return data.filter((subject) => {
       return (
-        (subject.title && subject.title.toLowerCase().includes(search)) ||
+        (subject.name && subject.name.toLowerCase().includes(search)) ||
         (subject.grade && subject.grade.toLowerCase().includes(search))
       );
     });

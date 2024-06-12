@@ -39,6 +39,7 @@ Coded by www.creative-tim.com
 // Material Dashboard 2 React layouts
 import Dashboard from "layouts/dashboard";
 import Profile from "layouts/profile";
+import StudentProfile from "./layouts/studentProfile";
 import SignIn from "layouts/authentication/sign-in";
 import ResetPassword from "layouts/authentication/reset-password";
 
@@ -268,11 +269,19 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Thông tin tài khoản",
+    name: "Tài khoản GV",
     key: "profile",
     icon: <Icon fontSize="small">person</Icon>,
     route: "/profile",
     component: <Profile />,
+  },
+  {
+    type: "collapse",
+    name: "Tài khoản HS",
+    key: "studentProfile",
+    icon: <Icon fontSize="small">person</Icon>,
+    route: "/studentProfile",
+    component: <StudentProfile />,
   },
 ];
 

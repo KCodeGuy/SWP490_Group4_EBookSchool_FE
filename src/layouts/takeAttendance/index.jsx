@@ -301,6 +301,26 @@ export default function TakeAttendance() {
               Chưa có dữ liệu!
             </div>
           )}
+
+          <div className="mt-5 text-base">
+            <p className="font-bold">Ghi chú:</p>
+            <ul className="list-disc ml-5">
+              <li>
+                <span className="text-color font-bold">(Chưa bắt đầu): </span>
+                <span className="italic">
+                  Tiết học này chưa bắt đầu, tiết học sẽ bắt đầu khi đến ngày học.
+                </span>
+              </li>
+              <li>
+                <span className="success-color font-bold">(Có mặt): </span>
+                <span className="italic">Học sinh/Giáo viên đã tham gia tiết học.</span>
+              </li>
+              <li>
+                <span className="error-color font-bold">(Vắng): </span>
+                <span className="italic">Học sinh/Giáo viên đã không tham gia tiết học.</span>
+              </li>
+            </ul>
+          </div>
         </MDBox>
       </Card>
       <Footer />

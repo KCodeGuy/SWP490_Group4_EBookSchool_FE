@@ -29,9 +29,9 @@ import { getAllTeachers } from "services/TeacherService";
 
 //get access token
 const accessToken = localStorage.getItem("authToken");
-const students = ["HS0001", "HS0002", "HS0003", "HS0004", "HS0005", "HS0006", "HS0007"];
 
 export default function ClassManagement() {
+  const students = ["HS0043"];
   console.log("Re-render");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);

@@ -68,6 +68,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const route = useLocation().pathname.split("/").slice(1);
   const [modalLogout, setModalLogout] = useState(false);
   const currentUser = JSON.parse(localStorage.getItem("user"));
+  const userRole = localStorage.getItem("userRole");
 
   const handleLogoutUser = () => {
     logoutUser();
@@ -185,7 +186,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
               </IconButton>
               {currentUser && (
                 <div className="flex items-center text-base font-medium ml-2 ">
-                  <Link to={currentUser.id.includes("HS") ? "/sudentProfile" : "/profile"}>
+                  <Link to={userRole == "Student" ? "/studentProfile" : "/profile"}>
                     <div className="flex items-center">
                       <img
                         className="w-12 h-12 object-contain object-center shadow-md rounded-full"

@@ -11,7 +11,11 @@ const getUserRole = (userID, userName, permission) => {
   ) {
     // Role subject teacher
     userRole = "SubjectTeacher";
-  } else if (userID.includes("homeroomteacher") || userName.toLowerCase() == "homeroomteacher") {
+  } else if (
+    userID.includes("homeroomteacher") ||
+    userName.toLowerCase() == "homeroomteacher" ||
+    userName.includes("homeroomteacher")
+  ) {
     // Role Homeroom teacher
     userRole = "HomeroomTeacher";
   } else if (permission.includes("Get Log") && userName.toLowerCase() !== "admin") {

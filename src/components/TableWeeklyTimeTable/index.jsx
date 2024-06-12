@@ -1,31 +1,38 @@
+/* eslint-disable prettier/prettier */
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import AccessAlarmsIcon from "@mui/icons-material/AccessAlarms";
-import { Link } from "react-router-dom";
-import { getTodayDate } from "utils/CommonFunctions";
+import { Link, useNavigate } from "react-router-dom";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import { getTodayDate } from "../../utils/CommonFunctions";
 
-const TableWeeklyTimeTableComponent = ({ data, onDetails, className, userRole }) => {
+const TableWeeklyTimeTableComponent = ({
+  data,
+  onDetails,
+  className,
+  userRole,
+  onEdit,
+  onDelete,
+}) => {
   const dates = data.map((item) => item.date);
   const defaultSlots = Array.from({ length: 10 }, (_, index) => index + 1);
   const { formattedDate } = getTodayDate();
+  const navigate = useNavigate();
 
   const renderSlotStatus = (status) => {
-    let formattedStatus = status.toLowerCase();
-    switch (formattedStatus) {
-      case "not-started": {
-        return <span className={`error-color`}>({status})</span>;
+    switch (status) {
+      case "Vắng": {
+        return <span className="font-bold error-color">({status})</span>;
       }
-      case "on-going": {
-        return <span className={`primary-color`}>({status})</span>;
+      case "Chưa bắt đầu": {
+        return <span className="font-bold text-color">({status})</span>;
       }
-      case "completed": {
-        return <span className={`success-color`}>({status})</span>;
-      }
-      default: {
-        return <span className={`text-slate-400`}>({status})</span>;
+      case "Có mặt": {
+        return <span className="font-bold success-color">({status})</span>;
       }
     }
   };
+
   return (
     <div className={`max-[1023px]:overflow-scroll lg:overflow-auto ${className}`}>
       <table>
@@ -78,13 +85,9 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails, className, userRole })
                           {slotData.slotTime}
                         </p>
                         <div className="flex justify-between mt-1 items-center">
-                          {slotData.isAttendance ? (
-                            <span className="font-bold success-color">(Có mặt)</span>
-                          ) : (
-                            <span className="font-bold error-color">(Vắng)</span>
-                          )}
-                          {userRole !== "Student" ? (
-                            <Link to="/schoolBook">
+                          {renderSlotStatus(slotData.status)}
+                          {userRole === "SubjectTeacher" || userRole === "HomeroomTeacher" ? (
+                            <Link to={`/schoolBook`}>
                               <button className="text-center text-white px-2 max-w-max h-6 leading-6 rounded bg-warning-color">
                                 SĐB
                               </button>
@@ -92,13 +95,47 @@ const TableWeeklyTimeTableComponent = ({ data, onDetails, className, userRole })
                           ) : (
                             ""
                           )}
+                          {userRole === "Principal" || userRole === "Headteacher" ? (
+                            <button
+                              className="text-center text-white px-3 max-w-max h-6 leading-6 rounded bg-error-color"
+                              onClick={() => onDelete(slotData)}
+                            >
+                              Xóa
+                            </button>
+                          ) : (
+                            ""
+                          )}
                         </div>
-                        {userRole === "SubjectTeacher" || userRole === "Principal" ? (
-                          <Link to="/takeAttendance">
-                            <button className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color mt-3">
+                        {userRole === "Student" || userRole === "SubjectTeacher" ? (
+                          <p className="text-center text-white px-1 max-w-max h-6 leading-6 rounded bg-warning-color mt-2">
+                            <LocationOnIcon className="mb-0.5" />
+                            {slotData.classroom}
+                          </p>
+                        ) : (
+                          ""
+                        )}
+                        {userRole === "SubjectTeacher" ? (
+                          <>
+                            <button
+                              className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color mt-2"
+                              onClick={() => {
+                                navigate(`/takeAttendance/${slotData.id}`);
+                              }}
+                            >
                               Điểm danh
                             </button>
-                          </Link>
+                          </>
+                        ) : (
+                          ""
+                        )}
+
+                        {userRole === "Principal" || userRole === "Headteacher" ? (
+                          <button
+                            className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color mt-3"
+                            onClick={() => onEdit(slotData, date)}
+                          >
+                            Cập nhật
+                          </button>
                         ) : (
                           ""
                         )}
@@ -121,6 +158,8 @@ TableWeeklyTimeTableComponent.propTypes = {
   data: PropTypes.any,
   className: PropTypes.string,
   onDetails: PropTypes.func,
+  onDelete: PropTypes.func,
+  onEdit: PropTypes.func,
   userRole: PropTypes.string,
 };
 

@@ -253,8 +253,15 @@ export default function NotificationManagement() {
                     }}
                   />
                   <div className="mt-4 flex justify-end">
-                    <ButtonComponent type="error" action="reset" onClick={() => reset()}>
-                      CLEAR
+                    <ButtonComponent
+                      type="error"
+                      action="reset"
+                      onClick={() => {
+                        reset();
+                        setModalOpen(false);
+                      }}
+                    >
+                      HỦY BỎ
                     </ButtonComponent>
                     <ButtonComponent action="submit">
                       <AddCircleOutlineIcon className="mr-1" />
@@ -366,8 +373,15 @@ export default function NotificationManagement() {
                   }}
                 />
                 <div className="mt-4 flex justify-end">
-                  <ButtonComponent type="error" action="reset" onClick={() => resetEditAction()}>
-                    CLEAR
+                  <ButtonComponent
+                    type="error"
+                    action="reset"
+                    onClick={() => {
+                      () => setModalEditOpen(false);
+                      resetEditAction();
+                    }}
+                  >
+                    HỦY BỎ
                   </ButtonComponent>
                   <ButtonComponent action="submit">CẬP NHẬT</ButtonComponent>
                 </div>

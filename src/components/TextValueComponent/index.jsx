@@ -8,8 +8,11 @@ export default function TextValueComponent({
   icon,
   variantValue,
   customValue,
+  maxWidth,
 }) {
-  const customClassName = `{w-full mb-2 flex items-center ${className}}`;
+  const customClassName = `{${
+    maxWidth ? maxWidth : "w-full"
+  }  mb-2 flex items-center ${className}}`;
   let variantValueStyle = "";
   switch (variantValue) {
     case "primary": {
@@ -31,7 +34,7 @@ export default function TextValueComponent({
   }
   return (
     <div className={customClassName}>
-      <div className="flex items-center text-md ">
+      <div className="flex items-center  text-md ">
         {icon}
         <label className="mx-2  font-medium w-36 text-wrap">{label}: </label>
       </div>
@@ -44,6 +47,7 @@ TextValueComponent.propTypes = {
   className: PropTypes.string,
   value: PropTypes.any,
   icon: PropTypes.any,
+  maxWidth: PropTypes.string,
   variantValue: PropTypes.string,
   customValue: PropTypes.string,
 };

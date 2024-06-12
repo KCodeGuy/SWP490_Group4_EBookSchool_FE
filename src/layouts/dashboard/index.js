@@ -33,14 +33,6 @@ const Dashboard = React.memo(() => {
     getAllNotifications(accessToken)
   );
 
-  const { data: classes } = useQuery(["currentClasses", { accessToken }], () =>
-    getAllClasses(accessToken)
-  );
-
-  if (classes) {
-    localStorage.setItem("currentClasses", JSON.stringify(classes?.data));
-  }
-
   const notifications = useMemo(() => (Array.isArray(data?.data) ? data.data : []), [data]);
   const totalItems = notifications.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);

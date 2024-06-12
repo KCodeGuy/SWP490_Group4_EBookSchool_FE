@@ -63,7 +63,6 @@ import LogManagement from "layouts/logManagement/LogManagement";
 import SystemSetting from "layouts/systemSetting";
 import RegisterNotebookStatistics from "layouts/registerNotebookStatistics/RegisterNotebookStatistics";
 import AttendanceStatistics from "layouts/attendanceStatistics/AttendanceStatistics";
-import StudentProfile from "layouts/studentProfile";
 import { Title } from "chart.js";
 
 const routes = [
@@ -109,7 +108,7 @@ const routes = [
     name: "Điểm danh",
     key: "takeAttendance",
     icon: <Icon fontSize="small">grading</Icon>,
-    route: "/takeAttendance",
+    route: "/takeAttendance/:attendanceID",
     component: <TakeAttendance />,
   },
 
@@ -274,14 +273,6 @@ const routes = [
     icon: <Icon fontSize="small">person</Icon>,
     route: "/profile",
     component: <Profile />,
-  },
-  {
-    type: "collapse",
-    name: "Thông tin tài khoản",
-    key: "studentProfile",
-    icon: <Icon fontSize="small">person</Icon>,
-    route: "/sudentProfile",
-    component: <StudentProfile />,
   },
 ];
 

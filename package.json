@@ -48,8 +48,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start"
   },
   "eslintConfig": {
@@ -72,6 +70,7 @@
   },
   "homepage": "http://KCodeGuy.github.io/SWP490_Group4_EBookSchool_FE",
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "ajv": "^7.2.4",
     "eslint": "8.39.0",
     "eslint-config-prettier": "8.8.0",

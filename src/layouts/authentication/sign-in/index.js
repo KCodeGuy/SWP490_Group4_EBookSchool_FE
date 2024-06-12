@@ -73,6 +73,14 @@ function Basic() {
         localStorage.setItem("refreshToken", data.data.refreshToken); // Example: saving a token
         localStorage.setItem("permissions", data.data.permissions); // Example: saving a token
         localStorage.setItem("user", JSON.stringify(data.data.user)); // Example: saving use
+        console.log(data.data.schoolYears);
+        localStorage.setItem("schoolYears", JSON.stringify(data.data.schoolYears));
+        const formattedArray = Object.keys(data.data.classes).map((schoolYear) => ({
+          schoolYear: schoolYear,
+          details: data.data.classes[schoolYear],
+        }));
+        console.log(formattedArray);
+        localStorage.setItem("currentClasses", JSON.stringify(formattedArray));
         const userRole = getUserRole(
           data.data.user.id.toString(),
           data.data.user.username.toString(),

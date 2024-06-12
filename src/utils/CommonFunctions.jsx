@@ -84,6 +84,13 @@ export const generateSchoolWeeks = (schoolYear) => {
 
   return schoolWeeks;
 };
+export const generateClasses = (listClasses, year) => {
+  const result = listClasses.find((item) => item.schoolYear == year);
+  if (result) {
+    return result.details;
+  }
+  return [];
+};
 
 export const formatDate = (date) => {
   const day = String(date.getDate()).padStart(2, "0");
@@ -153,4 +160,33 @@ export const getUsernameSubString = (text) => {
 export const getClassFromClassRoom = (inputString) => {
   const match = inputString.match(/\d+\w+/);
   return match ? match[0] : "";
+};
+
+export const formatDateYYYYMMDD = (inputDate) => {
+  // Check if the inputDate matches the "dd/MM/yyyy" format
+  const datePattern = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+  const match = inputDate.match(datePattern);
+
+  if (!match) {
+    throw new Error("The specified value does not conform to the format dd/MM/yyyy");
+  }
+
+  const [, day, month, year] = match;
+
+  // Rearrange the date to "yyyy-MM-dd"
+  const formattedDate = `${year}-${month}-${day}`;
+
+  return formattedDate;
+};
+
+export const countNumberOfSlotsInWeek = (currentTimeTable) => {
+  let numberOfSlotInWeek = 0;
+  currentTimeTable.forEach((date) => {
+    date.slots.forEach((slot) => {
+      if (slot.classroom !== "" && slot.subject !== "") {
+        numberOfSlotInWeek++;
+      }
+    });
+  });
+  return numberOfSlotInWeek;
 };

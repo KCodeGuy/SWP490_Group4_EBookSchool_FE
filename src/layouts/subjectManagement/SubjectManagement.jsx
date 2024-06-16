@@ -213,16 +213,21 @@ export default function SubjectManagement() {
   };
 
   const handleAddMark = (data) => {
-    // Generate a new id for the data
-    const id = markFactors.length;
-
-    // Create a new markFactor object with the id and other data
-    const newMarkFactor = { id, ...data };
-
-    // Update the markFactors state by appending the new markFactor
-    setMarkFactors((prevMarkFactors) => [...prevMarkFactors, newMarkFactor]);
+    let isDuplicateFactor = false;
+    if (markFactors.length > 0) {
+      markFactors.forEach((item) => {
+        if (item.nameScore === data.nameScore && item.semester === data.semester) {
+          isDuplicateFactor = true;
+          toast.error(`Điểm thành phần "Kiểm tra ${data.nameScore}" đã tồn tại!`);
+        }
+      });
+    }
+    if (!isDuplicateFactor) {
+      const id = markFactors.length;
+      const newMarkFactor = { id, ...data };
+      setMarkFactors((prevMarkFactors) => [...prevMarkFactors, newMarkFactor]);
+    }
   };
-  console.log("markFactors: ", markFactors);
   const handleAddLesson = (data) => {
     console.log("Call API add lesson: ", data);
     // Call API add subject here
@@ -266,7 +271,7 @@ export default function SubjectManagement() {
 
   // Xử lí get dữ liệu khi submit
   const handleUpdateSubject = (data) => {
-    console.log("Submit data", data);
+    // console.log("Submit data", data);
     const subjectData = {
       id: data.idEdit,
       name: data.nameEdit,
@@ -274,17 +279,12 @@ export default function SubjectManagement() {
       lessonPlans: lessonPlans,
       componentScores: componentScores,
     };
-    console.log("Data gửi đi: ", subjectData);
+    // console.log("Data gửi đi: ", subjectData);
     updateSubjectMutation.mutate(subjectData);
   };
 
   const handleClearEditForm = () => {
     resetEditAction();
-  };
-
-  //6. Functions handle deleting
-  const handleCloseDeleteModal = () => {
-    setModalDeleteOpen(false);
   };
 
   const handleStatistic = () => {
@@ -334,7 +334,7 @@ export default function SubjectManagement() {
     const search = txtSearch.trim().toLowerCase();
     return data.filter((subject) => {
       return (
-        (subject.title && subject.title.toLowerCase().includes(search)) ||
+        (subject.name && subject.name.toLowerCase().includes(search)) ||
         (subject.grade && subject.grade.toLowerCase().includes(search))
       );
     });
@@ -345,12 +345,13 @@ export default function SubjectManagement() {
   };
 
   const hanldeDeleteMarkFactor = (data) => {
-    console.log(data);
-    markFactors.forEach((item) => {
-      console.log(item);
-    });
+    deleteItemById(data[0]);
+    console.log("Delete: ", data[0]);
   };
 
+  const deleteItemById = (id) => {
+    setMarkFactors(markFactors.filter((item) => item.id != id));
+  };
   return (
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
@@ -461,13 +462,12 @@ export default function SubjectManagement() {
                       <div className="flex w-full">
                         <InputBaseComponent
                           className="w-1/2 mr-3"
-                          placeholder="Chọn cột điểm"
                           type="select"
                           options={nameScore}
                           control={control}
                           setValue={noSetValue}
                           name="nameScore"
-                          label="Chọn cột điểm"
+                          label="Điểm thành phần"
                           errors={errors}
                           validationRules={{
                             required: "Không được bỏ trống!",
@@ -475,13 +475,12 @@ export default function SubjectManagement() {
                         />
                         <InputBaseComponent
                           className="w-1/2"
-                          placeholder="Chọn kì học"
                           type="select"
                           options={semesters}
                           control={control}
                           setValue={noSetValue}
                           name="semester"
-                          label="Chọn kì"
+                          label="Học kì"
                           errors={errors}
                           validationRules={{
                             required: "Không được bỏ trống!",
@@ -493,6 +492,8 @@ export default function SubjectManagement() {
                           className="w-1/2 mr-3"
                           placeholder="Nhập số lượng"
                           type="number"
+                          minValue={1}
+                          maxValue={10}
                           control={control}
                           setValue={noSetValue}
                           name="count"
@@ -506,6 +507,8 @@ export default function SubjectManagement() {
                           className="w-1/2"
                           placeholder="Nhập hệ số"
                           type="number"
+                          minValue={1}
+                          maxValue={10}
                           control={control}
                           setValue={noSetValue}
                           name="scoreFactor"
@@ -531,6 +534,7 @@ export default function SubjectManagement() {
                     <TableComponent
                       header={[, "Tên", "Số lượng", "Hệ số", "Kì học"]}
                       data={markFactors?.map((item) => [
+                        item.id.toString(),
                         item.nameScore.toString(),
                         item.semester.toString(),
                         item.count.toString(),
@@ -540,6 +544,7 @@ export default function SubjectManagement() {
                       itemsPerPage={5}
                       // onEdit={handleEdit}
                       onDelete={hanldeDeleteMarkFactor}
+                      hiddenColumns={[0]}
                       className="mt-1"
                     />
                   </div>

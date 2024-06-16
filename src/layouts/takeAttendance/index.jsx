@@ -1,19 +1,26 @@
-import React, { useState } from "react";
-import { Card, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Card, CircularProgress, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import CheckIcon from "@mui/icons-material/Check";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import TableComponent from "../../components/TableComponent/TableComponent";
+import noDataImage3 from "../../assets/images/noDataImage3.avif";
 import { students } from "../../mock/student";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import { studentClasses } from "../../mock/class";
 import { schoolYears } from "../../mock/schoolYear";
 import { studentWeeklyTimeTableDates, timeTablesAllSchool } from "../../mock/weeklyTimeTable";
 import SearchInputComponent from "components/SearchInputComponent/SearchInputComponent";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { getAttendanceBySlot, updateAttendance } from "../../services/AttendanceService";
+import { useParams } from "react-router-dom";
+import GradingIcon from "@mui/icons-material/Grading";
 
 const schoolWeeks = [
   { id: 1, name: "week 1", startTime: "20/1/2024", endTime: "28/1/2024" },
@@ -31,19 +38,39 @@ const schoolWeeks = [
   { id: 13, name: "week 13", startTime: "20/1/2024", endTime: "28/1/2024" },
 ];
 
-const formattedSemester = [
-  { label: "Học kì 1", value: "HK1" },
-  { label: "Học kì 2", value: "HK2" },
-  { label: "Cả năm", value: "Cả năm" },
-];
-
 export default function TakeAttendance() {
+  const { attendanceID } = useParams();
   const [isCheckedAll, setIsCheckedAll] = useState(false);
   const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
-  const [currentData, setCurrentData] = useState(students.data);
+  const [currentData, setCurrentData] = useState([]);
+  const [currentSubject, setCurrentSubject] = useState("");
+  const accessToken = localStorage.getItem("authToken");
+  const queryClient = useQueryClient();
 
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
+  };
+
+  const { data, isError, isLoading, refetch } = useQuery({
+    queryKey: ["timetable", { accessToken, attendanceID }],
+    queryFn: () => getAttendanceBySlot(accessToken, attendanceID),
+    // enabled: false,
+  });
+
+  useEffect(() => {
+    if (data?.success) {
+      setCurrentSubject(data?.data[0].subject);
+      setCurrentData(data?.data);
+    }
+  }, [data]);
+
+  const handleFindSlotAttendance = () => {
+    refetch().then((result) => {
+      if (result?.data.success) {
+        setCurrentSubject(result?.data.data[0].subject);
+        setCurrentData(result?.data.data);
+      }
+    });
   };
 
   const [schoolClass, setSchoolClass] = React.useState(studentClasses.data[0].name);
@@ -71,27 +98,54 @@ export default function TakeAttendance() {
     value: item.name,
   }));
 
+  const updateAttendanceMutation = useMutation(
+    (attendanceData) => updateAttendance(accessToken, attendanceData),
+    {
+      onSuccess: (response) => {
+        queryClient.invalidateQueries("attendanceData");
+        if (response && response.success) {
+          refetch().then((result) => {
+            if (result?.data.success) {
+              setCurrentData(result?.data.data);
+            }
+          });
+          toast.success("Điểm danh thành công!");
+        } else {
+          toast.error(`${response.data}!`);
+        }
+      },
+    }
+  );
+
   const handleSaveData = (rowItem) => {
-    console.log("List saved", rowItem);
-    // Implement delete logic here
+    const attendedStudentIDs = rowItem.map((student) => student[0]);
+    const result = currentData
+      ?.filter((student) => attendedStudentIDs.includes(student.attendenceID))
+      .map((student) => ({
+        attendenceID: student.attendenceID,
+        present: true,
+      }));
+    console.log(result);
+    updateAttendanceMutation.mutate(result);
   };
 
   const handleChangeSearchValue = (txtSearch) => {
-    setCurrentData(filterStudentClasses(txtSearch, students.data));
+    setCurrentData(filterStudentClasses(txtSearch, currentData));
   };
 
   const filterStudentClasses = (txtSearch, data) => {
     const search = txtSearch.trim().toLowerCase();
     return data.filter((student) => {
       return (
-        student.fullName.toLowerCase().includes(search) ||
-        student.id.toString().toLowerCase().includes(search) ||
-        student.birthday.toLowerCase().includes(search)
+        student.studentID.toLowerCase().includes(search) ||
+        student.studentName.toString().toLowerCase().includes(search) ||
+        student.status.toLowerCase().includes(search)
       );
     });
   };
   return (
     <DashboardLayout>
+      <ToastContainer autoClose={3000} />
       <DashboardNavbar />
       <Card className="max-h-max mb-8">
         <MDBox p={5}>
@@ -149,7 +203,7 @@ export default function TakeAttendance() {
                   ))}
                 </Select>
               </FormControl>
-              <ButtonComponent type="success">
+              <ButtonComponent type="success" onClick={handleFindSlotAttendance}>
                 <FilterAltIcon className="mr-1" /> TÌM KIẾM
               </ButtonComponent>
             </div>
@@ -159,27 +213,37 @@ export default function TakeAttendance() {
               className="mr-3"
             />
           </div>
-          <div className="text-center mt-10">
-            <h4 className="text-xl font-bold uppercase">ĐIỂM DANH LỚP 12A1</h4>
+          <div className="text-center mt-10 ">
+            <div className="flex justify-center items-center text-3xl mx-auto w-full">
+              <GradingIcon />
+              {currentSubject ? (
+                <h4 className="text-xl font-bold ml-3">
+                  ĐIỂM DANH MÔN {currentSubject?.toUpperCase()}
+                </h4>
+              ) : (
+                <h4 className="text-xl font-bold ml-3">ĐIỂM DANH</h4>
+              )}
+            </div>
           </div>
-          <div className="flex justify-between mt-2 flex-wrap max-[767px]:mt-4">
+          <div className="flex justify-between mt-10 flex-wrap max-[767px]:mt-4">
             <div className="flex max-[767px]:mb-4">
               <div className="text-sm mr-4">
                 <span className="mr-2 font-bold">GVCN:</span>
                 <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                  DaQL
+                  Le Van A
                 </span>
               </div>
-              <div className="text-sm mr-4">
-                <span className="mr-2 font-bold">Tiết:</span>
-                <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                  1
-                </span>
-              </div>
+
               <div className="text-sm">
                 <span className="mr-2 font-bold">Ngày:</span>
                 <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                  15/04/05
+                  12/06/2024
+                </span>
+              </div>
+              <div className="text-sm ml-4">
+                <span className="mr-2 font-bold">Môn:</span>
+                <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                  {currentSubject || "Chưa có môn"}
                 </span>
               </div>
             </div>
@@ -190,31 +254,73 @@ export default function TakeAttendance() {
               </ButtonComponent>
             </div>
           </div>
+          {isLoading ? (
+            <div className="text-center primary-color my-10 text-xl italic font-medium">
+              <div className="mx-auto flex items-center justify-center">
+                <p className="mr-3">Loading</p>
+                <CircularProgress size={24} color="inherit" />
+              </div>
+            </div>
+          ) : currentData && currentData?.length > 0 ? (
+            <TableComponent
+              header={[
+                "Mã học sinh",
+                "Tên học sinh",
+                "Hình ảnh",
+                "Môn học",
+                "Điểm danh",
+                "Trạng thái",
+              ]}
+              data={currentData?.map((item) => [
+                item.attendenceID.toString(),
+                item.studentID.toString(),
+                item.studentName.toString(),
+                item.avatar.toString(),
+                item.subject.toString(),
+                item.status.toString(),
+                item.present.toString(),
+              ])}
+              onCheckboxChange={handleChecked}
+              showCheckboxes={true}
+              className="mt-4"
+              itemsPerPage={30}
+              onSave={handleSaveData}
+              isImage={3}
+              hiddenColumns={[0]}
+              // isShowImage={true}
+              isCheckedAll={isCheckedAll}
+              saveName="ĐIỂM DANH"
+            />
+          ) : (
+            <div className="text-center primary-color my-10 text-xl italic font-medium">
+              <img
+                className="w-60 h-60 object-cover object-center mx-auto"
+                src={noDataImage3}
+                alt="Chưa có dữ liệu!"
+              />
+              Chưa có dữ liệu!
+            </div>
+          )}
 
-          <TableComponent
-            header={[
-              "Hình ảnh",
-              "Tên học sinh",
-              "Mã học sinh",
-              "Giới tính",
-              "Ngày sinh",
-              "Trạng thái",
-            ]}
-            data={currentData.map((item) => [
-              item.fullName.toString(),
-              item.id.toString(),
-              item.gender.toString(),
-              item.birthday.toString(),
-              "Chưa điểm danh",
-            ])}
-            onCheckboxChange={handleChecked}
-            showCheckboxes={true}
-            className="mt-4"
-            onSave={handleSaveData}
-            isShowImage={true}
-            isCheckedAll={isCheckedAll}
-            saveName="ĐIỂM DANH"
-          />
+          <div className="mt-5 text-base">
+            <p className="font-bold">Ghi chú:</p>
+            <ul className="list-disc ml-5">
+              <li>
+                <span className="text-color font-bold">(Chưa bắt đầu): </span>
+                <span className="italic">
+                  Tiết học này chưa bắt đầu, tiết học sẽ bắt đầu khi đến ngày học.
+                </span>
+              </li>
+              <li>
+                <span className="success-color font-bold">(Có mặt): </span>
+                <span className="italic">Học sinh/Giáo viên đã tham gia tiết học.</span>
+              </li>
+              <li>
+                <span className="error-color font-bold">(Vắng): </span>
+                <span className="italic">Học sinh/Giáo viên đã không tham gia tiết học.</span>
+              </li>
+            </ul>
+          </div>
         </MDBox>
       </Card>
       <Footer />

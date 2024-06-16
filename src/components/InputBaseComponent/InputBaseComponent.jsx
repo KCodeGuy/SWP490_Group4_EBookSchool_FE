@@ -17,6 +17,8 @@ const InputBaseComponent = ({
   readOnly,
   disabled,
   setValue,
+  minValue,
+  maxValue,
   validationRules,
   getSelectedFile,
   options,
@@ -143,6 +145,8 @@ const InputBaseComponent = ({
                 ${errors[name] ? "border-red-400" : "border-blue-500"}`}
                 {...field}
                 type={type}
+                min={minValue}
+                max={maxValue}
                 disabled={disabled}
                 readOnly={readOnly}
                 onChange={(e) => {
@@ -172,6 +176,8 @@ InputBaseComponent.propTypes = {
   className: PropTypes.string,
   noLabel: PropTypes.bool,
   rowTextArea: PropTypes.number,
+  minValue: PropTypes.number,
+  maxValue: PropTypes.number,
   readOnly: PropTypes.bool,
   disabled: PropTypes.bool,
   setValue: PropTypes.func,

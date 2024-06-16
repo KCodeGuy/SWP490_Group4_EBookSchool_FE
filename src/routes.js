@@ -39,6 +39,7 @@ Coded by www.creative-tim.com
 // Material Dashboard 2 React layouts
 import Dashboard from "layouts/dashboard";
 import Profile from "layouts/profile";
+import StudentProfile from "./layouts/studentProfile";
 import SignIn from "layouts/authentication/sign-in";
 import ResetPassword from "layouts/authentication/reset-password";
 
@@ -63,7 +64,6 @@ import LogManagement from "layouts/logManagement/LogManagement";
 import SystemSetting from "layouts/systemSetting";
 import RegisterNotebookStatistics from "layouts/registerNotebookStatistics/RegisterNotebookStatistics";
 import AttendanceStatistics from "layouts/attendanceStatistics/AttendanceStatistics";
-import StudentProfile from "layouts/studentProfile";
 import { Title } from "chart.js";
 
 const routes = [
@@ -88,14 +88,7 @@ const routes = [
     route: "/schoolBook",
     component: <SchoolBook />,
   },
-  {
-    type: "collapse",
-    name: "Thông báo",
-    key: "notificationDetails",
-    icon: <Icon fontSize="small">notifications</Icon>,
-    route: "/notificationDetails/:notificationID",
-    component: <NotificationDetails />,
-  },
+
   {
     type: "collapse",
     name: "Thời khóa biểu",
@@ -109,8 +102,16 @@ const routes = [
     name: "Điểm danh",
     key: "takeAttendance",
     icon: <Icon fontSize="small">grading</Icon>,
-    route: "/takeAttendance",
+    route: "/takeAttendance/:attendanceID",
     component: <TakeAttendance />,
+  },
+  {
+    type: "collapse",
+    name: "Thông báo",
+    key: "notificationDetails",
+    icon: <Icon fontSize="small">notifications</Icon>,
+    route: "/notificationDetails/:notificationID",
+    component: <NotificationDetails />,
   },
 
   {
@@ -269,7 +270,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Thông tin tài khoản",
+    name: "Tài khoản GV",
     key: "profile",
     icon: <Icon fontSize="small">person</Icon>,
     route: "/profile",
@@ -277,10 +278,10 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Thông tin tài khoản",
+    name: "Tài khoản HS",
     key: "studentProfile",
     icon: <Icon fontSize="small">person</Icon>,
-    route: "/sudentProfile",
+    route: "/studentProfile",
     component: <StudentProfile />,
   },
 ];

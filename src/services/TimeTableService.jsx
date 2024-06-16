@@ -31,6 +31,13 @@ export const getTimetable = async (
       fromDate,
       classname: classID,
     };
+  } else if (userRole === "Principal") {
+    apiURL = `${API_HOST}/Schedules/Class`;
+    params = {
+      className: classID,
+      schoolYear,
+      fromDate,
+    };
   }
   const response = await axios.get(apiURL, {
     params,
@@ -39,13 +46,11 @@ export const getTimetable = async (
       Authorization: `Bearer ${accessToken}`,
     },
   });
+  console.log(response.data);
   return response.data;
 };
 
 export const addTimeTableByExcel = async (accessToken, file) => {
-  console.log(file);
-  console.log(accessToken);
-
   const formData = new FormData();
   formData.append("File", file);
   try {
@@ -55,10 +60,9 @@ export const addTimeTableByExcel = async (accessToken, file) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    console.log(res.data);
     return res.data;
   } catch (error) {
-    console.error("Error adding notification:", error);
+    console.error("Error adding timetable:", error);
     throw error;
   }
 };
@@ -72,10 +76,42 @@ export const addTimeTableManually = async (accessToken, slotData) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    console.log(res.data);
+    // console.log("Add slot: ", res.data);
     return res.data;
   } catch (error) {
-    console.error("Error adding notification:", error);
+    console.error("Error adding timetable:", error);
+    throw error;
+  }
+};
+
+export const updateSlotOfTimeTable = async (accessToken, slotData) => {
+  // console.log(slotData);
+  try {
+    const res = await axios.put(`${API_HOST}/Schedules/${slotData.id}`, slotData, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error("Error updating class:", error);
+    throw error;
+  }
+};
+
+export const deleteSlotOfTimeTable = async (accessToken, slotID) => {
+  try {
+    const res = await axios.delete(`${API_HOST}/Schedules/${slotID}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error deleting timetable:", error);
     throw error;
   }
 };

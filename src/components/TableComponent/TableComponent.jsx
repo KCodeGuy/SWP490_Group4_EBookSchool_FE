@@ -126,7 +126,13 @@ function TableComponent({
                             className="w-28 h-28 rounded-sm object-cover object-center mx-auto my-2"
                           />
                         ) : (
-                          <div className="max-line-4 max-w-56 mx-auto">{cell}</div>
+                          <div
+                            className={`max-line-4 max-w-56 mx-auto ${
+                              cell === "Vắng" ? "error-color font-bold" : ""
+                            } ${cell === "Có mặt" ? "success-color font-bold" : ""}`}
+                          >
+                            {cell}
+                          </div>
                         )}
                       </td>
                     )

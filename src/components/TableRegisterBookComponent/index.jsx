@@ -8,6 +8,7 @@ import EditCalendarIcon from "@mui/icons-material/EditCalendar";
 import Checkbox from "@mui/material/Checkbox";
 import AccessAlarmsIcon from "@mui/icons-material/AccessAlarms";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
+import { getTodayDate } from "../../utils/CommonFunctions";
 
 function TableRegisterBookComponent({
   header,
@@ -22,7 +23,6 @@ function TableRegisterBookComponent({
   showCheckboxes,
 }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [checkedItems, setCheckedItems] = useState([]);
   const isShowActions = onDelete != undefined || onEdit != undefined || onDetails != undefined;
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
@@ -61,9 +61,6 @@ function TableRegisterBookComponent({
       }
       case "D": {
         return <div className={`${defaultStyles} bg-error-color`}>{rating}</div>;
-      }
-      default: {
-        return <div className={`${defaultStyles} bg-slate-300-color`}>{rating}</div>;
       }
     }
   };
@@ -114,6 +111,9 @@ function TableRegisterBookComponent({
     }
     return slotTime;
   };
+
+  const { formattedDate } = getTodayDate();
+
   return (
     <div className={`max-[1023px]:overflow-scroll lg:overflow-auto ${className}`}>
       <table>
@@ -148,25 +148,43 @@ function TableRegisterBookComponent({
                   {(index === 0 || date.date !== currentData[index - 1].date) && (
                     <>
                       <td rowSpan={renderRowSpan(index, date.date)}>{rowNumber++}</td>
-                      <td rowSpan={renderRowSpan(index, date.date)}>
-                        {date.weekDate} <br />
-                        {date.date}
-                      </td>
+                      {date.date == formattedDate ? (
+                        <td
+                          className="font-bold italic success-color"
+                          rowSpan={renderRowSpan(index, date.date)}
+                        >
+                          {date.weekDate} <br />
+                          {date.date}
+                        </td>
+                      ) : (
+                        <td rowSpan={renderRowSpan(index, date.date)}>
+                          {date.weekDate} <br />
+                          {date.date}
+                        </td>
+                      )}
                     </>
                   )}
-                  <td>
-                    <p className="font-bold">Tiết {date.slot}</p>
-                    <p>
-                      <AccessAlarmsIcon /> {renderSlotTime(date.slot)}
-                    </p>
+                  <td className="px-2">
+                    {date.slot ? (
+                      <>
+                        <p className="font-bold">Tiết {date.slot}</p>
+                        <p>
+                          <AccessAlarmsIcon /> {renderSlotTime(date.slot)}
+                        </p>
+                      </>
+                    ) : (
+                      "_"
+                    )}
                   </td>
-                  <td>{date.subject}</td>
-                  <td>{date.teacher}</td>
-                  <td>{date.slotByLessonPlans}</td>
-                  <td>{date.numberOfAbsent}</td>
-                  <td>{date.title}</td>
-                  <td>{date.note}</td>
-                  <td>{renderRating(date.rating)}</td>
+                  <td className="px-2">{date.subject || "_"}</td>
+                  <td className="px-2">{date.teacher || "_"}</td>
+                  <td className="px-2">{date.slotByLessonPlan || "_"}</td>
+                  <td className="px-2">{date.numberOfAbsent || "_"}</td>
+                  <td className="px-2">{date.title || "_"}</td>
+                  <td>
+                    <div className="px-2 max-line-4 max-w-56 mx-auto">{date.note || "_"}</div>
+                  </td>
+                  <td className="px-2">{renderRating(date.rating) || "_"}</td>
                   {isShowActions && (
                     <td className="max-w-28 text-center">
                       {onDetails && (

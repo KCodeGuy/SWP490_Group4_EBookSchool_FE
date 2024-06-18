@@ -53,6 +53,7 @@ import ClassManagement from "./layouts/classManagement/ClassManagement";
 import NotificationManagement from "./layouts/notificationManagement/NotificationManagement";
 import SubjectManagement from "./layouts/subjectManagement/SubjectManagement";
 import AccountManagement from "./layouts/accountManagement/AccountManagement";
+import StudentAccountManagement from "./layouts/studentAccountManagement/StudentAccountManagement";
 import Demo from "./layouts/demo/Demo";
 import WeeklyTimeTable from "./layouts/weeklyTimeTable";
 import MarkStatistics from "./layouts/markStatistics/MarkStatistics";
@@ -200,13 +201,20 @@ const routes = [
 
   {
     type: "collapse",
-    name: "Quản lí tài khoản",
+    name: "Quản lí tài khoản giáo viên",
     key: "accountManagement",
     icon: <Icon fontSize="small">group</Icon>,
     route: "/accountManagement",
     component: <AccountManagement />,
   },
-
+  {
+    type: "collapse",
+    name: "Quản lí tài khoản học sinh",
+    key: "studentAccountManagement",
+    icon: <Icon fontSize="small">group</Icon>,
+    route: "/studentAccountManagement",
+    component: <StudentAccountManagement />,
+  },
   {
     type: "title",
     title: "Demo",

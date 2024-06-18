@@ -33,8 +33,7 @@ import { updateTeacher } from "services/TeacherService";
 
 const accessToken = localStorage.getItem("authToken");
 
-// Account management (UolLT)
-export default function AccountManagement() {
+export default function StudentAccountManagement() {
   //1. Modal form states open, close
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
@@ -66,7 +65,7 @@ export default function AccountManagement() {
     { label: "Đoàn viên", value: "Đoàn viên" },
   ];
 
-  const roles = ["Giáo viên chủ nhiệm", "Giáo viên bộ môn", "Giám thị"];
+  const roles = ["Giáo viên chủ nhiệm", "Học sinh/Phụ huynh", "Giáo viên bộ môn", "Giám thị"];
   const semesters = ["Học kì I", "Học kì II", "Cả năm"];
 
   const [selectedRole, setSelectedRole] = useState(roles[0]);
@@ -392,12 +391,12 @@ export default function AccountManagement() {
       <Card className="max-h-max mb-8">
         <MDBox p={5}>
           <div className="text-center mt-0">
-            <h4 className="text-xl font-bold">QUẢN LÍ TÀI KHOẢN GIÁO VIÊN</h4>
+            <h4 className="text-xl font-bold">QUẢN LÍ TÀI KHOẢN HỌC SINH</h4>
           </div>
           <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
             {/* role Select */}
             <div className="flex justify-start max-[639px]:flex-wrap">
-              <FormControl sx={{ minWidth: 120, marginRight: "12px" }}>
+              {/* <FormControl sx={{ minWidth: 120, marginRight: "12px" }}>
                 <InputLabel id="select-role-label" className="ml-3">
                   Chức vụ
                 </InputLabel>
@@ -420,7 +419,7 @@ export default function AccountManagement() {
                 <ButtonComponent type="success" onClick={handleStatistic}>
                   <FilterAltIcon className="mr-1" /> Tìm kiếm
                 </ButtonComponent>
-              </div>
+              </div>*/}
             </div>
             <div className="flex justify-end items-center sm:w-full sm:flex-wrap ">
               <SearchInputComponent
@@ -428,14 +427,14 @@ export default function AccountManagement() {
                 placeHolder="Nhập từ khóa..."
               />
               <div className="ml-3">
-                <ButtonComponent className="" onClick={handleOpenAddModal}>
-                  <AddCircleOutlineIcon className="text-3xl mr-1" />
-                  Tạo TKGV
-                </ButtonComponent>
                 {/* <ButtonComponent className="" onClick={handleOpenAddModal}>
                   <AddCircleOutlineIcon className="text-3xl mr-1" />
-                  Tạo TKHS
+                  Tạo TKGV
                 </ButtonComponent> */}
+                <ButtonComponent className="" onClick={handleOpenAddModal}>
+                  <AddCircleOutlineIcon className="text-3xl mr-1" />
+                  Tạo TKHS
+                </ButtonComponent>
                 <PopupComponent
                   title="TẠO TÀI KHOẢN"
                   description="Hãy tạo tài khoản"

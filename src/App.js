@@ -75,6 +75,8 @@ export default function App() {
       } else if (userRole === "Student") {
         setCurrentRoutes(studentRoutes);
       }
+    } else {
+      setCurrentRoutes(routes);
     }
   }, [userRole]);
   const [controller, dispatch] = useMaterialUIController();

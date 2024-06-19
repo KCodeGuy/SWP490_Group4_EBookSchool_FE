@@ -271,19 +271,11 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Tài khoản GV",
+    name: "Tài khoản",
     key: "profile",
     icon: <Icon fontSize="small">person</Icon>,
     route: "/profile",
     component: <Profile />,
-  },
-  {
-    type: "collapse",
-    name: "Tài khoản HS",
-    key: "studentProfile",
-    icon: <Icon fontSize="small">person</Icon>,
-    route: "/studentProfile",
-    component: <StudentProfile />,
   },
 ];
 

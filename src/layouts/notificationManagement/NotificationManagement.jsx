@@ -26,19 +26,33 @@ import {
   updateNotification,
 } from "../../services/NotificationService";
 import { useNavigate } from "react-router-dom";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 // Notification Management (UolLT)
 // Get access token
 const accessToken = localStorage.getItem("authToken");
+const modules = {
+  toolbar: [
+    [{ header: "1" }, { header: "2" }, { font: [] }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+    ["link", "image"],
+    ["clean"],
+  ],
+};
 
 export default function NotificationManagement() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [errorContentWill, setErrorContentWill] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [deleteData, setDeleteData] = useState({});
   const [currentData, setCurrentData] = useState([]);
   const [fileThumbnail, setFileThumbnail] = useState(null);
   const navigate = useNavigate();
+  const [contentQuillValue, setContentQuillValue] = useState("");
 
   const queryClient = useQueryClient();
 
@@ -95,7 +109,7 @@ export default function NotificationManagement() {
   const handleAddNotification = (data) => {
     const notificationData = {
       title: data.title,
-      content: data.content,
+      content: contentQuillValue,
       thumbnail: data.thumbnail,
     };
     addNotificationMutation.mutate(notificationData);
@@ -238,7 +252,7 @@ export default function NotificationManagement() {
                     }}
                   />
 
-                  <InputBaseComponent
+                  {/* <InputBaseComponent
                     className="w-96"
                     name="content"
                     placeholder="Nhập nội dung thông báo"
@@ -251,7 +265,18 @@ export default function NotificationManagement() {
                     validationRules={{
                       required: "Không được bỏ trống!",
                     }}
-                  />
+                  /> */}
+                  <div className="mt-5">
+                    <ReactQuill
+                      theme="snow"
+                      value={contentQuillValue}
+                      onChange={setContentQuillValue}
+                      modules={modules}
+                    />
+                    {!contentQuillValue && (
+                      <p className="error-color mt-1 text-base">Không được bỏ trống!</p>
+                    )}
+                  </div>
                   <div className="mt-4 flex justify-end">
                     <ButtonComponent
                       type="error"

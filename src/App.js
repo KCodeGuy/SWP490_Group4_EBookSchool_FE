@@ -42,9 +42,13 @@ import themeDarkRTL from "assets/theme-dark/theme-rtl";
 import rtlPlugin from "stylis-plugin-rtl";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
+import Profile from "layouts/profile";
+import StudentProfile from "./layouts/studentProfile";
+import SignIn from "layouts/authentication/sign-in";
+import ResetPassword from "layouts/authentication/reset-password";
 
 // Material Dashboard 2 React routes
-import routes from "routes";
+import { homeRoomTeacherRoutes, routes, studentRoutes, subjectTeacherRoutes } from "./routes";
 
 // Material Dashboard 2 React contexts
 import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
@@ -55,6 +59,24 @@ import brandDark from "assets/images/logo-ct-dark.png";
 const queryClient = new QueryClient();
 
 export default function App() {
+  let userRole = localStorage.getItem("userRole");
+
+  const [currentRoutes, setCurrentRoutes] = useState([]);
+  useEffect(() => {
+    if (userRole) {
+      if (userRole === "Principal") {
+        setCurrentRoutes(routes);
+      } else if (userRole === "Headteacher") {
+        setCurrentRoutes(routes);
+      } else if (userRole === "SubjectTeacher") {
+        setCurrentRoutes(subjectTeacherRoutes);
+      } else if (userRole === "HomeroomTeacher") {
+        setCurrentRoutes(homeRoomTeacherRoutes);
+      } else if (userRole === "Student") {
+        setCurrentRoutes(studentRoutes);
+      }
+    }
+  }, [userRole]);
   const [controller, dispatch] = useMaterialUIController();
   const {
     miniSidenav,
@@ -156,8 +178,8 @@ export default function App() {
             <Sidenav
               color={sidenavColor}
               brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-              brandName="E-SchoolBook"
-              routes={routes}
+              brandName="ORB"
+              routes={currentRoutes}
               onMouseEnter={handleOnMouseEnter}
               onMouseLeave={handleOnMouseLeave}
             />
@@ -167,8 +189,12 @@ export default function App() {
         )}
         {layout === "vr" && <Configurator />}
         <Routes>
-          {getRoutes(routes)}
-          <Route path="*" element={<Navigate to="/dashboard" />} />
+          {getRoutes(currentRoutes)}
+          {userRole ? (
+            <Route path="*" element={<Navigate to="/dashboard" />} />
+          ) : (
+            <Route path="*" element={<Navigate to="/authentication/sign-in" />} />
+          )}
         </Routes>
       </ThemeProvider>
     </QueryClientProvider>

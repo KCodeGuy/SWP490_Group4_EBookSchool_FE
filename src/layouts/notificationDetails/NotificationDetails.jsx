@@ -68,7 +68,10 @@ export default function NotificationDetails() {
                 />
                 <p className="mt-4 italic font-medium">Ảnh: {data?.data.title}</p>
               </div>
-              <p className="mt-5 text-justify italic">{data?.data.content}</p>
+              <div
+                className="w-full text-left mt-5"
+                dangerouslySetInnerHTML={{ __html: data?.data.content }}
+              ></div>
               <div className="flex mt-5 font-medium justify-end">
                 <span>Trường THPT Nguyễn Văn A</span>
                 <span className="mx-2">|</span>

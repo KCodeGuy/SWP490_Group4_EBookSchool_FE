@@ -122,54 +122,58 @@ const SchoolBook = () => {
     }
   };
 
-  const transformedData = [];
-  if (currentRegisterNotebook.length > 0) {
-    currentRegisterNotebook.forEach((detail) => {
-      const date = detail.date;
-      const weekDate = detail.weekDate;
-      const countSlots = detail.slots.length;
-
-      if (countSlots === 0) {
-        transformedData.push({
-          id: detail.id,
-          date: date,
-          weekDate: weekDate,
-          slots: [],
-          countSlots: countSlots,
-        });
-      } else {
-        detail.slots.forEach((slot) => {
-          const transformedSlot = {
-            id: slot.id,
-            date: date,
-            weekDate: weekDate,
-            slot: slot.slot,
-            subject: slot.subject,
-            teacher: slot.teacher,
-            slotByLessonPlan: slot.slotByLessonPlan,
-            numberOfAbsent: slot.numberOfAbsent,
-            numberAbsent: slot.numberAbsent,
-            title: slot.title,
-            note: slot.note,
-            rating: slot.rating,
-            countSlots: countSlots,
-          };
-          transformedData.push(transformedSlot);
-        });
-      }
-    });
-  }
-
   const { data, isError, isLoading, refetch } = useQuery({
     queryKey: ["schoolBook", { userID, userRole, accessToken, schoolWeek, schoolClass }],
     queryFn: () => getRegisterNotebook(userID, userRole, accessToken, schoolWeek, schoolClass),
     enabled: false,
   });
 
+  const formatRegisterNotebook = (registerNotebook) => {
+    const transformedData = [];
+    if (registerNotebook.length > 0) {
+      registerNotebook.forEach((detail) => {
+        const date = detail.date;
+        const weekDate = detail.weekDate;
+        const countSlots = detail.slots.length;
+
+        if (countSlots === 0) {
+          transformedData.push({
+            id: detail.id,
+            date: date,
+            weekDate: weekDate,
+            slots: [],
+            countSlots: countSlots,
+          });
+        } else {
+          detail.slots.forEach((slot) => {
+            const transformedSlot = {
+              id: slot.id,
+              date: date,
+              weekDate: weekDate,
+              slot: slot.slot,
+              subject: slot.subject,
+              teacher: slot.teacher,
+              slotByLessonPlan: slot.slotByLessonPlan,
+              numberOfAbsent: slot.numberOfAbsent,
+              numberAbsent: slot.numberAbsent,
+              title: slot.title,
+              note: slot.note,
+              rating: slot.rating,
+              countSlots: countSlots,
+            };
+            transformedData.push(transformedSlot);
+          });
+        }
+      });
+    }
+    return transformedData;
+  };
+
   const handleFilterTimetable = () => {
     refetch().then((result) => {
       if (result.data?.success) {
-        setCurrentRegisterNotebook(result.data?.data?.details);
+        const transformedData = formatRegisterNotebook(result.data?.data?.details);
+        setCurrentRegisterNotebook(transformedData);
       }
     });
   };
@@ -195,7 +199,8 @@ const SchoolBook = () => {
         queryClient.invalidateQueries("slotData");
         if (response && response.success) {
           refetch().then((result) => {
-            setCurrentRegisterNotebook(result.data?.data?.details);
+            const transformedData = formatRegisterNotebook(result.data?.data?.details);
+            setCurrentRegisterNotebook(transformedData);
           });
           toast.success("Cập nhật tiết học thành công!");
         } else {
@@ -377,7 +382,7 @@ const SchoolBook = () => {
               itemsPerPage={70}
               isPaginated={false}
               onEdit={handleViewSlotDetail}
-              data={transformedData}
+              data={currentRegisterNotebook}
               onDetails={handleViewSlotDetail}
               className="mt-8"
             />

@@ -190,3 +190,20 @@ export const countNumberOfSlotsInWeek = (currentTimeTable) => {
   });
   return numberOfSlotInWeek;
 };
+
+export const formatUrlToFile = async (url, filename, mimeType) => {
+  const proxyUrl = "https://cors-anywhere.herokuapp.com/"; // Using a public CORS proxy
+  const finalUrl = proxyUrl + url;
+
+  try {
+    const response = await fetch(finalUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const blob = await response.blob();
+    return new File([blob], filename, { type: mimeType });
+  } catch (error) {
+    console.error("Failed to fetch the image:", error);
+    throw error;
+  }
+};

@@ -509,7 +509,7 @@ const SchoolBook = () => {
                       required: "Không được bỏ trống!",
                     }}
                   />
-                  <NotifyCheckInfoForm actionText="đánh giá" />
+                  <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ trước khi đánh giá!" />
                   <div className="mt-4 flex justify-end">
                     <ButtonComponent
                       type="success"

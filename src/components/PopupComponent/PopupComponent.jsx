@@ -9,12 +9,15 @@ import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+const BootstrapDialog = styled(Dialog)(({ theme, width }) => ({
   "& .MuiDialogContent-root": {
     padding: theme.spacing(2),
   },
   "& .MuiDialogActions-root": {
     padding: theme.spacing(1),
+  },
+  "& .MuiPaper-root": {
+    width: width || "auto", // Default to 'auto' if no width prop is provided
   },
 }));
 

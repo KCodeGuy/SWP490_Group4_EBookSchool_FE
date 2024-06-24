@@ -11,6 +11,16 @@ const getStudentByID = async (accessToken, studentID) => {
   return res.data;
 };
 
+const getStudents = async (accessToken) => {
+  const res = await axios.get(`${API_HOST}/Students`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  return res.data;
+};
+
 const updateStudent = async (accessToken, data) => {
   const formData = new FormData();
   formData.append("fullName", data.fullName);
@@ -44,4 +54,4 @@ const updateStudent = async (accessToken, data) => {
   }
 };
 
-export { getStudentByID, updateStudent };
+export { getStudents, getStudentByID, updateStudent };

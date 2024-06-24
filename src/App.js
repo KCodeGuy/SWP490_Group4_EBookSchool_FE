@@ -48,7 +48,13 @@ import SignIn from "layouts/authentication/sign-in";
 import ResetPassword from "layouts/authentication/reset-password";
 
 // Material Dashboard 2 React routes
-import { homeRoomTeacherRoutes, routes, studentRoutes, subjectTeacherRoutes } from "./routes";
+import {
+  guestRoutes,
+  homeRoomTeacherRoutes,
+  routes,
+  studentRoutes,
+  subjectTeacherRoutes,
+} from "./routes";
 
 // Material Dashboard 2 React contexts
 import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
@@ -74,9 +80,11 @@ export default function App() {
         setCurrentRoutes(homeRoomTeacherRoutes);
       } else if (userRole === "Student") {
         setCurrentRoutes(studentRoutes);
+      } else {
+        setCurrentRoutes(guestRoutes);
       }
     } else {
-      setCurrentRoutes(routes);
+      setCurrentRoutes(guestRoutes);
     }
   }, [userRole]);
   const [controller, dispatch] = useMaterialUIController();

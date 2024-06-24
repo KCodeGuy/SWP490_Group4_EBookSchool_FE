@@ -19,7 +19,6 @@ const addSubject = async (accessToken, subjectData) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error adding subject:", error);
@@ -28,7 +27,6 @@ const addSubject = async (accessToken, subjectData) => {
 };
 
 const updateSubject = async (accessToken, subjectData) => {
-  console.log("Subject data", subjectData);
   try {
     const res = await axios.put(`${API_HOST}/Subjects/${subjectData.id}`, subjectData, {
       headers: {
@@ -37,7 +35,6 @@ const updateSubject = async (accessToken, subjectData) => {
       },
     });
 
-    console.log(res.data);
     return res.data;
   } catch (error) {
     console.error("Error updating subject:", error);

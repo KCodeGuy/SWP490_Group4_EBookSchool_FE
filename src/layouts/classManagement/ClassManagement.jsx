@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { Box, CircularProgress, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -13,32 +13,40 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
+import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
+import CancelIcon from "@mui/icons-material/Cancel";
+import { useNavigate } from "react-router-dom";
 
 import "./style.scss";
-import { classrooms } from "../../mock/classroom";
-import { studentClasses } from "../../mock/class";
 import { schoolYears } from "../../mock/schoolYear";
+import noDataImage3 from "../../assets/images/noDataImage3.avif";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
 import { getAllClasses, addClass, updateClass, deleteClass } from "../../services/ClassService";
-import { useNavigate } from "react-router-dom";
-import { getAllTeachers } from "services/TeacherService";
-
-//get access token
-const accessToken = localStorage.getItem("authToken");
+import { getAllTeachers } from "../../services/TeacherService";
+import { getStudents } from "services/StudentService";
+import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
 
 export default function ClassManagement() {
   const students = ["HS0043"];
-  console.log("Re-render");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [deletedData, setDeletedData] = useState({});
   const [currentData, setCurrentData] = useState([]);
-  const navigate = useNavigate();
+  const [addedStudents, setAddedStudents] = useState([]);
+  const [currentStudents, setCurrentStudents] = useState([]);
+
+  let accessToken, currentUser, userRole, schoolYearsAPI;
+  userRole = localStorage.getItem("userRole");
+  if (userRole) {
+    accessToken = localStorage.getItem("authToken");
+    schoolYearsAPI = JSON.parse(localStorage.getItem("schoolYears"));
+    currentUser = JSON.parse(localStorage.getItem("user"));
+  }
 
   const queryClient = useQueryClient();
   const { data, error, isLoading } = useQuery(["classState", { accessToken }], () =>
@@ -48,15 +56,24 @@ export default function ClassManagement() {
   const { data: currentTeacher } = useQuery(["teacherState", { accessToken }], () =>
     getAllTeachers(accessToken)
   );
+
+  const { data: listAllStudents, isLoading: isLoadingStudents } = useQuery(
+    ["studentState", { accessToken }],
+    () => getStudents(accessToken)
+  );
   useEffect(() => {
-    if (Array.isArray(data?.data)) {
+    if (data?.data) {
       setCurrentData(data.data);
-    } else {
-      setCurrentData([]);
     }
   }, [data]);
 
-  const [schoolYear, setSchoolYear] = useState(schoolYears.data[0].schoolYear);
+  useEffect(() => {
+    if (listAllStudents?.data) {
+      setCurrentStudents(listAllStudents.data);
+    }
+  }, [listAllStudents]);
+
+  const [schoolYear, setSchoolYear] = useState(schoolYearsAPI[schoolYearsAPI.length - 1]);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
   };
@@ -66,9 +83,9 @@ export default function ClassManagement() {
     value: teacher.id,
   }));
 
-  const formattedSchoolYears = schoolYears.data.map((year) => ({
-    label: year.schoolYear,
-    value: year.schoolYear,
+  const formattedSchoolYears = schoolYearsAPI.map((item) => ({
+    label: item,
+    value: item,
   }));
 
   const {
@@ -94,31 +111,59 @@ export default function ClassManagement() {
       if (response && response.success) {
         toast.success("Tạo lớp học thành công!");
       } else {
-        toast.error(`${response.data} !`);
+        toast.error(`Tạo lớp thất bại. ${response.data}!`);
       }
       reset();
+      setAddedStudents([]);
       setModalOpen(false);
     },
   });
 
-  const handleAddClass = (data) => {
-    const classData = {
-      classroom: data.classroom,
-      schoolYear: data.schoolYear,
-      teacherID: data.teacherID,
-      students: students,
-    };
-    console.log(classData);
-    addClassMutation.mutate(classData);
+  const handleGetItem = (data) => {
+    let isDuplicate = false;
+    const studentID = data[0];
+    const studentFullName = data[1];
+
+    if (addedStudents.length > 0) {
+      addedStudents.forEach((item) => {
+        if (item.id === studentID) {
+          isDuplicate = true;
+          toast.error(`Học sinh "${studentFullName}" đã tồn tại!`);
+        }
+      });
+    }
+    if (!isDuplicate) {
+      const newStudent = { id: studentID, fullname: studentFullName };
+      setAddedStudents((prevStudents) => [...prevStudents, newStudent]);
+      toast.success(`Học sinh "${studentFullName}" đã được thêm thành công!`);
+    }
   };
 
-  const handleCloseEditModal = () => {
-    setModalEditOpen(false);
+  const handleAddClass = (data) => {
+    let firstSchoolYear = data.schoolYear;
+    let firstTeacher = data.teacherID;
+    if (!data.schoolYear) {
+      firstSchoolYear = formattedSchoolYears[0].value;
+    }
+    if (!data.teacherID) {
+      firstTeacher = formattedTeachers[0]?.value;
+    }
+    if (addedStudents.length > 0) {
+      const studentIds = addedStudents.map((student) => student.id);
+      const classData = {
+        classroom: data.classroom,
+        schoolYear: firstSchoolYear,
+        teacherID: firstTeacher,
+        students: studentIds,
+      };
+      addClassMutation.mutate(classData);
+    } else {
+      toast.error("Bạn chưa thêm học sinh!");
+    }
   };
 
   // Xử lí show lên form edit thôi
   const handleEdit = (rowItem) => {
-    console.log(rowItem);
     if (rowItem) {
       setValue("idEdit", rowItem[0]);
       setValue("classroomEdit", rowItem[1]);
@@ -145,15 +190,13 @@ export default function ClassManagement() {
 
   // Xử lí get dữ liệu khi submit
   const handleUpdateClass = (data) => {
-    console.log("Submit data", data);
     const classData = {
       id: data.idEdit,
       classroom: data.classroomEdit,
       schoolYear: data.schoolYearEdit,
       teacherID: data.teacherIDEdit,
-      students: students,
+      students: ["HS0001", "HS0002"],
     };
-    console.log("Data gửi đi: ", classData);
     updateClassMutation.mutate(classData);
   };
 
@@ -215,6 +258,19 @@ export default function ClassManagement() {
     }
   };
 
+  const filterStudentsForAdding = (txtSearch, data) => {
+    const search = txtSearch.trim().toLowerCase();
+    if (data) {
+      return data.filter((student) => {
+        return (
+          student.id.toLowerCase().includes(search) ||
+          student.username.toLowerCase().includes(search) ||
+          student.fullname.toLowerCase().includes(search)
+        );
+      });
+    }
+  };
+
   return (
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
@@ -239,16 +295,16 @@ export default function ClassManagement() {
                   label="Năm học"
                   onChange={handleSchoolYearSelectedChange}
                 >
-                  {schoolYears.data.map((item, index) => (
-                    <MenuItem key={index} value={item.schoolYear.toString()}>
-                      {item.schoolYear.toString()}
+                  {schoolYearsAPI?.map((item, index) => (
+                    <MenuItem key={index} value={item}>
+                      {item}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
               <div className="max-[639px]:mt-2 ml-3">
                 <ButtonComponent type="success" onClick={handleStatistic}>
-                  <FilterAltIcon className="" /> Tìm kiếm
+                  <FilterAltIcon className="" /> TÌM KIẾM
                 </ButtonComponent>
               </div>
             </div>
@@ -260,7 +316,7 @@ export default function ClassManagement() {
               <div className="ml-3">
                 <ButtonComponent className="" onClick={() => setModalOpen(true)}>
                   <AddCircleOutlineIcon className="text-3xl mr-1" />
-                  Tạo
+                  TẠO
                 </ButtonComponent>
                 <PopupComponent
                   title="TẠO LỚP HỌC"
@@ -269,15 +325,16 @@ export default function ClassManagement() {
                   isOpen={modalOpen}
                   onClose={() => setModalOpen(false)}
                 >
+                  {/* <div className="flex justify-between"> */}
                   <form onSubmit={handleSubmit(handleAddClass)}>
                     <div className="flex">
                       <InputBaseComponent
-                        placeholder="Nhập tên lớp học"
+                        placeholder="Nhập tên lớp học..."
                         type="text"
                         control={control}
                         setValue={noSetValue}
                         name="classroom"
-                        className="w-1/2 mr-2"
+                        className="w-1/3 mr-2"
                         label="Tên lớp"
                         errors={errors}
                         validationRules={{
@@ -295,52 +352,139 @@ export default function ClassManagement() {
                       <InputBaseComponent
                         label="Năm học"
                         name="schoolYear"
-                        className="w-1/2 mr-2"
+                        className="w-1/3 mr-2"
                         control={control}
                         setValue={noSetValue}
                         type="select"
                         options={formattedSchoolYears}
                         errors={errors}
-                        validationRules={{
-                          required: "Hãy chọn năm học!",
-                        }}
+                      />
+                      <InputBaseComponent
+                        label="GV chủ nhiệm"
+                        name="teacherID"
+                        className="w-1/3"
+                        control={control}
+                        setValue={noSetValue}
+                        type="select"
+                        options={formattedTeachers}
+                        errors={errors}
                       />
                     </div>
-                    <InputBaseComponent
-                      label="GV chủ nhiệm"
-                      name="teacherID"
-                      control={control}
-                      setValue={noSetValue}
-                      type="select"
-                      options={formattedTeachers}
-                      errors={errors}
-                      validationRules={{
-                        required: "Không được bỏ trống!",
-                      }}
-                    />
+                    <label className="mr-2 font-medium">
+                      Danh sách học sinh ({addedStudents?.length}){" "}
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <div className="outline-none px-3 py-2 border border-blue-500 rounded flex flex-wrap mb-2">
+                      {addedStudents.length > 0 ? (
+                        addedStudents?.map((item, index) => (
+                          <p
+                            key={index}
+                            value={item.id}
+                            className="text-sm px-1 bg-primary-color mr-2 max-w-max italic text-white rounded-md mb-2"
+                          >
+                            {item.fullname}
+                            <span
+                              className="text-lg cursor-pointer"
+                              onClick={() => {
+                                setAddedStudents(
+                                  addedStudents.filter((student) => student.id != item.id)
+                                );
+                                toast.success(`Xóa học sinh "${item.fullname}" thành công!`);
+                              }}
+                            >
+                              <CancelIcon className="mb-0.5 ml-1" />
+                            </span>
+                          </p>
+                        ))
+                      ) : (
+                        <span className="text-base font-medium">Chưa có học sinh!</span>
+                      )}
+                    </div>
+                    <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi tạo!" />
                     <div className="mt-4 flex justify-end">
-                      <ButtonComponent type="error" action="reset" onClick={() => reset()}>
-                        CLEAR
+                      <ButtonComponent
+                        type="error"
+                        action="reset"
+                        onClick={() => {
+                          reset();
+                          setAddedStudents([]);
+                        }}
+                      >
+                        <CleaningServicesIcon className="text-3xl mr-1 mb-1" />
+                        ĐẶT LẠI
                       </ButtonComponent>
-                      <ButtonComponent action="submit">TẠO</ButtonComponent>
+                      <ButtonComponent action="submit">
+                        <AddCircleOutlineIcon className="text-3xl mr-1" />
+                        TẠO
+                      </ButtonComponent>
                     </div>
                   </form>
+                  <SearchInputComponent
+                    className="-translate-y-11"
+                    onSearch={(txtSearch) => {
+                      setCurrentStudents(filterStudentsForAdding(txtSearch, listAllStudents?.data));
+                      reset();
+                    }}
+                    placeHolder="Nhập từ khóa..."
+                  />
+                  <div className="flex justify-between">
+                    <p className="text-sm font-bold -translate-y-9">
+                      TẤT CẢ HỌC SINH ({currentStudents?.length})
+                    </p>
+                    <p className="text-sm font-bold -translate-y-9">
+                      Hãy thêm học sinh để tạo lớp.
+                    </p>
+                  </div>
+
+                  {isLoadingStudents ? (
+                    <div className="text-center primary-color my-10 text-xl italic font-medium">
+                      <div className="mx-auto flex items-center justify-center">
+                        <p className="mr-3">Loading</p>
+                        <CircularProgress size={24} color="inherit" />
+                      </div>
+                    </div>
+                  ) : listAllStudents?.success ? (
+                    <TableComponent
+                      header={["Mã HS", "Họ và tên", "Ảnh"]}
+                      data={currentStudents?.map((item) => [item.id, item.fullname, item.avatar])}
+                      onGet={handleGetItem}
+                      className="-translate-y-7"
+                      isOrdered={true}
+                      itemsPerPage={5}
+                      isImage={2}
+                    />
+                  ) : (
+                    <div className="text-center primary-color my-10 text-xl italic font-medium">
+                      <img
+                        className="w-60 h-60 object-cover object-center mx-auto"
+                        src={noDataImage3}
+                        alt="Chưa có dữ liệu!"
+                      />
+                      Chưa có dữ liệu!
+                    </div>
+                  )}
+                  {/* </div> */}
                 </PopupComponent>
               </div>
             </div>
           </div>
           <div>
             {isLoading ? (
-              <div className="text-center">Loading...</div>
-            ) : (
+              <div className="text-center primary-color my-10 text-xl italic font-medium">
+                <div className="mx-auto flex items-center justify-center">
+                  <p className="mr-3">Loading</p>
+                  <CircularProgress size={24} color="inherit" />
+                </div>
+              </div>
+            ) : data?.success ? (
               <TableComponent
                 header={["Tên lớp", "Năm học", "Phòng học", "Giáo viên chủ nhiệm"]}
                 data={currentData?.map((item) => [
-                  item.id.toString(),
-                  item.classroom.toString(),
-                  item.schoolYear.toString(),
-                  item.classroom.toString(),
-                  item.teacher.toString(),
+                  item.id,
+                  item.classroom,
+                  item.schoolYear,
+                  item.classroom,
+                  item.teacher,
                 ])}
                 itemsPerPage={10}
                 onEdit={handleEdit}
@@ -348,16 +492,36 @@ export default function ClassManagement() {
                 onDelete={handleDelete}
                 className="mt-8"
               />
+            ) : (
+              <div className="text-center primary-color my-10 text-xl italic font-medium">
+                <img
+                  className="w-60 h-60 object-cover object-center mx-auto"
+                  src={noDataImage3}
+                  alt="Chưa có dữ liệu!"
+                />
+                Chưa có dữ liệu!
+              </div>
             )}
             <PopupComponent
               title="CẬP NHẬT"
               description="Hãy chỉnh sửa để bắt đầu năm học mới"
               icon={<EditIcon />}
               isOpen={modalEditOpen}
-              onClose={handleCloseEditModal}
+              onClose={() => {
+                setModalEditOpen(false);
+              }}
             >
               <form onSubmit={handleSubmitEditAction(handleUpdateClass)}>
                 <div className="flex">
+                  <InputBaseComponent
+                    type="text"
+                    control={controlEditAction}
+                    className="hidden"
+                    name="idEdit"
+                    label="Tên lớp"
+                    setValue={setValue}
+                    errors={errorsEditAction}
+                  />
                   <InputBaseComponent
                     placeholder="Nhập tên lớp học"
                     type="text"
@@ -380,9 +544,6 @@ export default function ClassManagement() {
                     options={formattedSchoolYears}
                     setValue={setValue}
                     errors={errorsEditAction}
-                    validationRules={{
-                      required: "Hãy chọn năm học!",
-                    }}
                   />
                 </div>
                 <InputBaseComponent
@@ -393,15 +554,24 @@ export default function ClassManagement() {
                   type="select"
                   options={formattedTeachers}
                   errors={errorsEditAction}
-                  validationRules={{
-                    required: "Không được bỏ trống!",
-                  }}
                 />
+                <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi cập nhật!" />
                 <div className="mt-4 flex justify-end">
-                  <ButtonComponent type="error" action="reset" onClick={handleClearEditForm}>
-                    CLEAR
+                  <ButtonComponent
+                    type="error"
+                    action="reset"
+                    onClick={() => {
+                      setModalEditOpen(false);
+                      resetEditAction();
+                    }}
+                  >
+                    <CancelIcon className="text-3xl mr-1 mb-0.5" />
+                    HỦY BỎ
                   </ButtonComponent>
-                  <ButtonComponent action="submit">CẬP NHẬT</ButtonComponent>
+                  <ButtonComponent action="submit">
+                    <CancelIcon className="text-3xl mr-1 mb-0.5" />
+                    CẬP NHẬT
+                  </ButtonComponent>
                 </div>
               </form>
             </PopupComponent>

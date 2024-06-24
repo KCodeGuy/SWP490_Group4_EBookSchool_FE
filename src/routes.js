@@ -621,4 +621,23 @@ const homeRoomTeacherRoutes = [
   },
 ];
 
-export { routes, subjectTeacherRoutes, homeRoomTeacherRoutes, studentRoutes };
+const guestRoutes = [
+  {
+    type: "collapse",
+    name: "Đăng nhập",
+    key: "sign-in",
+    icon: <Icon fontSize="small">login</Icon>,
+    route: "/authentication/sign-in",
+    component: <SignIn />,
+  },
+  {
+    type: "collapse",
+    name: "Quên mật khẩu",
+    key: "reset-password",
+    icon: <Icon fontSize="small">lockOpen</Icon>,
+    route: "/authentication/reset-password",
+    component: <ResetPassword />,
+  },
+];
+
+export { routes, subjectTeacherRoutes, homeRoomTeacherRoutes, studentRoutes, guestRoutes };

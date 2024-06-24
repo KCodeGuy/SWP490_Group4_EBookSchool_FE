@@ -1,9 +1,12 @@
 import * as XLSX from "xlsx";
 // contains common methods
-export const countDuplicateItemsInArray = (arr) => {
+export const countDuplicateItemsInArray = (arr, schoolSemester) => {
   // Count occurrences of each key
-  const counts = arr.reduce((acc, { key }) => {
-    acc[key] = (acc[key] || 0) + 1;
+  const counts = arr.reduce((acc, { key, semester }) => {
+    // console.log(semester);
+    if (semester == schoolSemester) {
+      acc[key] = (acc[key] || 0) + 1;
+    }
     return acc;
   }, {});
 

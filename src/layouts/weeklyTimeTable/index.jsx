@@ -206,7 +206,6 @@ export default function WeeklyTimeTable() {
       }
     });
     refetchTeachers().then((result) => {
-      // console.log(result.data?.data);
       if (result.data?.success) {
         setCurrentTeachers(result.data?.data);
       }
@@ -290,7 +289,6 @@ export default function WeeklyTimeTable() {
         }
       });
       setCurrentSlot(rowItem);
-      // setCurrentSlotDate(dateEdit);
       setOpenModalUpdate(true);
     } else {
       setOpenModalUpdate(false);
@@ -584,7 +582,7 @@ export default function WeeklyTimeTable() {
                           }}
                         />
                       </div>
-                      <NotifyCheckInfoForm actionText="tạo" />
+                      <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ trước khi tạo!" />
                       <div className="flex justify-end mt-4">
                         <ButtonComponent
                           type="error"
@@ -632,7 +630,7 @@ export default function WeeklyTimeTable() {
                         required: "Hãy chọn file!",
                       }}
                     />
-                    <NotifyCheckInfoForm actionText="tạo" />
+                    <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ trước khi tạo!" />
                     <div className="mt-5 flex justify-end">
                       <ButtonComponent
                         type="error"
@@ -679,7 +677,7 @@ export default function WeeklyTimeTable() {
                         required: "Hãy chọn file!",
                       }}
                     />
-                    <NotifyCheckInfoForm actionText="cập nhật" />
+                    <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ trước khi cập nhật!" />
                     <div className="mt-5 flex justify-end">
                       <ButtonComponent
                         type="error"
@@ -875,7 +873,7 @@ export default function WeeklyTimeTable() {
                     }}
                   />
                 </div>
-                <NotifyCheckInfoForm actionText="cập nhật" />
+                <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ trước khi tạo cập nhật!" />
                 <div className="mt-5 flex justify-end">
                   <ButtonComponent
                     type="error"

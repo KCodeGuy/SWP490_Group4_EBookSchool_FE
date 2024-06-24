@@ -10,6 +10,7 @@ import EditCalendarIcon from "@mui/icons-material/EditCalendar";
 import Checkbox from "@mui/material/Checkbox";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 function TableComponent({
   header,
@@ -17,6 +18,7 @@ function TableComponent({
   onEdit,
   onDelete,
   onDetails,
+  onGet,
   onCheckboxChange,
   onSave,
   className,
@@ -41,7 +43,11 @@ function TableComponent({
     }
   }, [isCheckedAll, data]);
 
-  const isShowActions = onDelete !== undefined || onEdit !== undefined || onDetails !== undefined;
+  const isShowActions =
+    onDelete !== undefined ||
+    onEdit !== undefined ||
+    onDetails !== undefined ||
+    onGet !== undefined;
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -147,6 +153,17 @@ function TableComponent({
                 )}
                 {isShowActions && (
                   <td className="max-w-28">
+                    {onGet && (
+                      <ButtonComponent
+                        action="button"
+                        type="success"
+                        size="sm"
+                        onClick={() => onGet(row)}
+                      >
+                        <AddCircleOutlineIcon className="text-3xl mr-1" />
+                        Thêm
+                      </ButtonComponent>
+                    )}
                     {onEdit && (
                       <button
                         title="Edit button"
@@ -219,6 +236,7 @@ TableComponent.propTypes = {
   onDetails: PropTypes.func,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
+  onGet: PropTypes.func,
   onCheckboxChange: PropTypes.func,
   onSave: PropTypes.func,
   className: PropTypes.string,

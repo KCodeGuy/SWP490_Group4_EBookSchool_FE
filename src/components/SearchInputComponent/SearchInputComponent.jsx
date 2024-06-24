@@ -34,6 +34,7 @@ export default function SearchInputComponent({ onSearch, placeHolder, className 
       <button
         className="w-10 h-10 leading-10 bg-primary-color rounded text-white text-center cursor-pointer"
         onClick={handleSearch}
+        type="button"
       >
         <SearchIcon className="text-3xl" />
       </button>

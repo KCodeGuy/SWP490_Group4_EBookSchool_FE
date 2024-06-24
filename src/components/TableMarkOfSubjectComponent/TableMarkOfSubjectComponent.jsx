@@ -7,14 +7,16 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditCalendarIcon from "@mui/icons-material/EditCalendar";
+import { countDuplicateItemsInArray } from "../../utils/CommonFunctions";
 
 function TableMarkOfSubjectComponent({
-  header,
   data,
+  isHideMark,
   onEdit,
   onDelete,
   onDetails,
   onCheckboxChange,
+  semester,
   onSave,
   className,
   itemsPerPage,
@@ -33,6 +35,39 @@ function TableMarkOfSubjectComponent({
     setCurrentPage(page);
   };
 
+  let headerTable = [];
+  if (currentData.length > 0 && semester) {
+    headerTable = countDuplicateItemsInArray(currentData[0]?.scores, semester);
+  }
+
+  const renderAverageMark = (averageMark) => {
+    let defaultStyles = "mx-auto text-center text-white px-3 py-1 rounded";
+    if (averageMark >= 8) {
+      defaultStyles = `${defaultStyles} bg-success-color`;
+    } else if (averageMark >= 6.5 && averageMark < 8) {
+      defaultStyles = `${defaultStyles} bg-primary-color`;
+    } else if (averageMark >= 5 && averageMark < 6.5) {
+      defaultStyles = `${defaultStyles} bg-warning-color`;
+    } else if (averageMark < 5) {
+      defaultStyles = `${defaultStyles} bg-error-color`;
+    }
+    return defaultStyles;
+  };
+
+  const renderRanking = (averageMark) => {
+    let defaultStyles;
+    if (averageMark >= 8) {
+      defaultStyles = "mx-auto text-center text-white px-3 py-1 rounded bg-success-color";
+    } else if (averageMark >= 6.5 && averageMark < 8) {
+      defaultStyles = "mx-auto text-center text-white px-3 py-1 rounded bg-primary-color";
+    } else if (averageMark >= 5 && averageMark < 6.5) {
+      defaultStyles = "mx-auto text-center text-white px-3 py-1 rounded bg-warning-color";
+    } else if (averageMark < 5) {
+      defaultStyles = "mx-auto text-center text-white px-3 py-1 rounded bg-error-color";
+    }
+    return defaultStyles;
+  };
+
   return (
     <div className={`max-[1023px]:overflow-scroll lg:overflow-auto ${className}`}>
       <table>
@@ -41,12 +76,13 @@ function TableMarkOfSubjectComponent({
             {isOrdered && <th className="w-10">STT.</th>}
             <th className="w-28">Tên học sinh</th>
             <th className="w-28">Mã học sinh</th>
-            {header.map((column, index) => (
+            {headerTable?.map((column, index) => (
               <th colSpan={column.count} key={index}>
                 {column.key}
               </th>
             ))}
             <th className="w-28">Trung bình môn</th>
+            {/* <th className="w-28">Xếp loại</th> */}
             {isShowActions && <th className="w-28">Thao tác</th>}
           </tr>
         </thead>
@@ -56,12 +92,21 @@ function TableMarkOfSubjectComponent({
               {isOrdered && <td>{startIndex + rowIndex + 1}</td>}
               <td>{row.fullName}</td>
               <td>{row.id}</td>
-              {row.scores.map((item, index) => (
-                <td key={index} className="min-w-9">
-                  {item.value}
-                </td>
-              ))}
-              <td>{row.average}</td>
+              {row.scores.map((item, index) =>
+                item.semester == semester ? (
+                  <td key={index} className="min-w-9">
+                    {isHideMark || item.value == -1 ? "_" : item.value}
+                  </td>
+                ) : (
+                  ""
+                )
+              )}
+              <td>
+                <span className={renderAverageMark(row.average)}>{row.average}</span>
+              </td>
+              {/* <td>
+                <span>{renderRanking(row.average)}</span>
+              </td> */}
               {isShowActions && (
                 <td className="max-w-28">
                   {onEdit && (
@@ -132,12 +177,14 @@ TableMarkOfSubjectComponent.propTypes = {
   onDetails: PropTypes.func,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
+  semester: PropTypes.string,
   onCheckboxChange: PropTypes.func,
   onSave: PropTypes.func,
   className: PropTypes.string,
   itemsPerPage: PropTypes.number,
   isOrdered: PropTypes.bool,
   showCheckboxes: PropTypes.bool,
+  isHideMark: PropTypes.bool,
 };
 
 TableMarkOfSubjectComponent.defaultProps = {

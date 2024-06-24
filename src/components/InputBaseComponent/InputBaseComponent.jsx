@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Controller } from "react-hook-form";
 
@@ -32,6 +32,14 @@ const InputBaseComponent = ({
     setSelectedFile(value); // Store the selected file in state
     setValue(name, value); // Set the value for the input field with name
   };
+
+  // useEffect(() => {
+  //   console.log(type);
+  //   console.log(name);
+  //   if (type === "select" && options.length > 0) {
+  //     setValue(name, options[0].value);
+  //   }
+  // }, [type, options, setValue, name]);
 
   return (
     <div className={customClassName}>

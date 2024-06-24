@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import { Card, CircularProgress, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
@@ -10,36 +10,43 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { ToastContainer, toast } from "react-toastify";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
 import DownloadIcon from "@mui/icons-material/Download";
-import { useNavigate } from "react-router-dom";
+import CancelIcon from "@mui/icons-material/Cancel";
 import BookIcon from "@mui/icons-material/Book";
+import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import "./style.scss";
 import noDataImage3 from "../../assets/images/noDataImage3.avif";
-import { subjects, subject } from "../../mock/subject";
-import { schoolYears } from "../../mock/schoolYear";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
+import NotifyCheckInfoForm from "../../components/NotifyCheckInfoForm";
 import {
   getAllSubjects,
   addSubject,
   updateSubject,
   deleteSubject,
 } from "../../services/SubjectService";
-import { useMutation, useQuery, useQueryClient } from "react-query";
 
 const grades = [10, 11, 12];
-
-//get access token
+const semesters = [
+  { label: "Học kì I", value: "Học kỳ I" },
+  { label: "Học kì II", value: "Học kỳ II" },
+];
+const nameScore = [
+  { label: "Kiểm tra miệng", value: "Miệng" },
+  { label: "Kiểm tra 15 phút", value: "15p" },
+  { label: "Kiểm tra 1 tiết", value: "1 Tiết" },
+  { label: "Kiểm tra học kì", value: "Cuối kỳ" },
+];
 const accessToken = localStorage.getItem("authToken");
 
 // Subject Management (UolLT)
 export default function SubjectManagement() {
-  //1. Modal form states open, close
+  // console.log("Re-render");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
@@ -48,9 +55,8 @@ export default function SubjectManagement() {
   const [lessonPlans, setLessonPlans] = useState([]);
   const [deletedData, setDeletedData] = useState({});
   const [currentData, setCurrentData] = useState([]);
-  const navigate = useNavigate();
-
   const queryClient = useQueryClient();
+
   //call api get all
   const { data, error, isLoading } = useQuery(["subjectState", { accessToken }], () =>
     getAllSubjects(accessToken)
@@ -64,35 +70,17 @@ export default function SubjectManagement() {
     }
   }, [data]);
 
-  //2. Set data by Call API
-  const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
-  const handleSchoolYearSelectedChange = (event) => {
-    setSchoolYear(event.target.value);
-  };
+  const formattedGrades = grades.map((item) => ({
+    label: `Khối ${item}`,
+    value: item,
+  }));
 
   const [grade, setGrade] = React.useState(grades[0]);
   const handleGradeSelectedChange = (event) => {
     setGrade(event.target.value);
   };
 
-  const semesters = [
-    { label: "Học kì I", value: "Học kỳ I" },
-    { label: "Học kì II", value: "Học kỳ II" },
-  ];
-
-  const nameScore = [
-    { label: "Kiểm tra miệng", value: "Miệng" },
-    { label: "Kiểm tra 15 phút", value: "15p" },
-    { label: "Kiểm tra 1 tiết", value: "1 Tiết" },
-    { label: "Kiểm tra học kì", value: "Cuối kỳ" },
-  ];
-
-  const formattedGrades = grades.map((item) => ({
-    label: `Khối ${item}`,
-    value: item,
-  }));
-
-  //3.1 React-hook-from of adding action
+  //React-hook-from of adding action
   const {
     control,
     handleSubmit,
@@ -101,7 +89,7 @@ export default function SubjectManagement() {
     formState: { errors },
   } = useForm();
 
-  //3.1 React-hook-from of editing action
+  //React-hook-from of editing action
   const {
     control: controlEditAction,
     handleSubmit: handleSubmitEditAction,
@@ -110,76 +98,47 @@ export default function SubjectManagement() {
     formState: { errors: errorsEditAction },
   } = useForm();
 
-  //4. Functions handle adding
-  const handleOpenAddModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseAddModal = () => {
-    setModalOpen(false);
-  };
-
+  // Adding action
   const addSubjectsMutation = useMutation((subjectData) => addSubject(accessToken, subjectData), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("subjectState");
       if (response && response.success) {
         toast.success("Tạo môn học thành công!");
       } else {
-        toast.error(`${response.data} !`);
+        toast.error(`${response.data}!`);
       }
       setMarkFactors([]);
+      setLessonPlans([]);
       reset();
       setModalOpen(false);
     },
   });
 
   const formatMarkFactors = (data) => {
-    return data.map(({ id, nameScore, ...rest }) => {
-      // Create a new object with the keys we want to keep
-      let newObject = { ...rest, name: nameScore };
-
-      // Remove the keys 'name' and 'grade' if they are empty
-      if (newObject.name === "") delete newObject.name;
-      if (newObject.grade === "") delete newObject.grade;
-
-      // Return the transformed object
+    return data.map((data) => {
+      let newObject = {
+        name: data.nameScore,
+        count: data.count,
+        scoreFactor: data.scoreFactor,
+        semester: data.semester,
+      };
       return newObject;
     });
-  };
-
-  const formatLessonPlan = (data) => {
-    return data.map(({ id, nameScore, ...rest }) => {
-      // Create a new object with the keys we want to keep
-      let newObject = { ...rest, name: nameScore };
-
-      // Remove the keys 'name' and 'grade' if they are empty
-      if (newObject.name === "") delete newObject.name;
-      if (newObject.grade === "") delete newObject.grade;
-
-      // Return the transformed object
-      return newObject;
-    });
-  };
-
-  const handleAddSubject = (data) => {
-    const markFactorsTransform = formatMarkFactors(markFactors);
-    const classData = {
-      name: data.name,
-      grade: data.grade,
-      lessonPlans: lessonPlans,
-      componentScores: markFactorsTransform,
-    };
-
-    console.log("lessonPlans: ", lessonPlans);
-    console.log("classData", classData);
-    addSubjectsMutation.mutate(classData);
   };
 
   const handleAddMark = (data) => {
     let isDuplicateFactor = false;
+    let nameScoreFormatted = data.nameScore;
+    let semesterFormatted = data.semester;
+    if (data.nameScore === "") {
+      nameScoreFormatted = nameScore[0].value;
+    }
+    if (data.semester === "") {
+      semesterFormatted = semesters[0].value;
+    }
     if (markFactors.length > 0) {
       markFactors.forEach((item) => {
-        if (item.nameScore === data.nameScore && item.semester === data.semester) {
+        if (item.nameScore === nameScoreFormatted && item.semester === semesterFormatted) {
           isDuplicateFactor = true;
           toast.error(`Điểm thành phần "Kiểm tra ${data.nameScore}" đã tồn tại!`);
         }
@@ -187,9 +146,17 @@ export default function SubjectManagement() {
     }
     if (!isDuplicateFactor) {
       const id = markFactors.length;
-      const newMarkFactor = { id, ...data };
+      const newMarkFactor = {
+        id,
+        nameScore: nameScoreFormatted,
+        semester: semesterFormatted,
+        count: data.count,
+        scoreFactor: data.scoreFactor,
+      };
       setMarkFactors((prevMarkFactors) => [...prevMarkFactors, newMarkFactor]);
+      toast.success("Thêm điểm thành phần thành công!");
     }
+    reset();
   };
 
   const handleAddLessonPlan = (data) => {
@@ -204,21 +171,35 @@ export default function SubjectManagement() {
     }
     if (!isDuplicateLessonPlan) {
       const id = lessonPlans.length;
-      const newLessonPlane = { id: id, slot: data.slot, title: data.title };
+      const newLessonPlane = { id: id, slot: data.slot, title: data.titleOfSubject };
       setLessonPlans((pre) => [...pre, newLessonPlane]);
+      toast.success("Thêm giáo án thành công!");
+    }
+    reset();
+  };
+  const handleAddSubject = (data) => {
+    const markFactorsTransform = formatMarkFactors(markFactors);
+    let formattedGrade = data.grade;
+    if (!data.grade) {
+      formattedGrade = grades[0].toString();
+    }
+    if (markFactorsTransform.length <= 0) {
+      toast.error("Điểm thành phần không được bỏ trống!");
+    } else if (lessonPlans.length <= 0) {
+      toast.error("Giáo án không được bỏ trống!");
+    } else {
+      const classData = {
+        name: data.nameOfSubject,
+        grade: formattedGrade,
+        lessonPlans: lessonPlans,
+        componentScores: markFactorsTransform,
+      };
+      addSubjectsMutation.mutate(classData);
     }
   };
 
-  const handleClearAddForm = () => {
-    reset(); // Reset the form of adding modal
-  };
-
-  //5. Functions handle editing
-  const handleCloseEditModal = () => {
-    setModalEditOpen(false);
-  };
+  // Updating action
   const handleEdit = (rowItem) => {
-    // console.log(rowItem);
     if (rowItem) {
       setValue("idEdit", rowItem[0]);
       setValue("nameEdit", rowItem[1]);
@@ -240,32 +221,25 @@ export default function SubjectManagement() {
           toast.error(`${response.data} !`);
         }
         reset();
-        setModalOpen(false);
+        setModalEditOpen(false);
       },
     }
   );
 
-  // Xử lí get dữ liệu khi submit
   const handleUpdateSubject = (data) => {
-    const formatMarkFactors = formatMarkFactors(markFactors);
-    // console.log("Submit data", data);
+    const listMarks = formatMarkFactors(markFactors);
     const subjectData = {
       id: data.idEdit,
       name: data.nameEdit,
       grade: data.gradeEdit,
       lessonPlans: lessonPlans,
-      componentScores: formatMarkFactors,
+      componentScores: listMarks,
     };
-    // console.log("Data gửi đi: ", subjectData);
-    // updateSubjectMutation.mutate(subjectData);
-  };
-
-  const handleClearEditForm = () => {
-    resetEditAction();
+    updateSubjectMutation.mutate(subjectData);
   };
 
   const handleStatistic = () => {
-    setCurrentData(filterByButton(grade, data?.data));
+    setCurrentData(filterSubjectByGrade(grade, data?.data));
   };
 
   const deleteSubjectMutation = useMutation((subjectId) => deleteSubject(accessToken, subjectId), {
@@ -279,7 +253,6 @@ export default function SubjectManagement() {
       setModalDeleteOpen(false);
     },
     onError: (error) => {
-      console.error("Error deleting subject:", error);
       toast.error("Đã xảy ra lỗi khi xóa môn học!");
     },
   });
@@ -296,10 +269,10 @@ export default function SubjectManagement() {
   };
 
   const handleChangeSearchValue = (txtSearch) => {
-    setCurrentData(filterSubjects(txtSearch, data?.data));
+    setCurrentData(searchSubjectByKeys(txtSearch, data?.data));
   };
 
-  const filterByButton = (option, data) => {
+  const filterSubjectByGrade = (option, data) => {
     if (data) {
       return data.filter((item) => {
         return item.grade == option;
@@ -307,7 +280,7 @@ export default function SubjectManagement() {
     }
   };
 
-  const filterSubjects = (txtSearch, data) => {
+  const searchSubjectByKeys = (txtSearch, data) => {
     const search = txtSearch.trim().toLowerCase();
     return data.filter((subject) => {
       return (
@@ -317,28 +290,18 @@ export default function SubjectManagement() {
     });
   };
 
-  const handleTabChange = (event, newValue) => {
-    setCurrentTab(newValue);
-  };
-
   const handleDeleteMarkFactor = (data) => {
-    deleteItemById(data[0]);
+    if (data) {
+      setMarkFactors(markFactors.filter((item) => item.id != data[0]));
+      toast.success("Xóa điểm thành phần thành công!");
+    }
   };
 
   const handleDeleteLessonPlan = (data) => {
-    deleteLessonPlanById(data[0]);
-  };
-
-  const deleteItemById = (id) => {
-    setMarkFactors(markFactors.filter((item) => item.id != id));
-  };
-
-  const deleteLessonPlanById = (id) => {
-    setLessonPlans(lessonPlans.filter((item) => item.id != id));
-  };
-
-  const handleNextTab = () => {
-    setCurrentTab((prevTab) => (prevTab < 3 ? prevTab + 1 : prevTab));
+    if (data) {
+      setLessonPlans(lessonPlans.filter((item) => item.id != data[0]));
+      toast.success("Xóa giáo án thành công!");
+    }
   };
 
   return (
@@ -354,7 +317,6 @@ export default function SubjectManagement() {
             </div>
           </div>
           <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
-            {/* School Year Select */}
             <div className="flex justify-start max-[639px]:flex-wrap">
               <FormControl sx={{ minWidth: 120, marginRight: "12px" }}>
                 <InputLabel id="select-school-year-lable">Khối</InputLabel>
@@ -375,7 +337,7 @@ export default function SubjectManagement() {
               </FormControl>
               <div className="max-[639px]:mt-2">
                 <ButtonComponent type="success" onClick={handleStatistic}>
-                  <FilterAltIcon className="mr-1" /> Tìm kiếm
+                  <FilterAltIcon className="mr-1" /> TÌM KIẾM
                 </ButtonComponent>
               </div>
             </div>
@@ -385,36 +347,194 @@ export default function SubjectManagement() {
                 placeHolder="Nhập từ khóa..."
               />
               <div className="ml-3">
-                <ButtonComponent className="" onClick={handleOpenAddModal}>
+                <ButtonComponent className="" onClick={() => setModalOpen(true)}>
                   <AddCircleOutlineIcon className="text-3xl mr-1" />
-                  Tạo
+                  TẠO
                 </ButtonComponent>
                 <PopupComponent
                   title="TẠO MÔN HỌC"
                   description="Hãy tạo môn học để bắt đầu năm học mới"
                   icon={<AddCircleOutlineIcon />}
                   isOpen={modalOpen}
-                  onClose={handleCloseAddModal}
+                  onClose={() => setModalOpen(false)}
                   tabs={[
-                    { label: "TẠO MÔN" },
-                    { label: "ĐIỂM THÀNH PHẦN" },
-                    { label: "GIÁO ÁN" },
+                    { label: "1. ĐIỂM THÀNH PHẦN" },
+                    { label: "2. GIÁO ÁN" },
+                    { label: "3. TẠO MÔN" },
                     { label: "TẠO BẰNG EXCEL" },
                   ]}
                   currentTab={currentTab}
-                  onTabChange={handleNextTab}
+                  onTabChange={(newValue) => {
+                    reset();
+                    setCurrentTab(newValue);
+                  }}
                 >
-                  {/* Content for Tab 1 */}
+                  {/* Content for Tab 2 */}
                   <div role="tabpanel" hidden={currentTab !== 0}>
+                    <form onSubmit={handleSubmit(handleAddMark)}>
+                      <div className="flex w-full">
+                        <InputBaseComponent
+                          className="w-1/2 mr-3"
+                          type="select"
+                          options={nameScore}
+                          control={control}
+                          setValue={noSetValue}
+                          name="nameScore"
+                          label="Điểm thành phần"
+                          errors={errors}
+                        />
+                        <InputBaseComponent
+                          className="w-1/2"
+                          type="select"
+                          options={semesters}
+                          control={control}
+                          setValue={noSetValue}
+                          name="semester"
+                          label="Học kì"
+                          errors={errors}
+                        />
+                      </div>
+                      <div className="flex w-full">
+                        <InputBaseComponent
+                          className="w-1/2 mr-3"
+                          placeholder="Nhập số lượng..."
+                          type="number"
+                          minValue={1}
+                          maxValue={10}
+                          control={control}
+                          setValue={noSetValue}
+                          name="count"
+                          label="Số lượng"
+                          errors={errors}
+                          validationRules={{
+                            required: "Không được bỏ trống!",
+                          }}
+                        />
+                        <InputBaseComponent
+                          className="w-1/2"
+                          placeholder="Nhập hệ số..."
+                          type="number"
+                          minValue={1}
+                          maxValue={10}
+                          control={control}
+                          setValue={noSetValue}
+                          name="scoreFactor"
+                          label="Hệ số"
+                          errors={errors}
+                          validationRules={{
+                            required: "Không được bỏ trống!",
+                          }}
+                        />
+                      </div>
+                      <NotifyCheckInfoForm actionText="Hãy chuyển sang tab tiếp theo để tiếp tục tạo!" />
+                      <div className="mt-4 flex justify-end">
+                        <ButtonComponent
+                          type="error"
+                          action="reset"
+                          onClick={() => {
+                            reset();
+                          }}
+                        >
+                          <CleaningServicesIcon className="text-3xl mr-1 mb-1" />
+                          ĐẶT LẠI
+                        </ButtonComponent>
+                        <ButtonComponent action="submit">
+                          <AddCircleOutlineIcon className="text-3xl mr-1" />
+                          THÊM ĐIỂM
+                        </ButtonComponent>
+                      </div>
+                    </form>
+                    <p className="text-sm font-bold">TẤT CẢ CỘT ĐIỂM</p>
+                    <TableComponent
+                      header={["Tên", "Kì học", "Số lượng", "Hệ số"]}
+                      data={markFactors?.map((item) => [
+                        item.id,
+                        item.nameScore,
+                        item.semester,
+                        item.count,
+                        item.scoreFactor,
+                      ])}
+                      isOrdered={false}
+                      itemsPerPage={5}
+                      onDelete={handleDeleteMarkFactor}
+                      hiddenColumns={[0]}
+                      className="mt-1"
+                    />
+                  </div>
+                  {/* Content for Tab 3 */}
+                  <div role="tabpanel1" hidden={currentTab == 1}>
+                    <form onSubmit={handleSubmit(handleAddLessonPlan)}>
+                      <div className="flex">
+                        <InputBaseComponent
+                          className="w-1/2 mr-3"
+                          placeholder="Nhập nội dung bài học..."
+                          type="text"
+                          control={control}
+                          setValue={noSetValue}
+                          name="titleOfSubject"
+                          label="Nội dung"
+                          errors={errors}
+                          validationRules={{
+                            required: "Không được bỏ trống!",
+                          }}
+                        />
+                        <InputBaseComponent
+                          className="w-1/2"
+                          placeholder="Nhập thứ tự tiết..."
+                          type="number"
+                          control={control}
+                          setValue={noSetValue}
+                          name="slot"
+                          minValue={1}
+                          maxValue={200}
+                          label="Thứ tự tiết học"
+                          errors={errors}
+                          validationRules={{
+                            required: "Không được bỏ trống!",
+                          }}
+                        />
+                      </div>
+                      <NotifyCheckInfoForm actionText="Hãy chuyển sang tab tiếp theo để tiếp tục tạo!" />
+                      <div className="mt-4 flex justify-end">
+                        <ButtonComponent
+                          type="error"
+                          action="reset"
+                          onClick={() => {
+                            reset();
+                          }}
+                        >
+                          <CleaningServicesIcon className="text-3xl mr-1 mb-1" />
+                          ĐẶT LẠI
+                        </ButtonComponent>
+                        <ButtonComponent action="submit">
+                          <AddCircleOutlineIcon className="text-3xl mr-1" />
+                          THÊM GIÁO ÁN
+                        </ButtonComponent>
+                      </div>
+                    </form>
+                    <p className="text-sm font-bold">TẤT CẢ GIÁO ÁN</p>
+                    <TableComponent
+                      header={["Tên bài học", "Tiêt thứ"]}
+                      data={lessonPlans?.map((item) => [item.id, item.title, item.slot])}
+                      isOrdered={false}
+                      hiddenColumns={[0]}
+                      itemsPerPage={5}
+                      onDelete={handleDeleteLessonPlan}
+                      className="mt-1 mb-4"
+                    />
+                  </div>
+
+                  {/* Content for Tab 1 */}
+                  <div role="tabpane2" hidden={currentTab === 2}>
                     <form onSubmit={handleSubmit(handleAddSubject)}>
                       <div className="flex">
                         <InputBaseComponent
-                          placeholder="Nhập tên môn học"
+                          placeholder="Nhập tên môn học..."
                           type="text"
                           control={control}
                           className="w-1/2 mr-2"
                           setValue={noSetValue}
-                          name="name"
+                          name="nameOfSubject"
                           label="Tên môn học"
                           errors={errors}
                           validationRules={{
@@ -430,184 +550,30 @@ export default function SubjectManagement() {
                           type="select"
                           options={formattedGrades}
                           errors={errors}
-                          validationRules={{
-                            required: "Hãy chọn khối!",
-                          }}
                         />
                       </div>
+                      <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi tạo!" />
                       <div className="mt-4 flex justify-end">
-                        <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
-                          CLEAR
+                        <ButtonComponent
+                          type="error"
+                          action="reset"
+                          onClick={() => {
+                            reset();
+                            setModalOpen(false);
+                          }}
+                        >
+                          <CancelIcon className="text-3xl mr-1 mb-0.5" />
+                          HỦY BỎ
                         </ButtonComponent>
                         <ButtonComponent action="submit">
                           <AddCircleOutlineIcon className="text-3xl mr-1" />
                           TẠO
                         </ButtonComponent>
-                        {/* <ButtonComponent action="button" onClick={handleNextTab}>
-                          <AddCircleOutlineIcon className="text-3xl mr-1" />
-                          TIẾP TỤC
-                        </ButtonComponent> */}
                       </div>
                     </form>
                   </div>
 
-                  {/* Content for Tab 2 */}
-                  <div role="tabpanel" hidden={currentTab == 1}>
-                    <form onSubmit={handleSubmit(handleAddMark)}>
-                      <div className="flex w-full">
-                        <InputBaseComponent
-                          className="w-1/2 mr-3"
-                          type="select"
-                          options={nameScore}
-                          control={control}
-                          setValue={noSetValue}
-                          name="nameScore"
-                          label="Điểm thành phần"
-                          errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
-                        />
-                        <InputBaseComponent
-                          className="w-1/2"
-                          type="select"
-                          options={semesters}
-                          control={control}
-                          setValue={noSetValue}
-                          name="semester"
-                          label="Học kì"
-                          errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
-                        />
-                      </div>
-                      <div className="flex w-full">
-                        <InputBaseComponent
-                          className="w-1/2 mr-3"
-                          placeholder="Nhập số lượng"
-                          type="number"
-                          minValue={1}
-                          maxValue={10}
-                          control={control}
-                          setValue={noSetValue}
-                          name="count"
-                          label="Số lượng"
-                          errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
-                        />
-                        <InputBaseComponent
-                          className="w-1/2"
-                          placeholder="Nhập hệ số"
-                          type="number"
-                          minValue={1}
-                          maxValue={10}
-                          control={control}
-                          setValue={noSetValue}
-                          name="scoreFactor"
-                          label="Hệ số"
-                          errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                            pattern: {
-                              value: /^[0-9]*$/,
-                              message: "Điểm phải là một số nguyên dương!",
-                            },
-                          }}
-                        />
-                      </div>
-                      <div className="mt-4 flex justify-end">
-                        <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
-                          CLEAR
-                        </ButtonComponent>
-                        <ButtonComponent action="submit">
-                          <AddCircleOutlineIcon className="text-3xl mr-1" />
-                          THÊM ĐIỂM
-                        </ButtonComponent>
-                      </div>
-                    </form>
-                    <p className="text-sm font-bold">TẤT CẢ CỘT ĐIỂM</p>
-                    <TableComponent
-                      header={["Tên", "Số lượng", "Hệ số", "Kì học"]}
-                      data={markFactors?.map((item) => [
-                        item.id.toString(),
-                        item.nameScore.toString(),
-                        item.semester.toString(),
-                        item.count.toString(),
-                        item.scoreFactor.toString(),
-                      ])}
-                      isOrdered={false}
-                      itemsPerPage={5}
-                      onDelete={handleDeleteMarkFactor}
-                      hiddenColumns={[0]}
-                      className="mt-1"
-                    />
-                  </div>
-                  {/* Content for Tab 3 */}
-                  <div role="tabpanel" hidden={currentTab == 2}>
-                    {/* form nhập giáo án*/}
-                    <form onSubmit={handleSubmit(handleAddLessonPlan)}>
-                      <div className="flex">
-                        <InputBaseComponent
-                          placeholder="Nhập tên bài học"
-                          className="w-1/2 mr-2"
-                          type="text"
-                          control={control}
-                          setValue={noSetValue}
-                          name="title"
-                          label="Tên bài học"
-                          errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
-                        />
-                        <InputBaseComponent
-                          className="w-1/2"
-                          placeholder="Nhập thứ tự tiết"
-                          type="number"
-                          control={control}
-                          setValue={noSetValue}
-                          name="slot"
-                          label="Thứ tự tiết học"
-                          errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                            pattern: {
-                              value: /^[0-9]*$/,
-                              message: "Điểm phải là một số nguyên dương!",
-                            },
-                          }}
-                        />
-                      </div>
-                      <div className="mt-4 flex justify-end">
-                        <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
-                          CLEAR
-                        </ButtonComponent>
-                        <ButtonComponent action="submit">
-                          <AddCircleOutlineIcon className="text-3xl mr-1" />
-                          THÊM GIÁO ÁN
-                        </ButtonComponent>
-                      </div>
-                    </form>
-                    <p className="text-sm font-bold">TẤT CẢ GIÁO ÁN</p>
-                    <TableComponent
-                      header={["Tên bài học", "Tiêt thứ"]}
-                      data={lessonPlans?.map((item) => [
-                        item.id.toString(),
-                        item.title.toString(),
-                        item.slot.toString(),
-                      ])}
-                      isOrdered={false}
-                      hiddenColumns={[0]}
-                      itemsPerPage={5}
-                      onDelete={handleDeleteLessonPlan}
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div role="tabpanel" hidden={currentTab == 3}>
+                  <div role="tabpane3" hidden={currentTab == 3}>
                     <ButtonComponent action="submit">
                       <DownloadIcon className="mr-2" />
                       TẢI FILE
@@ -625,11 +591,23 @@ export default function SubjectManagement() {
                           required: "Hãy chọn file!",
                         }}
                       />
+                      <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi tạo!" />
                       <div className="mt-5 flex justify-end">
-                        <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
-                          CLEAR
+                        <ButtonComponent
+                          type="error"
+                          action="reset"
+                          onClick={() => {
+                            reset();
+                            setModalOpen(false);
+                          }}
+                        >
+                          <CancelIcon className="text-3xl mr-1 mb-0.5" />
+                          HỦY BỎ
                         </ButtonComponent>
-                        <ButtonComponent action="submit">TẠO</ButtonComponent>
+                        <ButtonComponent action="submit">
+                          <AddCircleOutlineIcon className="text-3xl mr-1" />
+                          TẠO
+                        </ButtonComponent>
                       </div>
                     </form>
                   </div>
@@ -648,11 +626,7 @@ export default function SubjectManagement() {
             ) : data?.success ? (
               <TableComponent
                 header={["Tên môn học", "Khối"]}
-                data={currentData?.map((item) => [
-                  item.id.toString(),
-                  item.name.toString(),
-                  item.grade.toString(),
-                ])}
+                data={currentData?.map((item) => [item.id, item.name, item.grade])}
                 itemsPerPage={15}
                 hiddenColumns={[0]}
                 onEdit={handleEdit}
@@ -674,7 +648,9 @@ export default function SubjectManagement() {
               description="Hãy chỉnh sửa để bắt đầu năm học mới"
               icon={<EditIcon />}
               isOpen={modalEditOpen}
-              onClose={handleCloseEditModal}
+              onClose={() => {
+                setModalEditOpen(false);
+              }}
             >
               <form onSubmit={handleSubmitEditAction(handleUpdateSubject)}>
                 <InputBaseComponent
@@ -701,11 +677,23 @@ export default function SubjectManagement() {
                     required: "Hãy chọn khối!",
                   }}
                 />
+                <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi cập nhật!" />
                 <div className="mt-4 flex justify-end">
-                  <ButtonComponent type="error" action="reset" onClick={handleClearEditForm}>
-                    CLEAR
+                  <ButtonComponent
+                    type="error"
+                    action="reset"
+                    onClick={() => {
+                      resetEditAction();
+                      setModalEditOpen(false);
+                    }}
+                  >
+                    <CancelIcon className="text-3xl mr-1 mb-0.5" />
+                    HỦY BỎ
                   </ButtonComponent>
-                  <ButtonComponent action="submit">CHỈNH SỬA</ButtonComponent>
+                  <ButtonComponent action="submit">
+                    <EditIcon className="text-3xl mr-1 mb-0.5" />
+                    CẬP NHẬT
+                  </ButtonComponent>
                 </div>
               </form>
             </PopupComponent>
@@ -723,9 +711,11 @@ export default function SubjectManagement() {
                   action="button"
                   onClick={() => setModalDeleteOpen(false)}
                 >
+                  <CancelIcon className="text-3xl mr-1 mb-0.5" />
                   HỦY BỎ
                 </ButtonComponent>
                 <ButtonComponent action="button" onClick={handleDeleteAPI}>
+                  <DeleteIcon className="text-3xl mr-1 mb-0.5" />
                   XÓA
                 </ButtonComponent>
               </div>

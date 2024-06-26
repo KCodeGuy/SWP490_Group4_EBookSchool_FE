@@ -11,6 +11,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import DownloadIcon from "@mui/icons-material/Download";
+import { ToastContainer, toast } from "react-toastify";
 
 import "./style.scss";
 import { grades } from "../../mock/grade";
@@ -24,7 +25,6 @@ import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
 import { accounts } from "mock/account";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { ToastContainer, toast } from "react-toastify";
 import { deleteStudent } from "services/StudentService";
 import { getStudentByID } from "services/StudentService";
 import { createStudent } from "services/StudentService";
@@ -317,6 +317,7 @@ export default function StudentAccountManagement() {
   };
   return (
     <DashboardLayout>
+      <ToastContainer autoClose={3000} />
       <DashboardNavbar />
       <Card className="max-h-max mb-8">
         <MDBox p={5}>

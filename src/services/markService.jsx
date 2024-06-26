@@ -7,10 +7,22 @@ const getMarkOfAllStudentsBySubject = async (accessToken, schoolYear, className,
     subjectName,
     schoolYear,
   };
-
-  console.log(accessToken);
-  console.log(params);
   const res = await axios.get(`${API_HOST}/Scores/ByClassBySubject`, {
+    params,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  return res.data;
+};
+
+const getMarkOfClassAllSubjects = async (accessToken, schoolYear, className) => {
+  let params = {
+    className,
+    schoolYear,
+  };
+  const res = await axios.get(`${API_HOST}/Scores/ByClassAllSubject`, {
     params,
     headers: {
       "Content-Type": "application/json",
@@ -20,16 +32,14 @@ const getMarkOfAllStudentsBySubject = async (accessToken, schoolYear, className,
   console.log(res.data);
   return res.data;
 };
-
 const downloadTemplateMarkByMarkComponent = async ({
   className,
   schoolYear,
   semester,
   subjectName,
   component,
-  indexCol = 3,
+  indexCol,
 }) => {
-  console.log(indexCol);
   window.location.href = `${API_HOST}/Scores/Template?className=${className}&schoolYear=${schoolYear}&semester=${semester}&subjectName=${subjectName}&component=${component}&indexCol=${indexCol}`;
 };
 
@@ -54,4 +64,5 @@ export {
   getMarkOfAllStudentsBySubject,
   downloadTemplateMarkByMarkComponent,
   updateMarkByMarkComponent,
+  getMarkOfClassAllSubjects,
 };

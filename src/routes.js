@@ -596,6 +596,20 @@ const homeRoomTeacherRoutes = [
     route: "/conductStatistics",
     component: <ConductStatistics />,
   },
+  {
+    type: "title",
+    title: "Quản lí",
+    key: "management",
+  },
+
+  {
+    type: "collapse",
+    name: "Quản lí điểm",
+    key: "markManagement",
+    icon: <Icon fontSize="small">ballot</Icon>,
+    route: "/markManagement",
+    component: <MarkManagement />,
+  },
 
   {
     type: "title",

@@ -29,6 +29,7 @@ import { getAllClasses, addClass, updateClass, deleteClass } from "../../service
 import { getAllTeachers } from "../../services/TeacherService";
 import { getStudents } from "services/StudentService";
 import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
+import { getAllStudents } from "services/StudentService";
 
 export default function ClassManagement() {
   const students = ["HS0043"];
@@ -59,7 +60,7 @@ export default function ClassManagement() {
 
   const { data: listAllStudents, isLoading: isLoadingStudents } = useQuery(
     ["studentState", { accessToken }],
-    () => getStudents(accessToken)
+    () => getAllStudents(accessToken)
   );
   useEffect(() => {
     if (data?.data) {

@@ -34,9 +34,9 @@ export default function TextValueComponent({
   }
   return (
     <div className={customClassName}>
-      <div className="flex items-center  text-md ">
+      <div className="flex items-center text-md ">
         {icon}
-        <label className="mx-2  font-medium w-36 text-wrap">{label}: </label>
+        <label className="mx-2 font-medium w-36 text-wrap">{label}: </label>
       </div>
       <p className={`text-base ${variantValueStyle} ${customValue}`}>{value}</p>
     </div>

@@ -8,6 +8,9 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditCalendarIcon from "@mui/icons-material/EditCalendar";
 import { countDuplicateItemsInArray } from "../../utils/CommonFunctions";
+import { renderAverageMarkStyles } from "utils/RenderStyle";
+import { renderRankingStyles } from "utils/RenderStyle";
+import { renderRanking } from "utils/RenderStyle";
 
 function TableMarkOfSubjectComponent({
   data,
@@ -35,37 +38,63 @@ function TableMarkOfSubjectComponent({
     setCurrentPage(page);
   };
 
-  let headerTable = [];
-  if (currentData.length > 0 && semester) {
-    headerTable = countDuplicateItemsInArray(currentData[0]?.scores, semester);
-  }
+  const extractHeaderTable = (scores, semester) => {
+    const keyOrder = ["Miệng", "15p", "1 Tiết", "Cuối kỳ"];
+    const filteredScores = scores.filter((score) => score.semester === semester);
+    const uniqueScores = [];
 
-  const renderAverageMark = (averageMark) => {
-    let defaultStyles = "mx-auto text-center text-white px-3 py-1 rounded";
-    if (averageMark >= 8) {
-      defaultStyles = `${defaultStyles} bg-success-color`;
-    } else if (averageMark >= 6.5 && averageMark < 8) {
-      defaultStyles = `${defaultStyles} bg-primary-color`;
-    } else if (averageMark >= 5 && averageMark < 6.5) {
-      defaultStyles = `${defaultStyles} bg-warning-color`;
-    } else if (averageMark < 5) {
-      defaultStyles = `${defaultStyles} bg-error-color`;
-    }
-    return defaultStyles;
+    keyOrder.forEach((key) => {
+      const seenIndexCols = new Set();
+      filteredScores.forEach((score) => {
+        if (score.key === key && !seenIndexCols.has(score.indexCol)) {
+          uniqueScores.push(score);
+          seenIndexCols.add(score.indexCol);
+        }
+      });
+    });
+
+    const keyCountMap = {};
+    uniqueScores.forEach((score) => {
+      if (!keyCountMap[score.key]) {
+        keyCountMap[score.key] = 0;
+      }
+      keyCountMap[score.key]++;
+    });
+
+    return keyOrder.map((key) => ({
+      key,
+      count: keyCountMap[key] || 0,
+    }));
   };
 
-  const renderRanking = (averageMark) => {
-    let defaultStyles;
-    if (averageMark >= 8) {
-      defaultStyles = "mx-auto text-center text-white px-3 py-1 rounded bg-success-color";
-    } else if (averageMark >= 6.5 && averageMark < 8) {
-      defaultStyles = "mx-auto text-center text-white px-3 py-1 rounded bg-primary-color";
-    } else if (averageMark >= 5 && averageMark < 6.5) {
-      defaultStyles = "mx-auto text-center text-white px-3 py-1 rounded bg-warning-color";
-    } else if (averageMark < 5) {
-      defaultStyles = "mx-auto text-center text-white px-3 py-1 rounded bg-error-color";
-    }
-    return defaultStyles;
+  let headerTable = [];
+  if (currentData.length > 0 && semester) {
+    headerTable = extractHeaderTable(currentData[0]?.scores, semester);
+  }
+
+  const sortScores = (scores) => {
+    const keyOrder = ["Miệng", "15p", "1 Tiết", "Cuối kỳ"];
+    const semesterOrder = ["Học kỳ I", "Học kỳ II"];
+
+    let sortedScores = scores.sort((a, b) => {
+      if (semesterOrder.indexOf(a.semester) !== semesterOrder.indexOf(b.semester)) {
+        return semesterOrder.indexOf(a.semester) - semesterOrder.indexOf(b.semester);
+      }
+      if (keyOrder.indexOf(a.key) !== keyOrder.indexOf(b.key)) {
+        return keyOrder.indexOf(a.key) - keyOrder.indexOf(b.key);
+      }
+      return a.indexCol - b.indexCol;
+    });
+
+    const seenIndices = new Set();
+    return sortedScores.filter((score) => {
+      const uniqueKey = `${score.semester}-${score.key}-${score.indexCol}`;
+      if (seenIndices.has(uniqueKey)) {
+        return false;
+      }
+      seenIndices.add(uniqueKey);
+      return true;
+    });
   };
 
   return (
@@ -74,39 +103,55 @@ function TableMarkOfSubjectComponent({
         <thead>
           <tr>
             {isOrdered && <th className="w-10">STT.</th>}
-            <th className="w-28">Tên học sinh</th>
+            <th className="w-32">Tên học sinh</th>
             <th className="w-28">Mã học sinh</th>
             {headerTable?.map((column, index) => (
               <th colSpan={column.count} key={index}>
                 {column.key}
               </th>
             ))}
-            <th className="w-28">Trung bình môn</th>
-            {/* <th className="w-28">Xếp loại</th> */}
-            {isShowActions && <th className="w-28">Thao tác</th>}
+            <th className="w-20">Trung bình môn</th>
+            <th className="w-20">Xếp loại</th>
+            {isShowActions && <th className="w-28">Chi tiết</th>}
           </tr>
         </thead>
         <tbody>
           {currentData.map((row, rowIndex) => (
             <tr key={rowIndex}>
               {isOrdered && <td>{startIndex + rowIndex + 1}</td>}
-              <td>{row.fullName}</td>
+              <td className="w-fit px-1">{row.fullName}</td>
               <td>{row.id}</td>
-              {row.scores.map((item, index) =>
-                item.semester == semester ? (
-                  <td key={index} className="min-w-9">
-                    {isHideMark || item.value == -1 ? "_" : item.value}
-                  </td>
-                ) : (
-                  ""
-                )
-              )}
+              {row.scores.length > 0
+                ? sortScores(row.scores).map((item, index) =>
+                    item.semester === semester ? (
+                      <td key={index} className="min-w-9">
+                        {isHideMark || item.value === -1 ? "_" : item.value}
+                      </td>
+                    ) : (
+                      ""
+                    )
+                  )
+                : headerTable?.map((column, index) => (
+                    <td colSpan={column.count} key={index}>
+                      _
+                    </td>
+                  ))}
               <td>
-                <span className={renderAverageMark(row.average)}>{row.average}</span>
+                {row.average != -1 && row.average != 0 ? (
+                  <span className={renderAverageMarkStyles(row.average)}>{row.average}</span>
+                ) : (
+                  "_"
+                )}
               </td>
-              {/* <td>
-                <span>{renderRanking(row.average)}</span>
-              </td> */}
+              <td>
+                {row.average != -1 && row.average != 0 ? (
+                  <span className={renderRankingStyles(row.average)}>
+                    {renderRanking(row.average)}
+                  </span>
+                ) : (
+                  <span className="italic font-medium w-20">Chưa xếp loại</span>
+                )}
+              </td>
               {isShowActions && (
                 <td className="max-w-28">
                   {onEdit && (

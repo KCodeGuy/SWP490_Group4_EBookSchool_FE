@@ -1,18 +1,24 @@
 import * as XLSX from "xlsx";
 // contains common methods
-export const countDuplicateItemsInArray = (arr, schoolSemester) => {
-  // Count occurrences of each key
-  const counts = arr.reduce((acc, { key, semester }) => {
-    // console.log(semester);
-    if (semester == schoolSemester) {
-      acc[key] = (acc[key] || 0) + 1;
-    }
-    return acc;
-  }, {});
+export function countDuplicateItemsInArray(array, semester) {
+  const keyOrder = ["Miệng", "15p", "1 Tiết", "Cuối kỳ"];
+  const itemCounts = {};
 
-  // Convert counts object to array of objects with key and count
-  return Object.keys(counts).map((key) => ({ key, count: counts[key] }));
-};
+  array.forEach((item) => {
+    if (item.semester === semester) {
+      if (itemCounts[item.key]) {
+        itemCounts[item.key]++;
+      } else {
+        itemCounts[item.key] = 1;
+      }
+    }
+  });
+
+  return keyOrder.map((key) => ({
+    key,
+    count: itemCounts[key] || 0,
+  }));
+}
 
 export const capitalizeFirstLetter = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1);

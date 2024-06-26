@@ -26,3 +26,13 @@ table tbody tr:hover {
   background-color: #eaeaea;
   transition: all 0.3s ease-in;
 }
+
+.pagination-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.pagination {
+  min-width: 1000px; // Adjust this width based on your table's minimum width
+  white-space: nowrap;
+}

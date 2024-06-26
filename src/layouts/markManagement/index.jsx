@@ -10,13 +10,15 @@ import DownloadIcon from "@mui/icons-material/Download";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { ToastContainer, toast } from "react-toastify";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import LockClockIcon from "@mui/icons-material/LockClock";
 
 import React, { useState, useEffect, useRef } from "react";
 import TableMarkOfSubjectComponent from "../../components/TableMarkOfSubjectComponent/TableMarkOfSubjectComponent";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import PopupComponent from "components/PopupComponent/PopupComponent";
-import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent";
+import PopupComponent from "../../components/PopupComponent/PopupComponent";
+import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
 import { useForm } from "react-hook-form";
 import { generateClasses } from "utils/CommonFunctions";
 import { useMutation, useQuery, useQueryClient } from "react-query";
@@ -24,15 +26,28 @@ import { getAllSubjects } from "services/SubjectService";
 import {
   downloadTemplateMarkByMarkComponent,
   getMarkOfAllStudentsBySubject,
+  getMarkOfClassAllSubjects,
   updateMarkByMarkComponent,
 } from "../../services/markService";
-import TableMarkAllStudentsComponent from "components/TableMarkAllStudentsComponent/TableMarkAllStudentsComponent";
+import TableMarkAllStudentsComponent from "../../components/TableMarkAllStudentsComponent/TableMarkAllStudentsComponent";
 import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
+import TextValueComponent from "../../components/TextValueComponent";
+import { renderRankingStyles } from "utils/RenderStyle";
+import { renderRanking } from "utils/RenderStyle";
 
 // Mark management (HieuTTN)
 const semesters = [
   { label: "Học kỳ I", value: "Học kỳ I" },
   { label: "Học kỳ II", value: "Học kỳ II" },
+  { label: "Cả năm", value: "Cả năm" },
+];
+
+const indexCols = [
+  { label: "Lần 1", value: 1 },
+  { label: "Lần 2", value: 2 },
+  { label: "Lần 3", value: 3 },
+  { label: "Lần 4", value: 4 },
+  { label: "Lần 5", value: 5 },
 ];
 
 const nameScore = [
@@ -43,10 +58,15 @@ const nameScore = [
 ];
 export default function MarkManagement() {
   const [currentOfStudentsMarkBySubject, setCurrentOfStudentsMarkBySubject] = useState([]);
+  const [currentMarkOfClass, setCurrentMarkOfClass] = useState([]);
   const [currentAction, setCurrentAction] = useState("adding");
   const [currentTab, setCurrentTab] = useState(0);
+  const [currentTabDetails, setCurrentTabDetails] = useState(0);
   const [openModalRandom, setOpenModalRandom] = useState(false);
+  const [openModalDetails, setOpenModalDetails] = useState(false);
   const [currentStudents, setCurrentStudents] = useState([]);
+  const [markDetails, setMarkDetails] = useState({});
+  const queryClient = useQueryClient();
 
   const {
     control,
@@ -55,9 +75,6 @@ export default function MarkManagement() {
     setValue: noSetValue,
     formState: { errors },
   } = useForm();
-
-  const handleImportMark = () => {};
-  const queryClient = useQueryClient();
 
   let accessToken, currentUser, userRole, userID, schoolYearsAPI, classesAPI;
   userRole = localStorage.getItem("userRole");
@@ -104,7 +121,10 @@ export default function MarkManagement() {
   };
 
   const handleDetails = (rowItem) => {
-    console.log("Details row:", rowItem);
+    if (rowItem) {
+      setMarkDetails(rowItem);
+      setOpenModalDetails(true);
+    }
   };
 
   const formattedClasses = classesOfSchoolYear.map((item) => ({
@@ -124,18 +144,39 @@ export default function MarkManagement() {
     enabled: false,
   });
 
+  const {
+    data: markOfClassAllSubject,
+    isError: isErrorMarkOfClass,
+    isLoading: isLoadingMarkOfClass,
+    refetch: refetchMarkOfClass,
+  } = useQuery({
+    queryKey: ["markOfClassAllSubject", { accessToken, schoolYear, schoolClass }],
+    queryFn: () => getMarkOfClassAllSubjects(accessToken, schoolYear, schoolClass),
+    enabled: false,
+  });
+
   const handleFilterMark = () => {
     refetch().then((result) => {
       if (result.data?.success) {
         setCurrentOfStudentsMarkBySubject(result.data?.data?.score);
       }
     });
+
+    refetchMarkOfClass().then((result) => {
+      if (result.data?.success) {
+        setCurrentMarkOfClass(result.data?.data?.averages);
+      }
+    });
   };
 
-  const formattedSubjects = data?.data?.map((item) => ({
-    label: `${item.name} (Khối-${item.grade})`,
-    value: item.name,
-  }));
+  const formattedSubjects = data?.data
+    ?.map((item) => ({
+      label: `${item.name} (Khối-${item.grade})`,
+      name: item.name,
+      value: item.name,
+      grade: item.grade,
+    }))
+    ?.sort((a, b) => a.grade - b.grade);
 
   const formattedSchoolYear = schoolYearsAPI?.map((item) => ({
     label: item,
@@ -158,12 +199,16 @@ export default function MarkManagement() {
     if (!data.component) {
       data.component = nameScore[0].value;
     }
+    if (!data.indexCol) {
+      data.indexCol = 1;
+    }
     const params = {
       className: data.className,
       schoolYear: data.schoolYear,
       semester: data.semester,
       subjectName: data.subjectName,
       component: data.component,
+      indexCol: data.indexCol,
     };
     if (params) {
       downloadTemplateMarkByMarkComponent(params);
@@ -188,8 +233,9 @@ export default function MarkManagement() {
     },
   });
   const handleUploadTemplate = (data) => {
-    console.log("Updload file", data);
-    updateMarkMutation.mutate(data.markFile);
+    if (data) {
+      updateMarkMutation.mutate(data.markFile);
+    }
   };
   return (
     <DashboardLayout>
@@ -234,184 +280,204 @@ export default function MarkManagement() {
                 </Select>
               </FormControl>
 
-              <FormControl sx={{ minWidth: 120 }}>
-                <InputLabel id="select-school-subject-lable">Môn học</InputLabel>
-                <Select
-                  labelId="select-school-subject-lable"
-                  id="select-school-subject"
-                  value={schoolSubject}
-                  className="h-10 mr-2 max-[767px]:mb-4"
-                  label="Môn học"
-                  onChange={handleSchoolSubjectSelectedChange}
-                >
-                  {data?.data?.map((item, index) => (
-                    <MenuItem key={index} value={item.name}>
-                      {item.name} - (Khối {item.grade})
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              {userRole === "Principal" || userRole === "SubjectTeacher" ? (
+                <FormControl sx={{ minWidth: 120 }}>
+                  <InputLabel id="select-school-subject-lable">Môn học</InputLabel>
+                  <Select
+                    labelId="select-school-subject-lable"
+                    id="select-school-subject"
+                    value={schoolSubject}
+                    className="h-10 mr-2 max-[767px]:mb-4"
+                    label="Môn học"
+                    onChange={handleSchoolSubjectSelectedChange}
+                  >
+                    {formattedSubjects?.map((item, index) => (
+                      <MenuItem key={index} value={item.name}>
+                        {item.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ) : (
+                ""
+              )}
 
               <ButtonComponent type="success" onClick={handleFilterMark}>
                 <FilterAltIcon className="mr-1" /> TÌM KIẾM
               </ButtonComponent>
             </div>
-            <div>
-              <ButtonComponent
-                className=""
-                onClick={() => {
-                  setCurrentAction("adding");
-                  setModalAdd(true);
-                }}
-              >
-                <AddCircleOutlineIcon className="text-3xl mr-1" />
-                NHẬP ĐIỂM
-              </ButtonComponent>
-              <ButtonComponent
-                type="success"
-                onClick={() => {
-                  setCurrentAction("updating");
-                  setModalAdd(true);
-                }}
-              >
-                <AddCircleOutlineIcon className="text-3xl mr-1" />
-                CẬP NHẬT
-              </ButtonComponent>
-            </div>
-            <PopupComponent
-              title={currentAction == "adding" ? "NHẬP ĐIỂM" : "CẬP NHẬT"}
-              description={
-                currentAction == "adding" ? "Nhập điểm bằng Excel" : "Cập nhật điểm bằng Excel"
-              }
-              icon={<AddCircleOutlineIcon />}
-              isOpen={modalAdd}
-              onClose={() => setModalAdd(false)}
-              tabs={[{ label: "TẢI FILE" }, { label: "UPLOAD FILE" }]}
-              currentTab={currentTab}
-              onTabChange={(event, newValue) => {
-                setCurrentTab(newValue);
-              }}
-            >
-              <div role="tabpanel" hidden={currentTab !== 0}>
-                <form onSubmit={handleSubmit(handleDownloadTemplate)}>
-                  <div className="flex">
-                    <InputBaseComponent
-                      name="schoolYear"
-                      label="Năm học"
-                      className="w-1/2 mr-2"
-                      control={control}
-                      setValue={noSetValue}
-                      type="select"
-                      options={formattedSchoolYear}
-                      errors={errors}
-                    />
-                    <InputBaseComponent
-                      name="className"
-                      label="Lớp học"
-                      className="w-1/2"
-                      control={control}
-                      setValue={noSetValue}
-                      type="select"
-                      options={formattedClasses}
-                      errors={errors}
-                    />
-                  </div>
-                  <div className="flex">
-                    <InputBaseComponent
-                      name="component"
-                      label="Điểm thành phần"
-                      className="w-1/2 mr-2"
-                      control={control}
-                      setValue={noSetValue}
-                      type="select"
-                      options={nameScore}
-                      errors={errors}
-                    />
-                    <InputBaseComponent
-                      name="semester"
-                      label="Học kì"
-                      className="w-1/2"
-                      control={control}
-                      setValue={noSetValue}
-                      type="select"
-                      options={semesters}
-                      errors={errors}
-                    />
-                  </div>
-                  <InputBaseComponent
-                    name="subjectName"
-                    label="Môn học"
-                    className="w-full"
-                    control={control}
-                    setValue={noSetValue}
-                    type="select"
-                    options={formattedSubjects}
-                    errors={errors}
-                  />
-                  <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ trước khi tải!" />
-                  <div className="mt-5 flex justify-end">
-                    <ButtonComponent
-                      type="error"
-                      action="reset"
-                      onClick={() => {
-                        reset();
-                        setModalAdd(false);
-                      }}
-                    >
-                      <CancelIcon className="text-3xl mr-1 mb-0.5" />
-                      HỦY BỎ
-                    </ButtonComponent>
-                    <ButtonComponent action="submit">
-                      <DownloadIcon className="mr-2" />
-                      TẢI FILE
-                    </ButtonComponent>
-                  </div>
-                </form>
-              </div>
-              <div role="tabpanel" hidden={currentTab == 1}>
-                <form onSubmit={handleSubmit(handleUploadTemplate)}>
-                  <InputBaseComponent
-                    name="markFile"
-                    label="File điểm(Excel)"
-                    className="w-full mt-2"
-                    control={control}
-                    setValue={noSetValue}
-                    type="file"
-                    errors={errors}
-                    validationRules={{
-                      required: "Hãy chọn file!",
+            {userRole === "SubjectTeacher" ? (
+              <>
+                <div>
+                  <ButtonComponent
+                    className=""
+                    onClick={() => {
+                      setCurrentAction("adding");
+                      setModalAdd(true);
                     }}
-                  />
-                  <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ trước khi upload!" />
-                  <div className="mt-5 flex justify-end">
-                    <ButtonComponent
-                      type="error"
-                      action="reset"
-                      onClick={() => {
-                        reset();
-                        setModalAdd(false);
-                      }}
-                    >
-                      <CancelIcon className="text-3xl mr-1 mb-0.5" />
-                      HỦY BỎ
-                    </ButtonComponent>
-                    <ButtonComponent action="submit">
-                      {currentAction == "adding" ? (
-                        <AddCircleOutlineIcon className="text-3xl mr-1" />
-                      ) : (
-                        <BorderColorIcon className="text-3xl mr-1" />
-                      )}
-                      {currentAction == "adding" ? "NHẬP ĐIỂM" : "CẬP NHẬT"}
-                    </ButtonComponent>
+                  >
+                    <AddCircleOutlineIcon className="text-3xl mr-1" />
+                    NHẬP ĐIỂM
+                  </ButtonComponent>
+                  <ButtonComponent
+                    type="success"
+                    onClick={() => {
+                      setCurrentAction("updating");
+                      setModalAdd(true);
+                    }}
+                  >
+                    <BorderColorIcon className="text-3xl mr-1" />
+                    CẬP NHẬT
+                  </ButtonComponent>
+                </div>
+                <PopupComponent
+                  title={currentAction == "adding" ? "NHẬP ĐIỂM" : "CẬP NHẬT"}
+                  description={
+                    currentAction == "adding" ? "Nhập điểm bằng Excel" : "Cập nhật điểm bằng Excel"
+                  }
+                  icon={<AddCircleOutlineIcon />}
+                  isOpen={modalAdd}
+                  onClose={() => setModalAdd(false)}
+                  tabs={[{ label: "TẢI XUỐNG" }, { label: "TẢI LÊN" }]}
+                  currentTab={currentTab}
+                  onTabChange={(event, newValue) => {
+                    setCurrentTab(newValue);
+                  }}
+                >
+                  <div role="tabpanel" hidden={currentTab !== 0}>
+                    <form onSubmit={handleSubmit(handleDownloadTemplate)}>
+                      <div className="flex">
+                        <InputBaseComponent
+                          name="schoolYear"
+                          label="Năm học"
+                          className="w-1/2 mr-2"
+                          control={control}
+                          setValue={noSetValue}
+                          type="select"
+                          options={formattedSchoolYear}
+                          errors={errors}
+                        />
+                        <InputBaseComponent
+                          name="className"
+                          label="Lớp học"
+                          className="w-1/2"
+                          control={control}
+                          setValue={noSetValue}
+                          type="select"
+                          options={formattedClasses}
+                          errors={errors}
+                        />
+                      </div>
+                      <div className="flex">
+                        <InputBaseComponent
+                          name="component"
+                          label="Điểm thành phần"
+                          className="w-1/2 mr-2"
+                          control={control}
+                          setValue={noSetValue}
+                          type="select"
+                          options={nameScore}
+                          errors={errors}
+                        />
+                        <InputBaseComponent
+                          name="semester"
+                          label="Học kì"
+                          className="w-1/2"
+                          control={control}
+                          setValue={noSetValue}
+                          type="select"
+                          options={semesters}
+                          errors={errors}
+                        />
+                      </div>
+                      <InputBaseComponent
+                        name="subjectName"
+                        label="Môn học"
+                        className="w-full"
+                        control={control}
+                        setValue={noSetValue}
+                        type="select"
+                        options={formattedSubjects}
+                        errors={errors}
+                      />
+                      <InputBaseComponent
+                        name="indexCol"
+                        label="Lần thứ"
+                        className="w-full"
+                        control={control}
+                        setValue={noSetValue}
+                        type="select"
+                        options={indexCols}
+                        errors={errors}
+                      />
+                      <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi tải xuống!" />
+                      <div className="mt-5 flex justify-end">
+                        <ButtonComponent
+                          type="error"
+                          action="reset"
+                          onClick={() => {
+                            reset();
+                            setModalAdd(false);
+                          }}
+                        >
+                          <CancelIcon className="text-3xl mr-1 mb-0.5" />
+                          HỦY BỎ
+                        </ButtonComponent>
+                        <ButtonComponent action="submit">
+                          <DownloadIcon className="mr-2" />
+                          TẢI XUỐNG
+                        </ButtonComponent>
+                      </div>
+                    </form>
                   </div>
-                </form>
-              </div>
-            </PopupComponent>
+                  <div role="tabpanel" hidden={currentTab == 1}>
+                    <form onSubmit={handleSubmit(handleUploadTemplate)}>
+                      <InputBaseComponent
+                        name="markFile"
+                        label="File điểm(Excel)"
+                        className="w-full mt-2"
+                        control={control}
+                        setValue={noSetValue}
+                        type="file"
+                        errors={errors}
+                        validationRules={{
+                          required: "Hãy chọn file!",
+                        }}
+                      />
+                      <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi tải lên!" />
+                      <div className="mt-5 flex justify-end">
+                        <ButtonComponent
+                          type="error"
+                          action="reset"
+                          onClick={() => {
+                            reset();
+                            setModalAdd(false);
+                          }}
+                        >
+                          <CancelIcon className="text-3xl mr-1 mb-0.5" />
+                          HỦY BỎ
+                        </ButtonComponent>
+                        <ButtonComponent action="submit">
+                          {currentAction == "adding" ? (
+                            <AddCircleOutlineIcon className="text-3xl mr-1" />
+                          ) : (
+                            <BorderColorIcon className="text-3xl mr-1" />
+                          )}
+                          {currentAction == "adding" ? "NHẬP ĐIỂM" : "CẬP NHẬT"}
+                        </ButtonComponent>
+                      </div>
+                    </form>
+                  </div>
+                </PopupComponent>
+              </>
+            ) : (
+              ""
+            )}
           </div>
 
           <PopupComponent
             title="RANDOM HỌC SINH"
-            description="RANDOM HỌC SINH"
+            description="Chọn ngẫu nhiên học sinh"
             isOpen={openModalRandom}
             onClose={() => setOpenModalRandom(false)}
           >
@@ -427,99 +493,220 @@ export default function MarkManagement() {
             </div>
           </PopupComponent>
 
-          <>
-            {/* <div className="text-center mt-5">
-              <h4 className="text-xl font-bold">Bảng điểm tổng kết lớp 12A1</h4>
-              <h4 className="text-xl font-bold">Học kỳ: HKI. Năm học: 2023-2024</h4>
+          <PopupComponent
+            title="CHI TIẾT ĐIỂM"
+            description="Chi tiết các cột điểm trong kỳ"
+            rightNote={`HS: ${markDetails?.fullName}`}
+            isOpen={openModalDetails}
+            onClose={() => setOpenModalDetails(false)}
+          >
+            {nameScore?.map((markComponent, index) => (
+              <div key={index}>
+                <div className="flex justify-between bg-primary-color text-white rounded-sm italic px-2 text-sm py-1 mb-1">
+                  <span>
+                    <AssignmentIcon className="mb-0.5" /> {markComponent.label}
+                  </span>
+                  <span>{schoolSemester}</span>
+                </div>
+                {markDetails && markDetails?.scores && markDetails?.scores.length > 0 ? (
+                  markDetails?.scores.map((item, index) =>
+                    item.key == markComponent.value && item.semester == schoolSemester ? (
+                      <TextValueComponent
+                        label={`Lần ${item.indexCol}`}
+                        key={index}
+                        className="px-4 justify-between justify-between"
+                        value={`${item.value != -1 ? `${item.value} điểm` : "_"}`}
+                        icon={<LockClockIcon />}
+                      />
+                    ) : (
+                      ""
+                    )
+                  )
+                ) : (
+                  <span className="italic text-base">Chưa có điểm</span>
+                )}
+              </div>
+            ))}
+            <div className="flex justify-between text-base mt-3 border-t-2 pt-2">
+              <div>
+                <span className="font-bold">Xếp loại: </span>
+                {markDetails?.average != -1 && markDetails?.average != 0 ? (
+                  <span className={renderRankingStyles(markDetails?.average)}>
+                    {renderRanking(markDetails?.average)}
+                  </span>
+                ) : (
+                  <span className="text-base italic">Chưa xếp loại</span>
+                )}
+              </div>
+              <div>
+                <span className="font-bold">TBM: </span>
+                {markDetails?.average != -1 && markDetails?.average != 0 ? (
+                  <span className="mx-auto text-center text-white px-3 py-1 rounded bg-success-color">
+                    {markDetails ? markDetails?.average : "_"}
+                  </span>
+                ) : (
+                  <span className="text-base italic">Chưa có điểm</span>
+                )}
+              </div>
             </div>
-            <TableMarkAllStudentsComponent
-              className="mt-4"
-              itemsPerPage={10}
-              data={scoreByStudents.data}
-              onViewDetails={handleViewDetails}
-            /> */}
-            <>
-              <div className="text-center mt-5">
-                <h4 className="text-xl font-bold">
-                  Bảng điểm môn {schoolSubject} lớp {schoolClass}
-                </h4>
-                <h4 className="text-xl font-bold">
-                  Học kỳ: {schoolSemester}. Năm học: {schoolYear}
-                </h4>
-              </div>
-              <div className="flex flex-nowrap justify-between icon-custom">
-                <div className="text-sm mr-4 flex">
-                  <div className="mr-2">
-                    <span className="mr-2 font-bold">Giáo viên: </span>
-                    <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                      {currentUser ? currentUser.fullname.toString() : "Chưa có thông tin!"}
-                    </span>
-                  </div>
-                  {/* <div>
-                    <span className="mr-2 font-bold">Môn học: </span>
-                    <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                      {schoolSubject ? schoolSubject.toString() : "Chưa có thông tin!"}
-                    </span>
-                  </div> */}
-                </div>
-                <div className="flex">
-                  <div className="flex items-center">
-                    <span className="mr-2 font-bold text-sm">Chọn học kỳ: </span>
-                    <FormControl sx={{ minWidth: 120 }}>
-                      <InputLabel id="select-school-semester-lable">Học kỳ</InputLabel>
-                      <Select
-                        labelId="select-school-semester-lable"
-                        id="select-school-semester"
-                        value={schoolSemester}
-                        className="h-10 mr-2 max-[767px]:mb-4"
-                        label="Học kỳ"
-                        onChange={handleSemesterChange}
-                      >
-                        {semesters.map((item, index) => (
-                          <MenuItem key={index} value={item.value}>
-                            {item.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </div>
-                  <ButtonComponent
-                    onClick={() => {
-                      setOpenModalRandom(true);
-                    }}
-                  >
-                    <CardGiftcardIcon className="mr-2" />
-                    Random học sinh
-                  </ButtonComponent>
-                </div>
-              </div>
+          </PopupComponent>
 
-              {isLoadingMark ? (
-                <div className="text-center primary-color my-10 text-xl italic font-medium">
-                  <div className="mx-auto flex items-center justify-center">
-                    <p className="mr-3">Loading</p>
-                    <CircularProgress size={24} color="inherit" />
+          <>
+            {userRole === "HomeroomTeacher" || userRole === "Principal" ? (
+              <>
+                <div className="text-center mt-10 uppercase">
+                  <h4 className="text-xl font-bold">Bảng điểm tổng kết lớp {schoolClass}</h4>
+                  <h4 className="text-xl font-bold">
+                    Học kỳ: {schoolSemester}. Năm học: {schoolYear}
+                  </h4>
+                </div>
+                <div className="flex flex-nowrap justify-between icon-custom">
+                  <div className="text-sm mr-4 flex">
+                    <div className="mr-2">
+                      <span className="mr-2 font-bold">Giáo viên: </span>
+                      <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                        {currentUser ? currentUser.fullname.toString() : "Chưa có thông tin!"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex">
+                    <div className="flex items-center">
+                      <span className="mr-2 font-bold text-sm">Chọn học kỳ: </span>
+                      <FormControl sx={{ minWidth: 120 }}>
+                        <InputLabel id="select-school-semester-lable">Học kỳ</InputLabel>
+                        <Select
+                          labelId="select-school-semester-lable"
+                          id="select-school-semester"
+                          value={schoolSemester}
+                          className="h-10 mr-2 max-[767px]:mb-4"
+                          label="Học kỳ"
+                          onChange={handleSemesterChange}
+                        >
+                          {semesters.map((item, index) => (
+                            <MenuItem key={index} value={item.value}>
+                              {item.label}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </div>
+                    <ButtonComponent
+                      onClick={() => {
+                        setOpenModalRandom(true);
+                      }}
+                    >
+                      <CardGiftcardIcon className="mr-2" />
+                      Random
+                    </ButtonComponent>
                   </div>
                 </div>
-              ) : markOfStudentsBySubject?.success && currentOfStudentsMarkBySubject.length > 0 ? (
-                <TableMarkOfSubjectComponent
-                  semester={schoolSemester}
-                  isHideMark={openModalRandom}
-                  data={currentOfStudentsMarkBySubject}
-                  className="mt-4 text-left"
-                  onDetails={handleDetails}
-                  itemsPerPage={20}
-                />
-              ) : (
-                <div className="text-center primary-color my-10 text-xl italic font-medium">
-                  <img
-                    className="w-60 h-60 object-cover object-center mx-auto"
-                    src={noDataImage3}
-                    alt="Chưa có dữ liệu!"
+                {isLoadingMarkOfClass ? (
+                  <div className="text-center primary-color my-10 text-xl italic font-medium">
+                    <div className="mx-auto flex items-center justify-center">
+                      <p className="mr-3">Loading</p>
+                      <CircularProgress size={24} color="inherit" />
+                    </div>
+                  </div>
+                ) : markOfClassAllSubject?.success && currentMarkOfClass.length > 0 ? (
+                  <TableMarkAllStudentsComponent
+                    className="mt-4"
+                    semester={schoolSemester}
+                    itemsPerPage={30}
+                    data={currentMarkOfClass}
+                    onViewDetails={handleDetails}
                   />
-                  Chưa có dữ liệu!
-                </div>
+                ) : (
+                  <div className="text-center primary-color my-10 text-xl italic font-medium">
+                    <img
+                      className="w-60 h-60 object-cover object-center mx-auto"
+                      src={noDataImage3}
+                      alt="Chưa có dữ liệu!"
+                    />
+                    Chưa có dữ liệu!
+                  </div>
+                )}
+              </>
+            ) : (
+              ""
+            )}
+
+            <>
+              {userRole === "SubjectTeacher" || userRole === "Principal" ? (
+                <>
+                  <div className="text-center mt-10 uppercase">
+                    <h4 className="text-xl font-bold">
+                      Bảng điểm môn {schoolSubject} lớp {schoolClass}
+                    </h4>
+                    <h4 className="text-xl font-bold">
+                      Học kỳ: {schoolSemester}. Năm học: {schoolYear}
+                    </h4>
+                  </div>
+
+                  {isLoadingMark ? (
+                    <div className="text-center primary-color my-10 text-xl italic font-medium">
+                      <div className="mx-auto flex items-center justify-center">
+                        <p className="mr-3">Loading</p>
+                        <CircularProgress size={24} color="inherit" />
+                      </div>
+                    </div>
+                  ) : markOfStudentsBySubject?.success &&
+                    currentOfStudentsMarkBySubject.length > 0 ? (
+                    <TableMarkOfSubjectComponent
+                      semester={schoolSemester}
+                      isHideMark={openModalRandom}
+                      data={currentOfStudentsMarkBySubject}
+                      className="mt-4 text-left"
+                      onDetails={handleDetails}
+                      itemsPerPage={30}
+                    />
+                  ) : (
+                    <div className="text-center primary-color my-10 text-xl italic font-medium">
+                      <img
+                        className="w-60 h-60 object-cover object-center mx-auto"
+                        src={noDataImage3}
+                        alt="Chưa có dữ liệu!"
+                      />
+                      Chưa có dữ liệu!
+                    </div>
+                  )}
+                </>
+              ) : (
+                ""
               )}
+
+              <div className="mt-5 text-base">
+                <p className="font-bold">Ghi chú:</p>
+                <ul className="list-disc ml-5">
+                  <li>
+                    <span className="font-bold">(-): </span>
+                    <span className="italic">
+                      Chưa có điểm, giáo viên chưa nhập điểm cho cột này.
+                    </span>
+                  </li>
+                  <li>
+                    <span className="black font-medium italic">(Chưa xếp loại): </span>
+                    <span className="italic">Học sinh đạt điểm trung bình học kỳ loại giỏi.</span>
+                  </li>
+                  <li>
+                    <span className="success-color font-medium italic">(Giỏi): </span>
+                    <span className="italic">Học sinh đạt điểm trung bình học kỳ loại giỏi.</span>
+                  </li>
+                  <li>
+                    <span className="primary-color font-medium italic">(Khá): </span>
+                    <span className="italic">Học sinh đạt điểm trung bình học kỳ loại khá.</span>
+                  </li>
+                  <li>
+                    <span className="warning-color font-medium italic">(Trung bình): </span>
+                    <span className="italic">
+                      Học sinh đạt điểm trung bình học kỳ loại trung bình.
+                    </span>
+                  </li>
+                  <li>
+                    <span className="error-color font-medium italic">(Kém): </span>
+                    <span className="italic">Học sinh đạt điểm trung bình học kỳ loại kém.</span>
+                  </li>
+                </ul>
+              </div>
             </>
           </>
         </MDBox>

@@ -41,7 +41,7 @@
     "sass": "^1.75.0",
     "slick-carousel": "^1.8.1",
     "stylis": "4.1.4",
-    "stylis-plugin-rtl": "2.1.1",
+    "stylis-plugin-rtl": "^2.0.2",
     "xlsx": "^0.18.5",
     "yup": "1.1.1"
   },
@@ -70,7 +70,6 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "http://KCodeGuy.github.io/SWP490_Group4_EBookSchool_FE",
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "ajv": "^7.2.4",

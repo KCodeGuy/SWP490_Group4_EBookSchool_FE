@@ -65,7 +65,7 @@ const SchoolBook = () => {
 
   const { today } = getTodayDate();
 
-  const [schoolYear, setSchoolYear] = React.useState(schoolYearsAPI[schoolYearsAPI.length - 1]);
+  const [schoolYear, setSchoolYear] = React.useState(schoolYearsAPI[schoolYearsAPI.length - 2]);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
   };

@@ -4,42 +4,44 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import CreateIcon from "@mui/icons-material/Create";
-import React, { useState, useMemo, useCallback } from "react";
 import HomeWorkIcon from "@mui/icons-material/HomeWork";
 import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
-import { Card } from "@mui/material";
+import { Card, CircularProgress } from "@mui/material";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import { useQuery } from "react-query";
+import React, { useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import sliderImage1 from "../../assets/images/slider1.png";
 import sliderImage2 from "../../assets/images/slider2.png";
 import sliderImage3 from "../../assets/images/slider3.png";
 import SliderComponent from "../../components/SilderComponent";
-import PaginationComponent from "components/PaginationComponent/PaginationComponent";
-import ButtonComponent from "components/ButtonComponent/ButtonComponent";
-import EventAvailableIcon from "@mui/icons-material/EventAvailable";
-import { getAllNotifications } from "services/NotificationService";
-import { useQuery } from "react-query";
-import { useNavigate } from "react-router-dom";
-import { getAllClasses } from "services/ClassService";
-
-const accessToken = localStorage.getItem("authToken");
-const userRole = localStorage.getItem("userRole");
+import PaginationComponent from "../../components/PaginationComponent/PaginationComponent";
+import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
+import { getAllNotifications } from "../../services/NotificationService";
+import noDataImage3 from "../../assets/images/noDataImage3.avif";
 
 const Dashboard = React.memo(() => {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  // const [currentData, setCurrentData] = useState([]);
+  const itemsPerPage = 20;
+  let paginatedData = [],
+    totalItems = 0,
+    totalPages = 0;
   const navigate = useNavigate();
+  const accessToken = localStorage.getItem("authToken");
+  // const userRole = localStorage.getItem("userRole");
 
   // Call API Get all notifications
-  const { data, error, isLoading } = useQuery(["notificationDetails", { accessToken }], () =>
+  const { data, error, isLoading } = useQuery(["notifications", { accessToken }], () =>
     getAllNotifications(accessToken)
   );
 
-  const notifications = useMemo(() => (Array.isArray(data?.data) ? data.data : []), [data]);
-  const totalItems = notifications.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const paginatedData = useMemo(
-    () => notifications.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage),
-    [notifications, currentPage, itemsPerPage]
-  );
+  if (data?.success) {
+    paginatedData = data?.data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    totalItems = data?.data.length;
+    totalPages = Math.ceil(totalItems / itemsPerPage);
+  }
 
   const handlePageChange = useCallback((page) => {
     setCurrentPage(page);
@@ -129,8 +131,15 @@ const Dashboard = React.memo(() => {
                     Mới nhất
                   </div>
                 </div>
-                {paginatedData.length > 0 ? (
-                  paginatedData.map((item, index) => (
+                {isLoading ? (
+                  <div className="text-center primary-color my-10 text-xl italic font-medium">
+                    <div className="mx-auto flex items-center justify-center">
+                      <p className="mr-3">Loading</p>
+                      <CircularProgress size={24} color="inherit" />
+                    </div>
+                  </div>
+                ) : data?.success && paginatedData?.length > 0 ? (
+                  paginatedData?.map((item, index) => (
                     <Grid key={index} item xs={12} marginTop={1}>
                       <Card sx={{ padding: "12px", marginBottom: "12px" }}>
                         <div className="flex max-[639px]:flex-wrap">
@@ -163,7 +172,14 @@ const Dashboard = React.memo(() => {
                     </Grid>
                   ))
                 ) : (
-                  <div className="text-center text-base">Loading...</div>
+                  <div className="text-center primary-color my-10 text-xl italic font-medium w-full">
+                    <img
+                      className="w-60 h-60 object-cover object-center mx-auto"
+                      src={noDataImage3}
+                      alt="Chưa có dữ liệu!"
+                    />
+                    Chưa có dữ liệu!
+                  </div>
                 )}
                 <PaginationComponent
                   location="center"

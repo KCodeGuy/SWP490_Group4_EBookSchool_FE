@@ -158,7 +158,7 @@ function Basic() {
                 required: "Không được bỏ trống!",
                 minLength: {
                   value: 6,
-                  message: "Mật khẩu ít nhất 8 kí tự!",
+                  message: "Mật khẩu ít nhất 6 kí tự!",
                 },
                 maxLength: {
                   value: 20,

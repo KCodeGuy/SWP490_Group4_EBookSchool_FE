@@ -1,5 +1,14 @@
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
-import { FormControl, InputLabel, Card, MenuItem, Select, CircularProgress } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  Card,
+  MenuItem,
+  Select,
+  CircularProgress,
+  Tabs,
+  Tab,
+} from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -34,6 +43,7 @@ import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
 import TextValueComponent from "../../components/TextValueComponent";
 import { renderRankingStyles } from "utils/RenderStyle";
 import { renderRanking } from "utils/RenderStyle";
+import { TabPanel } from "components/TabPanelComponent";
 
 // Mark management (HieuTTN)
 const semesters = [
@@ -61,10 +71,14 @@ export default function MarkManagement() {
   const [currentMarkOfClass, setCurrentMarkOfClass] = useState([]);
   const [currentAction, setCurrentAction] = useState("adding");
   const [currentTab, setCurrentTab] = useState(0);
-  const [currentTabDetails, setCurrentTabDetails] = useState(0);
   const [openModalRandom, setOpenModalRandom] = useState(false);
   const [openModalDetails, setOpenModalDetails] = useState(false);
-  const [currentStudents, setCurrentStudents] = useState([]);
+  const [value, setValue] = React.useState(0);
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+    setSchoolSemester(semesters[0].label);
+  };
+
   const [markDetails, setMarkDetails] = useState({});
   const queryClient = useQueryClient();
 
@@ -107,7 +121,7 @@ export default function MarkManagement() {
 
   useEffect(() => {
     if (data?.data?.length > 0) {
-      setSchoolSubject(data.data[0].name); // Set the default value to the first item
+      setSchoolSubject(data.data[0].name);
     }
   }, [data]);
   const [schoolSubject, setSchoolSubject] = React.useState("");
@@ -237,13 +251,37 @@ export default function MarkManagement() {
       updateMarkMutation.mutate(data.markFile);
     }
   };
+
+  const tabs = ["ĐIỂM THEO LỚP", "ĐIỂM THEO MÔN"];
   return (
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
       <DashboardNavbar />
       <Card className="max-h-max mb-8">
         <MDBox p={5}>
-          <div className="flex flex-nowrap justify-between mb-2.5">
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="simple tabs example"
+            sx={{
+              width: "100%",
+              textAlign: "left",
+              paddingX: 1,
+              paddingY: 2,
+              "& .Mui-selected": {
+                backgroundColor: "#247cd4",
+                color: "white !important",
+                fontWeight: "bold",
+                paddingY: 2,
+              },
+            }}
+          >
+            {tabs.map((item, index) => (
+              <Tab key={index} label={item} />
+            ))}
+          </Tabs>
+
+          <div className="flex flex-nowrap justify-between mb-2.5 mt-8">
             <div className="left">
               <FormControl sx={{ minWidth: 120 }}>
                 <InputLabel id="select-school-year-lable">Năm học</InputLabel>
@@ -280,7 +318,7 @@ export default function MarkManagement() {
                 </Select>
               </FormControl>
 
-              {userRole === "Principal" || userRole === "SubjectTeacher" ? (
+              {(userRole === "Principal" || userRole === "SubjectTeacher") && value != 0 ? (
                 <FormControl sx={{ minWidth: 120 }}>
                   <InputLabel id="select-school-subject-lable">Môn học</InputLabel>
                   <Select
@@ -475,6 +513,199 @@ export default function MarkManagement() {
             )}
           </div>
 
+          <TabPanel value={value} index={0}>
+            <>
+              {userRole === "HomeroomTeacher" || userRole === "Principal" ? (
+                <div className="text-center mt-10 uppercase">
+                  <h4 className="text-xl font-bold">Bảng điểm tổng kết lớp {schoolClass}</h4>
+                  <h4 className="text-xl font-bold">
+                    Học kỳ: {schoolSemester}. Năm học: {schoolYear}
+                  </h4>
+                </div>
+              ) : (
+                ""
+              )}
+              <div className="flex flex-nowrap justify-between icon-custom mt-5">
+                <div className="text-sm mr-4 flex">
+                  <div className="mr-2">
+                    <span className="mr-2 font-bold">Giáo viên: </span>
+                    <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                      {currentUser ? currentUser.fullname.toString() : "Chưa có thông tin!"}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex">
+                  <div className="flex items-center">
+                    <span className="mr-2 font-bold text-sm">Chọn học kỳ: </span>
+                    <FormControl sx={{ minWidth: 120 }}>
+                      <InputLabel id="select-school-semester-lable">Học kỳ</InputLabel>
+                      <Select
+                        labelId="select-school-semester-lable"
+                        id="select-school-semester"
+                        value={schoolSemester}
+                        className="h-10 mr-2 max-[767px]:mb-4"
+                        label="Học kỳ"
+                        onChange={handleSemesterChange}
+                      >
+                        {semesters.map((item, index) => (
+                          <MenuItem key={index} value={item.value}>
+                            {item.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </div>
+                </div>
+              </div>
+
+              {userRole === "HomeroomTeacher" || userRole === "Principal" ? (
+                isLoadingMarkOfClass ? (
+                  <div className="text-center primary-color my-10 text-xl italic font-medium">
+                    <div className="mx-auto flex items-center justify-center">
+                      <p className="mr-3">Loading</p>
+                      <CircularProgress size={24} color="inherit" />
+                    </div>
+                  </div>
+                ) : markOfClassAllSubject?.success && currentMarkOfClass.length > 0 ? (
+                  <TableMarkAllStudentsComponent
+                    className="mt-4"
+                    semester={schoolSemester}
+                    itemsPerPage={30}
+                    data={currentMarkOfClass}
+                    onViewDetails={handleDetails}
+                  />
+                ) : (
+                  <div className="text-center primary-color my-10 text-xl italic font-medium">
+                    <img
+                      className="w-60 h-60 object-cover object-center mx-auto"
+                      src={noDataImage3}
+                      alt="Chưa có dữ liệu!"
+                    />
+                    Chưa có dữ liệu!
+                  </div>
+                )
+              ) : (
+                ""
+              )}
+            </>
+          </TabPanel>
+          <TabPanel value={value} index={1}>
+            <>
+              {userRole === "SubjectTeacher" || userRole === "Principal" ? (
+                <>
+                  <div className="text-center mt-10 uppercase">
+                    <h4 className="text-xl font-bold">
+                      Bảng điểm môn {schoolSubject} lớp {schoolClass}
+                    </h4>
+                    <h4 className="text-xl font-bold">
+                      Học kỳ: {schoolSemester}. Năm học: {schoolYear}
+                    </h4>
+                  </div>
+                  <div className="flex flex-nowrap justify-between icon-custom mt-5">
+                    <div className="text-sm mr-4 flex">
+                      <div className="mr-2">
+                        <span className="mr-2 font-bold">Giáo viên: </span>
+                        <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                          {currentUser ? currentUser.fullname.toString() : "Chưa có thông tin!"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex">
+                      <div className="flex items-center">
+                        <span className="mr-2 font-bold text-sm">Chọn học kỳ: </span>
+                        <FormControl sx={{ minWidth: 120 }}>
+                          <InputLabel id="select-school-semester-lable">Học kỳ</InputLabel>
+                          <Select
+                            labelId="select-school-semester-lable"
+                            id="select-school-semester"
+                            value={schoolSemester}
+                            className="h-10 mr-2 max-[767px]:mb-4"
+                            label="Học kỳ"
+                            onChange={handleSemesterChange}
+                          >
+                            {semesters.map((item, index) => (
+                              <MenuItem key={index} value={item.value}>
+                                {item.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </div>
+                      <ButtonComponent
+                        onClick={() => {
+                          setOpenModalRandom(true);
+                        }}
+                      >
+                        <CardGiftcardIcon className="mr-2" />
+                        Random
+                      </ButtonComponent>
+                    </div>
+                  </div>
+
+                  {isLoadingMark ? (
+                    <div className="text-center primary-color my-10 text-xl italic font-medium">
+                      <div className="mx-auto flex items-center justify-center">
+                        <p className="mr-3">Loading</p>
+                        <CircularProgress size={24} color="inherit" />
+                      </div>
+                    </div>
+                  ) : markOfStudentsBySubject?.success &&
+                    currentOfStudentsMarkBySubject.length > 0 ? (
+                    <TableMarkOfSubjectComponent
+                      semester={schoolSemester}
+                      isHideMark={openModalRandom}
+                      data={currentOfStudentsMarkBySubject}
+                      className="mt-4 text-left"
+                      onDetails={handleDetails}
+                      itemsPerPage={30}
+                    />
+                  ) : (
+                    <div className="text-center primary-color my-10 text-xl italic font-medium">
+                      <img
+                        className="w-60 h-60 object-cover object-center mx-auto"
+                        src={noDataImage3}
+                        alt="Chưa có dữ liệu!"
+                      />
+                      Chưa có dữ liệu!
+                    </div>
+                  )}
+                </>
+              ) : (
+                ""
+              )}
+            </>
+          </TabPanel>
+
+          <div className="mt-5 text-base">
+            <p className="font-bold">Ghi chú:</p>
+            <ul className="list-disc ml-5">
+              <li>
+                <span className="font-bold">(-): </span>
+                <span className="italic">Chưa có điểm, giáo viên chưa nhập điểm cho cột này.</span>
+              </li>
+              <li>
+                <span className="black font-medium italic">(Chưa xếp loại): </span>
+                <span className="italic">Học sinh đạt điểm trung bình học kỳ loại giỏi.</span>
+              </li>
+              <li>
+                <span className="success-color font-medium italic">(Giỏi): </span>
+                <span className="italic">Học sinh đạt điểm trung bình học kỳ loại giỏi.</span>
+              </li>
+              <li>
+                <span className="primary-color font-medium italic">(Khá): </span>
+                <span className="italic">Học sinh đạt điểm trung bình học kỳ loại khá.</span>
+              </li>
+              <li>
+                <span className="warning-color font-medium italic">(Trung bình): </span>
+                <span className="italic">Học sinh đạt điểm trung bình học kỳ loại trung bình.</span>
+              </li>
+              <li>
+                <span className="error-color font-medium italic">(Kém): </span>
+                <span className="italic">Học sinh đạt điểm trung bình học kỳ loại kém.</span>
+              </li>
+            </ul>
+          </div>
+
           <PopupComponent
             title="RANDOM HỌC SINH"
             description="Chọn ngẫu nhiên học sinh"
@@ -550,165 +781,6 @@ export default function MarkManagement() {
               </div>
             </div>
           </PopupComponent>
-
-          <>
-            {userRole === "HomeroomTeacher" || userRole === "Principal" ? (
-              <>
-                <div className="text-center mt-10 uppercase">
-                  <h4 className="text-xl font-bold">Bảng điểm tổng kết lớp {schoolClass}</h4>
-                  <h4 className="text-xl font-bold">
-                    Học kỳ: {schoolSemester}. Năm học: {schoolYear}
-                  </h4>
-                </div>
-                <div className="flex flex-nowrap justify-between icon-custom">
-                  <div className="text-sm mr-4 flex">
-                    <div className="mr-2">
-                      <span className="mr-2 font-bold">Giáo viên: </span>
-                      <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                        {currentUser ? currentUser.fullname.toString() : "Chưa có thông tin!"}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex">
-                    <div className="flex items-center">
-                      <span className="mr-2 font-bold text-sm">Chọn học kỳ: </span>
-                      <FormControl sx={{ minWidth: 120 }}>
-                        <InputLabel id="select-school-semester-lable">Học kỳ</InputLabel>
-                        <Select
-                          labelId="select-school-semester-lable"
-                          id="select-school-semester"
-                          value={schoolSemester}
-                          className="h-10 mr-2 max-[767px]:mb-4"
-                          label="Học kỳ"
-                          onChange={handleSemesterChange}
-                        >
-                          {semesters.map((item, index) => (
-                            <MenuItem key={index} value={item.value}>
-                              {item.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </div>
-                    <ButtonComponent
-                      onClick={() => {
-                        setOpenModalRandom(true);
-                      }}
-                    >
-                      <CardGiftcardIcon className="mr-2" />
-                      Random
-                    </ButtonComponent>
-                  </div>
-                </div>
-                {isLoadingMarkOfClass ? (
-                  <div className="text-center primary-color my-10 text-xl italic font-medium">
-                    <div className="mx-auto flex items-center justify-center">
-                      <p className="mr-3">Loading</p>
-                      <CircularProgress size={24} color="inherit" />
-                    </div>
-                  </div>
-                ) : markOfClassAllSubject?.success && currentMarkOfClass.length > 0 ? (
-                  <TableMarkAllStudentsComponent
-                    className="mt-4"
-                    semester={schoolSemester}
-                    itemsPerPage={30}
-                    data={currentMarkOfClass}
-                    onViewDetails={handleDetails}
-                  />
-                ) : (
-                  <div className="text-center primary-color my-10 text-xl italic font-medium">
-                    <img
-                      className="w-60 h-60 object-cover object-center mx-auto"
-                      src={noDataImage3}
-                      alt="Chưa có dữ liệu!"
-                    />
-                    Chưa có dữ liệu!
-                  </div>
-                )}
-              </>
-            ) : (
-              ""
-            )}
-
-            <>
-              {userRole === "SubjectTeacher" || userRole === "Principal" ? (
-                <>
-                  <div className="text-center mt-10 uppercase">
-                    <h4 className="text-xl font-bold">
-                      Bảng điểm môn {schoolSubject} lớp {schoolClass}
-                    </h4>
-                    <h4 className="text-xl font-bold">
-                      Học kỳ: {schoolSemester}. Năm học: {schoolYear}
-                    </h4>
-                  </div>
-
-                  {isLoadingMark ? (
-                    <div className="text-center primary-color my-10 text-xl italic font-medium">
-                      <div className="mx-auto flex items-center justify-center">
-                        <p className="mr-3">Loading</p>
-                        <CircularProgress size={24} color="inherit" />
-                      </div>
-                    </div>
-                  ) : markOfStudentsBySubject?.success &&
-                    currentOfStudentsMarkBySubject.length > 0 ? (
-                    <TableMarkOfSubjectComponent
-                      semester={schoolSemester}
-                      isHideMark={openModalRandom}
-                      data={currentOfStudentsMarkBySubject}
-                      className="mt-4 text-left"
-                      onDetails={handleDetails}
-                      itemsPerPage={30}
-                    />
-                  ) : (
-                    <div className="text-center primary-color my-10 text-xl italic font-medium">
-                      <img
-                        className="w-60 h-60 object-cover object-center mx-auto"
-                        src={noDataImage3}
-                        alt="Chưa có dữ liệu!"
-                      />
-                      Chưa có dữ liệu!
-                    </div>
-                  )}
-                </>
-              ) : (
-                ""
-              )}
-
-              <div className="mt-5 text-base">
-                <p className="font-bold">Ghi chú:</p>
-                <ul className="list-disc ml-5">
-                  <li>
-                    <span className="font-bold">(-): </span>
-                    <span className="italic">
-                      Chưa có điểm, giáo viên chưa nhập điểm cho cột này.
-                    </span>
-                  </li>
-                  <li>
-                    <span className="black font-medium italic">(Chưa xếp loại): </span>
-                    <span className="italic">Học sinh đạt điểm trung bình học kỳ loại giỏi.</span>
-                  </li>
-                  <li>
-                    <span className="success-color font-medium italic">(Giỏi): </span>
-                    <span className="italic">Học sinh đạt điểm trung bình học kỳ loại giỏi.</span>
-                  </li>
-                  <li>
-                    <span className="primary-color font-medium italic">(Khá): </span>
-                    <span className="italic">Học sinh đạt điểm trung bình học kỳ loại khá.</span>
-                  </li>
-                  <li>
-                    <span className="warning-color font-medium italic">(Trung bình): </span>
-                    <span className="italic">
-                      Học sinh đạt điểm trung bình học kỳ loại trung bình.
-                    </span>
-                  </li>
-                  <li>
-                    <span className="error-color font-medium italic">(Kém): </span>
-                    <span className="italic">Học sinh đạt điểm trung bình học kỳ loại kém.</span>
-                  </li>
-                </ul>
-              </div>
-            </>
-          </>
         </MDBox>
       </Card>
       <Footer />

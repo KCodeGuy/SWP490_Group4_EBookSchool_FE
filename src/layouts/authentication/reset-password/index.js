@@ -90,8 +90,8 @@ function Cover() {
               validationRules={{
                 required: "không được bỏ trống!",
                 minLength: {
-                  value: 8,
-                  message: "Mật khẩu ít nhất 8 kí tự!",
+                  value: 6,
+                  message: "Mật khẩu ít nhất 6 kí tự!",
                 },
                 maxLength: {
                   value: 20,
@@ -110,8 +110,8 @@ function Cover() {
               validationRules={{
                 required: "Không được bỏ trống!",
                 minLength: {
-                  value: 8,
-                  message: "Mật khẩu ít nhât 8 kí tự!",
+                  value: 6,
+                  message: "Mật khẩu ít nhât 6 kí tự!",
                 },
                 maxLength: {
                   value: 20,

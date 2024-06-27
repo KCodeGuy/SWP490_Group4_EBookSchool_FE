@@ -105,12 +105,19 @@ function TableMarkOfSubjectComponent({
             {isOrdered && <th className="w-10">STT.</th>}
             <th className="w-32">Tên học sinh</th>
             <th className="w-28">Mã học sinh</th>
-            {headerTable?.map((column, index) => (
-              <th colSpan={column.count} key={index}>
-                {column.key}
-              </th>
-            ))}
-            <th className="w-20">Trung bình môn</th>
+            {semester != "Cả năm" ? (
+              headerTable?.map((column, index) => (
+                <th colSpan={column.count} key={index}>
+                  {column.key}
+                </th>
+              ))
+            ) : (
+              <>
+                <th className="w-32">Học kỳ I</th>
+                <th className="w-28">Học kỳ II</th>
+              </>
+            )}
+            <th className="w-20">{semester == "Cả năm" ? "Cả năm" : "Trung bình môn"}</th>
             <th className="w-20">Xếp loại</th>
             {isShowActions && <th className="w-28">Chi tiết</th>}
           </tr>
@@ -131,47 +138,91 @@ function TableMarkOfSubjectComponent({
                       ""
                     )
                   )
-                : headerTable?.map((column, index) => (
+                : semester !== "Cả năm"
+                ? headerTable?.map((column, index) => (
                     <td colSpan={column.count} key={index}>
                       _
                     </td>
-                  ))}
+                  ))
+                : ""}
+              {semester == "Cả năm" ? (
+                <>
+                  <td>
+                    {row.averageSemester1 != -1 && row.averageSemester1 != 0
+                      ? row.averageSemester1
+                      : "_"}
+                  </td>
+                  <td>
+                    {" "}
+                    {row.averageSemester1 != -1 && row.averageSemester1 != 0
+                      ? row.averageSemester1
+                      : "_"}
+                  </td>
+                </>
+              ) : (
+                ""
+              )}
+
               <td>
-                {row.average != -1 && row.average != 0 ? (
-                  <span className={renderAverageMarkStyles(row.average)}>{row.average}</span>
+                {semester == "Học kỳ I" ? (
+                  row.averageSemester1 != -1 && row.averageSemester1 != 0 ? (
+                    <span className={renderAverageMarkStyles(row.averageSemester1)}>
+                      {row.averageSemester1}
+                    </span>
+                  ) : (
+                    "_"
+                  )
+                ) : semester == "Học kỳ II" ? (
+                  row.averageSemester2 != -1 && row.averageSemester2 != 0 ? (
+                    <span className={renderAverageMarkStyles(row.averageSemester2)}>
+                      {row.averageSemester2}
+                    </span>
+                  ) : (
+                    "_"
+                  )
+                ) : semester == "Cả năm" ? (
+                  row.averageYear != -1 && row.averageYear != 0 ? (
+                    <span className={renderAverageMarkStyles(row.averageYear)}>
+                      {row.averageYear}
+                    </span>
+                  ) : (
+                    "_"
+                  )
                 ) : (
                   "_"
                 )}
               </td>
               <td>
-                {row.average != -1 && row.average != 0 ? (
-                  <span className={renderRankingStyles(row.average)}>
-                    {renderRanking(row.average)}
-                  </span>
+                {semester == "Học kỳ I" ? (
+                  row.averageSemester1 != -1 && row.averageSemester1 != 0 ? (
+                    <span className={renderRankingStyles(row.averageSemester1)}>
+                      {renderRanking(row.averageSemester1)}
+                    </span>
+                  ) : (
+                    "_"
+                  )
+                ) : semester == "Học kỳ II" ? (
+                  row.averageSemester2 != -1 && row.averageSemester2 != 0 ? (
+                    <span className={renderRankingStyles(row.averageSemester2)}>
+                      {renderRanking(row.averageSemester2)}
+                    </span>
+                  ) : (
+                    "_"
+                  )
+                ) : semester == "Cả năm" ? (
+                  row.averageYear != -1 && row.averageYear != 0 ? (
+                    <span className={renderRankingStyles(row.averageYear)}>
+                      {renderRanking(row.averageYear)}
+                    </span>
+                  ) : (
+                    "_"
+                  )
                 ) : (
                   <span className="italic font-medium w-20">Chưa xếp loại</span>
                 )}
               </td>
               {isShowActions && (
                 <td className="max-w-28">
-                  {onEdit && (
-                    <button
-                      title="Edit button"
-                      className="text-xl primary-color"
-                      onClick={() => onEdit(row)}
-                    >
-                      <ModeEditIcon />
-                    </button>
-                  )}
-                  {onDelete && (
-                    <button
-                      title="Delete button "
-                      className="text-xl ml-3 error-color"
-                      onClick={() => onDelete(row)}
-                    >
-                      <DeleteIcon />
-                    </button>
-                  )}
                   {onDetails && (
                     <button
                       title="Detail button "

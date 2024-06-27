@@ -67,7 +67,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
     // A function that sets the mini state of the sidenav.
     function handleMiniSidenav() {
       setMiniSidenav(dispatch, window.innerWidth < 1200);
-      setTransparentSidenav(dispatch, window.innerWidth < 1200 ? false : transparentSidenav);
+      setTransparentSidenav(dispatch, window.innerWidth < 1200 ? false : whiteSidenav);
       setWhiteSidenav(dispatch, window.innerWidth < 1200 ? false : whiteSidenav);
     }
 
@@ -94,6 +94,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
           key={key}
           target="_blank"
           rel="noreferrer"
+          fontWeight="bold"
           sx={{ textDecoration: "none" }}
         >
           <SidenavCollapse
@@ -104,7 +105,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
           />
         </Link>
       ) : (
-        <NavLink key={key} to={route}>
+        <NavLink key={key} to={route} className="font-bold">
           <SidenavCollapse name={name} icon={icon} active={key === collapseName} />
         </NavLink>
       );
@@ -189,7 +190,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
           color={sidenavColor}
           fullWidth
         >
-          + See more
+          Giới thiệu
         </MDButton>
       </MDBox>
     </SidenavRoot>

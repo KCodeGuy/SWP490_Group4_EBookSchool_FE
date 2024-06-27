@@ -73,10 +73,10 @@ function MaterialUIControllerProvider({ children }) {
   const initialState = {
     miniSidenav: false,
     transparentSidenav: false,
-    whiteSidenav: false,
+    whiteSidenav: true,
     sidenavColor: "info",
-    transparentNavbar: true,
-    fixedNavbar: true,
+    transparentNavbar: false,
+    fixedNavbar: false,
     openConfigurator: false,
     direction: "ltr",
     layout: "dashboard",
@@ -110,10 +110,10 @@ MaterialUIControllerProvider.propTypes = {
 
 // Context module functions
 const setMiniSidenav = (dispatch, value) => dispatch({ type: "MINI_SIDENAV", value });
-const setTransparentSidenav = (dispatch, value) => dispatch({ type: "TRANSPARENT_SIDENAV", value });
+const setTransparentSidenav = (dispatch, value) => dispatch({ type: "WHITE_SIDENAV", value });
 const setWhiteSidenav = (dispatch, value) => dispatch({ type: "WHITE_SIDENAV", value });
-const setSidenavColor = (dispatch, value) => dispatch({ type: "SIDENAV_COLOR", value });
-const setTransparentNavbar = (dispatch, value) => dispatch({ type: "TRANSPARENT_NAVBAR", value });
+const setSidenavColor = (dispatch, value) => dispatch({ type: "WHITE_SIDENAV", value });
+const setTransparentNavbar = (dispatch, value) => dispatch({ type: "WHITE_SIDENAV", value });
 const setFixedNavbar = (dispatch, value) => dispatch({ type: "FIXED_NAVBAR", value });
 const setOpenConfigurator = (dispatch, value) => dispatch({ type: "OPEN_CONFIGURATOR", value });
 const setDirection = (dispatch, value) => dispatch({ type: "DIRECTION", value });

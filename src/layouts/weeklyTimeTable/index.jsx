@@ -1033,7 +1033,7 @@ export default function WeeklyTimeTable() {
                     ""
                   )}
                   {userRole !== "Student" ? (
-                    <Link to="/schoolBook">
+                    <Link to="/register-notebook">
                       <ButtonComponent action="button">SỔ ĐẦU BÀI</ButtonComponent>
                     </Link>
                   ) : (

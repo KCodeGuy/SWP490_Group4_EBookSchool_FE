@@ -128,15 +128,23 @@ $dark-hover-color: #505e77;
   overflow: hidden;
   text-overflow: ellipsis;
   -webkit-line-clamp: 3; /* Limit to 3 lines */
+  word-wrap: break-word; /* Break long words */
+  word-break: break-all; /* Ensure content wraps within the container */
 }
 .max-line-4 {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  -webkit-line-clamp: 4; /* Limit to 3 lines */
+  -webkit-line-clamp: 4; /* Limit to 4 lines */
 }
-
+.text-container {
+  width: 100%; /* Ensure the container takes full width */
+  max-width: 98%; /* Set a max-width to avoid overflow */
+  box-sizing: border-box; /* Include padding and border in width */
+  padding-right: 1rem; /* Add some padding for better spacing */
+  overflow-x: hidden; /* Hide horizontal overflow */
+}
 .animate-new {
   animation: scaleObject 0.8s ease-in alternate infinite;
 }
@@ -148,6 +156,10 @@ $dark-hover-color: #505e77;
   to {
     transform: scale(1.1);
   }
+}
+
+.css-qh1700-MuiListItemText-root span {
+  font-weight: 500 !important;
 }
 
 .css-1vos75v {

@@ -87,7 +87,7 @@ const TableWeeklyTimeTableComponent = ({
                         <div className="flex justify-between mt-1 items-center">
                           {renderSlotStatus(slotData.status)}
                           {userRole === "SubjectTeacher" || userRole === "HomeroomTeacher" ? (
-                            <Link to={`/schoolBook`}>
+                            <Link to={`/register-notebook`}>
                               <button className="text-center text-white px-2 max-w-max h-6 leading-6 rounded bg-warning-color">
                                 SĐB
                               </button>

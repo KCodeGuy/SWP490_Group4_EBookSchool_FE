@@ -65,8 +65,6 @@ import LogManagement from "layouts/logManagement/LogManagement";
 import SystemSetting from "layouts/systemSetting";
 import RegisterNotebookStatistics from "layouts/registerNotebookStatistics/RegisterNotebookStatistics";
 import AttendanceStatistics from "layouts/attendanceStatistics/AttendanceStatistics";
-import { Title } from "chart.js";
-import { useEffect } from "react";
 
 const routes = [
   {
@@ -87,7 +85,7 @@ const routes = [
     name: "Sổ đầu bài",
     key: "schoolBook",
     icon: <Icon fontSize="small">assignment</Icon>,
-    route: "/schoolBook",
+    route: "/register-notebook",
     component: <SchoolBook />,
   },
 
@@ -202,7 +200,7 @@ const routes = [
 
   {
     type: "collapse",
-    name: "Quản lí tài khoản giáo viên",
+    name: "Quản lí giáo viên",
     key: "accountManagement",
     icon: <Icon fontSize="small">group</Icon>,
     route: "/accountManagement",
@@ -210,7 +208,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Quản lí tài khoản học sinh",
+    name: "Quản lí học sinh",
     key: "studentAccountManagement",
     icon: <Icon fontSize="small">group</Icon>,
     route: "/studentAccountManagement",
@@ -390,7 +388,7 @@ const subjectTeacherRoutes = [
     name: "Sổ đầu bài",
     key: "schoolBook",
     icon: <Icon fontSize="small">assignment</Icon>,
-    route: "/schoolBook",
+    route: "/register-notebook",
     component: <SchoolBook />,
   },
 
@@ -529,7 +527,7 @@ const homeRoomTeacherRoutes = [
     name: "Sổ đầu bài",
     key: "schoolBook",
     icon: <Icon fontSize="small">assignment</Icon>,
-    route: "/schoolBook",
+    route: "/register-notebook",
     component: <SchoolBook />,
   },
 

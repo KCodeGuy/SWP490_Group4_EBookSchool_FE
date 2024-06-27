@@ -132,20 +132,20 @@ const Dashboard = React.memo(() => {
                 {paginatedData.length > 0 ? (
                   paginatedData.map((item, index) => (
                     <Grid key={index} item xs={12} marginTop={1}>
-                      <Card sx={{ overflow: "hidden", padding: "12px", marginBottom: "12px" }}>
+                      <Card sx={{ padding: "12px", marginBottom: "12px" }}>
                         <div className="flex max-[639px]:flex-wrap">
                           <img
                             className="w-40 h-32 object-cover object-right rounded-md max-[639px]:w-full"
                             src={item.thumbnail}
                             alt="Ảnh bìa"
                           />
-                          <div className="text-base ml-4 w-full max-[639px]:ml-0 max-[639px]:mt-3">
+                          <div className="text-base ml-4 max-[639px]:ml-0 max-[639px]:mt-3">
                             <p className="font-bold uppercase text-blue-500 ">[{item.title}]</p>
-                            <p className="max-line-3 text-sm text-color text-justify h-11 leading-6">
+                            <p className="max-line-3 text-sm text-color text-justify text-container">
                               {item.content}
                             </p>
-                            <div className="flex justify-between items-end mt-2">
-                              <p className="font-bowl">
+                            <div className="flex justify-between items-end mt-2 w-full">
+                              <p className="font-medium">
                                 <EventAvailableIcon className="mr-2" />
                                 {item.createAt}
                               </p>

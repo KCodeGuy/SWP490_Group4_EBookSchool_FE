@@ -16,27 +16,27 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
-import noDataImage3 from "../../assets/images/noDataImage3.avif";
-
 import { CircularProgress, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+
 import { formatDateYearsMonthsDates } from "utils/CommonFunctions";
+import noDataImage3 from "../../assets/images/noDataImage3.avif";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent.jsx";
 import TableRegisterBookComponent from "../../components/TableRegisterBookComponent/index.jsx";
 import PopupComponent from "../../components/PopupComponent/PopupComponent.jsx";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent.jsx";
-import { generateSchoolWeeks } from "utils/CommonFunctions.jsx";
-import { isTodayInSchoolYear } from "utils/CommonFunctions.jsx";
-import { getWeekForDate } from "utils/CommonFunctions.jsx";
-import { getTodayDate } from "utils/CommonFunctions.jsx";
+import { generateSchoolWeeks } from "../../utils/CommonFunctions.jsx";
+import { isTodayInSchoolYear } from "../../utils/CommonFunctions.jsx";
+import { getWeekForDate } from "../../utils/CommonFunctions.jsx";
+import { getTodayDate } from "../../utils/CommonFunctions.jsx";
 import {
   getRegisterNotebook,
   updateRegisterNotebook,
 } from "../../services/RegisterNotebookService.jsx";
-import { useMutation, useQuery, useQueryClient } from "react-query";
 import { generateClasses } from "utils/CommonFunctions.jsx";
 import NotifyCheckInfoForm from "components/NotifyCheckInfoForm/index.jsx";
 import TextValueComponent from "../../components/TextValueComponent/index.jsx";
-import { useNavigate } from "react-router-dom";
 
 const SchoolBook = () => {
   const [openModalEditSchoolBook, setOpenModalEditSchoolBook] = useState(false);
@@ -65,7 +65,7 @@ const SchoolBook = () => {
 
   const { today } = getTodayDate();
 
-  const [schoolYear, setSchoolYear] = React.useState(schoolYearsAPI[schoolYearsAPI.length - 2]);
+  const [schoolYear, setSchoolYear] = React.useState(schoolYearsAPI[schoolYearsAPI.length - 1]);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
   };
@@ -168,6 +168,15 @@ const SchoolBook = () => {
     }
     return transformedData;
   };
+
+  if (schoolYearsAPI && classesOfSchoolYear && schoolWeeks) {
+    refetch().then((result) => {
+      if (result.data?.success) {
+        const transformedData = formatRegisterNotebook(result.data?.data?.details);
+        setCurrentRegisterNotebook(transformedData);
+      }
+    });
+  }
 
   const handleFilterTimetable = () => {
     refetch().then((result) => {

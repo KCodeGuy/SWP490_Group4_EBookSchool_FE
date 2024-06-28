@@ -83,7 +83,7 @@ const routes = [
   {
     type: "collapse",
     name: "Sổ đầu bài",
-    key: "schoolBook",
+    key: "register-notebook",
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/register-notebook",
     component: <SchoolBook />,
@@ -386,7 +386,7 @@ const subjectTeacherRoutes = [
   {
     type: "collapse",
     name: "Sổ đầu bài",
-    key: "schoolBook",
+    key: "register-notebook",
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/register-notebook",
     component: <SchoolBook />,
@@ -525,7 +525,7 @@ const homeRoomTeacherRoutes = [
   {
     type: "collapse",
     name: "Sổ đầu bài",
-    key: "schoolBook",
+    key: "register-notebook",
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/register-notebook",
     component: <SchoolBook />,

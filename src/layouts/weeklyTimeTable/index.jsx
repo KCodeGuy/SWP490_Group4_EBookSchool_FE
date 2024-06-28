@@ -86,7 +86,7 @@ export default function WeeklyTimeTable() {
   const [currentTab, setCurrentTab] = useState(0);
   const { today } = getTodayDate();
 
-  const [schoolYear, setSchoolYear] = React.useState(schoolYearsAPI[schoolYearsAPI.length - 2]);
+  const [schoolYear, setSchoolYear] = React.useState(schoolYearsAPI[schoolYearsAPI.length - 1]);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
   };
@@ -158,6 +158,14 @@ export default function WeeklyTimeTable() {
     queryFn: () => getAllTeachers(accessToken),
     enabled: false,
   });
+
+  if (schoolYearsAPI && formattedClasses && schoolWeeks) {
+    refetch().then((result) => {
+      if (result.data?.success) {
+        setCurrentTimeTable(result.data?.data?.details);
+      }
+    });
+  }
 
   const handleFilterTimetable = () => {
     refetch().then((result) => {

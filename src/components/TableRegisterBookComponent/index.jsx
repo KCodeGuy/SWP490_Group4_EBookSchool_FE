@@ -150,14 +150,14 @@ function TableRegisterBookComponent({
                       <td rowSpan={renderRowSpan(index, date.date)}>{rowNumber++}</td>
                       {date.date == formattedDate ? (
                         <td
-                          className="font-bold italic success-color"
+                          className="font-bold italic success-color px-2"
                           rowSpan={renderRowSpan(index, date.date)}
                         >
                           {date.weekDate} <br />
                           {date.date}
                         </td>
                       ) : (
-                        <td rowSpan={renderRowSpan(index, date.date)}>
+                        <td rowSpan={renderRowSpan(index, date.date)} className="px-2">
                           {date.weekDate} <br />
                           {date.date}
                         </td>
@@ -180,7 +180,9 @@ function TableRegisterBookComponent({
                   <td className="px-2">{date.teacher || "_"}</td>
                   <td className="px-2">{date.slotByLessonPlan || "_"}</td>
                   <td className="px-2">{date.numberOfAbsent || "_"}</td>
-                  <td className="px-2">{date.title || "_"}</td>
+                  <td className="">
+                    <span className="px-2 max-line-2 max-w-52">{date.title || "_"}</span>
+                  </td>
                   <td>
                     <div className="px-2 max-line-4 max-w-56 mx-auto">{date.note || "_"}</div>
                   </td>

@@ -1,29 +1,26 @@
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import { Card, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { Card, CircularProgress, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
 import { useForm } from "react-hook-form";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
+import GroupIcon from "@mui/icons-material/Group";
 import DownloadIcon from "@mui/icons-material/Download";
 import { ToastContainer, toast } from "react-toastify";
 
 import "./style.scss";
+import noDataImage3 from "../../assets/images/noDataImage3.avif";
 import { grades } from "../../mock/grade";
-import { subjects, subject } from "../../mock/subject";
-import { studentClasses } from "../../mock/class";
 import { schoolYears } from "../../mock/schoolYear";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
-import { accounts } from "mock/account";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { deleteStudent } from "services/StudentService";
 import { getStudentByID } from "services/StudentService";
@@ -31,42 +28,16 @@ import { createStudent } from "services/StudentService";
 import { updateStudent } from "services/StudentService";
 import { getAllStudents } from "services/StudentService";
 
-const accessToken = localStorage.getItem("authToken");
-
 export default function StudentAccountManagement() {
   //1. Modal form states open, close
+  const accessToken = localStorage.getItem("authToken");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [deletedSubject, setDeletedSubject] = useState({});
   const [currentTab, setCurrentTab] = useState(0);
   const [currentTabEdit, setCurrentTabEdit] = useState(0);
-
-  const currentSubjects = subjects.data;
-
-  const markFactors = subject.data.points[0].componentPoints.map((obj) => [
-    obj.id,
-    obj.name,
-    obj.count,
-    obj.scoreFactor,
-    subject.data.points[0].semeaster,
-  ]);
-
-  const lessonPlan = subject.data.lessonPlans.map((obj) => [
-    obj.id,
-    obj.title,
-    obj.description,
-    obj.slot,
-  ]);
-
-  //2. Set data by Call API
-  const radioOptions = [
-    { label: "Đảng viên", value: "Đảng viên" },
-    { label: "Đoàn viên", value: "Đoàn viên" },
-  ];
-
   const roles = ["học sinh chủ nhiệm", "Học sinh/Phụ huynh", "học sinh bộ môn", "Giám thị"];
-  const semesters = ["Học kì I", "Học kì II", "Cả năm"];
 
   const [selectedRole, setSelectedRole] = useState(roles[0]);
 
@@ -88,7 +59,7 @@ export default function StudentAccountManagement() {
     value: grade.name,
   }));
 
-  const [accounts, setAccounts] = useState();
+  const [accounts, setAccounts] = useState([]);
   const [username, setUsername] = useState();
   const [studentID, setStudentID] = useState();
   const [avatar, setAvatar] = useState(null);
@@ -157,7 +128,6 @@ export default function StudentAccountManagement() {
   });
 
   const handleAddRole = (data) => {
-    console.log(data);
     addStudentMutation.mutate(data);
   };
 
@@ -171,7 +141,6 @@ export default function StudentAccountManagement() {
   };
 
   const handleEdit = (rowItem) => {
-    console.dir(rowItem);
     if (rowItem) {
       setStudentID(rowItem[0]);
       setModalEditOpen(true);
@@ -203,10 +172,6 @@ export default function StudentAccountManagement() {
   const handleEditSubject = (data) => {
     updateStudentMutation.mutate(data);
   };
-  const handleClearEditForm = () => {
-    resetEditAction();
-  };
-
   const {
     data: studentData,
     error: studentError,
@@ -244,7 +209,7 @@ export default function StudentAccountManagement() {
   const formValues = watch();
 
   useEffect(() => {
-    console.log("Form values:", formValues);
+    // console.log("Form values:", formValues);
   }, [formValues]);
 
   useEffect(() => {
@@ -254,10 +219,6 @@ export default function StudentAccountManagement() {
   //6. Functions handle deleting
   const handleCloseDeleteModal = () => {
     setModalDeleteOpen(false);
-  };
-
-  const handleStatistic = () => {
-    console.log("Call api: ", { schoolYear });
   };
 
   useEffect(() => {
@@ -290,20 +251,20 @@ export default function StudentAccountManagement() {
     deleteStudentMutation.mutate(studentID);
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading data</div>;
-
   const handleChangeSearchValue = (txtSearch) => {
     console.log(txtSearch);
-    setCurrentData(filterSubjects(txtSearch, studentClasses.data));
+    setAccounts(searchStudent(txtSearch, data?.data));
   };
 
-  const filterSubjects = (txtSearch, data) => {
+  const searchStudent = (txtSearch, data) => {
     const search = txtSearch.trim().toLowerCase();
-    return data.filter((subject) => {
+    return data.filter((item) => {
       return (
-        (subject.title && subject.title.toLowerCase().includes(search)) ||
-        (subject.description && subject.description.toLowerCase().includes(search))
+        (item.id && item.id.toLowerCase().includes(search)) ||
+        (item.fullname && item.fullname.toLowerCase().includes(search)) ||
+        (item.username && item.username.toLowerCase().includes(search)) ||
+        (item.email && item.email.toLowerCase().includes(search)) ||
+        (item.phone && item.phone.toLowerCase().includes(search))
       );
     });
   };
@@ -321,8 +282,11 @@ export default function StudentAccountManagement() {
       <DashboardNavbar />
       <Card className="max-h-max mb-8">
         <MDBox p={5}>
-          <div className="text-center mt-0">
-            <h4 className="text-xl font-bold">QUẢN LÍ TÀI KHOẢN HỌC SINH</h4>
+          <div className="text-center mt-0 ">
+            <div className="flex justify-center items-center text-3xl mx-auto w-full">
+              <GroupIcon />
+              <h4 className="text-xl font-bold ml-3">QUẢN LÍ HỌC SINH</h4>
+            </div>
           </div>
           <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
             {/* role Select */}
@@ -364,7 +328,7 @@ export default function StudentAccountManagement() {
                 </ButtonComponent> */}
                 <ButtonComponent className="" onClick={handleOpenAddModal}>
                   <AddCircleOutlineIcon className="text-3xl mr-1" />
-                  Tạo TKHS
+                  Tạo
                 </ButtonComponent>
                 <PopupComponent
                   title="TẠO TÀI KHOẢN"
@@ -642,8 +606,14 @@ export default function StudentAccountManagement() {
             </div>
           </div>
           <div>
-            {/* show data table */}
-            {accounts != null && accounts.length > 0 ? (
+            {isLoading ? (
+              <div className="text-center primary-color my-10 text-xl italic font-medium">
+                <div className="mx-auto flex items-center justify-center">
+                  <p className="mr-3">Loading</p>
+                  <CircularProgress size={24} color="inherit" />
+                </div>
+              </div>
+            ) : data?.success && accounts.length > 0 ? (
               <TableComponent
                 header={["Mã học sinh", "Tên đăng nhập", "Tên đầy đủ", "Email", "Số điện thoại"]}
                 data={accounts.map((item) => [
@@ -653,12 +623,21 @@ export default function StudentAccountManagement() {
                   item.email,
                   item.phone,
                 ])}
-                itemsPerPage={10}
+                itemsPerPage={30}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 className="mt-8"
               />
-            ) : null}
+            ) : (
+              <div className="text-center primary-color my-10 text-xl italic font-medium">
+                <img
+                  className="w-60 h-60 object-cover object-center mx-auto"
+                  src={noDataImage3}
+                  alt="Chưa có dữ liệu!"
+                />
+                Chưa có dữ liệu!
+              </div>
+            )}
             <PopupComponent
               title="CẬP NHẬT"
               description="Hãy chỉnh sửa để bắt đầu năm học mới"

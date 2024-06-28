@@ -81,7 +81,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
     if (fixedNavbar) {
       setNavbarType("sticky");
     } else {
-      setNavbarType("static");
+      setNavbarType("sticky");
     }
 
     // A function that sets the transparent state of the navbar.
@@ -141,9 +141,12 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
   return (
     <AppBar
-      position={absolute ? "absolute" : navbarType}
+      position={absolute ? "fixed" : navbarType}
       color="inherit"
-      sx={(theme) => navbar(theme, { transparentNavbar, absolute, light, darkMode })}
+      sx={
+        ((theme) => navbar(theme, { transparentNavbar, absolute, light, darkMode }),
+        { marginBottom: "12px", borderRadius: "10px", padding: "6px 0" })
+      }
     >
       <Toolbar sx={(theme) => navbarContainer(theme)}>
         <MDBox color="inherit" mb={{ xs: 1, md: 0 }} sx={(theme) => navbarRow(theme, { isMini })}>

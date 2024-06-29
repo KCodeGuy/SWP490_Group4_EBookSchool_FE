@@ -26,7 +26,7 @@ export default function NotificationDetails() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="max-h-max mb-8">
+      <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
           {isLoading ? (
             <div>Loading...</div>

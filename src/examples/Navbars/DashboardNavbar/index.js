@@ -67,7 +67,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
   const [modalLogout, setModalLogout] = useState(false);
-  const currentUser = JSON.parse(localStorage.getItem("user"));
+  let currentUser = JSON.parse(localStorage.getItem("user"));
   const userRole = localStorage.getItem("userRole");
 
   const handleLogoutUser = () => {
@@ -141,7 +141,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
   return (
     <AppBar
-      position={absolute ? "fixed" : navbarType}
+      position={absolute ? "absolute" : navbarType}
       color="inherit"
       sx={
         ((theme) => navbar(theme, { transparentNavbar, absolute, light, darkMode }),

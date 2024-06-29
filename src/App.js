@@ -66,6 +66,7 @@ const queryClient = new QueryClient();
 
 export default function App() {
   let userRole = localStorage.getItem("userRole");
+  let schoolSetting = JSON.parse(localStorage.getItem("schoolSetting"));
 
   const [currentRoutes, setCurrentRoutes] = useState([]);
   useEffect(() => {
@@ -188,7 +189,7 @@ export default function App() {
             <Sidenav
               color={sidenavColor}
               brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-              brandName="ORB"
+              brandName={schoolSetting?.schoolName || "ORB"}
               routes={currentRoutes}
               onMouseEnter={handleOnMouseEnter}
               onMouseLeave={handleOnMouseLeave}

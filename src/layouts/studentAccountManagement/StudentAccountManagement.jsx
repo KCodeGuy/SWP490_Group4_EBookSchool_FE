@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import { ToastContainer, toast } from "react-toastify";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Card, CircularProgress, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
@@ -13,46 +14,54 @@ import DownloadIcon from "@mui/icons-material/Download";
 import CancelIcon from "@mui/icons-material/Cancel";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
 
 import "./style.scss";
 import noDataImage3 from "../../assets/images/noDataImage3.avif";
-import { grades } from "../../mock/grade";
-import { schoolYears } from "../../mock/schoolYear";
+import { nationOptions } from "../../mock/student";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent";
-import { useMutation, useQuery, useQueryClient } from "react-query";
-import { deleteStudent } from "services/StudentService";
-import { getStudentByID } from "services/StudentService";
-import { createStudent } from "services/StudentService";
-import { updateStudent } from "services/StudentService";
-import { getAllStudents } from "services/StudentService";
-import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
-import { nationOptions } from "mock/student";
-import { handleDownloadStudentExcel } from "services/StudentService";
-import { addStudentByExcel } from "services/StudentService";
+import { deleteStudent } from "../../services/StudentService";
+import { getStudentByID } from "../../services/StudentService";
+import { createStudent } from "../../services/StudentService";
+import { updateStudent } from "../../services/StudentService";
+import { getAllStudents } from "../../services/StudentService";
+import NotifyCheckInfoForm from "../../components/NotifyCheckInfoForm";
+import { handleDownloadStudentExcel } from "../../services/StudentService";
+import { addStudentByExcel } from "../../services/StudentService";
 
 const genderOptions = [
   { label: "Nam", value: "Nam" },
   { label: "Nữ", value: "Nữ" },
 ];
 
+const sortOptions = [
+  { label: "Chưa xài được", value: { index: 0, option: "ASC" } },
+  { label: "Mã học sinh(A-Z)", value: { index: 1, option: "ASC" } },
+  { label: "Mã học sinh(Z-A)", value: { index: 1, option: "DESC" } },
+  { label: "Tên đăng nhập(A-Z)", value: { index: 2, option: "ASC" } },
+  { label: "Tên đăng nhập(Z-A)", value: { index: 2, option: "DESC" } },
+  { label: "Họ và tên(A-Z)", value: { index: 3, option: "ASC" } },
+  { label: "Họ và tên(Z-A)", value: { index: 3, option: "DESC" } },
+];
+
 export default function StudentAccountManagement() {
-  //1. Modal form states open, close
   const accessToken = localStorage.getItem("authToken");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
-  const [currentTabEdit, setCurrentTabEdit] = useState(0);
   const [accounts, setAccounts] = useState([]);
   const [studentID, setStudentID] = useState();
   const [avatar, setAvatar] = useState(null);
   const queryClient = useQueryClient();
+  const [sortOption, setSortOption] = useState(sortOptions[0].value);
 
-  const { data, error, isLoading } = useQuery(["getStudents", { accessToken }], () =>
+  // 1. Get all students
+  const { data, error, isLoading } = useQuery(["studentsState", { accessToken }], () =>
     getAllStudents(accessToken)
   );
   useEffect(() => {
@@ -84,7 +93,7 @@ export default function StudentAccountManagement() {
     (templateFile) => addStudentByExcel(accessToken, templateFile),
     {
       onSuccess: (response) => {
-        queryClient.invalidateQueries("timeTableState");
+        queryClient.invalidateQueries("studentsState");
         if (response && response.success) {
           toast.success("Tạo học sinh thành công!");
           setAccounts(data?.data);
@@ -103,10 +112,9 @@ export default function StudentAccountManagement() {
     }
   };
 
-  // Add nè
   const addStudentMutationManually = useMutation((data) => createStudent(accessToken, data), {
     onSuccess: (response) => {
-      queryClient.invalidateQueries("addStudent");
+      queryClient.invalidateQueries("studentsState");
       if (response && response.success) {
         toast.success("Tạo học sinh thành công!");
       } else {
@@ -129,11 +137,7 @@ export default function StudentAccountManagement() {
     }
   };
 
-  //5. Functions handle editing
-  const handleCloseEditModal = () => {
-    setModalEditOpen(false);
-  };
-
+  // 3. Update API
   const handleEdit = (rowItem) => {
     if (rowItem) {
       setStudentID(rowItem[0]);
@@ -147,7 +151,7 @@ export default function StudentAccountManagement() {
     (studentData) => updateStudent(accessToken, studentData),
     {
       onSuccess: (response) => {
-        queryClient.invalidateQueries("studentState");
+        queryClient.invalidateQueries("studentsState");
         if (response && response.success) {
           toast.success("Cập nhật học sinh thành công!");
         } else {
@@ -166,6 +170,7 @@ export default function StudentAccountManagement() {
   const handleEditSubject = (data) => {
     updateStudentMutation.mutate(data);
   };
+
   const {
     data: studentData,
     error: studentError,
@@ -174,7 +179,7 @@ export default function StudentAccountManagement() {
     ["studentState", { accessToken, studentID }],
     () => getStudentByID(accessToken, studentID),
     {
-      enabled: !!studentID, // Only run the query if studentID is defined
+      enabled: !!studentID,
     }
   );
 
@@ -191,7 +196,9 @@ export default function StudentAccountManagement() {
       setValue("motherPhone", studentData.data.motherPhone);
       setValue("motherProfession", studentData.data.motherProfession);
       setValue("phone", studentData.data.phone);
-      setValue("birthday", studentData.data.birthday.split("T")[0]);
+      if (studentData?.data?.birthday) {
+        setValue("birthday", studentData.data.birthday.split("T")[0]);
+      }
       setValue("birthplace", studentData.data.birthplace);
       setValue("nation", studentData.data.nation);
       setValue("avatar", studentData.data.avatar);
@@ -208,10 +215,6 @@ export default function StudentAccountManagement() {
     queryClient.invalidateQueries(["studentState", { accessToken, studentID }]);
   }, [studentID]);
 
-  const handleCloseDeleteModal = () => {
-    setModalDeleteOpen(false);
-  };
-
   useEffect(() => {
     if (data?.success) {
       setAccounts(data?.data);
@@ -221,8 +224,8 @@ export default function StudentAccountManagement() {
   const deleteStudentMutation = useMutation((studentID) => deleteStudent(accessToken, studentID), {
     onSuccess: (response) => {
       if (response && response.success) {
+        queryClient.invalidateQueries(["studentsState", { accessToken }]); // Invalidate the getStudents query
         toast.success("Xóa học sinh thành công!");
-        queryClient.invalidateQueries(["getStudents", { accessToken }]); // Invalidate the getStudents query
       } else {
         toast.error("Xóa học sinh thất bại!");
       }
@@ -258,18 +261,11 @@ export default function StudentAccountManagement() {
     });
   };
 
-  const handleTabChange = (event, newValue) => {
-    setCurrentTab(newValue);
-  };
-
-  const handleTabEditChange = (event, newValue) => {
-    // setCurrentTabEdits(newValue);
-  };
   return (
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
       <DashboardNavbar />
-      <Card className="max-h-max mb-8">
+      <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
           <div className="text-center mt-0 ">
             <div className="flex justify-center items-center text-3xl mx-auto w-full">
@@ -278,8 +274,35 @@ export default function StudentAccountManagement() {
             </div>
           </div>
           <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
+            <div className="flex justify-start max-[639px]:flex-wrap">
+              <FormControl sx={{ minWidth: 120 }}>
+                <InputLabel id="select-school-year-lable">Sắp xếp theo</InputLabel>
+                <Select
+                  labelId="select-school-year-lable"
+                  id="select-school-year"
+                  value={sortOption}
+                  className="h-11 mr-0"
+                  label="Sắp xếp theo"
+                  onChange={(e) => setSortOption(e.target.value)}
+                >
+                  {sortOptions.map((item, index) => (
+                    <MenuItem key={index} value={item.value}>
+                      {item.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <div className="max-[639px]:mt-2 ml-3">
+                <ButtonComponent type="success" onClick={() => {}}>
+                  <SwapVertIcon className="text-3xl mr-1" /> SẮP XẾP
+                </ButtonComponent>
+              </div>
+            </div>
             <div className="flex justify-end items-center sm:w-full sm:flex-wrap ">
-              <SearchInputComponent onSearch={handleChangeSearchValue} placeHolder="Nhập từ khóa" />
+              <SearchInputComponent
+                onSearch={handleChangeSearchValue}
+                placeHolder="Nhập từ khóa..."
+              />
               <div className="ml-3">
                 <ButtonComponent className="" onClick={() => setModalOpen(true)}>
                   <AddCircleOutlineIcon className="text-3xl mr-1" />
@@ -293,7 +316,9 @@ export default function StudentAccountManagement() {
                   onClose={() => setModalOpen(false)}
                   tabs={[{ label: "TẠO TÀI KHOẢN" }, { label: "TẠO BẰNG EXCEL" }]}
                   currentTab={currentTab}
-                  onTabChange={handleTabChange}
+                  onTabChange={(newValue) => {
+                    setCurrentTab(newValue);
+                  }}
                 >
                   {/* Content for Tab 1 */}
                   <div role="tabpanel" hidden={currentTab !== 0}>
@@ -549,7 +574,7 @@ export default function StudentAccountManagement() {
                           required: "Hãy chọn file!",
                         }}
                       />
-                      <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi tạo!" />
+                      <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước tải lên!" />
                       <div className="mt-5 flex justify-end">
                         <ButtonComponent
                           type="error"
@@ -583,15 +608,25 @@ export default function StudentAccountManagement() {
               </div>
             ) : data?.success && accounts.length > 0 ? (
               <TableComponent
-                header={["Mã học sinh", "Tên đăng nhập", "Tên đầy đủ", "Email", "Số điện thoại"]}
+                header={[
+                  "Mã học sinh",
+                  "Tên đăng nhập",
+                  "Họ và tên",
+                  "Hình ảnh",
+                  "Email",
+                  "Số điện thoại",
+                ]}
                 data={accounts.map((item) => [
                   item.id,
                   item.username,
                   item.fullname,
+                  item.avatar,
                   item.email,
                   item.phone,
                 ])}
+                // sortOption={sortOption}
                 itemsPerPage={30}
+                isImage={3}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 className="mt-8"
@@ -611,9 +646,7 @@ export default function StudentAccountManagement() {
               description="Cập nhật tài khoản học sinh"
               icon={<EditIcon />}
               isOpen={modalEditOpen}
-              onClose={handleCloseEditModal}
-              currentTab={currentTabEdit}
-              onTabChange={handleTabEditChange}
+              onClose={() => setModalEditOpen(false)}
             >
               <form onSubmit={handleSubmitEditAction(handleEditSubject)}>
                 <div className="flex">
@@ -845,7 +878,14 @@ export default function StudentAccountManagement() {
                 </div>
                 <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi cập nhật!" />
                 <div className="mt-4 flex justify-end">
-                  <ButtonComponent type="error" action="reset" onClick={() => resetEditAction()}>
+                  <ButtonComponent
+                    type="error"
+                    action="reset"
+                    onClick={() => {
+                      resetEditAction();
+                      setModalEditOpen(false);
+                    }}
+                  >
                     <CancelIcon className="text-3xl mr-1 mb-0.5" />
                     HỦY BỎ
                   </ButtonComponent>
@@ -861,11 +901,19 @@ export default function StudentAccountManagement() {
               description="Xóa tài khoản học sinh"
               icon={<DeleteIcon />}
               isOpen={modalDeleteOpen}
-              onClose={handleCloseDeleteModal}
+              onClose={() => {
+                setModalDeleteOpen(false);
+              }}
             >
               <p className="text-base font-medium">Bạn có chắc chắn muốn xóa tài khoản?</p>
               <div className="mt-4 flex justify-end">
-                <ButtonComponent type="error" action="button" onClick={handleCloseDeleteModal}>
+                <ButtonComponent
+                  type="error"
+                  action="button"
+                  onClick={() => {
+                    setModalDeleteOpen(false);
+                  }}
+                >
                   <CancelIcon className="text-3xl mr-1 mb-0.5" />
                   HỦY BỎ
                 </ButtonComponent>

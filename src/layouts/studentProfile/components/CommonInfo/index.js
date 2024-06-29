@@ -16,8 +16,6 @@ Coded by www.creative-tim.com
 import { useState } from "react";
 import MarkunreadIcon from "@mui/icons-material/Markunread";
 import PersonIcon from "@mui/icons-material/Person";
-import LockIcon from "@mui/icons-material/Lock";
-import FaceIcon from "@mui/icons-material/Face";
 import ContactEmergencyIcon from "@mui/icons-material/ContactEmergency";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 
@@ -32,13 +30,6 @@ import ProfileInfoCard from "examples/Cards/InfoCards/ProfileInfoCard";
 import PropTypes from "prop-types";
 
 function CommonInfo({ currentUser, permissions }) {
-  const [followsMe, setFollowsMe] = useState(true);
-  const [answersPost, setAnswersPost] = useState(false);
-  const [mentionsMe, setMentionsMe] = useState(true);
-  const [newLaunches, setNewLaunches] = useState(false);
-  const [productUpdate, setProductUpdate] = useState(true);
-  const [newsletter, setNewsletter] = useState(false);
-
   return (
     <Card sx={{ boxShadow: "none", width: "100%" }}>
       <MDBox p={2}>

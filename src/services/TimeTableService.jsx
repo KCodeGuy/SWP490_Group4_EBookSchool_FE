@@ -46,7 +46,6 @@ export const getTimetable = async (
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  console.log(response.data);
   return response.data;
 };
 
@@ -68,7 +67,6 @@ export const addTimeTableByExcel = async (accessToken, file) => {
 };
 
 export const addTimeTableManually = async (accessToken, slotData) => {
-  console.log(slotData);
   try {
     const res = await axios.post(`${API_HOST}/Schedules`, slotData, {
       headers: {
@@ -85,7 +83,6 @@ export const addTimeTableManually = async (accessToken, slotData) => {
 };
 
 export const updateSlotOfTimeTable = async (accessToken, slotData) => {
-  // console.log(slotData);
   try {
     const res = await axios.put(`${API_HOST}/Schedules/${slotData.id}`, slotData, {
       headers: {

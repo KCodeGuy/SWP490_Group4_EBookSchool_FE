@@ -45,19 +45,16 @@ import bgImage from "assets/images/slider2.png";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent";
 import { useForm, Controller } from "react-hook-form";
-import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import { loginUser } from "../../../services/AuthService";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { CircularProgress } from "@mui/material";
-import { getTeacherByID } from "services/TeacherService";
-import { getStudentByID } from "services/StudentService";
 import { getUserRole } from "utils/handleUser";
-import { getAllClasses } from "services/ClassService";
+import { getSetting } from "services/SettingService";
 
 function Basic() {
-  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState({});
+  const queryClient = useQueryClient();
 
   const {
     control,
@@ -66,20 +63,23 @@ function Basic() {
     formState: { errors },
   } = useForm();
 
+  const { data: schoolSetting, error, isLoading } = useQuery(["settingState"], () => getSetting());
+
   const mutation = useMutation(loginUser, {
     onSuccess: (data) => {
       if (data.success) {
+        if (schoolSetting?.success) {
+          localStorage.setItem("schoolSetting", JSON.stringify(schoolSetting?.data));
+        }
         localStorage.setItem("authToken", data.data.accessToken); // Example: saving a token
         localStorage.setItem("refreshToken", data.data.refreshToken); // Example: saving a token
         localStorage.setItem("permissions", data.data.permissions); // Example: saving a token
         localStorage.setItem("user", JSON.stringify(data.data.user)); // Example: saving use
-        console.log(data.data.schoolYears);
         localStorage.setItem("schoolYears", JSON.stringify(data.data.schoolYears));
         const formattedArray = Object.keys(data.data.classes).map((schoolYear) => ({
           schoolYear: schoolYear,
           details: data.data.classes[schoolYear],
         }));
-        console.log(formattedArray);
         localStorage.setItem("currentClasses", JSON.stringify(formattedArray));
         const userRole = getUserRole(
           data.data.user.id.toString(),
@@ -88,7 +88,6 @@ function Basic() {
         );
         localStorage.setItem("userRole", userRole); // Example: saving use
         navigate("/dashboard");
-        // toast.success("Đăng nhập thành công!");
       } else {
         toast.error(data.data);
       }
@@ -121,14 +120,11 @@ function Basic() {
           </MDTypography>
           <MDBox mt={1} mb={1} textAlign="center">
             <MDTypography variant="button" color="white" fontWeight="medium">
-              Trường THSC&THPT Nguyen Van A
+              {schoolSetting?.data?.schoolName || "Online-Register-Notebook"}
             </MDTypography>
           </MDBox>
         </MDBox>
         <MDBox pt={2} pb={3} px={3}>
-          {/* <span className="error-color text-base">
-            {!currentUser.success ? currentUser.data : ""}
-          </span> */}
           <form onSubmit={handleSubmit(handleSubmitLogin)} className="w-full">
             <InputBaseComponent
               placeholder="Tên đăng nhập..."

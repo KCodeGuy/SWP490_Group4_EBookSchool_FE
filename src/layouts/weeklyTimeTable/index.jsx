@@ -387,7 +387,7 @@ export default function WeeklyTimeTable() {
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
       <DashboardNavbar />
-      <Card className="max-h-max mb-8">
+      <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
           <div className="flex justify-between items-center">
             <div>
@@ -623,7 +623,7 @@ export default function WeeklyTimeTable() {
                 <div role="tabpanel" hidden={currentTab == 1}>
                   <ButtonComponent action="submit" onClick={handleDownloadFile}>
                     <DownloadIcon className="mr-2" />
-                    TẢI FILE
+                    TẢI XUỐNG
                   </ButtonComponent>
                   <form onSubmit={handleSubmit(handleAddTimetableByExcel)}>
                     <InputBaseComponent
@@ -670,7 +670,7 @@ export default function WeeklyTimeTable() {
                 <div>
                   <ButtonComponent action="submit" onClick={handleDownloadFile}>
                     <DownloadIcon className="mr-2" />
-                    TẢI FILE
+                    TẢI XUỐNG
                   </ButtonComponent>
                   <form onSubmit={handleSubmit(handleAddTimetableByExcel)}>
                     <InputBaseComponent

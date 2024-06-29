@@ -2,14 +2,12 @@ import axios from "axios";
 import { API_HOST } from "./APIConfig";
 
 const getAttendanceBySlot = async (accessToken, slotID) => {
-  // console.log(slotID);
   const res = await axios.get(`${API_HOST}/Attendance/GetAttendanceBySlot/${slotID}`, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  // console.log(res.data);
   return res.data;
 };
 

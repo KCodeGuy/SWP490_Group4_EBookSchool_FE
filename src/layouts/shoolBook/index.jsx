@@ -280,7 +280,7 @@ const SchoolBook = () => {
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
       <DashboardNavbar />
-      <Card className="mb-8">
+      <Card className="mb-8 min-h-full">
         <MDBox p={5}>
           <div className="flex justify-between items-center">
             <div>

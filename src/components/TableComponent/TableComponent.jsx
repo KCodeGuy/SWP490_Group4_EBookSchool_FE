@@ -28,6 +28,7 @@ function TableComponent({
   showCheckboxes,
   isCheckedAll,
   isImage,
+  sortOption,
   isLimitLine,
   hiddenColumns,
   saveName = "Lưu",
@@ -42,6 +43,9 @@ function TableComponent({
       setCheckedItems([]);
     }
   }, [isCheckedAll, data]);
+
+  // console.log("data", data);
+  // console.log("sortOption trong table", sortOption);
 
   const isShowActions =
     onDelete !== undefined ||
@@ -248,6 +252,7 @@ TableComponent.propTypes = {
   isImage: PropTypes.number,
   hiddenColumns: PropTypes.array,
   isLimitLine: PropTypes.object,
+  sortOption: PropTypes.object,
   saveName: PropTypes.string,
 };
 

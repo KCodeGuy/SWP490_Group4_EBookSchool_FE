@@ -29,7 +29,6 @@ const getMarkOfClassAllSubjects = async (accessToken, schoolYear, className) => 
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  console.log(res.data);
   return res.data;
 };
 const downloadTemplateMarkByMarkComponent = async ({

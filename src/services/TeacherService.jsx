@@ -50,8 +50,6 @@ const createTeacher = async (accessToken, data) => {
     });
   }
 
-  console.dir(formData);
-
   try {
     const res = await axios.post(`${API_HOST}/Teachers`, formData, {
       headers: {
@@ -96,14 +94,6 @@ const updateTeacher = async (accessToken, data) => {
     });
   }
 
-  const logFormData = (formData) => {
-    for (let pair of formData.entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
-    }
-  };
-
-  logFormData(formData);
-
   try {
     const res = await axios.put(`${API_HOST}/Teachers/${data.id}`, formData, {
       headers: {
@@ -134,4 +124,33 @@ const deleteTeacher = async (accessToken, username) => {
   }
 };
 
-export { getTeacherByID, getAllTeachers, updateTeacher, deleteTeacher, createTeacher };
+const addTeacherByExcel = async (accessToken, file) => {
+  const formData = new FormData();
+  formData.append("File", file);
+  try {
+    const res = await axios.post(`${API_HOST}/Teachers/Excel`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error adding timetable:", error);
+    throw error;
+  }
+};
+
+const handleDownloadTeacherExcel = () => {
+  window.location.href = `${ORB_HOST}/Templates/template_teacher.xlsx`;
+};
+
+export {
+  getTeacherByID,
+  getAllTeachers,
+  updateTeacher,
+  deleteTeacher,
+  createTeacher,
+  addTeacherByExcel,
+  handleDownloadTeacherExcel,
+};

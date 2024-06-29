@@ -59,7 +59,7 @@ const Dashboard = React.memo(() => {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="max-h-max mb-8">
+      <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
           <Grid container spacing={3}>
             <Grid item xs={12}>

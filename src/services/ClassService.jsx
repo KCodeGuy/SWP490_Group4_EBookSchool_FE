@@ -37,7 +37,6 @@ const addClass = async (accessToken, classData) => {
 };
 
 const updateClass = async (accessToken, classData) => {
-  console.log("classData: ", classData);
   try {
     const res = await axios.put(`${API_HOST}/Classes?classID=${classData.id}`, classData, {
       headers: {
@@ -45,7 +44,6 @@ const updateClass = async (accessToken, classData) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    console.log(res.data);
     return res.data;
   } catch (error) {
     console.error("Error updating subject:", error);

@@ -42,11 +42,10 @@ const nameScore = [
   { label: "Kiểm tra 1 tiết", value: "1 Tiết" },
   { label: "Kiểm tra học kì", value: "Cuối kỳ" },
 ];
-const accessToken = localStorage.getItem("authToken");
 
 // Subject Management (UolLT)
 export default function SubjectManagement() {
-  // console.log("Re-render");
+  const accessToken = localStorage.getItem("authToken");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
@@ -308,7 +307,7 @@ export default function SubjectManagement() {
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
       <DashboardNavbar />
-      <Card className="max-h-max mb-8">
+      <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
           <div className="text-center mt-0 ">
             <div className="flex justify-center items-center text-3xl mx-auto w-full">
@@ -576,7 +575,7 @@ export default function SubjectManagement() {
                   <div role="tabpane3" hidden={currentTab == 3}>
                     <ButtonComponent action="submit">
                       <DownloadIcon className="mr-2" />
-                      TẢI FILE
+                      TẢI XUỐNG
                     </ButtonComponent>
                     <form onSubmit={handleSubmit(handleAddMark)}>
                       <InputBaseComponent

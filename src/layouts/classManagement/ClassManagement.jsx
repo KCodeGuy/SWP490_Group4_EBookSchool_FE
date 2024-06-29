@@ -276,7 +276,7 @@ export default function ClassManagement() {
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
       <DashboardNavbar />
-      <Card className="max-h-max mb-8">
+      <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
           <div className="text-center mt-0 ">
             <div className="flex justify-center items-center text-3xl mx-auto w-full">

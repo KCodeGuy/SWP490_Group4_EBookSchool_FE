@@ -15,7 +15,6 @@ import { students } from "../../mock/student";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import { studentClasses } from "../../mock/class";
 import { schoolYears } from "../../mock/schoolYear";
-import { studentWeeklyTimeTableDates, timeTablesAllSchool } from "../../mock/weeklyTimeTable";
 import SearchInputComponent from "components/SearchInputComponent/SearchInputComponent";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getAttendanceBySlot, updateAttendance } from "../../services/AttendanceService";
@@ -147,7 +146,7 @@ export default function TakeAttendance() {
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
       <DashboardNavbar />
-      <Card className="max-h-max mb-8">
+      <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
           <div className="flex justify-between items-center flex-wrap">
             <div>

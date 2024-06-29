@@ -27,7 +27,6 @@ const addNotification = async (accessToken, data) => {
   formData.append("thumbnail", data.thumbnail);
   formData.append("content", data.content);
 
-  console.log(data.thumbnail);
   try {
     const res = await axios.post(`${API_HOST}/Notifications`, formData, {
       headers: {

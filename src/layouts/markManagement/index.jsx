@@ -560,7 +560,7 @@ export default function MarkManagement() {
 
               {userRole === "HomeroomTeacher" || userRole === "Principal" ? (
                 isLoadingMarkOfClass ? (
-                  <div className="text-center primary-color my-10 text-xl italic font-medium">
+                  <div className="text-center primary-color my-30 text-xl italic font-medium">
                     <div className="mx-auto flex items-center justify-center">
                       <p className="mr-3">Loading</p>
                       <CircularProgress size={24} color="inherit" />
@@ -643,7 +643,7 @@ export default function MarkManagement() {
                   </div>
 
                   {isLoadingMark ? (
-                    <div className="text-center primary-color my-10 text-xl italic font-medium">
+                    <div className="text-center primary-color my-30 text-xl italic font-medium">
                       <div className="mx-auto flex items-center justify-center">
                         <p className="mr-3">Loading</p>
                         <CircularProgress size={24} color="inherit" />

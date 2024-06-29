@@ -169,7 +169,7 @@ const SchoolBook = () => {
     return transformedData;
   };
 
-  if (schoolYearsAPI && classesOfSchoolYear && schoolWeeks) {
+  if (schoolYearsAPI && schoolWeeks) {
     refetch().then((result) => {
       if (result.data?.success) {
         const transformedData = formatRegisterNotebook(result.data?.data?.details);

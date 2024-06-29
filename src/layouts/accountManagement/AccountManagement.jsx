@@ -283,11 +283,10 @@ export default function AccountManagement() {
   );
 
   useEffect(() => {
-    if (teacherData?.data) {
-      console.log(teacherData.data);
+    if (teacherData?.success) {
       setValue("id", teacherData.data.id);
       setValue("fullName", teacherData.data.fullname);
-      setValue("birthday", teacherData.data.birthday.split("T")[0]);
+      setValue("birthday", teacherData?.data?.birthday.split("T")[0]);
       setValue("gender", teacherData.data.gender);
       setValue("nation", teacherData.data.nation);
       setValue("email", teacherData.data.email);
@@ -360,9 +359,6 @@ export default function AccountManagement() {
   const handleDeleteAPI = () => {
     deleteTeacherMutation.mutate(username);
   };
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading data</div>;
 
   const handleChangeSearchValue = (txtSearch) => {
     console.log(txtSearch);

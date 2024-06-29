@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
+import { ToastContainer, toast } from "react-toastify";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import { Card, CircularProgress, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
 import { useForm } from "react-hook-form";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import GroupIcon from "@mui/icons-material/Group";
 import DownloadIcon from "@mui/icons-material/Download";
-import { ToastContainer, toast } from "react-toastify";
+import CancelIcon from "@mui/icons-material/Cancel";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
 
 import "./style.scss";
 import noDataImage3 from "../../assets/images/noDataImage3.avif";
@@ -27,6 +29,15 @@ import { getStudentByID } from "services/StudentService";
 import { createStudent } from "services/StudentService";
 import { updateStudent } from "services/StudentService";
 import { getAllStudents } from "services/StudentService";
+import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
+import { nationOptions } from "mock/student";
+import { handleDownloadStudentExcel } from "services/StudentService";
+import { addStudentByExcel } from "services/StudentService";
+
+const genderOptions = [
+  { label: "Nam", value: "Nam" },
+  { label: "Nữ", value: "Nữ" },
+];
 
 export default function StudentAccountManagement() {
   //1. Modal form states open, close
@@ -34,36 +45,11 @@ export default function StudentAccountManagement() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
-  const [deletedSubject, setDeletedSubject] = useState({});
   const [currentTab, setCurrentTab] = useState(0);
   const [currentTabEdit, setCurrentTabEdit] = useState(0);
-  const roles = ["học sinh chủ nhiệm", "Học sinh/Phụ huynh", "học sinh bộ môn", "Giám thị"];
-
-  const [selectedRole, setSelectedRole] = useState(roles[0]);
-
-  const handleRoleChange = (event) => {
-    setSelectedRole(event.target.value);
-  };
-  const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
-  const handleSchoolYearSelectedChange = (event) => {
-    setSchoolYear(event.target.value);
-  };
-
-  const formattedSchoolYears = schoolYears.data.map((year) => ({
-    label: year.schoolYear,
-    value: year.schoolYear,
-  }));
-
-  const formattedGrades = grades.data.map((grade) => ({
-    label: grade.name,
-    value: grade.name,
-  }));
-
   const [accounts, setAccounts] = useState([]);
-  const [username, setUsername] = useState();
   const [studentID, setStudentID] = useState();
   const [avatar, setAvatar] = useState(null);
-
   const queryClient = useQueryClient();
 
   const { data, error, isLoading } = useQuery(["getStudents", { accessToken }], () =>
@@ -94,45 +80,53 @@ export default function StudentAccountManagement() {
     formState: { errors: errorsEditAction },
   } = useForm();
 
-  //4. Functions handle adding
-  const handleOpenAddModal = () => {
-    setModalOpen(true);
-  };
+  const addStudentMutationByExcel = useMutation(
+    (templateFile) => addStudentByExcel(accessToken, templateFile),
+    {
+      onSuccess: (response) => {
+        queryClient.invalidateQueries("timeTableState");
+        if (response && response.success) {
+          toast.success("Tạo học sinh thành công!");
+          setAccounts(data?.data);
+        } else {
+          toast.error(`Tạo học sinh thất bại. ${response.data}!`);
+        }
+        reset();
+        setModalOpen(false);
+      },
+    }
+  );
 
-  const handleCloseAddModal = () => {
-    setModalOpen(false);
-  };
-
-  const handleAddAccount = (data) => {
-    console.log("Call API add subject: ", data);
-    // Call API add subject here
-  };
-
-  const handleAddInfomation = (data) => {
-    console.log("Call API add mark: ", data);
-    // Call API add subject here
+  const handleAddAccountByExcel = (data) => {
+    if (data) {
+      addStudentMutationByExcel.mutate(data.studentFileExcel);
+    }
   };
 
   // Add nè
-  const addStudentMutation = useMutation((data) => createStudent(accessToken, data), {
+  const addStudentMutationManually = useMutation((data) => createStudent(accessToken, data), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("addStudent");
       if (response && response.success) {
         toast.success("Tạo học sinh thành công!");
       } else {
-        toast.error(`${response.data}!`);
+        toast.error(`Tạo học sinh thất bại. ${response.data}!`);
       }
       reset();
       setModalOpen(false);
     },
   });
 
-  const handleAddRole = (data) => {
-    addStudentMutation.mutate(data);
-  };
-
-  const handleClearAddForm = () => {
-    reset(); // Reset the form of adding modal
+  const handleAddStudentManually = (data) => {
+    if (data) {
+      if (!data.gender || data.gender == "") {
+        data.gender = genderOptions[0].value;
+      }
+      if (!data.nation || data.nation == "") {
+        data.nation = nationOptions[0].value;
+      }
+      addStudentMutationManually.mutate(data);
+    }
   };
 
   //5. Functions handle editing
@@ -157,7 +151,7 @@ export default function StudentAccountManagement() {
         if (response && response.success) {
           toast.success("Cập nhật học sinh thành công!");
         } else {
-          toast.error(`${response.data}!`);
+          toast.error(`Cập nhật học sinh thất bại. ${response.data}!`);
         }
         resetEditAction();
         setModalEditOpen(false);
@@ -208,15 +202,12 @@ export default function StudentAccountManagement() {
 
   const formValues = watch();
 
-  useEffect(() => {
-    // console.log("Form values:", formValues);
-  }, [formValues]);
+  useEffect(() => {}, [formValues]);
 
   useEffect(() => {
     queryClient.invalidateQueries(["studentState", { accessToken, studentID }]);
   }, [studentID]);
 
-  //6. Functions handle deleting
   const handleCloseDeleteModal = () => {
     setModalDeleteOpen(false);
   };
@@ -242,7 +233,6 @@ export default function StudentAccountManagement() {
   const handleDelete = (rowItem) => {
     if (rowItem) {
       setStudentID(rowItem[0]);
-      setUsername(rowItem[1]);
       setModalDeleteOpen(true);
     }
   };
@@ -252,7 +242,6 @@ export default function StudentAccountManagement() {
   };
 
   const handleChangeSearchValue = (txtSearch) => {
-    console.log(txtSearch);
     setAccounts(searchStudent(txtSearch, data?.data));
   };
 
@@ -274,7 +263,7 @@ export default function StudentAccountManagement() {
   };
 
   const handleTabEditChange = (event, newValue) => {
-    setCurrentTabEdits(newValue);
+    // setCurrentTabEdits(newValue);
   };
   return (
     <DashboardLayout>
@@ -289,67 +278,33 @@ export default function StudentAccountManagement() {
             </div>
           </div>
           <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
-            {/* role Select */}
-            <div className="flex justify-start max-[639px]:flex-wrap">
-              {/* <FormControl sx={{ minWidth: 120, marginRight: "12px" }}>
-                <InputLabel id="select-role-label" className="ml-3">
-                  Chức vụ
-                </InputLabel>
-                <Select
-                  labelId="select-role-label"
-                  id="select-role"
-                  value={selectedRole}
-                  className="h-10 mx-3"
-                  label="Chức vụ"
-                  onChange={handleRoleChange}
-                >
-                  {roles.map((role) => (
-                    <MenuItem key={role} value={role}>
-                      {role}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <div className="max-[639px]:mt-2">
-                <ButtonComponent type="success" onClick={handleStatistic}>
-                  <FilterAltIcon className="mr-1" /> Tìm kiếm
-                </ButtonComponent>
-              </div>*/}
-            </div>
             <div className="flex justify-end items-center sm:w-full sm:flex-wrap ">
-              <SearchInputComponent
-                onSearch={handleChangeSearchValue}
-                placeHolder="Nhập từ khóa..."
-              />
+              <SearchInputComponent onSearch={handleChangeSearchValue} placeHolder="Nhập từ khóa" />
               <div className="ml-3">
-                {/* <ButtonComponent className="" onClick={handleOpenAddModal}>
+                <ButtonComponent className="" onClick={() => setModalOpen(true)}>
                   <AddCircleOutlineIcon className="text-3xl mr-1" />
-                  Tạo TKGV
-                </ButtonComponent> */}
-                <ButtonComponent className="" onClick={handleOpenAddModal}>
-                  <AddCircleOutlineIcon className="text-3xl mr-1" />
-                  Tạo
+                  TẠO
                 </ButtonComponent>
                 <PopupComponent
                   title="TẠO TÀI KHOẢN"
-                  description="Hãy tạo tài khoản"
+                  description="Tạo tài khoản học sinh"
                   icon={<AddCircleOutlineIcon />}
                   isOpen={modalOpen}
-                  onClose={handleCloseAddModal}
+                  onClose={() => setModalOpen(false)}
                   tabs={[{ label: "TẠO TÀI KHOẢN" }, { label: "TẠO BẰNG EXCEL" }]}
                   currentTab={currentTab}
                   onTabChange={handleTabChange}
                 >
                   {/* Content for Tab 1 */}
                   <div role="tabpanel" hidden={currentTab !== 0}>
-                    <form onSubmit={handleSubmit(handleAddRole)}>
+                    <form onSubmit={handleSubmit(handleAddStudentManually)}>
                       <div className="flex">
                         <InputBaseComponent
                           type="text"
                           className="w-1/2 mr-2"
                           control={control}
                           name="fullName"
-                          placeholder="Nguyen Van A"
+                          placeholder="Nguyễn Văn A"
                           label="Họ và tên"
                           setValue={noSetValue}
                           errors={errors}
@@ -363,24 +318,32 @@ export default function StudentAccountManagement() {
                           control={control}
                           setValue={noSetValue}
                           name="email"
-                          placeholder="hs@gmail.com"
+                          placeholder="hsabc123@gmail.com"
                           label="Email"
                           errors={errors}
                           validationRules={{
                             required: "Không được bỏ trống!",
+                            pattern: {
+                              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                              message: "Không đúng định dạng!",
+                            },
                           }}
                         />
                         <InputBaseComponent
                           type="text"
+                          label="Số điện thoại"
                           className="w-1/2"
                           control={control}
                           setValue={noSetValue}
-                          name="gender"
-                          placeholder="Nam"
-                          label="Giới tính"
+                          name="phone"
+                          placeholder="0234123470"
                           errors={errors}
                           validationRules={{
                             required: "Không được bỏ trống!",
+                            pattern: {
+                              value: /^[0-9]{10}$/,
+                              message: "Không đúng định dạng!",
+                            },
                           }}
                         />
                       </div>
@@ -398,33 +361,26 @@ export default function StudentAccountManagement() {
                           }}
                         />
                         <InputBaseComponent
-                          type="text"
-                          label="Dân tộc"
+                          type="select"
                           className="w-1/2 mr-2"
                           control={control}
                           setValue={noSetValue}
-                          name="nation"
-                          placeholder="Kinh"
+                          name="gender"
+                          label="Giới tính"
                           errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
+                          options={genderOptions}
                         />
                         <InputBaseComponent
-                          type="text"
-                          label="Số điện thoại"
+                          type="select"
+                          label="Dân tộc"
                           className="w-1/2"
                           control={control}
                           setValue={noSetValue}
-                          name="phone"
-                          placeholder="0234123470"
+                          name="nation"
                           errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
+                          options={nationOptions}
                         />
                       </div>
-                      <div className="flex"></div>
                       <div className="flex justify-between">
                         <InputBaseComponent
                           type="text"
@@ -432,7 +388,7 @@ export default function StudentAccountManagement() {
                           control={control}
                           setValue={noSetValue}
                           name="fatherFullName"
-                          placeholder="Nguyen Van B"
+                          placeholder="Nguyễn Văn B"
                           label="Họ tên cha"
                           errors={errors}
                           validationRules={{
@@ -464,10 +420,13 @@ export default function StudentAccountManagement() {
                           errors={errors}
                           validationRules={{
                             required: "Không được bỏ trống!",
+                            pattern: {
+                              value: /^[0-9]{10}$/,
+                              message: "Không đúng định dạng!",
+                            },
                           }}
                         />
                       </div>
-
                       <div className="flex justify-between">
                         <InputBaseComponent
                           type="text"
@@ -476,7 +435,7 @@ export default function StudentAccountManagement() {
                           setValue={noSetValue}
                           name="motherFullName"
                           label="Họ tên mẹ"
-                          placeholder="Lê thị B"
+                          placeholder="Lê Thị B"
                           errors={errors}
                           validationRules={{
                             required: "Không được bỏ trống!",
@@ -488,7 +447,7 @@ export default function StudentAccountManagement() {
                           control={control}
                           setValue={noSetValue}
                           name="motherProfession"
-                          placeholder="học sinh"
+                          placeholder="Nội trợ"
                           label="Nghề nghiệp mẹ"
                           errors={errors}
                           validationRules={{
@@ -507,16 +466,19 @@ export default function StudentAccountManagement() {
                           errors={errors}
                           validationRules={{
                             required: "Không được bỏ trống!",
+                            pattern: {
+                              value: /^[0-9]{10}$/,
+                              message: "Không đúng định dạng!",
+                            },
                           }}
                         />
                       </div>
                       <InputBaseComponent
                         type="text"
-                        className=""
                         control={control}
                         setValue={noSetValue}
                         name="birthplace"
-                        placeholder="Cần Thơ"
+                        placeholder="An bình, Ninh kiều, Cần Thơ"
                         label="Nơi sinh"
                         errors={errors}
                         validationRules={{
@@ -525,18 +487,16 @@ export default function StudentAccountManagement() {
                       />
                       <InputBaseComponent
                         type="text"
-                        className=""
                         control={control}
                         setValue={noSetValue}
                         name="address"
-                        placeholder="600 Nguyen van cu"
+                        placeholder="600, Nguyễn Văn Cừ (nối dài), An Bình, Ninh Kiều, Cần Thơ"
                         label="Địa chỉ"
                         errors={errors}
                         validationRules={{
                           required: "Không được bỏ trống!",
                         }}
                       />
-
                       <div className="flex">
                         <InputBaseComponent
                           type="file"
@@ -551,38 +511,34 @@ export default function StudentAccountManagement() {
                           }}
                         />
                       </div>
-                      {/* <InputBaseComponent
-                      type="textArea"
-                      className="w-full"
-                      control={controlEditAction}
-                      setValue={setValue}
-                      name="otherInfo"
-                      label="Thông tin khác"
-                      errors={errorsEditAction}
-                      validationRules={{
-                        required: "Không được bỏ trống!",
-                      }}
-                    /> */}
+                      <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi tạo!" />
                       <div className="mt-4 flex justify-end">
                         <ButtonComponent
                           type="error"
                           action="reset"
-                          onClick={() => resetEditAction()}
+                          onClick={() => {
+                            reset();
+                            setModalOpen(false);
+                          }}
                         >
-                          CLEAR
+                          <CancelIcon className="text-3xl mr-1 mb-0.5" />
+                          HỦY BỎ
                         </ButtonComponent>
-                        <ButtonComponent action="submit">THÊM</ButtonComponent>
+                        <ButtonComponent action="submit">
+                          <AddCircleOutlineIcon className="text-3xl mr-1" />
+                          TẠO
+                        </ButtonComponent>
                       </div>
                     </form>
                   </div>
                   <div role="tabpanel" hidden={currentTab == 1}>
-                    <ButtonComponent action="submit">
+                    <ButtonComponent action="button" onClick={() => handleDownloadStudentExcel()}>
                       <DownloadIcon className="mr-2" />
-                      TẢI FILE
+                      TẢI XUỐNG
                     </ButtonComponent>
-                    <form onSubmit={handleSubmit(handleAddAccount)}>
+                    <form onSubmit={handleSubmit(handleAddAccountByExcel)}>
                       <InputBaseComponent
-                        name="timeTableFile"
+                        name="studentFileExcel"
                         label="Tài khoản(Excel)"
                         className="w-full mt-5"
                         control={control}
@@ -593,11 +549,23 @@ export default function StudentAccountManagement() {
                           required: "Hãy chọn file!",
                         }}
                       />
+                      <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi tạo!" />
                       <div className="mt-5 flex justify-end">
-                        <ButtonComponent type="error" action="reset" onClick={handleClearAddForm}>
-                          CLEAR
+                        <ButtonComponent
+                          type="error"
+                          action="reset"
+                          onClick={() => {
+                            reset();
+                            setModalOpen(false);
+                          }}
+                        >
+                          <CancelIcon className="text-3xl mr-1 mb-0.5" />
+                          HỦY BỎ
                         </ButtonComponent>
-                        <ButtonComponent action="submit">TẠO</ButtonComponent>
+                        <ButtonComponent action="submit">
+                          <AddCircleOutlineIcon className="text-3xl mr-1" />
+                          TẠO
+                        </ButtonComponent>
                       </div>
                     </form>
                   </div>
@@ -639,8 +607,8 @@ export default function StudentAccountManagement() {
               </div>
             )}
             <PopupComponent
-              title="CẬP NHẬT"
-              description="Hãy chỉnh sửa để bắt đầu năm học mới"
+              title="CẬP NHẬT TÀI KHOẢN"
+              description="Cập nhật tài khoản học sinh"
               icon={<EditIcon />}
               isOpen={modalEditOpen}
               onClose={handleCloseEditModal}
@@ -673,19 +641,27 @@ export default function StudentAccountManagement() {
                     errors={errorsEditAction}
                     validationRules={{
                       required: "Không được bỏ trống!",
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: "Email không đúng định dạng!",
+                      },
                     }}
                   />
                   <InputBaseComponent
                     type="text"
+                    label="Số điện thoại"
                     className="w-1/2"
                     control={controlEditAction}
                     setValue={setValue}
-                    name="gender"
-                    placeholder="Nam"
-                    label="Giới tính"
+                    name="phone"
+                    placeholder="0234123470"
                     errors={errorsEditAction}
                     validationRules={{
                       required: "Không được bỏ trống!",
+                      pattern: {
+                        value: /^[0-9]{10}$/,
+                        message: "Số điện thoại không đúng định dạng!",
+                      },
                     }}
                   />
                 </div>
@@ -703,30 +679,26 @@ export default function StudentAccountManagement() {
                     }}
                   />
                   <InputBaseComponent
-                    type="text"
-                    label="Dân tộc"
+                    type="select"
                     className="w-1/2 mr-2"
+                    control={controlEditAction}
+                    setValue={setValue}
+                    name="gender"
+                    placeholder="Nam"
+                    label="Giới tính"
+                    errors={errorsEditAction}
+                    options={genderOptions}
+                  />
+                  <InputBaseComponent
+                    type="select"
+                    label="Dân tộc"
+                    className="w-1/2"
                     control={controlEditAction}
                     setValue={setValue}
                     name="nation"
                     placeholder="Kinh"
                     errors={errorsEditAction}
-                    validationRules={{
-                      required: "Không được bỏ trống!",
-                    }}
-                  />
-                  <InputBaseComponent
-                    type="text"
-                    label="Số điện thoại"
-                    className="w-1/2"
-                    control={controlEditAction}
-                    setValue={setValue}
-                    name="phone"
-                    placeholder="0234123470"
-                    errors={errorsEditAction}
-                    validationRules={{
-                      required: "Không được bỏ trống!",
-                    }}
+                    options={nationOptions}
                   />
                 </div>
                 <div className="flex"></div>
@@ -737,7 +709,7 @@ export default function StudentAccountManagement() {
                     control={controlEditAction}
                     setValue={setValue}
                     name="fatherFullName"
-                    placeholder="Nguyen Van B"
+                    placeholder="Nguyễn Văn B"
                     label="Họ tên cha"
                     errors={errorsEditAction}
                     validationRules={{
@@ -769,6 +741,10 @@ export default function StudentAccountManagement() {
                     errors={errorsEditAction}
                     validationRules={{
                       required: "Không được bỏ trống!",
+                      pattern: {
+                        value: /^[0-9]{10}$/,
+                        message: "Số điện thoại không đúng định dạng!",
+                      },
                     }}
                   />
                 </div>
@@ -781,7 +757,7 @@ export default function StudentAccountManagement() {
                     setValue={setValue}
                     name="motherFullName"
                     label="Họ tên mẹ"
-                    placeholder="Lê thị B"
+                    placeholder="Lê Thị B"
                     errors={errorsEditAction}
                     validationRules={{
                       required: "Không được bỏ trống!",
@@ -793,7 +769,7 @@ export default function StudentAccountManagement() {
                     control={controlEditAction}
                     setValue={setValue}
                     name="motherProfession"
-                    placeholder="học sinh"
+                    placeholder="Nội trợ"
                     label="Nghề nghiệp mẹ"
                     errors={errorsEditAction}
                     validationRules={{
@@ -812,6 +788,10 @@ export default function StudentAccountManagement() {
                     errors={errorsEditAction}
                     validationRules={{
                       required: "Không được bỏ trống!",
+                      pattern: {
+                        value: /^[0-9]{10}$/,
+                        message: "Số điện thoại không đúng định dạng!",
+                      },
                     }}
                   />
                 </div>
@@ -821,7 +801,7 @@ export default function StudentAccountManagement() {
                   control={controlEditAction}
                   setValue={setValue}
                   name="birthplace"
-                  placeholder="Cần Thơ"
+                  placeholder="An bình, Ninh kiều, Cần Thơ"
                   label="Nơi sinh"
                   errors={errorsEditAction}
                   validationRules={{
@@ -834,7 +814,7 @@ export default function StudentAccountManagement() {
                   control={controlEditAction}
                   setValue={setValue}
                   name="address"
-                  placeholder="600 Nguyen van cu"
+                  placeholder="600, Nguyễn Văn Cừ (nối dài), An Bình, Ninh Kiều, Cần Thơ"
                   label="Địa chỉ"
                   errors={errorsEditAction}
                   validationRules={{
@@ -863,39 +843,34 @@ export default function StudentAccountManagement() {
                     />
                   )}
                 </div>
-                {/* <InputBaseComponent
-                      type="textArea"
-                      className="w-full"
-                      control={controlEditAction}
-                      setValue={setValue}
-                      name="otherInfo"
-                      label="Thông tin khác"
-                      errors={errorsEditAction}
-                      validationRules={{
-                        required: "Không được bỏ trống!",
-                      }}
-                    /> */}
+                <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi cập nhật!" />
                 <div className="mt-4 flex justify-end">
                   <ButtonComponent type="error" action="reset" onClick={() => resetEditAction()}>
-                    CLEAR
+                    <CancelIcon className="text-3xl mr-1 mb-0.5" />
+                    HỦY BỎ
                   </ButtonComponent>
-                  <ButtonComponent action="submit">CẬP NHẬT</ButtonComponent>
+                  <ButtonComponent action="submit">
+                    <BorderColorIcon className="text-3xl mr-1" />
+                    CẬP NHẬT
+                  </ButtonComponent>
                 </div>
               </form>
             </PopupComponent>
             <PopupComponent
               title="XÓA TÀI KHOẢN"
-              description="Hãy kiểm xác nhận thông tin trước khi xóa"
+              description="Xóa tài khoản học sinh"
               icon={<DeleteIcon />}
               isOpen={modalDeleteOpen}
               onClose={handleCloseDeleteModal}
             >
-              <p>Bạn có chắc chắn muốn xóa tài khoản?</p>
+              <p className="text-base font-medium">Bạn có chắc chắn muốn xóa tài khoản?</p>
               <div className="mt-4 flex justify-end">
                 <ButtonComponent type="error" action="button" onClick={handleCloseDeleteModal}>
+                  <CancelIcon className="text-3xl mr-1 mb-0.5" />
                   HỦY BỎ
                 </ButtonComponent>
                 <ButtonComponent action="button" onClick={handleDeleteAPI}>
+                  <DeleteIcon className="text-3xl mr-1" />
                   XÓA
                 </ButtonComponent>
               </div>

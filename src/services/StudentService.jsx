@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_HOST } from "./APIConfig";
+import { API_HOST, ORB_HOST } from "./APIConfig";
 
 const getStudentByID = async (accessToken, studentID) => {
   const res = await axios.get(`${API_HOST}/Students/${studentID}`, {
@@ -19,6 +19,27 @@ const getAllStudents = async (accessToken) => {
     },
   });
   return res.data;
+};
+
+const addStudentByExcel = async (accessToken, file) => {
+  const formData = new FormData();
+  formData.append("File", file);
+  try {
+    const res = await axios.post(`${API_HOST}/Students/Excel`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error adding timetable:", error);
+    throw error;
+  }
+};
+
+const handleDownloadStudentExcel = () => {
+  window.location.href = `${ORB_HOST}/Templates/template_student.xlsx`;
 };
 
 const updateStudent = async (accessToken, data) => {
@@ -102,4 +123,12 @@ const deleteStudent = async (accessToken, username) => {
   }
 };
 
-export { getStudentByID, updateStudent, getAllStudents, createStudent, deleteStudent };
+export {
+  getStudentByID,
+  updateStudent,
+  getAllStudents,
+  createStudent,
+  deleteStudent,
+  addStudentByExcel,
+  handleDownloadStudentExcel,
+};

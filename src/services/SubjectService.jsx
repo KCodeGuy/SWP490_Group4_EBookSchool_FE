@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_HOST } from "./APIConfig";
+import { API_HOST, ORB_HOST } from "./APIConfig";
 
 const getAllSubjects = async (accessToken) => {
   const res = await axios.get(`${API_HOST}/Subjects`, {
@@ -57,4 +57,32 @@ const deleteSubject = async (accessToken, subjectID) => {
   }
 };
 
-export { getAllSubjects, addSubject, updateSubject, deleteSubject };
+const downloadTemplateSubject = () => {
+  window.location.href = `https://orbapi.click/Templates/template_subject.xlsx`;
+};
+
+const addSubjectByExcel = async (accessToken, file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  try {
+    const res = await axios.post(`${API_HOST}/Subjects/Excel`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error adding timetable:", error);
+    throw error;
+  }
+};
+
+export {
+  getAllSubjects,
+  addSubject,
+  updateSubject,
+  deleteSubject,
+  downloadTemplateSubject,
+  addSubjectByExcel,
+};

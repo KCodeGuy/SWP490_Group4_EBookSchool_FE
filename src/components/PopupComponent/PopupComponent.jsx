@@ -67,6 +67,7 @@ export default function PopupComponent({
           variant="standard"
           sx={{
             paddingX: 2,
+            minHeight: 46,
             "& .Mui-selected": {
               backgroundColor: "#247cd4",
               color: "white !important",

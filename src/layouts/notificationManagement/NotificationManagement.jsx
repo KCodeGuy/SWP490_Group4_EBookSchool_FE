@@ -54,6 +54,10 @@ export default function NotificationManagement() {
   const [contentQuillValue, setContentQuillValue] = useState("");
   const navigate = useNavigate();
 
+  if (contentQuillValue) {
+    console.log(contentQuillValue);
+  }
+
   const queryClient = useQueryClient();
 
   // Call API Get all notifications
@@ -61,8 +65,8 @@ export default function NotificationManagement() {
     getAllNotifications(accessToken)
   );
   useEffect(() => {
-    if (data?.success) {
-      setCurrentData(data?.data);
+    if (data) {
+      setCurrentData(data);
     }
   }, [data]);
 
@@ -95,7 +99,7 @@ export default function NotificationManagement() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("notificationState");
-        if (response && response.success) {
+        if (response) {
           toast.success("Tạo thông báo thành công!");
         } else {
           toast.error(`${response.data}!`);
@@ -138,7 +142,7 @@ export default function NotificationManagement() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("notificationState");
-        if (response && response.success) {
+        if (response) {
           toast.success("Cập nhật thông báo thành công!");
         } else {
           toast.error(`${response.data}!`);
@@ -179,7 +183,7 @@ export default function NotificationManagement() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("notificationState");
-        if (response && response.success) {
+        if (response) {
           toast.success("Xóa thông báo thành công!");
         } else {
           toast.error("Xóa thông báo thất bại!");
@@ -204,7 +208,7 @@ export default function NotificationManagement() {
 
   // Handle search function
   const handleChangeSearchValue = (txtSearch) => {
-    setCurrentData(filterNotifications(txtSearch, data?.data));
+    setCurrentData(filterNotifications(txtSearch, data));
   };
 
   const filterNotifications = (txtSearch, data) => {
@@ -333,7 +337,7 @@ export default function NotificationManagement() {
                   <CircularProgress size={24} color="inherit" />
                 </div>
               </div>
-            ) : data?.success ? (
+            ) : data ? (
               <TableComponent
                 header={[
                   "Tiêu đề",

@@ -29,6 +29,8 @@ import {
   addSubject,
   updateSubject,
   deleteSubject,
+  downloadTemplateSubject,
+  addSubjectByExcel,
 } from "../../services/SubjectService";
 
 const grades = [10, 11, 12];
@@ -57,16 +59,18 @@ export default function SubjectManagement() {
   const queryClient = useQueryClient();
 
   //call api get all
-  const { data, error, isLoading } = useQuery(["subjectState", { accessToken }], () =>
-    getAllSubjects(accessToken)
-  );
+  const { data, isError, isLoading, refetch } = useQuery({
+    queryKey: ["subjectState"],
+    queryFn: () => getAllSubjects(accessToken),
+    enabled: false,
+  });
 
   useEffect(() => {
-    if (Array.isArray(data?.data)) {
-      setCurrentData(data.data);
-    } else {
-      setCurrentData([]);
-    }
+    refetch().then((result) => {
+      if (result.data) {
+        setCurrentData(result.data);
+      }
+    });
   }, [data]);
 
   const formattedGrades = grades.map((item) => ({
@@ -101,7 +105,12 @@ export default function SubjectManagement() {
   const addSubjectsMutation = useMutation((subjectData) => addSubject(accessToken, subjectData), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("subjectState");
-      if (response && response.success) {
+      if (response) {
+        refetch().then((result) => {
+          if (result.data) {
+            setCurrentData(result.data);
+          }
+        });
         toast.success("Tạo môn học thành công!");
       } else {
         toast.error(`${response.data}!`);
@@ -112,6 +121,29 @@ export default function SubjectManagement() {
       setModalOpen(false);
     },
   });
+
+  const addSubjectByExcelMutation = useMutation((file) => addSubjectByExcel(accessToken, file), {
+    onSuccess: (response) => {
+      queryClient.invalidateQueries("addSubjectExcel");
+      if (response) {
+        refetch().then((result) => {
+          if (result.data) {
+            setCurrentData(result.data);
+          }
+        });
+        toast.success("Tạo môn thành công!");
+      } else {
+        toast.error(`${response.data}!`);
+      }
+      reset();
+      setModalOpen(false);
+    },
+  });
+  const handleAddSubjectByExcel = (data) => {
+    if (data) {
+      addSubjectByExcelMutation.mutate(data.subjectFile);
+    }
+  };
 
   const formatMarkFactors = (data) => {
     return data.map((data) => {
@@ -214,7 +246,12 @@ export default function SubjectManagement() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("subjectState");
-        if (response && response.success) {
+        if (response) {
+          refetch().then((result) => {
+            if (result.data) {
+              setCurrentData(result.data);
+            }
+          });
           toast.success("Cập nhật môn học thành công!");
         } else {
           toast.error(`${response.data} !`);
@@ -238,13 +275,18 @@ export default function SubjectManagement() {
   };
 
   const handleStatistic = () => {
-    setCurrentData(filterSubjectByGrade(grade, data?.data));
+    setCurrentData(filterSubjectByGrade(grade, data));
   };
 
   const deleteSubjectMutation = useMutation((subjectId) => deleteSubject(accessToken, subjectId), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("subjectState");
-      if (response && response.success) {
+      if (response) {
+        refetch().then((result) => {
+          if (result.data) {
+            setCurrentData(result.data);
+          }
+        });
         toast.success("Xóa môn học thành công!");
       } else {
         toast.error("Xóa môn học thất bại!");
@@ -268,7 +310,7 @@ export default function SubjectManagement() {
   };
 
   const handleChangeSearchValue = (txtSearch) => {
-    setCurrentData(searchSubjectByKeys(txtSearch, data?.data));
+    setCurrentData(searchSubjectByKeys(txtSearch, data));
   };
 
   const filterSubjectByGrade = (option, data) => {
@@ -573,13 +615,13 @@ export default function SubjectManagement() {
                   </div>
 
                   <div role="tabpane3" hidden={currentTab == 3}>
-                    <ButtonComponent action="submit">
+                    <ButtonComponent action="submit" onClick={downloadTemplateSubject}>
                       <DownloadIcon className="mr-2" />
                       TẢI XUỐNG
                     </ButtonComponent>
-                    <form onSubmit={handleSubmit(handleAddMark)}>
+                    <form onSubmit={handleSubmit(handleAddSubjectByExcel)}>
                       <InputBaseComponent
-                        name="timeTableFile"
+                        name="subjectFile"
                         label="Môn học(Excel)"
                         className="w-full mt-5"
                         control={control}
@@ -622,7 +664,7 @@ export default function SubjectManagement() {
                   <CircularProgress size={24} color="inherit" />
                 </div>
               </div>
-            ) : data?.success ? (
+            ) : data ? (
               <TableComponent
                 header={["Tên môn học", "Khối"]}
                 data={currentData?.map((item) => [item.id, item.name, item.grade])}

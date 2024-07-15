@@ -59,8 +59,8 @@ export default function AccountManagement() {
     getAllTeachers(accessToken)
   );
   useEffect(() => {
-    if (data?.success) {
-      setAccounts(data?.data);
+    if (data) {
+      setAccounts(data);
     }
   }, [data]);
 
@@ -96,10 +96,10 @@ export default function AccountManagement() {
   const addTeacherMutation = useMutation((data) => createTeacher(accessToken, data), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("teacherAccounts");
-      if (response && response.success) {
+      if (response) {
         toast.success("Tạo giáo viên thành công!");
       } else {
-        toast.error(`${response.data}!`);
+        toast.error(`${response}!`);
       }
       reset();
       setModalOpen(false);
@@ -154,10 +154,10 @@ export default function AccountManagement() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("teacherAccounts");
-        if (response && response.success) {
+        if (response && response) {
           toast.success("Cập nhật giáo viên thành công!");
         } else {
-          toast.error(`${response.data}!`);
+          toast.error(`${response}!`);
         }
         resetEditAction();
         setModalEditOpen(false);
@@ -217,31 +217,31 @@ export default function AccountManagement() {
   );
 
   useEffect(() => {
-    if (teacherData?.success) {
-      setValue("id", teacherData.data.id);
-      setValue("fullName", teacherData.data.fullname);
-      if (teacherData?.data?.birthday) {
-        setValue("birthday", teacherData?.data?.birthday.split("T")[0]);
+    if (teacherData) {
+      setValue("id", teacherData?.id);
+      setValue("fullName", teacherData?.fullname);
+      if (teacherData?.birthday) {
+        setValue("birthday", teacherData?.birthday.split("T")[0]);
       }
-      setValue("gender", teacherData.data.gender);
-      setValue("nation", teacherData.data.nation);
-      setValue("email", teacherData.data.email);
-      setValue("phone", teacherData.data.phone);
-      setValue("isBachelor", teacherData.data.isBachelor);
-      setValue("isMaster", teacherData.data.isMaster);
-      setValue("isDoctor", teacherData.data.isDoctor);
-      setValue("isProfessor", teacherData.data.isProfessor);
-      setValue("address", teacherData.data.address);
-      setValue("avatar", teacherData.data.avatar);
-      setAvatar(teacherData.data.avatar);
+      setValue("gender", teacherData?.gender);
+      setValue("nation", teacherData?.nation);
+      setValue("email", teacherData?.email);
+      setValue("phone", teacherData?.phone);
+      setValue("isBachelor", teacherData?.isBachelor);
+      setValue("isMaster", teacherData?.isMaster);
+      setValue("isDoctor", teacherData?.isDoctor);
+      setValue("isProfessor", teacherData?.isProfessor);
+      setValue("address", teacherData?.address);
+      setValue("avatar", teacherData?.avatar);
+      setAvatar(teacherData?.avatar);
 
-      teacherData.data.roles.forEach((role) => {
+      teacherData?.roles.forEach((role) => {
         const formattedRole = `role${role}`;
         setValue(formattedRole, true);
       });
 
       // Handling permissions
-      teacherData.data.permissions.forEach((permission) => {
+      teacherData?.permissions.forEach((permission) => {
         const formattedPermission = `is${permission.replace(/\s+/g, "")}`;
         setValue(formattedPermission, true);
       });
@@ -255,14 +255,14 @@ export default function AccountManagement() {
   }, [teacherID]);
 
   useEffect(() => {
-    if (data?.success) {
-      setAccounts(data?.data);
+    if (data) {
+      setAccounts(data);
     }
   }, [data]);
 
   const deleteTeacherMutation = useMutation((username) => deleteTeacher(accessToken, username), {
     onSuccess: (response) => {
-      if (response && response.success) {
+      if (response) {
         queryClient.invalidateQueries(["teacherAccounts", { accessToken }]); // Invalidate the getTeachers query
         toast.success(`Xóa giáo viên "${username}" thành công!`);
       } else {
@@ -284,7 +284,7 @@ export default function AccountManagement() {
   };
 
   const handleChangeSearchValue = (txtSearch) => {
-    setAccounts(searchTeacher(txtSearch, data?.data));
+    setAccounts(searchTeacher(txtSearch, data));
   };
 
   const searchTeacher = (txtSearch, data) => {
@@ -1090,7 +1090,7 @@ export default function AccountManagement() {
                   <CircularProgress size={24} color="inherit" />
                 </div>
               </div>
-            ) : data?.success && accounts.length > 0 ? (
+            ) : data && accounts.length > 0 ? (
               <TableComponent
                 header={[
                   "Mã giáo viên",

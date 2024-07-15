@@ -40,15 +40,21 @@ const schoolWeeks = [
 export default function TakeAttendance() {
   const { attendanceID } = useParams();
   const [isCheckedAll, setIsCheckedAll] = useState(false);
-  const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
   const [currentData, setCurrentData] = useState([]);
   const [currentSubject, setCurrentSubject] = useState("");
-  const accessToken = localStorage.getItem("authToken");
-  const queryClient = useQueryClient();
+  let accessToken,
+    currentUser,
+    userRole,
+    userID,
+    numberOfSlotInWeek = 0;
+  userRole = localStorage.getItem("userRole");
+  if (userRole) {
+    accessToken = localStorage.getItem("authToken");
+    currentUser = JSON.parse(localStorage.getItem("user"));
+    userID = currentUser.id;
+  }
 
-  const handleSchoolYearSelectedChange = (event) => {
-    setSchoolYear(event.target.value);
-  };
+  const queryClient = useQueryClient();
 
   const { data, isError, isLoading, refetch } = useQuery({
     queryKey: ["timetable", { accessToken, attendanceID }],
@@ -57,55 +63,34 @@ export default function TakeAttendance() {
   });
 
   useEffect(() => {
-    if (data?.success) {
-      setCurrentSubject(data?.data[0].subject);
-      setCurrentData(data?.data);
+    if (data) {
+      setCurrentSubject(data[0].subject);
+      setCurrentData(data);
     }
   }, [data]);
 
   const handleFindSlotAttendance = () => {
     refetch().then((result) => {
-      if (result?.data.success) {
-        setCurrentSubject(result?.data.data[0].subject);
-        setCurrentData(result?.data.data);
+      if (result?.data) {
+        setCurrentSubject(result?.data[0].subject);
+        setCurrentData(result?.data);
       }
     });
   };
-
-  const [schoolClass, setSchoolClass] = React.useState(studentClasses.data[0].name);
-  const handleSchoolClassSelectedChange = (event) => {
-    setSchoolClass(event.target.value);
-  };
-
-  const [schoolWeek, setSchoolWeek] = React.useState(schoolWeeks[0].name);
-  const handleSchoolWeeksSelectedChange = (event) => {
-    setSchoolWeek(event.target.value);
-  };
-
   const handleChecked = (rowItem) => {
     // console.log("checked:", rowItem);
     // Implement delete logic here
   };
-
-  const formattedSchoolYear = schoolYears.data.map((year) => ({
-    label: year.schoolYear,
-    value: year.schoolYear,
-  }));
-
-  const formattedSchoolClass = studentClasses.data.map((item) => ({
-    label: item.name,
-    value: item.name,
-  }));
 
   const updateAttendanceMutation = useMutation(
     (attendanceData) => updateAttendance(accessToken, attendanceData),
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("attendanceData");
-        if (response && response.success) {
+        if (response) {
           refetch().then((result) => {
-            if (result?.data.success) {
-              setCurrentData(result?.data.data);
+            if (result?.data) {
+              setCurrentData(result?.data);
             }
           });
           toast.success("Điểm danh thành công!");
@@ -148,70 +133,6 @@ export default function TakeAttendance() {
       <DashboardNavbar />
       <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
-          <div className="flex justify-between items-center flex-wrap">
-            <div>
-              <FormControl sx={{ minWidth: 120 }}>
-                <InputLabel id="select-school-year-lable">Năm học</InputLabel>
-                <Select
-                  labelId="select-school-year-lable"
-                  id="elect-school-year"
-                  value={schoolYear}
-                  className="h-10 mr-2 max-[767px]:mb-4"
-                  label="Năm học"
-                  onChange={handleSchoolYearSelectedChange}
-                >
-                  {schoolYears.data.map((item, index) => (
-                    <MenuItem key={index} value={item.schoolYear}>
-                      {item.schoolYear}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <FormControl sx={{ minWidth: 120 }}>
-                <InputLabel id="select-school-class-lable">Lớp</InputLabel>
-                <Select
-                  labelId="select-school-class-lable"
-                  id="select-school-class"
-                  value={schoolClass}
-                  className="h-10 mr-2 max-[767px]:mb-4"
-                  label="Lớp"
-                  onChange={handleSchoolClassSelectedChange}
-                >
-                  {studentClasses.data.map((item, index) => (
-                    <MenuItem key={index} value={item.name}>
-                      {item.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl sx={{ minWidth: 120 }}>
-                <InputLabel id="select-school-week-lable">Tuần</InputLabel>
-                <Select
-                  labelId="select-school-week-lable"
-                  id="select-school-class"
-                  value={schoolWeek}
-                  className="h-10 mr-2 max-[767px]:mb-4"
-                  label="Tuần"
-                  onChange={handleSchoolWeeksSelectedChange}
-                >
-                  {schoolWeeks.map((item, index) => (
-                    <MenuItem key={index} value={item.name}>
-                      {item.startTime} - {item.endTime}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <ButtonComponent type="success" onClick={handleFindSlotAttendance}>
-                <FilterAltIcon className="mr-1" /> TÌM KIẾM
-              </ButtonComponent>
-            </div>
-            <SearchInputComponent
-              onSearch={handleChangeSearchValue}
-              placeHolder="Nhập từ khóa..."
-              className="mr-3"
-            />
-          </div>
           <div className="text-center mt-10 ">
             <div className="flex justify-center items-center text-3xl mx-auto w-full">
               <GradingIcon />

@@ -34,7 +34,7 @@ export default function NotificationDetails() {
             <div className="text-center mt-5 text-base">
               <div className="flex justify-between max-[639px]:flex-wrap">
                 <div className="flex items-baseline ">
-                  <h4 className="text-xl font-bold uppercase">[{data?.data.title}]</h4>
+                  <h4 className="text-xl font-bold uppercase">[{data?.title}]</h4>
                   <div className="text-sm bg-success-color italic text-white rounded-md px-2 ml-4 h-5 leading-5 animate-new transition-all max-[639px]:hidden ">
                     Mới nhất
                   </div>
@@ -42,7 +42,7 @@ export default function NotificationDetails() {
                 <div className="flex items-baseline max-[639px]:mt-2">
                   <p>
                     <EventAvailableIcon className="mr-2" />
-                    {data?.data.createAt}
+                    {data?.createAt}
                   </p>
                   {permissions.includes("Add Notification") && (
                     <>
@@ -63,19 +63,19 @@ export default function NotificationDetails() {
               <div className="w-full text-center">
                 <img
                   className="mt-8 rounded-md mx-auto w-full h-full"
-                  src={data?.data.thumbnail}
+                  src={data?.thumbnail}
                   alt="Ảnh thông báo"
                 />
-                <p className="mt-4 italic font-medium">Ảnh: {data?.data.title}</p>
+                <p className="mt-4 italic font-medium">Ảnh: {data?.title}</p>
               </div>
               <div
                 className="w-full text-left mt-5"
-                dangerouslySetInnerHTML={{ __html: data?.data.content }}
+                dangerouslySetInnerHTML={{ __html: data?.content }}
               ></div>
               <div className="flex mt-5 font-medium justify-end">
                 <span>Trường THPT Nguyễn Văn A</span>
                 <span className="mx-2">|</span>
-                <span>{data?.data.createBy}</span>
+                <span>{data?.createBy}</span>
               </div>
             </div>
           )}

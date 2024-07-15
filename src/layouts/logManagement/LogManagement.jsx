@@ -43,8 +43,8 @@ export default function LogManagement() {
   );
 
   useEffect(() => {
-    if (data?.success) {
-      setCurrentData(data?.data);
+    if (data) {
+      setCurrentData(data);
     }
   }, [data]);
 
@@ -67,11 +67,11 @@ export default function LogManagement() {
     }
   };
   const handleStatistic = () => {
-    setCurrentData(filterLogByAction(logAction, data?.data));
+    setCurrentData(filterLogByAction(logAction, data));
   };
 
   const handleChangeSearchValue = (txtSearch) => {
-    setCurrentData(filterLog(txtSearch, data?.data));
+    setCurrentData(filterLog(txtSearch, data));
   };
 
   const filterLog = (txtSearch, data) => {
@@ -163,7 +163,7 @@ export default function LogManagement() {
                   <CircularProgress size={24} color="inherit" />
                 </div>
               </div>
-            ) : data?.success && currentData.length > 0 ? (
+            ) : data && currentData.length > 0 ? (
               <TableComponent
                 header={["Mã log", "Loại thao tác", "Ghi chú", "Thời gian"]}
                 data={currentData?.map((item) => [

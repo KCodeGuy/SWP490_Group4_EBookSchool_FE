@@ -169,26 +169,28 @@ const SchoolBook = () => {
     return transformedData;
   };
 
-  if (schoolYearsAPI && schoolWeeks) {
-    refetch().then((result) => {
-      if (result.data?.success) {
-        const transformedData = formatRegisterNotebook(result.data?.data?.details);
-        setCurrentRegisterNotebook(transformedData);
-      }
-    });
-  }
+  useEffect(() => {
+    if (schoolWeeks) {
+      refetch().then((result) => {
+        if (result?.data) {
+          const transformedData = formatRegisterNotebook(result.data?.details);
+          setCurrentRegisterNotebook(transformedData);
+        }
+      });
+    }
+  }, [schoolWeeks]);
 
   const handleFilterTimetable = () => {
     refetch().then((result) => {
-      if (result.data?.success) {
-        const transformedData = formatRegisterNotebook(result.data?.data?.details);
+      if (result.data) {
+        const transformedData = formatRegisterNotebook(result.data?.details);
         setCurrentRegisterNotebook(transformedData);
       }
     });
   };
 
   const handleChangeSearchValue = (txtSearch) => {
-    console.log(txtSearch);
+    // console.log(txtSearch);
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -206,9 +208,9 @@ const SchoolBook = () => {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("slotData");
-        if (response && response.success) {
+        if (response) {
           refetch().then((result) => {
-            const transformedData = formatRegisterNotebook(result.data?.data?.details);
+            const transformedData = formatRegisterNotebook(result.data?.details);
             setCurrentRegisterNotebook(transformedData);
           });
           toast.success("Cập nhật tiết học thành công!");
@@ -339,13 +341,13 @@ const SchoolBook = () => {
                 <FilterAltIcon className="mr-1" /> TÌM KIẾM
               </ButtonComponent>
             </div>
-            <div className="flex items-center">
+            {/* <div className="flex items-center">
               <SearchInputComponent
                 onSearch={handleChangeSearchValue}
                 placeHolder="Nhập từ khóa..."
                 className="mr-3"
               />
-            </div>
+            </div> */}
           </div>
           <div className="text-center mt-10 ">
             <div className="flex justify-center items-center text-3xl mx-auto w-full">
@@ -375,7 +377,7 @@ const SchoolBook = () => {
                 <CircularProgress size={24} color="inherit" />
               </div>
             </div>
-          ) : data?.success && currentRegisterNotebook.length > 0 ? (
+          ) : data && currentRegisterNotebook.length > 0 ? (
             <TableRegisterBookComponent
               header={[
                 "Ngày",

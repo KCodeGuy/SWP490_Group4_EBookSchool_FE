@@ -67,29 +67,29 @@ function Basic() {
 
   const mutation = useMutation(loginUser, {
     onSuccess: (data) => {
-      if (data.success) {
-        if (schoolSetting?.success) {
-          localStorage.setItem("schoolSetting", JSON.stringify(schoolSetting?.data));
+      if (data) {
+        if (schoolSetting) {
+          localStorage.setItem("schoolSetting", JSON.stringify(schoolSetting));
         }
-        localStorage.setItem("authToken", data.data.accessToken); // Example: saving a token
-        localStorage.setItem("refreshToken", data.data.refreshToken); // Example: saving a token
-        localStorage.setItem("permissions", data.data.permissions); // Example: saving a token
-        localStorage.setItem("user", JSON.stringify(data.data.user)); // Example: saving use
-        localStorage.setItem("schoolYears", JSON.stringify(data.data.schoolYears));
-        const formattedArray = Object.keys(data.data.classes).map((schoolYear) => ({
+        localStorage.setItem("authToken", data.accessToken); // Example: saving a token
+        localStorage.setItem("refreshToken", data.refreshToken); // Example: saving a token
+        localStorage.setItem("permissions", data.permissions); // Example: saving a token
+        localStorage.setItem("user", JSON.stringify(data.user)); // Example: saving use
+        localStorage.setItem("schoolYears", JSON.stringify(data.schoolYears));
+        const formattedArray = Object.keys(data.classes).map((schoolYear) => ({
           schoolYear: schoolYear,
-          details: data.data.classes[schoolYear],
+          details: data.classes[schoolYear],
         }));
         localStorage.setItem("currentClasses", JSON.stringify(formattedArray));
         const userRole = getUserRole(
-          data.data.user.id.toString(),
-          data.data.user.username.toString(),
-          data.data.permissions.toString()
+          data.user.id.toString(),
+          data.user.username.toString(),
+          data.permissions.toString()
         );
         localStorage.setItem("userRole", userRole); // Example: saving use
         navigate("/dashboard");
       } else {
-        toast.error(data.data);
+        toast.error(data);
       }
       setCurrentUser(data);
     },
@@ -120,7 +120,7 @@ function Basic() {
           </MDTypography>
           <MDBox mt={1} mb={1} textAlign="center">
             <MDTypography variant="button" color="white" fontWeight="medium">
-              {schoolSetting?.data?.schoolName || "Online-Register-Notebook"}
+              {schoolSetting?.schoolName || "Online-Register-Notebook"}
             </MDTypography>
           </MDBox>
         </MDBox>

@@ -37,9 +37,9 @@ const Dashboard = React.memo(() => {
     getAllNotifications(accessToken)
   );
 
-  if (data?.success) {
-    paginatedData = data?.data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-    totalItems = data?.data.length;
+  if (data) {
+    paginatedData = data?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    totalItems = data?.length;
     totalPages = Math.ceil(totalItems / itemsPerPage);
   }
 
@@ -138,7 +138,7 @@ const Dashboard = React.memo(() => {
                       <CircularProgress size={24} color="inherit" />
                     </div>
                   </div>
-                ) : data?.success && paginatedData?.length > 0 ? (
+                ) : data && paginatedData?.length > 0 ? (
                   paginatedData?.map((item, index) => (
                     <Grid key={index} item xs={12} marginTop={1}>
                       <Card sx={{ padding: "12px", marginBottom: "12px" }}>

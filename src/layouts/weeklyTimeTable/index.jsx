@@ -159,18 +159,20 @@ export default function WeeklyTimeTable() {
     enabled: false,
   });
 
-  if (schoolYearsAPI && formattedClasses && schoolWeeks) {
-    refetch().then((result) => {
-      if (result.data?.success) {
-        setCurrentTimeTable(result.data?.data?.details);
-      }
-    });
-  }
+  useEffect(() => {
+    if (schoolYearsAPI && formattedClasses && schoolWeeks) {
+      refetch().then((result) => {
+        if (result.data) {
+          setCurrentTimeTable(result.data?.details);
+        }
+      });
+    }
+  }, [schoolWeek]);
 
   const handleFilterTimetable = () => {
     refetch().then((result) => {
-      if (result.data?.success) {
-        setCurrentTimeTable(result.data?.data?.details);
+      if (result.data) {
+        setCurrentTimeTable(result.data?.details);
       }
     });
   };
@@ -208,14 +210,14 @@ export default function WeeklyTimeTable() {
 
   const handleOpenCreateModal = () => {
     refetchSubjects().then((result) => {
-      if (result.data?.success) {
+      if (result.data) {
         // console.log(result.data?.data);
-        setCurrentSubjects(result.data?.data);
+        setCurrentSubjects(result.data);
       }
     });
     refetchTeachers().then((result) => {
-      if (result.data?.success) {
-        setCurrentTeachers(result.data?.data);
+      if (result.data) {
+        setCurrentTeachers(result.data);
       }
     });
     setIsUpdateAction(false);
@@ -227,15 +229,15 @@ export default function WeeklyTimeTable() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("timeTableState");
-        if (response && response.success) {
+        if (response) {
           toast.success("Tạo slot thành công!");
         } else {
           toast.error(`${response.data}!`);
         }
         reset();
         refetch().then((result) => {
-          if (result.data?.success) {
-            setCurrentTimeTable(result.data?.data?.details);
+          if (result.data) {
+            setCurrentTimeTable(result.data?.details);
           }
         });
         setOpenModelAdd(false);
@@ -252,7 +254,7 @@ export default function WeeklyTimeTable() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("timeTableState");
-        if (response && response.success) {
+        if (response) {
           toast.success("Tạo thời khóa biểu thành công!");
         } else {
           toast.error(`${response.data}!`);
@@ -260,8 +262,8 @@ export default function WeeklyTimeTable() {
         reset();
         setOpenModelAdd(false);
         refetch().then((result) => {
-          if (result.data?.success) {
-            setCurrentTimeTable(result.data?.data?.details);
+          if (result.data) {
+            setCurrentTimeTable(result.data?.details);
           }
         });
       },
@@ -287,13 +289,13 @@ export default function WeeklyTimeTable() {
       }
       // Start call API
       refetchSubjects().then((result) => {
-        if (result.data?.success) {
-          setCurrentSubjects(result.data?.data);
+        if (result.data) {
+          setCurrentSubjects(result.data);
         }
       });
       refetchTeachers().then((result) => {
-        if (result.data?.success) {
-          setCurrentTeachers(result.data?.data);
+        if (result.data) {
+          setCurrentTeachers(result.data);
         }
       });
       setCurrentSlot(rowItem);
@@ -308,7 +310,7 @@ export default function WeeklyTimeTable() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("slotData");
-        if (response && response.success) {
+        if (response) {
           toast.success("Cập nhật tiết học thành công!");
         } else {
           toast.error(`${response.data}!`);
@@ -316,8 +318,8 @@ export default function WeeklyTimeTable() {
         resetEditAction();
         setOpenModalUpdate(false);
         refetch().then((result) => {
-          if (result.data?.success) {
-            setCurrentTimeTable(result.data?.data?.details);
+          if (result.data) {
+            setCurrentTimeTable(result.data?.details);
           }
         });
       },
@@ -342,15 +344,15 @@ export default function WeeklyTimeTable() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("slotData");
-        if (response && response.success) {
+        if (response) {
           toast.success("Xóa tiết học thành công!");
         } else {
           toast.error("Xóa tiết học thất bại!");
         }
         setModalDeleteOpen(false);
         refetch().then((result) => {
-          if (result.data?.success) {
-            setCurrentTimeTable(result.data?.data?.details);
+          if (result.data) {
+            setCurrentTimeTable(result.data?.details);
           }
         });
       },
@@ -752,7 +754,7 @@ export default function WeeklyTimeTable() {
                 <CircularProgress size={24} color="inherit" />
               </div>
             </div>
-          ) : data?.success && currentTimeTable.length > 0 ? (
+          ) : data && currentTimeTable.length > 0 ? (
             <TableWeeklyTimeTableComponent
               data={currentTimeTable}
               onDetails={handleViewSlotDetail}

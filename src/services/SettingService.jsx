@@ -8,7 +8,6 @@ const getSetting = async () => {
       // Authorization: `Bearer ${accessToken}`,
     },
   });
-  console.log(res.data);
   return res.data;
 };
 

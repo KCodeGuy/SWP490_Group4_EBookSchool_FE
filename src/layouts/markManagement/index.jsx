@@ -66,6 +66,9 @@ const nameScore = [
   { label: "Kiểm tra 1 tiết", value: "1 Tiết" },
   { label: "Kiểm tra học kì", value: "Cuối kỳ" },
 ];
+
+let tabs = ["ĐIỂM THEO MÔN", "ĐIỂM THEO LỚP"];
+
 export default function MarkManagement() {
   const [currentOfStudentsMarkBySubject, setCurrentOfStudentsMarkBySubject] = useState([]);
   const [currentMarkOfClass, setCurrentMarkOfClass] = useState([]);
@@ -120,8 +123,8 @@ export default function MarkManagement() {
   };
 
   useEffect(() => {
-    if (data?.data?.length > 0) {
-      setSchoolSubject(data.data[0].name);
+    if (data) {
+      setSchoolSubject(data[0].name);
     }
   }, [data]);
   const [schoolSubject, setSchoolSubject] = React.useState("");
@@ -171,26 +174,27 @@ export default function MarkManagement() {
 
   const handleFilterMark = () => {
     refetch().then((result) => {
-      if (result.data?.success) {
-        setCurrentOfStudentsMarkBySubject(result.data?.data?.score);
+      if (result.data) {
+        setCurrentOfStudentsMarkBySubject(result.data);
       }
     });
 
     refetchMarkOfClass().then((result) => {
-      if (result.data?.success) {
-        setCurrentMarkOfClass(result.data?.data?.averages);
+      if (result.data) {
+        setCurrentMarkOfClass(result.data);
       }
     });
   };
 
-  const formattedSubjects = data?.data
+  const formattedSubjects = data
+    ?.filter((item) => item.isMark) // filter only items with isMark = true
     ?.map((item) => ({
       label: `${item.name} (Khối-${item.grade})`,
       name: item.name,
       value: item.name,
       grade: item.grade,
     }))
-    ?.sort((a, b) => a.grade - b.grade);
+    ?.sort((a, b) => a.grade - b.grade); // sort by grade
 
   const formattedSchoolYear = schoolYearsAPI?.map((item) => ({
     label: item,
@@ -232,7 +236,7 @@ export default function MarkManagement() {
   const updateMarkMutation = useMutation((file) => updateMarkByMarkComponent(accessToken, file), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("timeTableState");
-      if (response && response.success) {
+      if (response) {
         toast.success("Nhập điểm thành công!");
       } else {
         toast.error(`${response.data}!`);
@@ -240,8 +244,8 @@ export default function MarkManagement() {
       reset();
       setModalAdd(false);
       refetch().then((result) => {
-        if (result.data?.success) {
-          setCurrentOfStudentsMarkBySubject(result.data?.data?.score);
+        if (result.data) {
+          setCurrentOfStudentsMarkBySubject(result.data);
         }
       });
     },
@@ -252,34 +256,37 @@ export default function MarkManagement() {
     }
   };
 
-  const tabs = ["ĐIỂM THEO LỚP", "ĐIỂM THEO MÔN"];
   return (
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
       <DashboardNavbar />
       <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
-          <Tabs
-            value={value}
-            onChange={handleChange}
-            aria-label="simple tabs example"
-            sx={{
-              width: "100%",
-              textAlign: "left",
-              paddingX: 1,
-              paddingY: 2,
-              "& .Mui-selected": {
-                backgroundColor: "#247cd4",
-                color: "white !important",
-                fontWeight: "bold",
+          {userRole === "Principal" ? (
+            <Tabs
+              value={value}
+              onChange={handleChange}
+              aria-label="simple tabs example"
+              sx={{
+                width: "100%",
+                textAlign: "left",
+                paddingX: 1,
                 paddingY: 2,
-              },
-            }}
-          >
-            {tabs.map((item, index) => (
-              <Tab key={index} label={item} />
-            ))}
-          </Tabs>
+                "& .Mui-selected": {
+                  backgroundColor: "#247cd4",
+                  color: "white !important",
+                  fontWeight: "bold",
+                  paddingY: 2,
+                },
+              }}
+            >
+              {tabs.map((item, index) => (
+                <Tab key={index} label={item} />
+              ))}
+            </Tabs>
+          ) : (
+            ""
+          )}
 
           <div className="flex flex-nowrap justify-between mb-2.5 mt-8">
             <div className="left">
@@ -318,7 +325,10 @@ export default function MarkManagement() {
                 </Select>
               </FormControl>
 
-              {(userRole === "Principal" || userRole === "SubjectTeacher") && value != 0 ? (
+              {(userRole === "Principal" ||
+                userRole === "SubjectTeacher" ||
+                userRole === "HomeroomTeacher") &&
+              value != 1 ? (
                 <FormControl sx={{ minWidth: 120 }}>
                   <InputLabel id="select-school-subject-lable">Môn học</InputLabel>
                   <Select
@@ -512,8 +522,10 @@ export default function MarkManagement() {
               ""
             )}
           </div>
-
-          <TabPanel value={value} index={0}>
+          <TabPanel
+            value={value}
+            index={userRole === "SubjectTeacher" || userRole === "Principal" ? 1 : 0}
+          >
             <>
               {userRole === "HomeroomTeacher" || userRole === "Principal" ? (
                 <div className="text-center mt-10 uppercase">
@@ -530,7 +542,7 @@ export default function MarkManagement() {
                   <div className="mr-2">
                     <span className="mr-2 font-bold">Giáo viên: </span>
                     <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                      {currentUser ? currentUser.fullname.toString() : "Chưa có thông tin!"}
+                      {currentMarkOfClass?.teacherName || "Chưa có thông tin!"}
                     </span>
                   </div>
                 </div>
@@ -566,12 +578,12 @@ export default function MarkManagement() {
                       <CircularProgress size={24} color="inherit" />
                     </div>
                   </div>
-                ) : markOfClassAllSubject?.success && currentMarkOfClass.length > 0 ? (
+                ) : markOfClassAllSubject && currentMarkOfClass?.averages?.length > 0 ? (
                   <TableMarkAllStudentsComponent
                     className="mt-4"
                     semester={schoolSemester}
                     itemsPerPage={30}
-                    data={currentMarkOfClass}
+                    data={currentMarkOfClass?.averages}
                     onViewDetails={handleDetails}
                   />
                 ) : (
@@ -585,11 +597,21 @@ export default function MarkManagement() {
                   </div>
                 )
               ) : (
-                ""
+                <div className="text-center primary-color my-10 text-xl italic font-medium">
+                  <img
+                    className="w-60 h-60 object-cover object-center mx-auto"
+                    src={noDataImage3}
+                    alt="Chưa có dữ liệu!"
+                  />
+                  Bạn không có quyền try cập!
+                </div>
               )}
             </>
           </TabPanel>
-          <TabPanel value={value} index={1}>
+          <TabPanel
+            value={value}
+            index={userRole === "SubjectTeacher" || userRole === "Principal" ? 0 : 1}
+          >
             <>
               {userRole === "SubjectTeacher" || userRole === "Principal" ? (
                 <>
@@ -606,7 +628,7 @@ export default function MarkManagement() {
                       <div className="mr-2">
                         <span className="mr-2 font-bold">Giáo viên: </span>
                         <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                          {currentUser ? currentUser.fullname.toString() : "Chưa có thông tin!"}
+                          {currentOfStudentsMarkBySubject?.teacherName || "Chưa có thông tin!"}
                         </span>
                       </div>
                     </div>
@@ -649,12 +671,12 @@ export default function MarkManagement() {
                         <CircularProgress size={24} color="inherit" />
                       </div>
                     </div>
-                  ) : markOfStudentsBySubject?.success &&
-                    currentOfStudentsMarkBySubject.length > 0 ? (
+                  ) : markOfStudentsBySubject &&
+                    currentOfStudentsMarkBySubject?.score?.length > 0 ? (
                     <TableMarkOfSubjectComponent
                       semester={schoolSemester}
                       isHideMark={openModalRandom}
-                      data={currentOfStudentsMarkBySubject}
+                      data={currentOfStudentsMarkBySubject?.score}
                       className="mt-4 text-left"
                       onDetails={handleDetails}
                       itemsPerPage={30}
@@ -675,7 +697,6 @@ export default function MarkManagement() {
               )}
             </>
           </TabPanel>
-
           <div className="mt-5 text-base">
             <p className="font-bold">Ghi chú:</p>
             <ul className="list-disc ml-5">
@@ -705,7 +726,6 @@ export default function MarkManagement() {
               </li>
             </ul>
           </div>
-
           <PopupComponent
             title="RANDOM HỌC SINH"
             description="Chọn ngẫu nhiên học sinh"
@@ -723,7 +743,6 @@ export default function MarkManagement() {
               <ButtonComponent action="button">RANDOM</ButtonComponent>
             </div>
           </PopupComponent>
-
           <PopupComponent
             title="CHI TIẾT ĐIỂM"
             description="Chi tiết các cột điểm trong kỳ"

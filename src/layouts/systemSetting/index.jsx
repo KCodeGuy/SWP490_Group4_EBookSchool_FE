@@ -54,7 +54,7 @@ export default function SystemSetting() {
   const updateSchoolSettingMutation = useMutation((setting) => updateSetting(setting), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("settingState");
-      if (response && response.success) {
+      if (response) {
         toast.success("Cập nhật hệ thống thành công!");
       } else {
         toast.error(`Cập nhật hệ thống thất bại. ${response.data}!`);
@@ -244,7 +244,7 @@ export default function SystemSetting() {
                 <CircularProgress size={24} color="inherit" />
               </div>
             </div>
-          ) : data?.success ? (
+          ) : data ? (
             <Grid container spacing={1}>
               <Grid item xs={12} md={4}>
                 <MDBox mb={4}>
@@ -256,7 +256,7 @@ export default function SystemSetting() {
                   <DomainIcon />
                   <span className="text-base font-bold mx-2">Tên trường: </span>
                   <span className="text-sm text-color">
-                    {data?.data.schoolName || "Chưa có dữ liệu!"}
+                    {data?.schoolName || "Chưa có dữ liệu!"}
                   </span>
                 </div>
 
@@ -264,28 +264,28 @@ export default function SystemSetting() {
                   <PhoneIphoneIcon />
                   <span className="text-base font-bold mx-2">Số điện thoại: </span>
                   <span className="text-sm text-color">
-                    {data?.data.schoolPhone || "Chưa có dữ liệu!"}
+                    {data?.schoolPhone || "Chưa có dữ liệu!"}
                   </span>
                 </div>
                 <div className="flex items-center mt-4">
                   <MarkunreadIcon />
                   <span className="text-base font-bold mx-2">Email: </span>
                   <span className="text-sm text-color">
-                    {data?.data.schoolEmail || "Chưa có dữ liệu!"}
+                    {data?.schoolEmail || "Chưa có dữ liệu!"}
                   </span>
                 </div>
                 <div className="flex items-center mt-4">
                   <MilitaryTechIcon />
                   <span className="text-base font-bold mx-2">Cấp bậc: </span>
                   <span className="text-sm text-color">
-                    {data?.data.schoolLevel || "Chưa có dữ liệu!"}
+                    {data?.schoolLevel || "Chưa có dữ liệu!"}
                   </span>
                 </div>
                 <div className="flex items-center mt-4">
                   <LocationOnIcon />
                   <span className="text-base font-bold mx-2">Địa chỉ: </span>
                   <span className="text-sm text-color">
-                    {data?.data.schoolAddress || "Chưa có dữ liệu!"}
+                    {data?.schoolAddress || "Chưa có dữ liệu!"}
                   </span>
                 </div>
               </Grid>
@@ -304,7 +304,7 @@ export default function SystemSetting() {
                   <EmojiEventsIcon />
                   <span className="text-base font-bold mx-2">Giới thiệu: </span>
                   <span className="text-sm text-color">
-                    {data?.data.schoolName || "Chưa có dữ liệu!"}
+                    {data?.schoolName || "Chưa có dữ liệu!"}
                   </span>
                 </div>
                 <div className="flex items-center mt-4">

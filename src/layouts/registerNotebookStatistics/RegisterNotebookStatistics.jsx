@@ -1,6 +1,7 @@
 import {
   Box,
   Card,
+  CircularProgress,
   FormControl,
   Grid,
   InputLabel,
@@ -10,6 +11,7 @@ import {
   Tabs,
   Typography,
 } from "@mui/material";
+import noDataImage3 from "../../assets/images/noDataImage3.avif";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { BarChart, PieChart, axisClasses } from "@mui/x-charts";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
@@ -24,6 +26,8 @@ import React, { useState } from "react";
 import { schoolYears } from "mock/schoolYear";
 import { studentClasses } from "mock/class";
 import SchoolBook from "layouts/shoolBook";
+import { statisticOfRegisterNotebook } from "../../services/StatisticService";
+import { useQuery } from "react-query";
 
 const schoolWeeks = [
   { id: 1, name: "week 1", startTime: "20/1/2024", endTime: "28/1/2024" },
@@ -41,40 +45,6 @@ const schoolWeeks = [
   { id: 13, name: "week 13", startTime: "20/1/2024", endTime: "28/1/2024" },
 ];
 
-const semesters = ["Học kì I", "Học kì II", "Cả năm"];
-
-const grades = ["Khối 10", "Khối 11", "Khối 12"];
-
-const datasetSchoolBookForEntireSchool = [
-  {
-    Điểm: 1500,
-    Khối: "Khối 10",
-  },
-  {
-    Điểm: 1600,
-    Khối: "Khối 11",
-  },
-  {
-    Điểm: 1700,
-    Khối: "Khối 12",
-  },
-];
-
-const datasetASchoolBookForAGrade = [
-  {
-    Điểm: 160,
-    Lớp: "12A1",
-  },
-  {
-    Điểm: 50,
-    Lớp: "12A2",
-  },
-  {
-    Điểm: 200,
-    Lớp: "12A3",
-  },
-];
-
 const valueASubjectForAGrade = (value) => {
   if (typeof value === "number" || value === null) {
     return `${value} điểm`;
@@ -85,7 +55,7 @@ const valueASubjectForAGrade = (value) => {
 const chartSchoolBookForEntireSchool = {
   yAxis: [
     {
-      label: "Điểm",
+      label: "Điểm sổ đầu bài",
     },
   ],
   series: [{ dataKey: "Điểm", label: "Điểm trung bình", valueASubjectForAGrade, color: "#247CD4" }],
@@ -103,7 +73,7 @@ const chartSchoolBookForAGrade = {
       label: "Điểm sổ đầu bài",
     },
   ],
-  series: [{ dataKey: "Điểm", label: "Điểm", valueASubjectForAGrade, color: "#247CD4" }],
+  series: [{ dataKey: "Điểm", label: "Lớp học", valueASubjectForAGrade, color: "#247CD4" }],
   height: 500,
   sx: {
     [`& .${axisClasses.directionY} .${axisClasses.label}`]: {
@@ -113,29 +83,21 @@ const chartSchoolBookForAGrade = {
 };
 
 export default function RegisterNotebookStatistics() {
-  const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
+  let accessToken, userRole, schoolYearsAPI;
+  userRole = localStorage.getItem("userRole");
+  if (userRole) {
+    accessToken = localStorage.getItem("authToken");
+    schoolYearsAPI = JSON.parse(localStorage.getItem("schoolYears"));
+  }
+
+  const [currentData, setCurrentData] = useState([]);
+  const [chartFormattedData, setChartFormattedData] = useState([]);
+  const [highestMark, setHighestMark] = useState({ mark: 0, class: "Chưa thống kê!" });
+  const [lowestMark, setLowerMark] = useState({ mark: 0, class: "Chưa thống kê!" });
+  const [averageMark, setAverageMark] = useState(0);
+  const [schoolYear, setSchoolYear] = React.useState(schoolYearsAPI[schoolYearsAPI.length - 1]);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
-  };
-
-  const [schoolSemester, setSchoolSemester] = React.useState(semesters[0]);
-  const handleSchoolSemesterSelectedChange = (event) => {
-    setSchoolSemester(event.target.value);
-  };
-
-  const [grade, setGrade] = React.useState(grades[0]);
-  const handleGradeSelectedChange = (event) => {
-    setGrade(event.target.value);
-  };
-
-  const [schoolClass, setSchoolClass] = React.useState(studentClasses.data[0].name);
-  const handleSchoolClassSelectedChange = (event) => {
-    setSchoolClass(event.target.value);
-  };
-
-  const [schoolSubject, setSchoolSubject] = React.useState("Môn học");
-  const handleSchoolSubjectSelectedChange = (event) => {
-    setSchoolSubject(event.target.value);
   };
 
   const [schoolWeek, setSchoolWeek] = React.useState(schoolWeeks[0].name);
@@ -143,23 +105,41 @@ export default function RegisterNotebookStatistics() {
     setSchoolWeek(event.target.value);
   };
 
+  const { data, isError, isLoading, refetch } = useQuery({
+    queryKey: ["registerNotebookStatistic", { accessToken, schoolYear }],
+    queryFn: () => statisticOfRegisterNotebook(accessToken, schoolYear),
+    enabled: false,
+  });
+
   const handleDetails = (rowItem) => {
     console.log("Details row:", rowItem);
     // Implement delete logic here
   };
 
   const handleStatisticSubjectSchool = () => {
-    console.log("Call api by all school: ", { schoolYear, schoolSemester, schoolSubject });
+    refetch().then((result) => {
+      if (result.data?.success) {
+        const { transformedData, chartFormattedData } = transformData(result.data?.data);
+        setCurrentData(transformedData);
+        setChartFormattedData(chartFormattedData);
+      }
+    });
   };
   const [value, setValue] = React.useState(0);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const tabLabels = ["ĐIỂM SĐB TOÀN TRƯỜNG", "ĐIỂM SĐB THEO KHỐI"];
+  const tabLabels = ["ĐIỂM SĐB THEO TUẦN", "ĐIỂM SĐB CẢ NĂM"];
 
   const handleStatisticSubjectGrades = () => {
-    console.log("Call api by grad: ", { schoolYear, schoolSemester, schoolSubject, grade });
+    refetch().then((result) => {
+      if (result.data?.success) {
+        const { transformedData, chartFormattedData } = transformData(result.data?.data);
+        setCurrentData(transformedData);
+        setChartFormattedData(chartFormattedData);
+      }
+    });
   };
 
   const schoolBookOfAllSchoolsBox = [
@@ -197,36 +177,36 @@ export default function RegisterNotebookStatistics() {
       color: "primary",
       icon: "leaderboard",
       title: "Điểm thấp nhất",
-      count: "4.75",
+      count: `${lowestMark?.mark} điểm`,
       textDescriptionColor: "primary",
-      amount: "Lớp 12A1",
+      amount: `Lớp ${lowestMark?.class}`,
       label: "có TB thấp nhất",
     },
     {
       color: "info",
       icon: "leaderboard",
       title: "Điểm trung bình",
-      count: "8.75",
+      count: `${averageMark} điểm`,
       textDescriptionColor: "info",
-      amount: "Điểm TB giữa các lớp",
+      amount: "Điểm TB giữa tất cả các lớp",
       label: "",
     },
     {
       color: "success",
       icon: "leaderboard",
       title: "Điểm cao nhất",
-      count: "10",
+      count: `${highestMark?.mark} điểm`,
       textDescriptionColor: "success",
-      amount: "Lớp 12A2",
+      amount: `Lớp ${highestMark?.class}`,
       label: "có TB cao nhất",
     },
     {
       color: "info",
       icon: "leaderboard",
       title: "Tổng số lớp",
-      count: "12",
+      count: currentData?.length || 0,
       textDescriptionColor: "info",
-      amount: "12",
+      amount: currentData?.length || 0,
       label: "là tổng số lượng lớp",
     },
   ];
@@ -237,19 +217,49 @@ export default function RegisterNotebookStatistics() {
     ["Khối 12", "500", "1700", "3"],
   ]);
 
-  const [aSchoolBookForAGrade, setSchoolBookForAGrade] = useState([
-    ["12A1", "40", "160", "1"],
-    ["12A2", "40", "100", "1"],
-    ["12A3", "40", "110", "1"],
-    ["12A4", "40", "139", "1"],
-    ["12A5", "40", "178", "1"],
-    ["12A6", "40", "90", "1"],
-    ["12A7", "40", "105", "1"],
-  ]);
-
   (React.useState < "middle") | ("tick" > "middle");
   const [tickPlacement, setTickPlacement] = React.useState("middle");
   const [tickLabelPlacement, setTickLabelPlacement] = React.useState("middle");
+
+  function transformData(data) {
+    // Extract total marks and add to each object
+    data.forEach((item) => {
+      item.rankCounts.totalMark = item.rankCounts[""];
+      delete item.rankCounts[""];
+    });
+
+    // Sort data by totalMark in descending order
+    data.sort((a, b) => b.rankCounts.totalMark - a.rankCounts.totalMark);
+
+    // Assign ranks based on sorted order
+    data.forEach((item, index) => {
+      item.rankCounts.rank = index + 1;
+    });
+
+    // Get the highest and lowest totalMark
+    setHighestMark({ mark: data[0].rankCounts.totalMark, class: data[0].className });
+    setLowerMark({
+      mark: data[data.length - 1].rankCounts.totalMark,
+      class: data[data.length - 1].className,
+    });
+
+    // Transform data into the desired format
+    const chartFormattedData = data.map((item) => ({
+      Điểm: item.rankCounts.totalMark,
+      Lớp: `Lớp ${item.className}`,
+    }));
+
+    // Sort chartFormattedData by totalMark in ascending order
+    chartFormattedData.sort((a, b) => a.Điểm - b.Điểm);
+
+    const totalMarks = data.reduce((sum, item) => sum + item.rankCounts.totalMark, 0);
+    const averageMark = totalMarks / data.length;
+    setAverageMark(averageMark);
+    return {
+      transformedData: data,
+      chartFormattedData,
+    };
+  }
 
   return (
     <DashboardLayout>
@@ -281,53 +291,19 @@ export default function RegisterNotebookStatistics() {
             </Tabs>
             <TabPanel value={value} index={0}>
               <div className="left">
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                <FormControl sx={{ minWidth: 120 }}>
                   <InputLabel id="select-school-year-lable">Năm học</InputLabel>
                   <Select
                     labelId="select-school-year-lable"
                     id="elect-school-year"
                     value={schoolYear}
-                    className="h-11 mr-3"
+                    className="h-10 mr-2 max-[767px]:mb-4"
                     label="Năm học"
                     onChange={handleSchoolYearSelectedChange}
                   >
-                    {schoolYears.data.map((item) => (
-                      <MenuItem key={item.schoolYear} value={item.schoolYear}>
-                        {item.schoolYear}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-semester-lable">Học kì</InputLabel>
-                  <Select
-                    labelId="select-semester-lable"
-                    id="select-semester"
-                    value={schoolSemester}
-                    className="h-11 mr-3"
-                    label="Học kì"
-                    onChange={handleSchoolSemesterSelectedChange}
-                  >
-                    {semesters.map((item) => (
-                      <MenuItem key={item} value={item}>
+                    {schoolYearsAPI?.map((item, index) => (
+                      <MenuItem key={index} value={item}>
                         {item}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-school-week-lable">Tuần</InputLabel>
-                  <Select
-                    labelId="select-school-week-lable"
-                    id="select-school-class"
-                    value={schoolWeek}
-                    className="h-10 mr-2 max-[767px]:mb-4"
-                    label="Tuần"
-                    onChange={handleSchoolWeeksSelectedChange}
-                  >
-                    {schoolWeeks.map((item, index) => (
-                      <MenuItem key={index} value={item.name}>
-                        {item.startTime} - {item.endTime}
                       </MenuItem>
                     ))}
                   </Select>
@@ -337,17 +313,12 @@ export default function RegisterNotebookStatistics() {
                   className="max-[639px]:w-full"
                   onClick={handleStatisticSubjectSchool}
                 >
-                  <FilterAltIcon className="mr-1" /> Thống kê
+                  <FilterAltIcon className="mr-1" /> THỐNG KÊ
                 </ButtonComponent>
               </div>
               <>
                 <div className="text-center mt-8">
-                  <h4 className="text-xl font-bold">
-                    Thống kê TB điểm SĐB trường THPT Nguyễn Việt Hồng
-                  </h4>
-                  <h4 className="text-xl font-bold">
-                    Học kỳ: {schoolSemester}. Năm học: {schoolYear}
-                  </h4>
+                  <h4 className="text-xl font-bold">THỐNG KÊ ĐIỂM SỔ ĐẦU BÀI THEO TUẦN</h4>
                 </div>
 
                 <div className="mt-4 w-full grid gap-4 sm:grid-cols-1 md:grid-cols-2 overflow-x-auto">
@@ -356,7 +327,7 @@ export default function RegisterNotebookStatistics() {
                     style={{ background: "#E9F7FF" }}
                   >
                     <BarChart
-                      dataset={datasetSchoolBookForEntireSchool}
+                      dataset={chartFormattedData}
                       xAxis={[
                         { scaleType: "band", dataKey: "Khối", tickPlacement, tickLabelPlacement },
                       ]}
@@ -381,9 +352,7 @@ export default function RegisterNotebookStatistics() {
                       ))}
                     </div>
                     <div className="table w-full mt-8">
-                      <p className="text-base font-bold h-3">
-                        THỐNG KÊ CHI TIẾT ({schoolWeek}, {schoolSemester}, {schoolYear})
-                      </p>
+                      <p className="text-base font-bold h-3">THỐNG KÊ CHI TIẾT</p>
                       <TableComponent
                         header={["Khối", "Số lượng", "Điểm", "Hạng"]}
                         data={aSubjectForEntireSchool}
@@ -399,73 +368,35 @@ export default function RegisterNotebookStatistics() {
             </TabPanel>
             <TabPanel value={value} index={1}>
               <div className="left">
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                <FormControl sx={{ minWidth: 120 }}>
                   <InputLabel id="select-school-year-lable">Năm học</InputLabel>
                   <Select
                     labelId="select-school-year-lable"
                     id="elect-school-year"
                     value={schoolYear}
-                    className="h-11 mr-3"
+                    className="h-10 mr-2 max-[767px]:mb-4"
                     label="Năm học"
                     onChange={handleSchoolYearSelectedChange}
                   >
-                    {schoolYears.data.map((item) => (
-                      <MenuItem key={item.schoolYear} value={item.schoolYear}>
-                        {item.schoolYear}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-grade-lable">Khối</InputLabel>
-                  <Select
-                    labelId="select-grade-lable"
-                    id="select-grade"
-                    value={grade}
-                    className="h-11 mr-3"
-                    label="Khối"
-                    onChange={handleGradeSelectedChange}
-                  >
-                    {grades.map((item) => (
-                      <MenuItem key={item} value={item}>
+                    {schoolYearsAPI?.map((item, index) => (
+                      <MenuItem key={index} value={item}>
                         {item}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
 
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-semester-lable">Học kì</InputLabel>
-                  <Select
-                    labelId="select-semester-lable"
-                    id="select-semester"
-                    value={schoolSemester}
-                    className="h-11 mr-3"
-                    label="Học kì"
-                    onChange={handleSchoolSemesterSelectedChange}
-                  >
-                    {semesters.map((item) => (
-                      <MenuItem key={item} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
                 <ButtonComponent
                   type="success"
                   className="max-[639px]:w-full"
                   onClick={handleStatisticSubjectGrades}
                 >
-                  <FilterAltIcon className="mr-1" /> Thống kê
+                  <FilterAltIcon className="mr-1" /> THỐNG KÊ
                 </ButtonComponent>
               </div>
               <>
                 <div className="text-center mt-6">
-                  <h4 className="text-xl font-bold">Thống kê điểm SĐB {grade}</h4>
-                  <h4 className="text-xl font-bold">
-                    Học kỳ: {schoolSemester}. Năm học: {schoolYear}
-                  </h4>
+                  <h4 className="text-xl font-bold">THỐNG KÊ SỔ ĐẦU BÀI NĂM HỌC {schoolYear}</h4>
                 </div>
                 <div className="w-full custom mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
                   {aSchoolBookForAGradeBox.map((item, index) => (
@@ -488,7 +419,7 @@ export default function RegisterNotebookStatistics() {
                   style={{ background: "#E9F7FF" }}
                 >
                   <BarChart
-                    dataset={datasetASchoolBookForAGrade}
+                    dataset={chartFormattedData}
                     xAxis={[
                       { scaleType: "band", dataKey: "Lớp", tickPlacement, tickLabelPlacement },
                     ]}
@@ -497,15 +428,35 @@ export default function RegisterNotebookStatistics() {
                 </div>
 
                 <div className="mt-8 custom-table">
-                  <p className="text-base font-bold">THỐNG KÊ CHI TIẾT {grade}</p>
-                  <TableComponent
-                    header={["Lớp", "Sỉ số", "Điểm TB", "Hạng"]}
-                    data={aSchoolBookForAGrade}
-                    // onEdit={handleEdit}
-                    onDetails={handleDetails}
-                    // onDelete={handleDelete}
-                    className="mt-4"
-                  />
+                  <p className="text-base font-bold">THỐNG KÊ CHI TIẾT</p>
+                  {isLoading ? (
+                    <div className="text-center primary-color my-30 text-xl italic font-medium">
+                      <div className="mx-auto flex items-center justify-center">
+                        <p className="mr-3">Loading</p>
+                        <CircularProgress size={24} color="inherit" />
+                      </div>
+                    </div>
+                  ) : data?.success && currentData.length > 0 ? (
+                    <TableComponent
+                      header={["Lớp", "Điểm TB", "Hạng"]}
+                      data={currentData?.map((item) => [
+                        item.className,
+                        item.rankCounts.totalMark,
+                        item.rankCounts.rank,
+                      ])}
+                      onDetails={handleDetails}
+                      className="mt-4"
+                    />
+                  ) : (
+                    <div className="text-center primary-color my-10 text-xl italic font-medium">
+                      <img
+                        className="w-60 h-60 object-cover object-center mx-auto"
+                        src={noDataImage3}
+                        alt="Chưa có dữ liệu!"
+                      />
+                      Chưa có dữ liệu!
+                    </div>
+                  )}
                 </div>
               </>
             </TabPanel>

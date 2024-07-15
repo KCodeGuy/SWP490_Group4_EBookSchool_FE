@@ -55,7 +55,7 @@ function Overview() {
   );
 
   useEffect(() => {
-    setCurrentData(data?.data);
+    setCurrentData(data);
   }, [data]);
 
   return (

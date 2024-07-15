@@ -65,8 +65,8 @@ export default function StudentAccountManagement() {
     getAllStudents(accessToken)
   );
   useEffect(() => {
-    if (data?.success) {
-      setAccounts(data?.data);
+    if (data) {
+      setAccounts(data);
     }
   }, [data]);
 
@@ -94,9 +94,9 @@ export default function StudentAccountManagement() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("studentsState");
-        if (response && response.success) {
+        if (response) {
           toast.success("Tạo học sinh thành công!");
-          setAccounts(data?.data);
+          setAccounts(data);
         } else {
           toast.error(`Tạo học sinh thất bại. ${response.data}!`);
         }
@@ -115,7 +115,7 @@ export default function StudentAccountManagement() {
   const addStudentMutationManually = useMutation((data) => createStudent(accessToken, data), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("studentsState");
-      if (response && response.success) {
+      if (response) {
         toast.success("Tạo học sinh thành công!");
       } else {
         toast.error(`Tạo học sinh thất bại. ${response.data}!`);
@@ -152,7 +152,7 @@ export default function StudentAccountManagement() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("studentsState");
-        if (response && response.success) {
+        if (response) {
           toast.success("Cập nhật học sinh thành công!");
         } else {
           toast.error(`Cập nhật học sinh thất bại. ${response.data}!`);
@@ -216,14 +216,14 @@ export default function StudentAccountManagement() {
   }, [studentID]);
 
   useEffect(() => {
-    if (data?.success) {
-      setAccounts(data?.data);
+    if (data) {
+      setAccounts(data);
     }
   }, [data]);
 
   const deleteStudentMutation = useMutation((studentID) => deleteStudent(accessToken, studentID), {
     onSuccess: (response) => {
-      if (response && response.success) {
+      if (response) {
         queryClient.invalidateQueries(["studentsState", { accessToken }]); // Invalidate the getStudents query
         toast.success("Xóa học sinh thành công!");
       } else {
@@ -245,7 +245,7 @@ export default function StudentAccountManagement() {
   };
 
   const handleChangeSearchValue = (txtSearch) => {
-    setAccounts(searchStudent(txtSearch, data?.data));
+    setAccounts(searchStudent(txtSearch, data));
   };
 
   const searchStudent = (txtSearch, data) => {
@@ -606,7 +606,7 @@ export default function StudentAccountManagement() {
                   <CircularProgress size={24} color="inherit" />
                 </div>
               </div>
-            ) : data?.success && accounts.length > 0 ? (
+            ) : data && accounts.length > 0 ? (
               <TableComponent
                 header={[
                   "Mã học sinh",

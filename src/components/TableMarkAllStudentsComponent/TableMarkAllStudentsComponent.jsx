@@ -22,16 +22,74 @@ const TableMarkAllStudentsComponent = ({
     "TBM",
     "Học lực",
     "Hạnh kiểm",
-    "Xếp hạng",
+    // "Xếp hạng",
     "Chi tiết",
   ];
-  const dynamicHeaders = data[0].subjectAverages.map((subject) => subject.subject);
 
+  const subjectOrder = [
+    "Ngữ Văn",
+    "Toán",
+    "Ngoại ngữ",
+    "Vật lí",
+    "Hóa học",
+    "Sinh học",
+    "Lịch sử",
+    "Địa lí",
+    "GDCD",
+    "Tin học",
+    "Công nghệ",
+    "GD QP-AN",
+  ];
+
+  const sortSubjects = (subjects) => {
+    return subjects.sort(
+      (a, b) => subjectOrder.indexOf(a.subject) - subjectOrder.indexOf(b.subject)
+    );
+  };
+
+  // Calculate averages and add them to each student object
+  const calculateAverages = (subjects, key) => {
+    let sumOfAllSubject = 0;
+    let count = 0;
+    subjects.map((item) => {
+      if (key === "averageSemester1" && !isNaN(item.averageSemester1)) {
+        sumOfAllSubject += parseInt(item.averageSemester1);
+        count++;
+      }
+      if (key === "averageSemester2" && !isNaN(item.averageSemester2)) {
+        sumOfAllSubject += parseInt(item.averageSemester2);
+        count++;
+      }
+      if (key === "averageWholeYear" && !isNaN(item.averageWholeYear)) {
+        sumOfAllSubject += parseInt(item.averageWholeYear);
+        count++;
+      }
+    });
+    return Math.round((sumOfAllSubject / count) * 10) / 10;
+  };
+
+  const sortedData = data.map((student) => {
+    const sortedSubjects = sortSubjects(student.subjectAverages);
+    const totalAverage1 = calculateAverages(sortedSubjects, "averageSemester1");
+    const totalAverage2 = calculateAverages(sortedSubjects, "averageSemester2");
+    const totalAverage = calculateAverages(sortedSubjects, "averageWholeYear");
+
+    return {
+      ...student,
+      subjectAverages: sortedSubjects,
+      totalAverage1,
+      totalAverage2,
+      totalAverage,
+    };
+  });
+
+  const dynamicHeaders = sortedData[0].subjectAverages.map((subject) => subject.subject);
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = data.slice(startIndex, endIndex);
+
+  const currentData = sortedData.slice(startIndex, endIndex);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -100,16 +158,43 @@ const TableMarkAllStudentsComponent = ({
                   )
                 : "_"}
               <td>
-                <span className={renderAverageMarkStyles(10)}>10</span>
+                {semester == "Học kỳ I" ? (
+                  <span className={renderAverageMarkStyles(student.totalAverage1)}>
+                    {student.totalAverage1}
+                  </span>
+                ) : semester == "Học kỳ II" ? (
+                  <span className={renderAverageMarkStyles(student.totalAverage2)}>
+                    {student.totalAverage2}
+                  </span>
+                ) : semester == "Cả năm" ? (
+                  <span className={renderAverageMarkStyles(student.totalAverage)}>
+                    {student.totalAverage}
+                  </span>
+                ) : (
+                  ""
+                )}
               </td>
               <td>
-                <span className={renderRankingStyles(10)}>Giỏi</span>
+                {semester == "Học kỳ I" ? (
+                  <span className={renderRankingStyles(student.totalAverage1)}>
+                    {renderRanking(student.totalAverage1)}
+                  </span>
+                ) : semester == "Học kỳ II" ? (
+                  <span className={renderRankingStyles(student.totalAverage2)}>
+                    {renderRanking(student.totalAverage2)}
+                  </span>
+                ) : semester == "Cả năm" ? (
+                  <span className={renderRankingStyles(student.totalAverage)}>
+                    {renderRanking(student.totalAverage)}
+                  </span>
+                ) : (
+                  ""
+                )}
               </td>
               <td className="font-medium">
-                {" "}
                 <span className={renderRankingStyles(10)}>Tốt</span>
               </td>
-              <td>1</td>
+              {/* <td>1</td> */}
               <td>
                 <button className="primary-color text-xl" onClick={() => onViewDetails(student)}>
                   <EditCalendarIcon />

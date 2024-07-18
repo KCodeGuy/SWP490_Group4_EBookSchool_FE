@@ -12,14 +12,12 @@ const getAllClasses = async (accessToken) => {
 };
 // CallAPI_ClassManagement_UolLT_V1
 const getClassByID = async (accessToken, classID) => {
-  console.log(classID);
   const res = await axios.get(`${API_HOST}/Classes/${classID}?schoolYear=2024-2025`, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  console.log(res.data);
   return res.data;
 };
 
@@ -33,6 +31,7 @@ const addClass = async (accessToken, classData) => {
     });
     return response;
   } catch (error) {
+    throw error.message;
     console.log(error);
   }
 };

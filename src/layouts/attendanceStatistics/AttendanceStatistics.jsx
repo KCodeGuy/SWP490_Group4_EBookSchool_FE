@@ -1,96 +1,38 @@
-import { Card, FormControl, Grid, InputLabel, MenuItem, Select, Tab, Tabs } from "@mui/material";
+import { Card, CircularProgress, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import React, { useState } from "react";
-import "./style.scss";
-
+import AutoStoriesIcon from "@mui/icons-material/AutoStories";
+import PersonIcon from "@mui/icons-material/Person";
+import DoNotDisturbOffIcon from "@mui/icons-material/DoNotDisturbOff";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import GroupsIcon from "@mui/icons-material/Groups";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
+import { useQuery } from "react-query";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { axisClasses } from "@mui/x-charts";
-import { schoolYears } from "mock/schoolYear";
-import { TabPanel } from "components/TabPanelComponent";
+
+import "./style.scss";
+import noDataImage3 from "../../assets/images/noDataImage3.avif";
+import TableComponent from "../../components/TableComponent/TableComponent";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
-import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import { studentClasses } from "mock/class";
-import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
-import TableComponent from "components/TableComponent/TableComponent";
+import PopupComponent from "../../components/PopupComponent/PopupComponent";
+import { isTodayInSchoolYear } from "../../utils/CommonFunctions";
+import { getWeekForDate } from "../../utils/CommonFunctions";
+import { getTodayDate } from "../../utils/CommonFunctions";
+import { generateSchoolWeeks } from "utils/CommonFunctions";
+import TextValueComponent from "../../components/TextValueComponent";
+import {
+  statisticOfAttendance,
+  statisticOfAttendanceWholeYear,
+} from "../../services/StatisticService";
 
-const semesters = ["Học kì I", "Học kì II", "Cả năm"];
-
-const grades = ["Khối 10", "Khối 11", "Khối 12"];
-
-const datasetAttendanceOfEntireSchool = [
-  {
-    Tổng: 14,
-    Phép: 20,
-    Không: 5,
-    Khối: "10",
-  },
-  {
-    Tổng: 14,
-    Phép: 20,
-    Không: 5,
-    Khối: "11",
-  },
-  {
-    Tổng: 14,
-    Phép: 20,
-    Không: 5,
-    Khối: "12",
-  },
-];
-
-const datasetAttendanceOfGrades = [
-  {
-    Tổng: 14,
-    Phép: 20,
-    Không: 5,
-    Lớp: "12A1",
-  },
-  {
-    Tổng: 14,
-    Phép: 20,
-    Không: 5,
-    Lớp: "12A2",
-  },
-  {
-    Tổng: 14,
-    Phép: 20,
-    Không: 5,
-    Lớp: "12A3",
-  },
-  {
-    Tổng: 14,
-    Phép: 20,
-    Không: 5,
-    Lớp: "12A4",
-  },
-  {
-    Tổng: 14,
-    Phép: 20,
-    Không: 5,
-    Lớp: "12A5",
-  },
-  {
-    Tổng: 14,
-    Phép: 20,
-    Không: 5,
-    Lớp: "12A6",
-  },
-  {
-    Tổng: 14,
-    Phép: 20,
-    Không: 5,
-    Lớp: "12A7",
-  },
-  {
-    Tổng: 14,
-    Phép: 20,
-    Không: 5,
-    Lớp: "12A8",
-  },
-];
+const grades = [10, 11, 12];
 
 const chartSetting = {
   yAxis: [
@@ -98,7 +40,6 @@ const chartSetting = {
       label: "Lượt vắng",
     },
   ],
-  width: 1000,
   height: 500,
   sx: {
     [`.${axisClasses.left} .${axisClasses.label}`]: {
@@ -110,14 +51,21 @@ const chartSetting = {
 const valueFormatter = (value) => `${value} học sinh`;
 
 export default function AttendanceStatistics() {
-  const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
+  const [currentData, setCurrentData] = useState([]);
+  const [currentAttendanceDetail, setCurrentAttendanceDetail] = useState({});
+  const [openModalDetail, setOpenModalDetail] = useState(false);
+
+  let accessToken, userRole, schoolYearsAPI;
+  userRole = localStorage.getItem("userRole");
+  if (userRole) {
+    accessToken = localStorage.getItem("authToken");
+    schoolYearsAPI = JSON.parse(localStorage.getItem("schoolYears"));
+  }
+  const { today } = getTodayDate();
+
+  const [schoolYear, setSchoolYear] = React.useState(schoolYearsAPI[schoolYearsAPI.length - 1]);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
-  };
-
-  const [schoolSemester, setSchoolSemester] = React.useState(semesters[0]);
-  const handleSchoolSemesterSelectedChange = (event) => {
-    setSchoolSemester(event.target.value);
   };
 
   const [grade, setGrade] = React.useState(grades[0]);
@@ -125,312 +73,162 @@ export default function AttendanceStatistics() {
     setGrade(event.target.value);
   };
 
-  const [schoolClass, setSchoolClass] = React.useState(studentClasses.data[0].name);
-  const handleSchoolClassSelectedChange = (event) => {
-    setSchoolClass(event.target.value);
+  const schoolWeeks = generateSchoolWeeks(schoolYear);
+  let currentWeek;
+  if (isTodayInSchoolYear(schoolYear)) {
+    currentWeek = getWeekForDate(schoolWeeks, today);
+  }
+  const [currentWeekDate, setCurrentWeekDate] = useState(currentWeek);
+  const [schoolWeek, setSchoolWeek] = React.useState(currentWeekDate?.startTime);
+  const [schoolWeekEnd, setSchoolWeekEnd] = React.useState(currentWeekDate?.endTime);
+  const handleSchoolWeeksSelectedChange = (event) => {
+    setSchoolWeek(event.target.value);
+    setSchoolWeekEnd(event.target.value);
   };
 
-  const [schoolSubject, setSchoolSubject] = React.useState("Môn học");
-  const handleSchoolSubjectSelectedChange = (event) => {
-    setSchoolSubject(event.target.value);
-  };
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: [
+      "attendanceStatistic",
+      { accessToken, schoolYear, fromDate: schoolWeek, schoolWeekEnd, grade },
+    ],
+    queryFn: () => statisticOfAttendance(accessToken, schoolYear, schoolWeek, schoolWeekEnd, grade),
+    enabled: false,
+  });
+
+  const {
+    data: attendanceStatisticWholeYear,
+    isLoading: isLoadingWholeYear,
+    refetch: refetchWholeYear,
+  } = useQuery({
+    queryKey: ["attendanceStatisticWholeYear", { accessToken, schoolYear, grade }],
+    queryFn: () => statisticOfAttendanceWholeYear(accessToken, schoolYear, grade),
+    enabled: false,
+  });
 
   const handleDetails = (rowItem) => {
-    console.log("Details row:", rowItem);
-    // Implement delete logic here
+    setOpenModalDetail(true);
+    const attendanceDetail = {
+      className: rowItem[0],
+      grade: rowItem[1],
+      teacher: rowItem[2],
+      numberOfStudent: rowItem[3],
+      numberOfPresent: rowItem[4],
+      numberOfAbsent: rowItem[5],
+      numberOfConfirmed: rowItem[6],
+      numberOfUnconfirmed: rowItem[7],
+    };
+    setCurrentAttendanceDetail(attendanceDetail);
   };
 
-  const handleStatisticSubjectSchool = () => {
-    console.log("Call api by all school: ", { schoolYear, schoolSemester, schoolSubject });
-  };
-  const [value, setValue] = React.useState(0);
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  const handleStatisticByWeekly = () => {
+    refetch().then((result) => {
+      if (result.data) {
+        setCurrentData(result.data);
+      }
+    });
   };
 
-  const tabLabels = ["LƯỢT VẮNG TOÀN TRƯỜNG", "LƯỢT VẮNG THEO KHỐI"];
+  const handleStatisticWholeYear = () => {
+    refetchWholeYear().then((result) => {
+      if (result.data) {
+        setCurrentData(result.data);
+      }
+    });
+  };
 
+  const totalNumberOfAbsent = currentData?.reduce((sum, item) => sum + item.numberOfAbsent, 0);
+  const totalNumberOfConfirmed = currentData?.reduce(
+    (sum, item) => sum + item.numberOfConfirmed,
+    0
+  );
   const attendanceOfEntireSchoolBox = [
     {
-      color: "primary",
+      color: "info",
       icon: "leaderboard",
       title: "Tổng lượt vắng",
-      count: "50",
-      textDescriptionColor: "primary",
-      amount: "50",
+      count: `${totalNumberOfAbsent || 0} lượt`,
+      textDescriptionColor: "info",
+      amount: `${totalNumberOfAbsent || 0}`,
       label: "là tổng lượt vắng",
     },
     {
-      color: "info",
+      color: "secondary",
       icon: "leaderboard",
-      title: "Có phép",
-      count: "20",
-      textDescriptionColor: "info",
-      amount: "20",
-      label: "là lượt vắng có phép",
+      title: "Vắng(K)",
+      count: `${totalNumberOfAbsent - totalNumberOfConfirmed || 0} lượt`,
+      textDescriptionColor: "secondary",
+      amount: `${totalNumberOfAbsent - totalNumberOfConfirmed || 0}`,
+      label: "là tổng lượt vắng không phép",
     },
     {
-      color: "success",
+      color: "warning",
       icon: "leaderboard",
-      title: "Không phép",
-      count: "30",
-      textDescriptionColor: "success",
-      amount: "30",
-      label: "là lượt vắng không phép",
-    },
-  ];
-  const attendanceOfGradesBox = [
-    {
-      color: "primary",
-      icon: "leaderboard",
-      title: "Tổng lượt vắng",
-      count: "50",
-      textDescriptionColor: "primary",
-      amount: "50",
-      label: "là tổng lượt vắng",
-    },
-    {
-      color: "info",
-      icon: "leaderboard",
-      title: "Có phép",
-      count: "20",
-      textDescriptionColor: "info",
-      amount: "20",
-      label: "là lượt vắng có phép",
-    },
-    {
-      color: "success",
-      icon: "leaderboard",
-      title: "Không phép",
-      count: "30",
-      textDescriptionColor: "success",
-      amount: "30",
-      label: "là lượt vắng không phép",
-    },
-    {
-      color: "info",
-      icon: "leaderboard",
-      title: "Trung bình",
-      count: "50",
-      textDescriptionColor: "info",
-      amount: "50",
-      label: "là lượt vắng TB của trường",
+      title: "Vắng(phép)",
+      count: `${totalNumberOfConfirmed || 0} lượt`,
+      textDescriptionColor: "warning",
+      amount: `${totalNumberOfConfirmed || 0}`,
+      label: "là tổng lượt vắng có phép",
     },
   ];
 
-  const [attendanceOfEntireSchool, setAttendanceOfEntireSchool] = useState([
-    ["12A1", "50", "Lê Văn A", "10", "20", "30"],
-    ["12A1", "50", "Lê Văn A", "10", "20", "30"],
-    ["12A1", "50", "Lê Văn A", "10", "20", "30"],
-    ["12A1", "50", "Lê Văn A", "10", "20", "30"],
-    ["12A1", "50", "Lê Văn A", "10", "20", "30"],
-    ["12A1", "50", "Lê Văn A", "10", "20", "30"],
-    ["12A1", "50", "Lê Văn A", "10", "20", "30"],
-    ["12A1", "50", "Lê Văn A", "10", "20", "30"],
-    ["12A1", "50", "Lê Văn A", "10", "20", "30"],
-  ]);
-
-  const [attendanceOfGrades, setAttendanceOfGrades] = useState([
-    ["12A1", "50", "Lê Văn A", "10", "20", "30"],
-    ["12A1", "50", "Lê Văn A", "10", "20", "30"],
-    ["12A1", "50", "Lê Văn A", "10", "20", "30"],
-    ["12A1", "50", "Lê Văn A", "10", "20", "30"],
-    ["12A1", "50", "Lê Văn A", "10", "20", "30"],
-    ["12A1", "50", "Lê Văn A", "10", "20", "30"],
-  ]);
-
-  const [attendanceOfAClass, setAttendanceOfAClassOfAClass] = useState([
-    ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-    ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-    ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-    ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-    ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-    ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-    ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-    ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-    ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-    ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-    ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-  ]);
   (React.useState < "middle") | ("tick" > "middle");
-  const [tickPlacement, setTickPlacement] = React.useState("middle");
-  const [tickLabelPlacement, setTickLabelPlacement] = React.useState("middle");
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="mb-8">
+      <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
-          {/* DO NOT DELETE CODE AS ABOVE*/}
-          <div className="w-full mb-10">
-            <Tabs
-              value={value}
-              onChange={handleChange}
-              aria-label="simple tabs example"
-              sx={{
-                width: "100%",
-                textAlign: "left",
-                paddingX: 1,
-                paddingY: 2,
-                "& .Mui-selected": {
-                  backgroundColor: "#247cd4",
-                  color: "white !important",
-                  fontWeight: "bold",
-                  paddingY: 2,
-                },
-              }}
-            >
-              {tabLabels.map((item, index) => (
-                <Tab key={index} label={item} />
-              ))}
-            </Tabs>
-            <TabPanel value={value} index={0}>
+          <div className="w-full">
+            <div className="flex justify-between">
               <div className="left">
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
+                <FormControl sx={{ minWidth: 120 }}>
                   <InputLabel id="select-school-year-lable">Năm học</InputLabel>
                   <Select
                     labelId="select-school-year-lable"
                     id="elect-school-year"
                     value={schoolYear}
-                    className="h-11 mr-3"
+                    className="h-10 mr-2 max-[767px]:mb-4"
                     label="Năm học"
                     onChange={handleSchoolYearSelectedChange}
                   >
-                    {schoolYears.data.map((item) => (
-                      <MenuItem key={item.schoolYear} value={item.schoolYear}>
-                        {item.schoolYear}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-semester-lable">Học kì</InputLabel>
-                  <Select
-                    labelId="select-semester-lable"
-                    id="select-semester"
-                    value={schoolSemester}
-                    className="h-11 mr-3"
-                    label="Học kì"
-                    onChange={handleSchoolSemesterSelectedChange}
-                  >
-                    {semesters.map((item) => (
-                      <MenuItem key={item} value={item}>
+                    {schoolYearsAPI?.map((item, index) => (
+                      <MenuItem key={index} value={item}>
                         {item}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
-                <ButtonComponent
-                  type="success"
-                  className="max-[639px]:w-full"
-                  onClick={handleStatisticSubjectSchool}
-                >
-                  <FilterAltIcon className="mr-1" /> Thống kê
-                </ButtonComponent>
-              </div>
-              <div className="text-center mt-8">
-                <h4 className="text-xl font-bold">
-                  Thống kê lượt vắng {grade} trường THPT Nguyễn Việt Hồng
-                </h4>
-                <h4 className="text-xl font-bold">
-                  Học kỳ: {schoolSemester}. Năm học: {schoolYear}
-                </h4>
-              </div>
-              <div className="mt-8 grid gap-4 md:grid-cols-3 custom">
-                {attendanceOfEntireSchoolBox.map((item, index) => (
-                  <ComplexStatisticsCard
-                    key={index}
-                    color={item.color}
-                    icon={item.icon}
-                    title={item.title}
-                    count={item.count}
-                    percentage={{
-                      color: item.textDescriptionColor,
-                      amount: item.amount,
-                      label: item.label,
-                    }}
-                  />
-                ))}
-              </div>
-              <div
-                className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
-                style={{ background: "#E9F7FF" }}
-              >
-                <BarChart
-                  dataset={datasetAttendanceOfEntireSchool}
-                  xAxis={[
-                    { scaleType: "band", dataKey: "Khối", tickPlacement, tickLabelPlacement },
-                  ]}
-                  series={[
-                    { dataKey: "Tổng", label: "Tổng lượt vắng", valueFormatter },
-                    { dataKey: "Phép", label: "Có phép", valueFormatter },
-                    { dataKey: "Không", label: "Không phép", valueFormatter },
-                  ]}
-                  {...chartSetting}
-                />
-              </div>
 
-              <div className="mt-8 custom-table">
-                <p className="text-base font-bold">THỐNG KÊ CHI TIẾT</p>
-                <TableComponent
-                  header={["Khối", "Số lượng", "GVCN", "Tổng lượt vắng", "Có phép", "Không phép"]}
-                  data={attendanceOfEntireSchool}
-                  // onEdit={handleEdit}
-                  onDetails={handleDetails}
-                  // onDelete={handleDelete}
-                  className="mt-4"
-                />
-              </div>
-            </TabPanel>
-            <TabPanel value={value} index={1}>
-              <div className="left">
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-school-year-lable">Năm học</InputLabel>
+                <FormControl sx={{ minWidth: 120 }}>
+                  <InputLabel id="select-school-week-lable">Tuần</InputLabel>
                   <Select
-                    labelId="select-school-year-lable"
-                    id="elect-school-year"
-                    value={schoolYear}
-                    className="h-11 mr-3"
-                    label="Năm học"
-                    onChange={handleSchoolYearSelectedChange}
+                    labelId="select-school-week-lable"
+                    id="select-school-week"
+                    value={schoolWeek}
+                    className="h-10 mr-2 max-[767px]:mb-4"
+                    label="Tuần"
+                    onChange={handleSchoolWeeksSelectedChange}
                   >
-                    {schoolYears.data.map((item) => (
-                      <MenuItem key={item.schoolYear} value={item.schoolYear}>
-                        {item.schoolYear}
+                    {schoolWeeks.map((item, index) => (
+                      <MenuItem key={index} value={item.startTime}>
+                        {item.startTime} - {item.endTime}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-grade-lable">Khối</InputLabel>
+                <FormControl sx={{ minWidth: 120 }}>
+                  <InputLabel id="select-school-grade-lable">Khối lớp</InputLabel>
                   <Select
-                    labelId="select-grade-lable"
+                    labelId="select-school-grade-lable"
                     id="select-grade"
                     value={grade}
-                    className="h-11 mr-3"
-                    label="Khối"
+                    className="h-10 mr-2 max-[767px]:mb-4"
+                    label="Năm học"
                     onChange={handleGradeSelectedChange}
                   >
-                    {grades.map((item) => (
-                      <MenuItem key={item} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-semester-lable">Học kì</InputLabel>
-                  <Select
-                    labelId="select-semester-lable"
-                    id="select-semester"
-                    value={schoolSemester}
-                    className="h-11 mr-3"
-                    label="Học kì"
-                    onChange={handleSchoolSemesterSelectedChange}
-                  >
-                    {semesters.map((item) => (
-                      <MenuItem key={item} value={item}>
-                        {item}
+                    {grades?.map((item, index) => (
+                      <MenuItem key={index} value={item}>
+                        {`Khối ${item}`}
                       </MenuItem>
                     ))}
                   </Select>
@@ -438,63 +236,217 @@ export default function AttendanceStatistics() {
                 <ButtonComponent
                   type="success"
                   className="max-[639px]:w-full"
-                  onClick={handleStatisticSubjectSchool}
+                  onClick={handleStatisticByWeekly}
                 >
-                  <FilterAltIcon className="mr-1" /> Thống kê
+                  <FilterAltIcon className="mr-1" /> THỐNG KÊ
                 </ButtonComponent>
               </div>
-              <div className="text-center mt-8">
-                <h4 className="text-xl font-bold">
-                  Thống kê học lực khối {grade} trường THPT Nguyễn Việt Hồng
-                </h4>
-                <h4 className="text-xl font-bold">
-                  Học kỳ: {schoolSemester}. Năm học: {schoolYear}
-                </h4>
-              </div>
-              <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4 custom">
-                {attendanceOfGradesBox.map((item, index) => (
-                  <ComplexStatisticsCard
-                    key={index}
-                    color={item.color}
-                    icon={item.icon}
-                    title={item.title}
-                    count={item.count}
-                    percentage={{
-                      color: item.textDescriptionColor,
-                      amount: item.amount,
-                      label: item.label,
-                    }}
-                  />
-                ))}
-              </div>
-              <div
-                className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
-                style={{ background: "#E9F7FF" }}
+              <ButtonComponent
+                type="primary"
+                className="max-[639px]:w-full"
+                onClick={handleStatisticWholeYear}
               >
-                <BarChart
-                  dataset={datasetAttendanceOfGrades}
-                  xAxis={[{ scaleType: "band", dataKey: "Lớp", tickPlacement, tickLabelPlacement }]}
-                  series={[
-                    { dataKey: "Tổng", label: "Tổng lượt vắng", valueFormatter },
-                    { dataKey: "Phép", label: "Có phép", valueFormatter },
-                    { dataKey: "Không", label: "Không phép", valueFormatter },
-                  ]}
-                  {...chartSetting}
-                />
-              </div>
+                <FilterAltIcon className="mr-1" /> CẢ NĂM
+              </ButtonComponent>
+            </div>
+            <div className="text-center mt-8">
+              <h4 className="text-xl font-bold uppercase">Thống kê lượt vắng khối {grade}</h4>
+              <h4 className="text-xl font-bold uppercase">Năm học: {schoolYear}</h4>
+            </div>
 
-              <div className="mt-8 custom-table">
-                <p className="text-base font-bold">THỐNG KÊ CHI TIẾT ({grade})</p>
-                <TableComponent
-                  header={["Lớp", "Sỉ số", "GVCN", "Tổng lượt vắng", "Có phép", "Không phép"]}
-                  data={attendanceOfGrades}
-                  // onEdit={handleEdit}
-                  onDetails={handleDetails}
-                  // onDelete={handleDelete}
-                  className="mt-4"
-                />
-              </div>
-            </TabPanel>
+            <div className="mt-8 custom-table">
+              {isLoading || isLoadingWholeYear ? (
+                <div className="text-center primary-color py-20 text-xl italic font-medium my-10">
+                  <div className="mx-auto flex items-center justify-center">
+                    <p className="mr-3">Loading</p>
+                    <CircularProgress size={24} color="inherit" />
+                  </div>
+                </div>
+              ) : currentData?.length > 0 ? (
+                <>
+                  <div className="mt-10 grid gap-4 md:grid-cols-3 custom">
+                    {attendanceOfEntireSchoolBox.map((item, index) => (
+                      <ComplexStatisticsCard
+                        key={index}
+                        color={item.color}
+                        icon={item.icon}
+                        title={item.title}
+                        count={item.count}
+                        percentage={{
+                          color: item.textDescriptionColor,
+                          amount: item.amount,
+                          label: item.label,
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <div
+                    className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
+                    style={{ background: "#E9F7FF" }}
+                  >
+                    <BarChart
+                      dataset={currentData?.map((item) => ({
+                        className: item.className,
+                        numberOfAbsent: item.numberOfAbsent,
+                        numberOfUnconfirmed: item.numberOfAbsent - item.numberOfConfirmed,
+                        numberOfConfirmed: item.numberOfConfirmed,
+                      }))}
+                      xAxis={[
+                        {
+                          scaleType: "band",
+                          dataKey: "className",
+                          tickPlacement: "middle",
+                          tickLabelPlacement: "middle",
+                        },
+                      ]}
+                      series={[
+                        {
+                          dataKey: "numberOfAbsent",
+                          label: "Lựợt vắng",
+                          valueFormatter,
+                        },
+                        { dataKey: "numberOfUnconfirmed", label: "Vắng(K)", valueFormatter },
+                        {
+                          dataKey: "numberOfConfirmed",
+                          label: "Vắng(phép)",
+                          valueFormatter,
+                        },
+                      ]}
+                      {...chartSetting}
+                    />
+                  </div>
+                  <p className="text-base font-bold mt-6">
+                    THỐNG KÊ CHI TIẾT LƯỢT VẮNG({schoolYear})
+                  </p>
+                  <TableComponent
+                    header={[
+                      "Lớp",
+                      "Khối",
+                      "GVCN",
+                      "Số lượng HS",
+                      "Có mặt",
+                      "Chưa điểm danh",
+                      "Vắng(phép)",
+                      "Vắng(K)",
+                    ]}
+                    data={currentData?.map((item) => [
+                      item.className,
+                      item.grade,
+                      item.teacher,
+                      item.numberOfStudent,
+                      item.numberOfPresent,
+                      item.numberOfAbsent,
+                      item.numberOfConfirmed,
+                      item.numberOfAbsent - item.numberOfConfirmed,
+                    ])}
+                    onDetails={handleDetails}
+                    itemsPerPage={30}
+                    className="mt-4"
+                  />
+                </>
+              ) : (
+                <div className="text-center primary-color my-10 text-xl italic font-medium">
+                  <img
+                    className="w-60 h-60 object-cover object-center mx-auto"
+                    src={noDataImage3}
+                    alt="Chưa có dữ liệu!"
+                  />
+                  Chưa có dữ liệu!
+                </div>
+              )}
+            </div>
+            <div className="mt-5 text-base">
+              <p className="font-bold">Ghi chú:</p>
+              <ul className="list-disc ml-5">
+                <li>
+                  <span className="primary-color font-bold">(Tổng lượt vắng): </span>
+                  <span className="italic">
+                    Tổng tất cả lượt vắng của học sinh trong năm học/tuần học quy định.
+                  </span>
+                </li>
+                <li>
+                  <span className="text-color font-bold">(Vắng(K)): </span>
+                  <span className="italic">
+                    {" "}
+                    Tổng tất cả lượt vắng không phép của học sinh trong năm học/tuần học quy định.
+                  </span>
+                </li>
+                <li>
+                  <span className="warning-color font-bold">(Vắng(phép)): </span>
+                  <span className="italic">
+                    {" "}
+                    Tổng tất cả lượt vắng có phép của học sinh trong năm học/tuần học quy định.
+                  </span>
+                </li>
+              </ul>
+            </div>
+            {data && currentData.length > 0 ? (
+              <PopupComponent
+                title="CHI TIẾT"
+                description={`NĂM HỌC: ${schoolYear || "chưa có dữ liệu!"} `}
+                rightNote={`Lớp: ${currentAttendanceDetail.className || "chưa có dữ liệu!"}`}
+                isOpen={openModalDetail}
+                onClose={() => setOpenModalDetail(false)}
+              >
+                <div className="max-w-md">
+                  <TextValueComponent
+                    label="GVCN"
+                    value={currentAttendanceDetail.teacher || "chưa có dữ liệu!"}
+                    icon={<PersonIcon />}
+                    variantValue="success"
+                    className="justify-between w-full"
+                  />
+                  <TextValueComponent
+                    label="Số lượng học sinh"
+                    value={
+                      `${currentAttendanceDetail.numberOfStudent} học sinh` || "chưa có dữ liệu!"
+                    }
+                    icon={<GroupsIcon />}
+                    customValue="text-black "
+                    className="justify-between w-full"
+                  />
+                  <TextValueComponent
+                    label="Có mặt"
+                    value={`${currentAttendanceDetail.numberOfPresent} lượt` || "_"}
+                    icon={<CheckCircleIcon />}
+                    customValue="text-black "
+                    className="justify-between w-full"
+                  />
+                  <TextValueComponent
+                    label="Chưa điểm danh"
+                    value={`${currentAttendanceDetail.numberOfAbsent} lượt` || "_"}
+                    icon={<RemoveCircleOutlineIcon />}
+                    customValue="text-black "
+                    className="justify-between w-full"
+                  />
+                  <TextValueComponent
+                    label="Vắng(phép)"
+                    value={`${currentAttendanceDetail.numberOfConfirmed} lượt` || "_"}
+                    icon={<HowToRegIcon />}
+                    customValue="text-black "
+                    className="justify-between w-full"
+                  />
+                  <TextValueComponent
+                    label="Vắng(K)"
+                    value={`${currentAttendanceDetail.numberOfUnconfirmed} lượt` || "_"}
+                    icon={<DoNotDisturbOffIcon />}
+                    customValue="text-black "
+                    className="justify-between w-full"
+                  />
+
+                  <div className="w-full h-0.5 bg-slate-400 my-2"></div>
+                  <TextValueComponent
+                    label="Tổng lượt vắng"
+                    value={`${currentAttendanceDetail.numberOfAbsent} lượt` || "_"}
+                    icon={<AutoStoriesIcon />}
+                    variantValue="primary"
+                    className="justify-between w-full"
+                  />
+                </div>
+              </PopupComponent>
+            ) : (
+              ""
+            )}
           </div>
         </MDBox>
       </Card>

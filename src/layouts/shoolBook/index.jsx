@@ -7,7 +7,6 @@ import "react-toastify/dist/ReactToastify.css";
 import Card from "@mui/material/Card";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useForm } from "react-hook-form";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent.jsx";
 import Footer from "../../examples/Footer/index.js";
@@ -22,7 +21,6 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import { formatDateYearsMonthsDates } from "utils/CommonFunctions";
 import noDataImage3 from "../../assets/images/noDataImage3.avif";
-import SearchInputComponent from "../../components/SearchInputComponent/SearchInputComponent.jsx";
 import TableRegisterBookComponent from "../../components/TableRegisterBookComponent/index.jsx";
 import PopupComponent from "../../components/PopupComponent/PopupComponent.jsx";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent.jsx";
@@ -39,6 +37,7 @@ import NotifyCheckInfoForm from "components/NotifyCheckInfoForm/index.jsx";
 import TextValueComponent from "../../components/TextValueComponent/index.jsx";
 
 const SchoolBook = () => {
+  const [isFirstRender, setIsFirstRender] = useState(true);
   const [openModalEditSchoolBook, setOpenModalEditSchoolBook] = useState(false);
   const [currentRegisterNotebook, setCurrentRegisterNotebook] = useState({});
   const [currentSlot, setCurrentSlot] = useState({});
@@ -170,7 +169,7 @@ const SchoolBook = () => {
   };
 
   useEffect(() => {
-    if (schoolWeeks) {
+    if (schoolWeeks && isFirstRender) {
       refetch().then((result) => {
         if (result?.data) {
           const transformedData = formatRegisterNotebook(result.data?.details);
@@ -178,9 +177,11 @@ const SchoolBook = () => {
         }
       });
     }
-  }, [schoolWeeks]);
+    setIsFirstRender(false);
+  }, [schoolWeeks, isFirstRender]);
 
   const handleFilterTimetable = () => {
+    setIsFirstRender(false);
     refetch().then((result) => {
       if (result.data) {
         const transformedData = formatRegisterNotebook(result.data?.details);
@@ -188,11 +189,6 @@ const SchoolBook = () => {
       }
     });
   };
-
-  const handleChangeSearchValue = (txtSearch) => {
-    // console.log(txtSearch);
-  };
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 

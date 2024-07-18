@@ -54,8 +54,8 @@ const updateMarkByMarkComponent = async (accessToken, file) => {
     });
     return res.data;
   } catch (error) {
-    console.error("Error adding timetable:", error);
-    throw error;
+    // console.error("Error adding timetable:", error);
+    // throw error;
   }
 };
 

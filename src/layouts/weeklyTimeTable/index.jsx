@@ -53,6 +53,7 @@ import { getAllTeachers } from "../../services/TeacherService";
 const slotDates = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 export default function WeeklyTimeTable() {
+  const [isFirstRender, setIsFirstRender] = useState(true);
   const [openModelAdd, setOpenModelAdd] = useState(false);
   const [isUpdateAction, setIsUpdateAction] = useState(false);
   const [openModalDetail, setOpenModalDetail] = useState(false);
@@ -160,16 +161,18 @@ export default function WeeklyTimeTable() {
   });
 
   useEffect(() => {
-    if (schoolYearsAPI && formattedClasses && schoolWeeks) {
+    if (schoolYearsAPI && formattedClasses && schoolWeeks && isFirstRender) {
       refetch().then((result) => {
         if (result.data) {
           setCurrentTimeTable(result.data?.details);
         }
       });
+      setIsFirstRender(false);
     }
-  }, [schoolWeek]);
+  }, [schoolWeek, isFirstRender]);
 
   const handleFilterTimetable = () => {
+    setIsFirstRender(false);
     refetch().then((result) => {
       if (result.data) {
         setCurrentTimeTable(result.data?.details);
@@ -962,7 +965,7 @@ export default function WeeklyTimeTable() {
               </li>
             </ul>
           </div>
-          {data?.success && currentTimeTable.length > 0 ? (
+          {data && currentTimeTable.length > 0 ? (
             <PopupComponent
               title="CHI TIẾT"
               description={`TIẾT: ${currentSlot.slot}`}

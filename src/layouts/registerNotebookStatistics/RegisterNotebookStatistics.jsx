@@ -1,86 +1,47 @@
 import {
-  Box,
   Card,
   CircularProgress,
   FormControl,
-  Grid,
   InputLabel,
   MenuItem,
   Select,
   Tab,
   Tabs,
-  Typography,
 } from "@mui/material";
-import noDataImage3 from "../../assets/images/noDataImage3.avif";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import { BarChart, PieChart, axisClasses } from "@mui/x-charts";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import { BarChart, axisClasses } from "@mui/x-charts";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import MDBox from "components/MDBox";
 import { TabPanel } from "components/TabPanelComponent";
 import TableComponent from "components/TableComponent/TableComponent";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 import Footer from "examples/Footer";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import React, { useState } from "react";
-import { schoolYears } from "mock/schoolYear";
-import { studentClasses } from "mock/class";
-import SchoolBook from "layouts/shoolBook";
-import { statisticOfRegisterNotebook } from "../../services/StatisticService";
 import { useQuery } from "react-query";
 
-const schoolWeeks = [
-  { id: 1, name: "week 1", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 2, name: "week 2", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 3, name: "week 3", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 4, name: "week 4", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 5, name: "week 5", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 6, name: "week 6", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 7, name: "week 7", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 8, name: "week 8", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 9, name: "week 9", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 10, name: "week 10", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 11, name: "week 11", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 12, name: "week 12", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 13, name: "week 13", startTime: "20/1/2024", endTime: "28/1/2024" },
-];
+import noDataImage3 from "../../assets/images/noDataImage3.avif";
+import { isTodayInSchoolYear } from "../../utils/CommonFunctions";
+import { getWeekForDate } from "../../utils/CommonFunctions";
+import { generateSchoolWeeks } from "../../utils/CommonFunctions";
+import { getTodayDate } from "../../utils/CommonFunctions";
+import PopupComponent from "../../components/PopupComponent/PopupComponent";
+import TextValueComponent from "../../components/TextValueComponent";
+import {
+  statisticOfRegisterNotebook,
+  statisticOfRegisterNotebookByGrade,
+  statisticOfRegisterNotebookByGradeWholeYear,
+  statisticOfRegisterNotebookWholeYear,
+} from "../../services/StatisticService";
 
-const valueASubjectForAGrade = (value) => {
-  if (typeof value === "number" || value === null) {
-    return `${value} điểm`;
-  }
-  throw new Error("Value must be a number or null");
-};
-
-const chartSchoolBookForEntireSchool = {
-  yAxis: [
-    {
-      label: "Điểm sổ đầu bài",
-    },
-  ],
-  series: [{ dataKey: "Điểm", label: "Điểm trung bình", valueASubjectForAGrade, color: "#247CD4" }],
-  height: 500,
-  sx: {
-    [`& .${axisClasses.directionY} .${axisClasses.label}`]: {
-      transform: "translateX(-10px)",
-    },
-  },
-};
-
-const chartSchoolBookForAGrade = {
-  yAxis: [
-    {
-      label: "Điểm sổ đầu bài",
-    },
-  ],
-  series: [{ dataKey: "Điểm", label: "Lớp học", valueASubjectForAGrade, color: "#247CD4" }],
-  height: 500,
-  sx: {
-    [`& .${axisClasses.directionY} .${axisClasses.label}`]: {
-      transform: "translateX(-10px)",
-    },
-  },
-};
+const grades = [10, 11, 12];
+const MARK_OF_TYPE_A = 20;
+const MARK_OF_TYPE_B = 15;
+const MARK_OF_TYPE_C = 10;
+const MARK_OF_TYPE_D = 0;
 
 export default function RegisterNotebookStatistics() {
   let accessToken, userRole, schoolYearsAPI;
@@ -91,7 +52,8 @@ export default function RegisterNotebookStatistics() {
   }
 
   const [currentData, setCurrentData] = useState([]);
-  const [chartFormattedData, setChartFormattedData] = useState([]);
+  const [detail, setDetail] = useState({});
+  const [openModalDetail, setOpenModalDetail] = useState(false);
   const [highestMark, setHighestMark] = useState({ mark: 0, class: "Chưa thống kê!" });
   const [lowestMark, setLowerMark] = useState({ mark: 0, class: "Chưa thống kê!" });
   const [averageMark, setAverageMark] = useState(0);
@@ -100,97 +62,129 @@ export default function RegisterNotebookStatistics() {
     setSchoolYear(event.target.value);
   };
 
-  const [schoolWeek, setSchoolWeek] = React.useState(schoolWeeks[0].name);
+  const { today } = getTodayDate();
+  const schoolWeeks = generateSchoolWeeks(schoolYear);
+
+  let currentWeek;
+  if (isTodayInSchoolYear(schoolYear)) {
+    currentWeek = getWeekForDate(schoolWeeks, today);
+  }
+
+  const [currentWeekDate, setCurrentWeekDate] = useState(currentWeek);
+
+  const [schoolWeek, setSchoolWeek] = React.useState(currentWeekDate?.startTime);
+  const [schoolWeekEnd, setSchoolWeekEnd] = React.useState(currentWeekDate?.endTime);
   const handleSchoolWeeksSelectedChange = (event) => {
     setSchoolWeek(event.target.value);
+    setSchoolWeekEnd(event.target.value);
+  };
+  const [grade, setGrade] = React.useState(grades[0]);
+  const handleGradeSelectedChange = (event) => {
+    setGrade(event.target.value);
   };
 
   const { data, isError, isLoading, refetch } = useQuery({
-    queryKey: ["registerNotebookStatistic", { accessToken, schoolYear }],
-    queryFn: () => statisticOfRegisterNotebook(accessToken, schoolYear),
+    queryKey: ["registerNotebookStatistic", { accessToken, schoolYear, schoolWeek, schoolWeekEnd }],
+    queryFn: () => statisticOfRegisterNotebook(accessToken, schoolYear, schoolWeek, schoolWeekEnd),
+    enabled: false,
+  });
+
+  const {
+    data: dataWholeYear,
+    isLoading: isLoadingWholeYear,
+    refetch: refetchWholeYear,
+  } = useQuery({
+    queryKey: ["registerNotebookStatisticWholeYear", { accessToken, schoolYear }],
+    queryFn: () => statisticOfRegisterNotebookWholeYear(accessToken, schoolYear),
+    enabled: false,
+  });
+
+  const {
+    data: dataByGrade,
+    isLoading: isLoadingByGrade,
+    refetch: refetchByGrade,
+  } = useQuery({
+    queryKey: [
+      "registerNotebookStatisticByGrade",
+      { accessToken, schoolYear, schoolWeek, schoolWeekEnd, grade },
+    ],
+    queryFn: () =>
+      statisticOfRegisterNotebookByGrade(accessToken, schoolYear, schoolWeek, schoolWeekEnd, grade),
+    enabled: false,
+  });
+
+  const {
+    data: dataByGradeWholeYear,
+    isLoading: isLoadingByGradeWholeYear,
+    refetch: refetchByGradeWholeYear,
+  } = useQuery({
+    queryKey: ["registerNotebookStatisticByGradeWholeYear", { accessToken, schoolYear, grade }],
+    queryFn: () => statisticOfRegisterNotebookByGradeWholeYear(accessToken, schoolYear, grade),
     enabled: false,
   });
 
   const handleDetails = (rowItem) => {
-    console.log("Details row:", rowItem);
-    // Implement delete logic here
+    if (rowItem) {
+      setOpenModalDetail(true);
+      const itemDetail = {
+        className: rowItem[0],
+        typeA: rowItem[1],
+        typeB: rowItem[2],
+        typeC: rowItem[3],
+        typeD: rowItem[4],
+        slotRemainder: rowItem[5],
+        totalMark: rowItem[6],
+        rank: rowItem[7],
+      };
+      setDetail(itemDetail);
+    }
   };
 
-  const handleStatisticSubjectSchool = () => {
-    refetch().then((result) => {
-      if (result.data?.success) {
-        const { transformedData, chartFormattedData } = transformData(result.data?.data);
-        setCurrentData(transformedData);
-        setChartFormattedData(chartFormattedData);
-      }
-    });
-  };
   const [value, setValue] = React.useState(0);
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    setCurrentData([]);
   };
 
-  const tabLabels = ["ĐIỂM SĐB THEO TUẦN", "ĐIỂM SĐB CẢ NĂM"];
+  const tabLabels = ["ĐIỂM SĐB TOÀN TRƯỜNG", "ĐIỂM SĐB THEO KHỐI"];
 
-  const handleStatisticSubjectGrades = () => {
+  const handleStatisticWeekly = () => {
     refetch().then((result) => {
-      if (result.data?.success) {
-        const { transformedData, chartFormattedData } = transformData(result.data?.data);
+      if (result.data) {
+        const { transformedData } = transformData(result.data);
         setCurrentData(transformedData);
-        setChartFormattedData(chartFormattedData);
       }
     });
   };
 
-  const schoolBookOfAllSchoolsBox = [
-    {
-      color: "primary",
-      icon: "leaderboard",
-      title: "Điểm thấp nhất",
-      count: "1500",
-      textDescriptionColor: "primary",
-      amount: "Khối 10",
-      label: "có TB thấp nhất",
-    },
-    {
-      color: "info",
-      icon: "leaderboard",
-      title: "Điểm TB cả trường",
-      count: "1600",
-      textDescriptionColor: "info",
-      amount: "1600",
-      label: "là điểm TB cả trường",
-    },
-    {
-      color: "success",
-      icon: "leaderboard",
-      title: "Điểm cao nhất",
-      count: "1700",
-      textDescriptionColor: "success",
-      amount: "Khối 12",
-      label: "có TB cao nhất",
-    },
-  ];
+  const handleStatisticWholeYear = () => {
+    refetchWholeYear().then((result) => {
+      if (result.data) {
+        const { transformedData } = transformData(result.data);
+        setCurrentData(transformedData);
+      }
+    });
+  };
+
+  const handleStatisticWeeklyByGrade = () => {
+    refetchByGrade().then((result) => {
+      if (result.data) {
+        const { transformedData } = transformData(result.data);
+        setCurrentData(transformedData);
+      }
+    });
+  };
+
+  const handleStatisticWeeklyByGradeWholeYear = () => {
+    refetchByGradeWholeYear().then((result) => {
+      if (result.data) {
+        const { transformedData } = transformData(result.data);
+        setCurrentData(transformedData);
+      }
+    });
+  };
 
   const aSchoolBookForAGradeBox = [
-    {
-      color: "primary",
-      icon: "leaderboard",
-      title: "Điểm thấp nhất",
-      count: `${lowestMark?.mark} điểm`,
-      textDescriptionColor: "primary",
-      amount: `Lớp ${lowestMark?.class}`,
-      label: "có TB thấp nhất",
-    },
-    {
-      color: "info",
-      icon: "leaderboard",
-      title: "Điểm trung bình",
-      count: `${averageMark} điểm`,
-      textDescriptionColor: "info",
-      amount: "Điểm TB giữa tất cả các lớp",
-      label: "",
-    },
     {
       color: "success",
       icon: "leaderboard",
@@ -198,76 +192,124 @@ export default function RegisterNotebookStatistics() {
       count: `${highestMark?.mark} điểm`,
       textDescriptionColor: "success",
       amount: `Lớp ${highestMark?.class}`,
-      label: "có TB cao nhất",
+      label: "có tổng điểm cao nhất",
+    },
+    {
+      color: "info",
+      icon: "leaderboard",
+      title: "Điểm trung bình",
+      count: `${averageMark} điểm`,
+      textDescriptionColor: "info",
+      amount: `${averageMark} điểm`,
+      label: "Điểm TB giữa tất cả các lớp",
+    },
+    {
+      color: "primary",
+      icon: "leaderboard",
+      title: "Điểm thấp nhất",
+      count: `${lowestMark?.mark} điểm`,
+      textDescriptionColor: "primary",
+      amount: `Lớp ${lowestMark?.class}`,
+      label: "có tổng điểm thấp nhất",
     },
     {
       color: "info",
       icon: "leaderboard",
       title: "Tổng số lớp",
-      count: currentData?.length || 0,
+      count: `${currentData?.length} lớp` || 0,
       textDescriptionColor: "info",
-      amount: currentData?.length || 0,
+      amount: `${currentData?.length} lớp` || 0,
       label: "là tổng số lượng lớp",
     },
   ];
-
-  const [aSubjectForEntireSchool, setASchoolBookForEntireSchool] = useState([
-    ["Khối 10", "500", "1500", "1"],
-    ["Khối 11", "500", "1600", "2"],
-    ["Khối 12", "500", "1700", "3"],
-  ]);
 
   (React.useState < "middle") | ("tick" > "middle");
   const [tickPlacement, setTickPlacement] = React.useState("middle");
   const [tickLabelPlacement, setTickLabelPlacement] = React.useState("middle");
 
   function transformData(data) {
-    // Extract total marks and add to each object
-    data.forEach((item) => {
-      item.rankCounts.totalMark = item.rankCounts[""];
-      delete item.rankCounts[""];
-    });
+    if (data.length > 0) {
+      const defaultRankKeys = ["A", "B", "C", "D"];
 
-    // Sort data by totalMark in descending order
-    data.sort((a, b) => b.rankCounts.totalMark - a.rankCounts.totalMark);
+      // Extract total marks, calculate totalMark and add default values
+      data.forEach((item) => {
+        item.rankCounts.remainderSlot = item.rankCounts[""];
+        delete item.rankCounts[""];
 
-    // Assign ranks based on sorted order
-    data.forEach((item, index) => {
-      item.rankCounts.rank = index + 1;
-    });
+        // Ensure default values for C and D
+        defaultRankKeys.forEach((key) => {
+          if (!item.rankCounts.hasOwnProperty(key)) {
+            item.rankCounts[key] = 0;
+          }
+        });
 
-    // Get the highest and lowest totalMark
-    setHighestMark({ mark: data[0].rankCounts.totalMark, class: data[0].className });
-    setLowerMark({
-      mark: data[data.length - 1].rankCounts.totalMark,
-      class: data[data.length - 1].className,
-    });
+        // Calculate totalMark
+        item.rankCounts.totalMark =
+          item.rankCounts.A * MARK_OF_TYPE_A +
+          item.rankCounts.B * MARK_OF_TYPE_B +
+          item.rankCounts.C * MARK_OF_TYPE_C;
+      });
 
-    // Transform data into the desired format
-    const chartFormattedData = data.map((item) => ({
-      Điểm: item.rankCounts.totalMark,
-      Lớp: `Lớp ${item.className}`,
-    }));
+      // Sort data by totalMark in descending order
+      data.sort((a, b) => b.rankCounts.totalMark - a.rankCounts.totalMark);
 
-    // Sort chartFormattedData by totalMark in ascending order
-    chartFormattedData.sort((a, b) => a.Điểm - b.Điểm);
+      // Assign ranks based on sorted order
+      data.forEach((item, index) => {
+        item.rankCounts.rank = index + 1;
+      });
 
-    const totalMarks = data.reduce((sum, item) => sum + item.rankCounts.totalMark, 0);
-    const averageMark = totalMarks / data.length;
-    setAverageMark(averageMark);
+      // Get the highest and lowest totalMark
+      setHighestMark({ mark: data[0].rankCounts.totalMark, class: data[0].className });
+      setLowerMark({
+        mark: data[data.length - 1].rankCounts.totalMark,
+        class: data[data.length - 1].className,
+      });
+
+      // Transform data into the desired format for chart
+      const chartFormattedData = data.map((item) => ({
+        Điểm: item.rankCounts.totalMark,
+        Lớp: `Lớp ${item.className}`,
+      }));
+
+      // Sort chartFormattedData by totalMark in ascending order
+      chartFormattedData.sort((a, b) => a.Điểm - b.Điểm);
+
+      const totalMarks = data.reduce((sum, item) => sum + item.rankCounts.totalMark, 0);
+      const averageMark = totalMarks / data.length;
+      setAverageMark(averageMark);
+
+      return {
+        transformedData: data,
+        chartFormattedData,
+      };
+    }
     return {
-      transformedData: data,
-      chartFormattedData,
+      transformedData: [],
+      chartFormattedData: [],
     };
   }
+
+  const chartSetting = {
+    yAxis: [
+      {
+        label: "Điểm số",
+      },
+    ],
+    height: 500,
+    sx: {
+      [`.${axisClasses.left} .${axisClasses.label}`]: {
+        transform: "translate(-10px, 0)",
+      },
+    },
+  };
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card>
+      <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
           {/* DO NOT DELETE CODE AS ABOVE*/}
-          <div className="w-full mb-10">
+          <div className="w-full">
             <Tabs
               value={value}
               onChange={handleChange}
@@ -308,61 +350,141 @@ export default function RegisterNotebookStatistics() {
                     ))}
                   </Select>
                 </FormControl>
+
+                <FormControl sx={{ minWidth: 120 }}>
+                  <InputLabel id="select-school-week-lable">Tuần</InputLabel>
+                  <Select
+                    labelId="select-school-week-lable"
+                    id="select-school-week"
+                    value={schoolWeek}
+                    className="h-10 mr-2 max-[767px]:mb-4"
+                    label="Tuần"
+                    onChange={handleSchoolWeeksSelectedChange}
+                  >
+                    {schoolWeeks.map((item, index) => (
+                      <MenuItem key={index} value={item.startTime}>
+                        {item.startTime} - {item.endTime}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
                 <ButtonComponent
                   type="success"
                   className="max-[639px]:w-full"
-                  onClick={handleStatisticSubjectSchool}
+                  onClick={handleStatisticWeekly}
                 >
                   <FilterAltIcon className="mr-1" /> THỐNG KÊ
+                </ButtonComponent>
+                <ButtonComponent
+                  type="primary"
+                  className="max-[639px]:w-full"
+                  onClick={handleStatisticWholeYear}
+                >
+                  <FilterAltIcon className="mr-1" /> CẢ NĂM
                 </ButtonComponent>
               </div>
               <>
                 <div className="text-center mt-8">
-                  <h4 className="text-xl font-bold">THỐNG KÊ ĐIỂM SỔ ĐẦU BÀI THEO TUẦN</h4>
+                  <h4 className="text-xl font-bold uppercase">Thống kê sổ đầu bài</h4>
+                  <h4 className="text-xl font-bold uppercase">Năm học: {schoolYear}</h4>
                 </div>
 
-                <div className="mt-4 w-full grid gap-4 sm:grid-cols-1 md:grid-cols-2 overflow-x-auto">
-                  <div
-                    className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
-                    style={{ background: "#E9F7FF" }}
-                  >
-                    <BarChart
-                      dataset={chartFormattedData}
-                      xAxis={[
-                        { scaleType: "band", dataKey: "Khối", tickPlacement, tickLabelPlacement },
-                      ]}
-                      {...chartSchoolBookForEntireSchool}
-                    />
-                  </div>
-                  <div className="w-full">
-                    <div className="mt-8 grid gap-2 sm:grid-cols-1 md:grid-cols-3 custom">
-                      {schoolBookOfAllSchoolsBox.map((item, index) => (
-                        <ComplexStatisticsCard
-                          key={index}
-                          color={item.color}
-                          icon={item.icon}
-                          title={item.title}
-                          count={item.count}
-                          percentage={{
-                            color: item.textDescriptionColor,
-                            amount: item.amount,
-                            label: item.label,
-                          }}
-                        />
-                      ))}
+                <div className="mt-8 custom-table">
+                  {isLoading || isLoadingWholeYear ? (
+                    <div className="text-center primary-color py-20 text-xl italic font-medium">
+                      <div className="mx-auto flex items-center justify-center">
+                        <p className="mr-3">Loading</p>
+                        <CircularProgress size={24} color="inherit" />
+                      </div>
                     </div>
-                    <div className="table w-full mt-8">
-                      <p className="text-base font-bold h-3">THỐNG KÊ CHI TIẾT</p>
+                  ) : data && currentData.length > 0 ? (
+                    <>
+                      <div className="w-full custom mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+                        {aSchoolBookForAGradeBox.map((item, index) => (
+                          <ComplexStatisticsCard
+                            key={index}
+                            color={item.color}
+                            icon={item.icon}
+                            title={item.title}
+                            count={item.count}
+                            percentage={{
+                              color: item.textDescriptionColor,
+                              amount: item.amount,
+                              label: item.label,
+                            }}
+                          />
+                        ))}
+                      </div>
+                      {currentData[0].rankCounts.totalMark > 0 ? (
+                        <div
+                          className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
+                          style={{ background: "#E9F7FF" }}
+                        >
+                          <BarChart
+                            dataset={currentData.map((item) => ({
+                              className: item.className,
+                              totalMark: item.rankCounts.totalMark,
+                            }))}
+                            xAxis={[
+                              {
+                                scaleType: "band",
+                                dataKey: "className",
+                                tickPlacement: "middle",
+                                tickLabelPlacement: "middle",
+                              },
+                            ]}
+                            series={[
+                              {
+                                dataKey: "totalMark",
+                                label: "Điểm số",
+                              },
+                            ]}
+                            {...chartSetting}
+                          />
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                      <p className="text-base font-bold mt-5">
+                        THỐNG KÊ CHI TIẾT NĂM HỌC({schoolYear})
+                      </p>
                       <TableComponent
-                        header={["Khối", "Số lượng", "Điểm", "Hạng"]}
-                        data={aSubjectForEntireSchool}
-                        // onEdit={handleEdit}
+                        header={[
+                          "Lớp",
+                          "Loại A",
+                          "Loại B",
+                          "Loại C",
+                          "Loại D",
+                          "Tiết chưa đánh giá",
+                          "Tổng điểm",
+                          "Hạng",
+                        ]}
+                        data={currentData?.map((item) => [
+                          item.className,
+                          item.rankCounts.A,
+                          item.rankCounts.B,
+                          item.rankCounts.C,
+                          item.rankCounts.D,
+                          item.rankCounts.remainderSlot,
+                          item.rankCounts.totalMark,
+                          item.rankCounts.rank,
+                        ])}
+                        itemsPerPage={30}
                         onDetails={handleDetails}
-                        // onDelete={handleDelete}
                         className="mt-4"
                       />
+                    </>
+                  ) : (
+                    <div className="text-center primary-color my-10 text-xl italic font-medium">
+                      <img
+                        className="w-60 h-60 object-cover object-center mx-auto"
+                        src={noDataImage3}
+                        alt="Chưa có dữ liệu!"
+                      />
+                      Chưa có dữ liệu!
                     </div>
-                  </div>
+                  )}
                 </div>
               </>
             </TabPanel>
@@ -386,67 +508,168 @@ export default function RegisterNotebookStatistics() {
                   </Select>
                 </FormControl>
 
+                <FormControl sx={{ minWidth: 120 }}>
+                  <InputLabel id="select-school-week-lable">Tuần</InputLabel>
+                  <Select
+                    labelId="select-school-week-lable"
+                    id="select-school-week"
+                    value={schoolWeek}
+                    className="h-10 mr-2 max-[767px]:mb-4"
+                    label="Tuần"
+                    onChange={handleSchoolWeeksSelectedChange}
+                  >
+                    {schoolWeeks.map((item, index) => (
+                      <MenuItem key={index} value={item.startTime}>
+                        {item.startTime} - {item.endTime}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl sx={{ minWidth: 120 }}>
+                  <InputLabel id="select-school-grade-lable">Khối lớp</InputLabel>
+                  <Select
+                    labelId="select-school-grade-lable"
+                    id="select-school-grade"
+                    value={grade}
+                    className="h-10 mr-2 max-[767px]:mb-4"
+                    label="Năm học"
+                    onChange={handleGradeSelectedChange}
+                  >
+                    {grades?.map((item, index) => (
+                      <MenuItem key={index} value={item}>
+                        {`Khối ${item}`}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
                 <ButtonComponent
                   type="success"
                   className="max-[639px]:w-full"
-                  onClick={handleStatisticSubjectGrades}
+                  onClick={handleStatisticWeeklyByGrade}
                 >
                   <FilterAltIcon className="mr-1" /> THỐNG KÊ
                 </ButtonComponent>
+                <ButtonComponent
+                  type="primary"
+                  className="max-[639px]:w-full"
+                  onClick={handleStatisticWeeklyByGradeWholeYear}
+                >
+                  <FilterAltIcon className="mr-1" /> CẢ NĂM
+                </ButtonComponent>
               </div>
               <>
-                <div className="text-center mt-6">
-                  <h4 className="text-xl font-bold">THỐNG KÊ SỔ ĐẦU BÀI NĂM HỌC {schoolYear}</h4>
-                </div>
-                <div className="w-full custom mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-                  {aSchoolBookForAGradeBox.map((item, index) => (
-                    <ComplexStatisticsCard
-                      key={index}
-                      color={item.color}
-                      icon={item.icon}
-                      title={item.title}
-                      count={item.count}
-                      percentage={{
-                        color: item.textDescriptionColor,
-                        amount: item.amount,
-                        label: item.label,
-                      }}
-                    />
-                  ))}
-                </div>
-                <div
-                  className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
-                  style={{ background: "#E9F7FF" }}
-                >
-                  <BarChart
-                    dataset={chartFormattedData}
-                    xAxis={[
-                      { scaleType: "band", dataKey: "Lớp", tickPlacement, tickLabelPlacement },
-                    ]}
-                    {...chartSchoolBookForAGrade}
-                  />
+                <div className="text-center mt-8">
+                  <h4 className="text-xl font-bold uppercase">Thống kê sổ đầu bài khối {grade}</h4>
+                  <h4 className="text-xl font-bold uppercase">Năm học: {schoolYear}</h4>
                 </div>
 
                 <div className="mt-8 custom-table">
-                  <p className="text-base font-bold">THỐNG KÊ CHI TIẾT</p>
-                  {isLoading ? (
-                    <div className="text-center primary-color my-30 text-xl italic font-medium">
+                  {isLoadingByGrade || isLoadingByGradeWholeYear ? (
+                    <div className="text-center primary-color py-20 text-xl italic font-medium">
                       <div className="mx-auto flex items-center justify-center">
                         <p className="mr-3">Loading</p>
                         <CircularProgress size={24} color="inherit" />
                       </div>
                     </div>
-                  ) : data?.success && currentData.length > 0 ? (
-                    <TableComponent
-                      header={["Lớp", "Điểm TB", "Hạng"]}
-                      data={currentData?.map((item) => [
-                        item.className,
-                        item.rankCounts.totalMark,
-                        item.rankCounts.rank,
-                      ])}
-                      onDetails={handleDetails}
-                      className="mt-4"
-                    />
+                  ) : (dataByGrade || dataByGradeWholeYear) && currentData.length > 0 ? (
+                    <>
+                      <div className="w-full custom mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+                        {aSchoolBookForAGradeBox.map((item, index) => (
+                          <ComplexStatisticsCard
+                            key={index}
+                            color={item.color}
+                            icon={item.icon}
+                            title={item.title}
+                            count={item.count}
+                            percentage={{
+                              color: item.textDescriptionColor,
+                              amount: item.amount,
+                              label: item.label,
+                            }}
+                          />
+                        ))}
+                      </div>
+                      {currentData[0].rankCounts.totalMark > 0 ? (
+                        <div
+                          className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
+                          style={{ background: "#E9F7FF" }}
+                        >
+                          <BarChart
+                            dataset={currentData.map((item) => ({
+                              className: item.className,
+                              typeA: item.rankCounts.A,
+                              typeB: item.rankCounts.B,
+                              typeC: item.rankCounts.C,
+                              typeD: item.rankCounts.D,
+                              totalMark: item.rankCounts.totalMark,
+                            }))}
+                            xAxis={[
+                              {
+                                scaleType: "band",
+                                dataKey: "className",
+                                tickPlacement: "middle",
+                                tickLabelPlacement: "middle",
+                              },
+                            ]}
+                            series={[
+                              {
+                                dataKey: "typeA",
+                                label: "Loại A",
+                              },
+                              {
+                                dataKey: "typeB",
+                                label: "Loại B",
+                              },
+                              {
+                                dataKey: "typeC",
+                                label: "Loại C",
+                              },
+                              {
+                                dataKey: "typeD",
+                                label: "Loại D",
+                              },
+                              {
+                                dataKey: "totalMark",
+                                label: "Điểm số",
+                              },
+                            ]}
+                            {...chartSetting}
+                          />
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                      <p className="text-base font-bold mt-5">
+                        THỐNG KÊ CHI TIẾT NĂM HỌC({schoolYear})
+                      </p>
+                      <TableComponent
+                        header={[
+                          "Lớp",
+                          "Loại A",
+                          "Loại B",
+                          "Loại C",
+                          "Loại D",
+                          "Tiết chưa đánh giá",
+                          "Tổng điểm",
+                          "Xếp hạng",
+                        ]}
+                        data={currentData?.map((item) => [
+                          item.className,
+                          item.rankCounts.A,
+                          item.rankCounts.B,
+                          item.rankCounts.C,
+                          item.rankCounts.D,
+                          item.rankCounts.remainderSlot,
+                          item.rankCounts.totalMark,
+                          item.rankCounts.rank,
+                        ])}
+                        itemsPerPage={30}
+                        onDetails={handleDetails}
+                        className="mt-4"
+                      />
+                    </>
                   ) : (
                     <div className="text-center primary-color my-10 text-xl italic font-medium">
                       <img
@@ -460,6 +683,87 @@ export default function RegisterNotebookStatistics() {
                 </div>
               </>
             </TabPanel>
+            <div className="mt-5 text-base">
+              <p className="font-bold">Ghi chú:</p>
+              <ul className="list-disc ml-5">
+                <li>
+                  <span className="primary-color font-bold">(Loại A): </span>
+                  <span className="italic">Tiết tích cực, tốt ({MARK_OF_TYPE_A} điểm/tiết.)</span>
+                </li>
+                <li>
+                  <span className="text-color font-bold">(Loại B): </span>
+                  <span className="italic">Tiết học khá ({MARK_OF_TYPE_B} điểm/tiết.)</span>
+                </li>
+                <li>
+                  <span className="warning-color font-bold">(Loại C): </span>
+                  <span className="italic">Tiết Trung bình ({MARK_OF_TYPE_C} điểm/tiết.).</span>
+                </li>
+                <li>
+                  <span className="error-color font-bold">(Loại D): </span>
+                  <span className="italic">Tiết học kém ({MARK_OF_TYPE_D} điểm/tiết.).</span>
+                </li>
+              </ul>
+            </div>
+            {currentData.length > 0 ? (
+              <PopupComponent
+                title="CHI TIẾT"
+                description={`NĂM HỌC: ${schoolYear || "chưa có dữ liệu!"} `}
+                rightNote={`Lớp: ${detail.className || "chưa có dữ liệu!"}`}
+                isOpen={openModalDetail}
+                onClose={() => setOpenModalDetail(false)}
+              >
+                <div className="max-w-md">
+                  <TextValueComponent
+                    label={`Loại A (${detail.typeA} * ${MARK_OF_TYPE_A})`}
+                    value={`${detail.typeA * MARK_OF_TYPE_A} điểm` || "_"}
+                    icon={<BorderColorIcon />}
+                    className="justify-between w-full"
+                  />
+                  <TextValueComponent
+                    label={`Loại B (${detail.typeB} * ${MARK_OF_TYPE_B})`}
+                    value={`${detail.typeB * MARK_OF_TYPE_B} điểm` || "_"}
+                    icon={<BorderColorIcon />}
+                    className="justify-between w-full"
+                  />
+                  <TextValueComponent
+                    label={`Loại C (${detail.typeC} * ${MARK_OF_TYPE_C})`}
+                    value={`${detail.typeC * MARK_OF_TYPE_C} điểm` || "_"}
+                    icon={<BorderColorIcon />}
+                    className="justify-between w-full"
+                  />
+                  <TextValueComponent
+                    label={`Loại D (${detail.typeD})`}
+                    value={`${detail.typeD} điểm` || "_"}
+                    icon={<BorderColorIcon />}
+                    className="justify-between w-full"
+                  />
+                  <TextValueComponent
+                    label="Tiết chưa đáng giá"
+                    value={detail.slotRemainder || "_"}
+                    icon={<RemoveCircleOutlineIcon />}
+                    className="justify-between w-full"
+                  />
+
+                  <div className="w-full h-0.5 bg-slate-400 my-2"></div>
+                  <div className="flex justify-between text-base mt-3  pt-2">
+                    <div>
+                      <span className="font-bold">Xếp hạng: </span>
+                      <span className="mx-auto text-center text-white px-3 py-1 rounded bg-primary-color">
+                        {detail.rank || "_"}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-bold">Tổng điểm: </span>
+                      <span className="mx-auto text-center text-white px-3 py-1 rounded bg-primary-color">
+                        {`${detail.totalMark} điểm`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </PopupComponent>
+            ) : (
+              ""
+            )}
           </div>
         </MDBox>
       </Card>

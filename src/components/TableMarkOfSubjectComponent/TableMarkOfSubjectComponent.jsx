@@ -10,7 +10,7 @@ import EditCalendarIcon from "@mui/icons-material/EditCalendar";
 import { countDuplicateItemsInArray } from "../../utils/CommonFunctions";
 import { renderAverageMarkStyles } from "utils/RenderStyle";
 import { renderRankingStyles } from "utils/RenderStyle";
-import { renderRanking } from "utils/RenderStyle";
+import { renderRanking } from "../../utils/RenderStyle";
 
 function TableMarkOfSubjectComponent({
   data,

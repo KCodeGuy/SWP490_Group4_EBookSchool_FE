@@ -16,144 +16,22 @@ import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import { studentClasses } from "mock/class";
-import { schoolYears } from "mock/schoolYear";
-import { subjects } from "mock/subject";
 import React, { useState } from "react";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import { useQuery } from "react-query";
 
 import "./style.scss";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 import TableComponent from "components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import { TabPanel } from "../../components/TabPanelComponent";
-import { statisticOfMark } from "services/StatisticService";
-import { useQuery } from "react-query";
-import { generateClasses } from "utils/CommonFunctions";
-import { getAllSubjects } from "services/SubjectService";
+import { statisticOfMark } from "../../services/StatisticService";
+import { generateClasses } from "../../utils/CommonFunctions";
+import { getAllSubjects } from "../../services/SubjectService";
 
 const semesters = ["Học kì I", "Học kì II", "Cả năm"];
 
 const grades = [10, 11, 12];
-
-const datasetASubjectForAGrade = [
-  {
-    Toán: 2.1,
-    Lớp: "12A1",
-  },
-  {
-    Toán: 2.8,
-    Lớp: "12A2",
-  },
-  {
-    Toán: 4.1,
-    Lớp: "12A3",
-  },
-];
-
-const datasetASubjectForEntireSchool = [
-  {
-    Toán: 9,
-    Khối: "Khối 10",
-  },
-  {
-    Toán: 2.8,
-    Khối: "Khối 11",
-  },
-  {
-    Toán: 4.1,
-    Khối: "Khối 12",
-  },
-];
-
-const datasetDetailedMarksfForSubjectOfClass = [
-  {
-    LessThan1: 51,
-    Điểm: "6 - 7",
-  },
-  {
-    LessThan1: 118,
-    Điểm: "7 - 8",
-  },
-  {
-    LessThan1: 138,
-    Điểm: "8 - 9",
-  },
-  {
-    LessThan1: 2,
-    Điểm: "9 - 10",
-  },
-  {
-    LessThan1: 68,
-    Điểm: "Đạt",
-  },
-  {
-    LessThan1: 1,
-    Điểm: "Chưa đạt",
-  },
-];
-
-const datasetAverageTestMarksByClass = [
-  {
-    Toán: 2.1,
-    Lớp: "12A1",
-  },
-  {
-    Toán: 2.8,
-    Lớp: "12A2",
-  },
-  {
-    Toán: 4.1,
-    Lớp: "12A3",
-  },
-  {
-    Toán: 2.1,
-    Lớp: "12A4",
-  },
-  {
-    Toán: 7,
-    Lớp: "12A5",
-  },
-  {
-    Toán: 9,
-    Lớp: "12A6",
-  },
-  {
-    Toán: 8,
-    Lớp: "12A7",
-  },
-  {
-    Toán: 2.8,
-    Lớp: "12A8",
-  },
-  {
-    Toán: 4.1,
-    Lớp: "12A9",
-  },
-  {
-    Toán: 4.1,
-    Lớp: "12A10",
-  },
-];
-
-const datasetAverageMarksOfClass = [
-  {
-    Điểm: 6,
-    Môn: "Ngữ Văn",
-  },
-  {
-    Điểm: 8,
-    Môn: "Toán",
-  },
-  {
-    Điểm: 8,
-    Môn: "Anh Văn",
-  },
-  {
-    Điểm: 6,
-    Môn: "Vật Lý",
-  },
-];
 
 const valueASubjectForAGrade = (value) => {
   if (typeof value === "number" || value === null) {
@@ -169,50 +47,16 @@ const valueDetailedMarksfForSubjectOfClass = (value) => {
   throw new Error("Value must be a number or null");
 };
 
-const chartASubjectForAGrade = {
-  yAxis: [
-    {
-      label: "Điểm",
-      min: 1, // Setting the minimum value of the y-axis
-      max: 10, // Setting the maximum value of the y-axis
-    },
-  ],
-  series: [{ dataKey: "Toán", label: "Trung bình môn", valueASubjectForAGrade, color: "#247CD4" }],
-  height: 500,
-  sx: {
-    [`& .${axisClasses.directionY} .${axisClasses.label}`]: {
-      transform: "translateX(-10px)",
-    },
-  },
-};
-
-const chartASubjectForEntireSchool = {
-  yAxis: [
-    {
-      label: "Điểm",
-      min: 1, // Setting the minimum value of the y-axis
-      max: 10, // Setting the maximum value of the y-axis
-    },
-  ],
-  series: [{ dataKey: "Toán", label: "Trung bình môn", valueASubjectForAGrade, color: "#247CD4" }],
-  height: 500,
-  sx: {
-    [`& .${axisClasses.directionY} .${axisClasses.label}`]: {
-      transform: "translateX(-10px)",
-    },
-  },
-};
-
 const chartDetailedMarksfForSubjectOfClass = {
   yAxis: [
     {
-      label: "Số học sinh",
+      label: "Số lượng điểm",
     },
   ],
   series: [
     {
-      dataKey: "LessThan1",
-      label: "Số học sinh",
+      dataKey: "count",
+      label: "Than điểm",
       valueDetailedMarksfForSubjectOfClass,
       color: "#247CD4",
     },
@@ -243,6 +87,7 @@ const chartAverageTestMarksByClass = {
     },
   },
 };
+
 const chartAverageMarksOfClass = {
   yAxis: [
     {
@@ -265,40 +110,11 @@ export default function MarkStatistics() {
     setValue(newValue);
   };
 
+  const [highestMark, setHighestMark] = useState("");
+  const [lowestMark, setLowestMark] = useState("");
+  const [averageMark, setAverageMark] = useState(0);
+
   const tabLabels = ["ĐIỂM MÔN TOÀN TRƯỜNG", "ĐIỂM THEO KHỐI", "ĐIỂM THEO MÔN", "ĐIỂM THEO LỚP"];
-  const [aSubjectForAGrade, setASubjectForAGrade] = useState([
-    ["12A1", "40", "10.0", "1"],
-    ["12A2", "40", "10.0", "1"],
-    ["12A3", "40", "10.0", "1"],
-    ["12A4", "40", "10.0", "1"],
-    ["12A5", "40", "10.0", "1"],
-    ["12A6", "40", "10.0", "1"],
-    ["12A7", "40", "10.0", "1"],
-  ]);
-
-  const [aSubjectForEntireSchool, setASubjectForEntireSchool] = useState([
-    ["Khối 10", "500", "9", "1"],
-    ["Khối 11", "500", "9", "2"],
-    ["Khối 12", "500", "9", "3"],
-  ]);
-
-  const [detailedMarksfForSubjectOfClass, setDetailedMarksfForSubjectOfClass] = useState([
-    ["6 - 7", , "51"],
-    ["7 - 8", , "118"],
-    ["8 - 9", , "138"],
-    ["9 - 10", , "2"],
-    ["Đạt", , "68"],
-    ["Chưa đạt", , "1"],
-  ]);
-
-  const [averageTestMarksByClass, setAverageTestMarksByClass] = useState([
-    ["12A1", "40", "Lê Văn A", "8.5", "1"],
-    ["12A2", "40", "Lê Văn B", "8.5", "2"],
-    ["12A3", "40", "Lê Văn C", "8.5", "3"],
-    ["12A4", "40", "Lê Văn D", "8.5", "4"],
-    ["12A5", "40", "Lê Văn E", "8.5", "5"],
-    ["12A6", "40", "Lê Văn F", "8.5", "6"],
-  ]);
 
   let accessToken, currentUser, userRole, userID, schoolYearsAPI, classesAPI;
   userRole = localStorage.getItem("userRole");
@@ -327,9 +143,9 @@ export default function MarkStatistics() {
     setSchoolSemester(event.target.value);
   };
 
-  const [grade, setGrade] = React.useState(grades[0]);
+  const [schoolGrade, setSchoolGrade] = React.useState(grades[0]);
   const handleGradeSelectedChange = (event) => {
-    setGrade(event.target.value);
+    setSchoolGrade(event.target.value);
   };
 
   const classesOfSchoolYear = generateClasses(classesAPI, schoolYear);
@@ -344,6 +160,11 @@ export default function MarkStatistics() {
     value: item.ID,
   }));
 
+  const [schoolSubject, setSchoolSubject] = React.useState("");
+  const handleSchoolSubjectSelectedChange = (event) => {
+    setSchoolSubject(event.target.value);
+  };
+
   const formattedSubjects = subjects
     ?.filter((item) => item.isMark) // filter only items with isMark = true
     ?.map((item) => ({
@@ -354,22 +175,67 @@ export default function MarkStatistics() {
     }))
     ?.sort((a, b) => a.grade - b.grade); // sort by grade
 
-  const [schoolSubject, setSchoolSubject] = React.useState(formattedSubjects[0].name);
-  const handleSchoolSubjectSelectedChange = (event) => {
-    setSchoolSubject(event.target.value);
-  };
-
   const handleDetails = (rowItem) => {
     console.log("Details row:", rowItem);
     // Implement delete logic here
   };
 
+  // Find the item with the highest count
+  const getHighestMark = (data) => {
+    if (data.length > 0) {
+      return data?.reduce((max, item) => (item.count > max.count ? item : max), data[0]);
+    }
+    return 0;
+  };
+
+  const getLowerMark = (data) => {
+    if (data.length > 0) {
+      return currentData?.reduce((min, item) => (item.count < min.count ? item : min), data[0]);
+    }
+    return 0;
+  };
+
+  const getAverageMark = (data) => {
+    if (data.length > 0) {
+      const total = currentData?.reduce((sum, item) => sum + item.count, 0);
+      return total / data.length;
+    }
+    return 0;
+  };
+
   const handleStatisticSubjectClass = () => {
+    let highestMark = "";
+    let lowestMark = "";
+    let averageMark = 0;
     refetch().then((result) => {
       if (result.data) {
-        setCurrentData(result.data);
+        if (schoolSemester == "Học kì I") {
+          setCurrentData(result.data[0].scores);
+          highestMark = getHighestMark(result.data[0].scores);
+          lowestMark = getLowerMark(result.data[0].scores);
+          averageMark = getAverageMark(result.data[0].scores);
+          console.log(highestMark);
+          console.log(lowestMark);
+          console.log(averageMark);
+        } else if (schoolSemester == "Học kì II") {
+          setCurrentData(result.data[1].scores);
+          highestMark = getHighestMark(result.data[1].scores);
+          lowestMark = getLowerMark(result.data[1].scores);
+          averageMark = getAverageMark(result.data[1].scores);
+        } else if (schoolSemester == "Cả năm") {
+          setCurrentData(result.data[2].scores);
+          highestMark = getHighestMark(result.data[2].scores);
+          lowestMark = getLowerMark(result.data[2].scores);
+          averageMark = getAverageMark(result.data[2].scores);
+        }
       }
     });
+    console.log(highestMark.averageScore);
+    console.log(lowestMark.averageScore);
+    console.log(averageMark);
+    setHighestMark(highestMark);
+    setLowestMark(lowestMark);
+    setAverageMark(averageMark);
   };
 
   const detailedMarksfForSubjectOfClassBox = [
@@ -377,27 +243,27 @@ export default function MarkStatistics() {
       color: "primary",
       icon: "leaderboard",
       title: "Ít nhất",
-      count: "6 -7 điểm",
+      count: `${lowestMark} điểm`,
       textDescriptionColor: "primary",
-      amount: "6 -7 điểm",
+      amount: `${highestMark} điểm`,
       label: "chiếm tỉ lệ ít nhất",
     },
     {
       color: "info",
       icon: "leaderboard",
       title: "Nhiều nhất",
-      count: "8 - 9 điểm",
+      count: `${highestMark} điểm`,
       textDescriptionColor: "info",
-      amount: "8-9 điểm",
+      amount: `${highestMark} điểm`,
       label: "chiếm tỉ lệ cao nhất",
     },
     {
       color: "success",
       icon: "leaderboard",
       title: "Điểm trung bình",
-      count: "8.3",
+      count: `${averageMark} điểm`,
       textDescriptionColor: "success",
-      amount: "8.0",
+      amount: `${averageMark} điểm`,
       label: "là điểm trung bình",
     },
   ];
@@ -482,10 +348,19 @@ export default function MarkStatistics() {
   (React.useState < "middle") | ("tick" > "middle");
   const [tickPlacement, setTickPlacement] = React.useState("middle");
   const [tickLabelPlacement, setTickLabelPlacement] = React.useState("middle");
-
   const { data, isError, isLoading, refetch } = useQuery({
-    queryKey: ["markStatistic", { accessToken, schoolYear }],
-    queryFn: () => statisticOfMark(accessToken, schoolYear),
+    queryKey: ["markStatistic"],
+    queryFn: () => {
+      if (value === 1) {
+        return statisticOfMark(accessToken, schoolYear, "schoolGrade", schoolGrade);
+      } else if (value === 2) {
+        return statisticOfMark(accessToken, schoolYear, "schoolSubject", schoolSubject);
+      } else if (value === 3) {
+        return statisticOfMark(accessToken, schoolYear, "schoolClass", schoolClass);
+      } else if (value == 0) {
+        return statisticOfMark(accessToken, schoolYear, "schoolYear", schoolYear);
+      }
+    },
     enabled: false,
   });
 
@@ -536,13 +411,30 @@ export default function MarkStatistics() {
                       ))}
                     </Select>
                   </FormControl>
+                  <FormControl sx={{ minWidth: 120 }}>
+                    <InputLabel id="select-semester-lable">Học kỳ</InputLabel>
+                    <Select
+                      labelId="select-semester-lable"
+                      id="select-semester"
+                      value={schoolSemester}
+                      className="h-10 mr-2 max-[767px]:mb-4"
+                      label="Học kì"
+                      onChange={handleSchoolSemesterSelectedChange}
+                    >
+                      {semesters.map((item) => (
+                        <MenuItem key={item} value={item}>
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                   {value == 1 ? (
                     <FormControl sx={{ minWidth: 120 }}>
                       <InputLabel id="select-school-grade-lable">Khối lớp</InputLabel>
                       <Select
                         labelId="select-school-grade-lable"
                         id="select-grade"
-                        value={grade}
+                        value={schoolGrade}
                         className="h-10 mr-2 max-[767px]:mb-4"
                         label="Năm học"
                         onChange={handleGradeSelectedChange}
@@ -555,24 +447,6 @@ export default function MarkStatistics() {
                       </Select>
                     </FormControl>
                   ) : value == 2 ? (
-                    <FormControl sx={{ minWidth: 120 }}>
-                      <InputLabel id="select-school-class-lable">Lớp</InputLabel>
-                      <Select
-                        labelId="select-school-class-lable"
-                        id="select-school-class"
-                        value={schoolClass}
-                        className="h-10 mr-2 max-[767px]:mb-4"
-                        label="Lớp"
-                        onChange={handleChangeClass}
-                      >
-                        {formattedClasses?.map((item, index) => (
-                          <MenuItem key={index} value={item.label}>
-                            {item.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  ) : value == 3 ? (
                     <FormControl sx={{ minWidth: 120 }}>
                       <InputLabel id="select-school-subject-lable">Môn học</InputLabel>
                       <Select
@@ -590,6 +464,24 @@ export default function MarkStatistics() {
                         ))}
                       </Select>
                     </FormControl>
+                  ) : value == 3 ? (
+                    <FormControl sx={{ minWidth: 120 }}>
+                      <InputLabel id="select-school-class-lable">Lớp</InputLabel>
+                      <Select
+                        labelId="select-school-class-lable"
+                        id="select-school-class"
+                        value={schoolClass}
+                        className="h-10 mr-2 max-[767px]:mb-4"
+                        label="Lớp"
+                        onChange={handleChangeClass}
+                      >
+                        {formattedClasses?.map((item, index) => (
+                          <MenuItem key={index} value={item.label}>
+                            {item.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   ) : (
                     ""
                   )}
@@ -601,26 +493,6 @@ export default function MarkStatistics() {
                   >
                     <FilterAltIcon className="mr-1" /> THỐNG KÊ
                   </ButtonComponent>
-                </div>
-                <div>
-                  <span className="mr-2 font-bold text-sm">Chọn học kỳ: </span>
-                  <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                    <InputLabel id="select-semester-lable">Học kì</InputLabel>
-                    <Select
-                      labelId="select-semester-lable"
-                      id="select-semester"
-                      value={schoolSemester}
-                      className="h-11 mr-3"
-                      label="Học kì"
-                      onChange={handleSchoolSemesterSelectedChange}
-                    >
-                      {semesters.map((item) => (
-                        <MenuItem key={item} value={item}>
-                          {item}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
                 </div>
               </div>
               <>
@@ -663,11 +535,11 @@ export default function MarkStatistics() {
                             style={{ background: "#E9F7FF" }}
                           >
                             <BarChart
-                              dataset={datasetDetailedMarksfForSubjectOfClass}
+                              dataset={currentData}
                               xAxis={[
                                 {
                                   scaleType: "band",
-                                  dataKey: "Điểm",
+                                  dataKey: "averageScore",
                                   tickPlacement,
                                   tickLabelPlacement,
                                 },
@@ -682,7 +554,7 @@ export default function MarkStatistics() {
 
                         <TableComponent
                           header={["Than điểm", "Số lượng"]}
-                          data={detailedMarksfForSubjectOfClass}
+                          data={currentData?.map((item) => [item.averageScore, item.count])}
                           onDetails={handleDetails}
                           className="mt-4"
                         />

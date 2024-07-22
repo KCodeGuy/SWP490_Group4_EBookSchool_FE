@@ -325,9 +325,9 @@ export default function AttendanceStatistics() {
                       "GVCN",
                       "Số lượng HS",
                       "Có mặt",
-                      "Chưa điểm danh",
-                      "Vắng(phép)",
                       "Vắng(K)",
+                      "Vắng(phép)",
+                      "Tổng lượt vắng",
                     ]}
                     data={currentData?.map((item) => [
                       item.className,
@@ -337,7 +337,7 @@ export default function AttendanceStatistics() {
                       item.numberOfPresent,
                       item.numberOfAbsent,
                       item.numberOfConfirmed,
-                      item.numberOfAbsent - item.numberOfConfirmed,
+                      item.numberOfAbsent + item.numberOfConfirmed,
                     ])}
                     onDetails={handleDetails}
                     itemsPerPage={30}

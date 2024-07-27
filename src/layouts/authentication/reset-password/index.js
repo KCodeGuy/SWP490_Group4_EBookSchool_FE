@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -15,9 +15,18 @@ import bgImage from "assets/images/bg-sign-up-cover.jpeg";
 import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent";
 import { useForm, Controller } from "react-hook-form";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { getStudentByID } from "services/StudentService";
+import { getTeacherByID } from "services/TeacherService";
+import { toast, ToastContainer } from "react-toastify";
+import { updateStudent } from "services/StudentService";
+import { updateTeacher } from "services/TeacherService";
+import { CircularProgress } from "@mui/material";
+import { logoutUser } from "services/AuthService";
 
 function Cover() {
+  const navigate = useNavigate();
   const {
     control,
     handleSubmit,
@@ -26,15 +35,134 @@ function Cover() {
   } = useForm();
 
   const [isMatchedPassword, setIsMatchedPassword] = useState(true);
+  const [currentAccount, setCurrentAccount] = useState({});
+
+  const userRole = localStorage.getItem("userRole");
+  const accessToken = localStorage.getItem("authToken");
+  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const userID = currentUser?.id;
+  const queryClient = useQueryClient();
+
+  // Tôi yêu Thiên Nhi
+  const { data: studentData } = useQuery(
+    ["studentState", { accessToken, userID }],
+    () => getStudentByID(accessToken, userID),
+    { enabled: userRole.includes("Student") && Boolean(accessToken && userID) }
+  );
+
+  const { data: teacherData } = useQuery(
+    ["teacherState", { accessToken, userID }],
+    () => getTeacherByID(accessToken, userID),
+    { enabled: !userRole.includes("Student") && Boolean(accessToken && userID) }
+  );
+
+  useEffect(() => {
+    if (userRole.includes("Student") && studentData) {
+      setCurrentAccount(studentData);
+    } else if (!userRole.includes("Student") && teacherData) {
+      setCurrentAccount(teacherData);
+    }
+  }, [userRole, studentData, teacherData]);
+
+  // ANHLHS0001
+  const updateStudentMutation = useMutation(
+    (studentData) => updateStudent(accessToken, studentData),
+    {
+      onSuccess: (response) => {
+        queryClient.invalidateQueries("studentState");
+        toast.success("Cập nhật mật khẩu thành công!", {
+          onClose: () => {
+            logoutUser();
+            navigate("/authentication/sign-in");
+          },
+        });
+      },
+      onError: (error) => {
+        console.error("Error updating student:", error);
+        toast.error("Cập nhật mật khẩu thất bại!");
+      },
+    }
+  );
+
+  // ANHLHS0001
+  const updateTeacherMutation = useMutation(
+    (teacherData) => updateTeacher(accessToken, teacherData),
+    {
+      onSuccess: (response) => {
+        queryClient.invalidateQueries("teacherState");
+        toast.success("Cập nhật mật khẩu thành công!", {
+          onClose: () => {
+            logoutUser();
+            navigate("/authentication/sign-in");
+          },
+        });
+      },
+      onError: (error) => {
+        console.error("Error updating student:", error);
+        toast.error("Cập nhật mật khẩu thất bại!");
+      },
+    }
+  );
 
   const handleSubmitLogin = (data) => {
-    console.log(data);
     const isCorrectPassword = data.password === data.passwordReset;
     setIsMatchedPassword(isCorrectPassword);
+    if (isCorrectPassword) {
+      if (userRole.includes("Student")) {
+        const studentData = {
+          id: currentAccount?.id || "Chưa có dữ liệu",
+          username: currentAccount?.username || "Chưa có dữ liệu",
+          fullname: currentAccount?.fullname || "Chưa có dữ liệu",
+          address: currentAccount?.address || "Chưa có dữ liệu",
+          email: currentAccount?.email || "Chưa có dữ liệu",
+          phone: currentAccount?.phone || "Chưa có dữ liệu",
+          gender: currentAccount?.gender || "Chưa có dữ liệu",
+          birthday: currentAccount?.birthday || "Chưa có dữ liệu",
+          nation: currentAccount?.nation || "Chưa có dữ liệu",
+          birthplace: currentAccount?.birthplace || "Chưa có dữ liệu",
+          homeTown: currentAccount?.homeTown || "Chưa có dữ liệu",
+          fatherFullName: currentAccount?.fatherFullName || "Chưa có dữ liệu",
+          fatherProfession: currentAccount?.fatherProfession || "Chưa có dữ liệu",
+          fatherPhone: currentAccount?.fatherPhone || "Chưa có dữ liệu",
+          motherFullName: currentAccount?.motherFullName || "Chưa có dữ liệu",
+          motherProfession: currentAccount?.motherProfession || "Chưa có dữ liệu",
+          motherPhone: currentAccount?.motherPhone || "Chưa có dữ liệu",
+          avatar: currentAccount?.avatar || "Chưa có dữ liệu",
+          isMartyrs: currentAccount?.isMartyrs || false,
+          password: data.passwordReset || "aA@123",
+        };
+        updateStudentMutation.mutate(studentData);
+      } else {
+        const teacherData = {
+          id: currentAccount?.id || "Chưa có dữ liệu",
+          username: currentAccount?.username || "Chưa có dữ liệu",
+          fullname: currentAccount?.fullname || "Chưa có dữ liệu",
+          address: currentAccount?.address || "Chưa có dữ liệu",
+          email: currentAccount?.email || "Chưa có dữ liệu",
+          phone: currentAccount?.phone || "Chưa có dữ liệu",
+          gender: currentAccount?.gender || "Chưa có dữ liệu",
+          birthday: currentAccount?.birthday || "Chưa có dữ liệu",
+          nation: currentAccount?.nation || "Chưa có dữ liệu",
+          isBachelor: currentAccount?.isBachelor || false,
+          isMaster: currentAccount?.isMaster || false,
+          isDoctor: currentAccount?.isDoctor || false,
+          isProfessor: currentAccount?.isProfessor || false,
+          avatar: currentAccount?.avatar || "Chưa có dữ liệu",
+          roles: currentAccount?.roles,
+          permissions: currentAccount?.permissions,
+          password: data.passwordReset || "aA@123",
+        };
+        updateTeacherMutation.mutate(teacherData);
+        console.log(teacherData);
+      }
+    } else {
+      toast.error("Mật khẩu nhập lại không khớp!");
+    }
   };
 
   return (
     <CoverLayout image={bgImage}>
+      <ToastContainer autoClose={3000} />
       <Card>
         <MDBox
           variant="gradient"
@@ -57,28 +185,19 @@ function Cover() {
           </MDBox>
         </MDBox>
         <MDBox pt={2} pb={3} px={3}>
-          {!isMatchedPassword ? (
-            <span className="text-base error-color mb-1">Mật khẩu nhập lại không khớp!</span>
-          ) : (
-            ""
-          )}
           <form onSubmit={handleSubmit(handleSubmitLogin)} className="w-full">
-            <InputBaseComponent
-              placeholder="Tên đăng nhập..."
-              type="text"
-              control={control}
-              name="username"
-              setValue={noSetValue}
-              label="Tên đăng nhập"
-              errors={errors}
-              validationRules={{
-                required: "Không được bỏ trống!",
-                minLength: {
-                  value: 4,
-                  message: "Tên đăng nhập ít nhất 4 kí tự!",
-                },
-              }}
-            />
+            <div className="text-base ">
+              <label className={`mr-2 font-medium min-w-28`}>
+                Tên đăng nhập <span className="text-red-500">*</span>
+              </label>
+              <input
+                readOnly
+                className={`outline-none px-3 border py-2 rounded w-full
+               border-blue-500}`}
+                type="text"
+                value={currentUser?.username}
+              />
+            </div>
             <InputBaseComponent
               placeholder="Nhập mật khẩu mới..."
               type="password"
@@ -135,7 +254,11 @@ function Cover() {
               </MDTypography>
             </MDBox>
             <ButtonComponent style={{ marginTop: "12px", width: "100%" }} action="submit">
-              CẬP NHẬT
+              {updateStudentMutation?.isLoading || updateTeacherMutation?.isLoading ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                "CẬP NHẬT"
+              )}
             </ButtonComponent>
           </form>
         </MDBox>

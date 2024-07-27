@@ -123,7 +123,6 @@ export default function ClassManagement() {
   //call api add class
   const addClassMutation = useMutation((classData) => addClass(accessToken, classData), {
     onSuccess: (response) => {
-      console.log(response);
       if (response && response?.status === 200) {
         queryClient.invalidateQueries("classState");
         refetch().then((result) => {

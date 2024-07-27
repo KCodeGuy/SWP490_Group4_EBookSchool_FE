@@ -44,6 +44,9 @@ import TextValueComponent from "../../components/TextValueComponent";
 import { renderRankingStyles } from "utils/RenderStyle";
 import { renderRanking } from "utils/RenderStyle";
 import { TabPanel } from "components/TabPanelComponent";
+import { SUBJECT_ROLE } from "services/APIConfig";
+import { PRINCIPAL_ROLE } from "services/APIConfig";
+import { HOMEROOM_ROLE } from "services/APIConfig";
 
 // Mark management (HieuTTN)
 const semesters = [
@@ -262,7 +265,7 @@ export default function MarkManagement() {
       <DashboardNavbar />
       <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
-          {userRole === "Principal" ? (
+          {userRole.includes(PRINCIPAL_ROLE) ? (
             <Tabs
               value={value}
               onChange={handleChange}
@@ -325,9 +328,9 @@ export default function MarkManagement() {
                 </Select>
               </FormControl>
 
-              {(userRole === "Principal" ||
-                userRole === "SubjectTeacher" ||
-                userRole === "HomeroomTeacher") &&
+              {(userRole.includes(PRINCIPAL_ROLE) ||
+                userRole.includes(SUBJECT_ROLE) ||
+                userRole.includes(HOMEROOM_ROLE)) &&
               value != 1 ? (
                 <FormControl sx={{ minWidth: 120 }}>
                   <InputLabel id="select-school-subject-lable">Môn học</InputLabel>
@@ -354,7 +357,7 @@ export default function MarkManagement() {
                 <FilterAltIcon className="mr-1" /> TÌM KIẾM
               </ButtonComponent>
             </div>
-            {userRole === "SubjectTeacher" ? (
+            {userRole.includes(SUBJECT_ROLE) ? (
               <>
                 <div>
                   <ButtonComponent
@@ -524,10 +527,10 @@ export default function MarkManagement() {
           </div>
           <TabPanel
             value={value}
-            index={userRole === "SubjectTeacher" || userRole === "Principal" ? 1 : 0}
+            index={userRole.includes(SUBJECT_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? 1 : 0}
           >
             <>
-              {userRole === "HomeroomTeacher" || userRole === "Principal" ? (
+              {userRole.includes(HOMEROOM_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
                 <div className="text-center mt-10 uppercase">
                   <h4 className="text-xl font-bold">Bảng điểm tổng kết lớp {schoolClass}</h4>
                   <h4 className="text-xl font-bold">
@@ -570,7 +573,7 @@ export default function MarkManagement() {
                 </div>
               </div>
 
-              {userRole === "HomeroomTeacher" || userRole === "Principal" ? (
+              {userRole.includes(HOMEROOM_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
                 isLoadingMarkOfClass ? (
                   <div className="text-center primary-color my-30 text-xl italic font-medium">
                     <div className="mx-auto flex items-center justify-center">
@@ -610,10 +613,10 @@ export default function MarkManagement() {
           </TabPanel>
           <TabPanel
             value={value}
-            index={userRole === "SubjectTeacher" || userRole === "Principal" ? 0 : 1}
+            index={userRole.includes(SUBJECT_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? 0 : 1}
           >
             <>
-              {userRole === "SubjectTeacher" || userRole === "Principal" ? (
+              {userRole.includes(SUBJECT_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
                 <>
                   <div className="text-center mt-10 uppercase">
                     <h4 className="text-xl font-bold">

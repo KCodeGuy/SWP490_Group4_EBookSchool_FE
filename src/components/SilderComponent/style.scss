@@ -23,10 +23,10 @@
 .slick-prev::before,
 .slick-next::before {
   font-size: 32px; /* Adjust as needed */
-  color: white; /* Change button color */
+  color: $primary-color; /* Change button color */
 }
 
 .slick-prev:hover,
 .slick-next:hover {
-  color: $primary-hover-color; /* Change active dot color */
+  color: $primary-color; /* Change active dot color */
 }

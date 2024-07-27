@@ -35,6 +35,7 @@ import {
 import { generateClasses } from "utils/CommonFunctions.jsx";
 import NotifyCheckInfoForm from "components/NotifyCheckInfoForm/index.jsx";
 import TextValueComponent from "../../components/TextValueComponent/index.jsx";
+import { SUBJECT_ROLE } from "services/APIConfig.jsx";
 
 const SchoolBook = () => {
   const [isFirstRender, setIsFirstRender] = useState(true);
@@ -425,7 +426,7 @@ const SchoolBook = () => {
             </ul>
           </div>
           <PopupComponent
-            title={userRole === "SubjectTeacher" ? "ĐÁNH GIÁ TIẾT HỌC" : "CHI TIẾT SỔ"}
+            title={userRole.includes(SUBJECT_ROLE) ? "ĐÁNH GIÁ TIẾT HỌC" : "CHI TIẾT SỔ"}
             description={`GVBM: ${currentUser?.fullname}`}
             rightNote={`Lớp: ${currentClass}`}
             icon={<BorderColorIcon />}
@@ -473,7 +474,7 @@ const SchoolBook = () => {
                 icon={<PersonOffIcon />}
               />
               {/* </div> */}
-              {userRole === "SubjectTeacher" ? (
+              {userRole.includes(SUBJECT_ROLE) ? (
                 <>
                   <InputBaseComponent
                     name="id"

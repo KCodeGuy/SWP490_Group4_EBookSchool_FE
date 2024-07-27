@@ -24,7 +24,14 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
-import { ORB_HOST } from "../../services/APIConfig";
+import {
+  HEADTEACHER_ROLE,
+  HOMEROOM_ROLE,
+  ORB_HOST,
+  PRINCIPAL_ROLE,
+  STUDENT_ROLE,
+  SUBJECT_ROLE,
+} from "../../services/APIConfig";
 import noDataImage3 from "../../assets/images/noDataImage3.avif";
 import TableWeeklyTimeTableComponent from "../../components/TableWeeklyTimeTable";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
@@ -413,9 +420,9 @@ export default function WeeklyTimeTable() {
                   ))}
                 </Select>
               </FormControl>
-              {userRole === "HomeroomTeacher" ||
-              userRole === "Principal" ||
-              userRole === "Headteacher" ? (
+              {userRole.includes(HOMEROOM_ROLE) ||
+              userRole.includes(PRINCIPAL_ROLE) ||
+              userRole.includes(HEADTEACHER_ROLE) ? (
                 <FormControl sx={{ minWidth: 120 }}>
                   <InputLabel id="select-school-class-lable">Lớp</InputLabel>
                   <Select
@@ -467,7 +474,7 @@ export default function WeeklyTimeTable() {
             </div>
 
             <div className="flex items-center">
-              {userRole === "Principal" || userRole === "Headteacher" ? (
+              {userRole.includes(PRINCIPAL_ROLE) || userRole.includes(HEADTEACHER_ROLE) ? (
                 <>
                   <ButtonComponent
                     className="max-[767px]:hidden md:block"
@@ -717,9 +724,9 @@ export default function WeeklyTimeTable() {
             <div className="flex justify-center items-center text-3xl mx-auto w-full">
               <TodayIcon />
               <h4 className="text-xl font-bold uppercase ml-3">
-                {userRole === "HomeroomTeacher" ||
-                userRole === "Principal" ||
-                userRole === "Headteacher"
+                {userRole.includes(HOMEROOM_ROLE) ||
+                userRole.includes(PRINCIPAL_ROLE) ||
+                userRole.includes(HEADTEACHER_ROLE)
                   ? `THỜI KHÓA BIỂU LỚP ${schoolClass}`
                   : `THỜI KHÓA BIỂU(${currentUser.fullname.toString()})`}
               </h4>
@@ -730,7 +737,7 @@ export default function WeeklyTimeTable() {
             <div className="flex max-[767px]:mb-4">
               <div className="text-sm mr-4">
                 <span className="mr-2 font-bold">
-                  {userRole == "Student" ? "Học sinh: " : "Giáo viên: "}
+                  {userRole.includes(STUDENT_ROLE) ? "Học sinh: " : "Giáo viên: "}
                 </span>
                 <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
                   {currentUser ? currentUser.fullname.toString() : ""}
@@ -1030,7 +1037,7 @@ export default function WeeklyTimeTable() {
                 />
 
                 <div className="mt-4 flex justify-end">
-                  {userRole === "SubjectTeacher" || userRole === "Principal" ? (
+                  {userRole.includes(SUBJECT_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
                     <ButtonComponent
                       type="success"
                       action="button"
@@ -1045,7 +1052,7 @@ export default function WeeklyTimeTable() {
                   ) : (
                     ""
                   )}
-                  {userRole !== "Student" ? (
+                  {!userRole.includes(STUDENT_ROLE) ? (
                     <Link to="/register-notebook">
                       <ButtonComponent action="button">SỔ ĐẦU BÀI</ButtonComponent>
                     </Link>

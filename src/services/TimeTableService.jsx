@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_HOST } from "./APIConfig";
+import { API_HOST, HOMEROOM_ROLE, PRINCIPAL_ROLE, SUBJECT_ROLE } from "./APIConfig";
 
 export const getTimetable = async (
   userID,
@@ -16,14 +16,14 @@ export const getTimetable = async (
   };
   let apiURL = `${API_HOST}/Schedules/Student`;
 
-  if (userRole === "SubjectTeacher") {
+  if (userRole.includes(SUBJECT_ROLE)) {
     apiURL = `${API_HOST}/Schedules/SubjectTeacher`;
     params = {
       teacherID: userID,
       schoolYear,
       fromDate,
     };
-  } else if (userRole === "HomeroomTeacher") {
+  } else if (userRole.includes(HOMEROOM_ROLE)) {
     apiURL = `${API_HOST}/Schedules/HomeroomTeacher`;
     params = {
       teacherID: userID,
@@ -31,7 +31,7 @@ export const getTimetable = async (
       fromDate,
       classname: classID,
     };
-  } else if (userRole === "Principal") {
+  } else if (userRole.includes(PRINCIPAL_ROLE)) {
     apiURL = `${API_HOST}/Schedules/Class`;
     params = {
       className: classID,

@@ -67,32 +67,33 @@ const createTeacher = async (accessToken, data) => {
 
 const updateTeacher = async (accessToken, data) => {
   const formData = new FormData();
-  formData.append("username", data.otherValues.username);
-  formData.append("fullName", data.otherValues.fullName);
-  formData.append("birthday", data.otherValues.birthday);
-  formData.append("gender", data.otherValues.gender);
-  formData.append("nation", data.otherValues.nation);
-  formData.append("email", data.otherValues.email);
-  formData.append("phone", data.otherValues.phone);
-  formData.append("isBachelor", data.otherValues.bachelor ?? false);
-  formData.append("isMaster", data.otherValues.master ?? false);
-  formData.append("isDoctor", data.otherValues.doctor ?? false);
-  formData.append("isProfessor", data.otherValues.professor ?? false);
-  formData.append("address", data.otherValues.address);
-  formData.append("Password", data.otherValues.password);
-  formData.append("avatar", data.otherValues.avatar);
+  formData.append("username", data.username);
+  formData.append("fullName", data.fullName);
+  formData.append("address", data.address);
+  formData.append("email", data.email);
+  formData.append("phone", data.phone);
+  formData.append("gender", data.gender);
+  formData.append("birthday", data.birthday);
+  formData.append("nation", data.nation);
+  formData.append("isBachelor", data.isBachelor);
+  formData.append("isMaster", data.isMaster);
+  formData.append("isDoctor", data.isDoctor);
+  formData.append("isProfessor", data.isProfessor);
+  formData.append("avatar", data.avatar);
 
-  if (data.permissions && Array.isArray(data.permissions)) {
+  if (data.permissions) {
     data.permissions.forEach((permission, index) => {
-      formData.append(`Permissions[${index}]`, permission);
+      formData.append(`permissions[${index}]`, permission);
     });
   }
 
-  if (data.roles && Array.isArray(data.roles)) {
+  if (data.roles) {
     data.roles.forEach((role, index) => {
-      formData.append(`Roles[${index}]`, role);
+      formData.append(`roles[${index}]`, role);
     });
   }
+
+  console.log("formData:", formData);
 
   try {
     const res = await axios.put(`${API_HOST}/Teachers/${data.id}`, formData, {

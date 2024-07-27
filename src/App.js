@@ -60,8 +60,12 @@ import {
 import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
 
 // Images
-import brandWhite from "assets/images/logo-ct.png";
-import brandDark from "assets/images/logo-ct-dark.png";
+import brandWhite from "assets/images/logo1.png";
+import brandDark from "assets/images/logo1.png";
+import { PRINCIPAL_ROLE } from "services/APIConfig";
+import { SUBJECT_ROLE } from "services/APIConfig";
+import { HOMEROOM_ROLE } from "services/APIConfig";
+import { STUDENT_ROLE } from "services/APIConfig";
 const queryClient = new QueryClient();
 
 export default function App() {
@@ -71,15 +75,15 @@ export default function App() {
   const [currentRoutes, setCurrentRoutes] = useState([]);
   useEffect(() => {
     if (userRole) {
-      if (userRole === "Principal") {
+      if (userRole.includes(PRINCIPAL_ROLE)) {
         setCurrentRoutes(routes);
-      } else if (userRole === "Headteacher") {
+      } else if (userRole.includes(PRINCIPAL_ROLE)) {
         setCurrentRoutes(routes);
-      } else if (userRole === "SubjectTeacher") {
+      } else if (userRole.includes(SUBJECT_ROLE)) {
         setCurrentRoutes(subjectTeacherRoutes);
-      } else if (userRole === "HomeroomTeacher") {
+      } else if (userRole.includes(HOMEROOM_ROLE)) {
         setCurrentRoutes(homeRoomTeacherRoutes);
-      } else if (userRole === "Student") {
+      } else if (userRole.includes(STUDENT_ROLE)) {
         setCurrentRoutes(studentRoutes);
       } else {
         setCurrentRoutes(guestRoutes);

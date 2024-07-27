@@ -13,7 +13,7 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // react-router-dom components
 import { Link, useNavigate } from "react-router-dom";
@@ -41,7 +41,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // Images
-import bgImage from "assets/images/slider2.png";
+import bgImage from "assets/images/slider1.png";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import InputBaseComponent from "components/InputBaseComponent/InputBaseComponent";
 import { useForm, Controller } from "react-hook-form";
@@ -53,8 +53,8 @@ import { getSetting } from "services/SettingService";
 
 function Basic() {
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState({});
   const queryClient = useQueryClient();
+  const [currentUser, setCurrentUser] = useState({});
 
   const {
     control,
@@ -63,7 +63,11 @@ function Basic() {
     formState: { errors },
   } = useForm();
 
-  const { data: schoolSetting, error, isLoading } = useQuery(["settingState"], () => getSetting());
+  const {
+    data: schoolSetting,
+    error,
+    isLoading,
+  } = useQuery(["settingState"], () => getSetting(), { staleTime: Infinity });
 
   const mutation = useMutation(loginUser, {
     onSuccess: (data) => {
@@ -71,35 +75,39 @@ function Basic() {
         if (schoolSetting) {
           localStorage.setItem("schoolSetting", JSON.stringify(schoolSetting));
         }
-        localStorage.setItem("authToken", data.accessToken); // Example: saving a token
-        localStorage.setItem("refreshToken", data.refreshToken); // Example: saving a token
-        localStorage.setItem("permissions", data.permissions); // Example: saving a token
-        localStorage.setItem("user", JSON.stringify(data.user)); // Example: saving use
+        localStorage.setItem("authToken", data.accessToken);
+        if (data?.permissions) {
+          localStorage.setItem("permissions", data?.permissions);
+        }
+        localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("schoolYears", JSON.stringify(data.schoolYears));
         const formattedArray = Object.keys(data.classes).map((schoolYear) => ({
-          schoolYear: schoolYear,
+          schoolYear,
           details: data.classes[schoolYear],
         }));
         localStorage.setItem("currentClasses", JSON.stringify(formattedArray));
-        const userRole = getUserRole(
-          data.user.id.toString(),
-          data.user.username.toString(),
-          data.permissions.toString()
-        );
-        localStorage.setItem("userRole", userRole); // Example: saving use
+        if (data?.roles) {
+          localStorage.setItem("userRole", data?.roles?.toString());
+        }
         navigate("/dashboard");
       } else {
-        toast.error(data);
+        toast.error("Tên đăng nhập hoặc tài khoản không chính xác!");
+        setCurrentUser(data);
       }
-      setCurrentUser(data);
+    },
+    onError: () => {
+      toast.error("Tên đăng nhập hoặc tài khoản không chính xác!");
     },
   });
 
+  useEffect(() => {
+    queryClient.prefetchQuery("settingState", getSetting);
+  }, [queryClient]);
+
   const handleSubmitLogin = (data) => {
-    const username = data.username;
-    const password = data.password;
-    mutation.mutate({ username, password });
+    mutation.mutate({ username: data.username, password: data.password });
   };
+
   return (
     <BasicLayout image={bgImage}>
       <ToastContainer autoClose={3000} />

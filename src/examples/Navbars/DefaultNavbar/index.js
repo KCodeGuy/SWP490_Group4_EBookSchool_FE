@@ -29,6 +29,7 @@ import Icon from "@mui/material/Icon";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
+import brand from "assets/images/logo1.png";
 
 // Material Dashboard 2 React example components
 import DefaultNavbarLink from "examples/Navbars/DefaultNavbar/DefaultNavbarLink";
@@ -100,7 +101,7 @@ function DefaultNavbar({ transparent, light, action }) {
         }) => ({
           backgroundColor: transparent
             ? transparentColor.main
-            : rgba(darkMode ? background.sidenav : white.main, 0.8),
+            : rgba(darkMode ? background.sidenav : white.main, 1),
           backdropFilter: transparent ? "none" : `saturate(200%) blur(30px)`,
         })}
       >
@@ -111,9 +112,12 @@ function DefaultNavbar({ transparent, light, action }) {
           lineHeight={1}
           pl={{ xs: 0, lg: 1 }}
         >
-          <MDTypography variant="button" fontWeight="bold" color={light ? "white" : "dark"}>
-            {schoolSetting?.schoolName || "ORB"}
-          </MDTypography>
+          <div className="flex items-center">
+            {brand && <MDBox component="img" src={brand} alt="Brand" width="2rem" />}
+            <p className="text-left text-sm font-medium ml-2">
+              {schoolSetting?.schoolName || "ORB"}
+            </p>
+          </div>
         </MDBox>
         <MDBox color="inherit" display={{ xs: "none", lg: "flex" }} m={0} p={0}>
           <DefaultNavbarLink icon="donut_large" name="Giới thiệu" route="/authentication/sign-in" />

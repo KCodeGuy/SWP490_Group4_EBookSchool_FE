@@ -8,7 +8,7 @@ import HomeWorkIcon from "@mui/icons-material/HomeWork";
 import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
 import { Card, CircularProgress } from "@mui/material";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -23,23 +23,42 @@ import noDataImage3 from "../../assets/images/noDataImage3.avif";
 
 const Dashboard = React.memo(() => {
   const [currentPage, setCurrentPage] = useState(1);
-  // const [currentData, setCurrentData] = useState([]);
+  const queryClient = useQueryClient();
   const itemsPerPage = 20;
-  let paginatedData = [],
-    totalItems = 0,
-    totalPages = 0;
   const navigate = useNavigate();
-  const accessToken = localStorage.getItem("authToken");
-  // const userRole = localStorage.getItem("userRole");
+
+  let accessToken, userRole;
+  userRole = localStorage.getItem("userRole");
+  if (userRole) {
+    accessToken = localStorage.getItem("authToken");
+  }
 
   // Call API Get all notifications
-  const { data, error, isLoading } = useQuery(["notifications", { accessToken }], () =>
-    getAllNotifications(accessToken)
+  const { data, error, isLoading } = useQuery(
+    ["notifications", { accessToken }],
+    () => getAllNotifications(accessToken),
+    {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+      keepPreviousData: true,
+    }
   );
 
+  useEffect(() => {
+    if (data && accessToken) {
+      queryClient.prefetchQuery(["notifications", { accessToken, page: currentPage + 1 }], () =>
+        getAllNotifications(accessToken)
+      );
+    }
+  }, [data, accessToken]);
+
+  let paginatedData = [];
+  let totalItems = 0;
+  let totalPages = 0;
+
   if (data) {
-    paginatedData = data?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-    totalItems = data?.length;
+    paginatedData = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    totalItems = data.length;
     totalPages = Math.ceil(totalItems / itemsPerPage);
   }
 
@@ -66,19 +85,19 @@ const Dashboard = React.memo(() => {
               <SliderComponent
                 sliderImages={[
                   {
-                    title: "Trường THPT Nguyễn Việt Hồng",
-                    description: "Tự hào trường top!",
+                    title: "",
+                    description: "",
                     image: sliderImage1,
                   },
                   {
-                    title: "CÔ GIÁO ĐẠT THÀNH TÍCH TRONG CUỘC THI CODE",
-                    description: "Chúc mừng cô Mỹ Quyên đã đạt thành tích code dữ!",
-                    image: sliderImage3,
+                    title: "",
+                    description: "",
+                    image: sliderImage2,
                   },
                   {
-                    title: "Trường THPT Nguyễn Việt Hồng",
-                    description: "Tự hào trường top!",
-                    image: sliderImage2,
+                    title: "",
+                    description: "!",
+                    image: sliderImage3,
                   },
                 ]}
               />
@@ -125,7 +144,7 @@ const Dashboard = React.memo(() => {
                 <div className="flex justify-between item-center w-full">
                   <p className="font-bold animate-pulse text-lg">
                     <CircleNotificationsIcon className="mb-1 mr-2" />
-                    THÔNG BÁO(NEWS)
+                    THÔNG BÁO
                   </p>
                   <div className="text-sm bg-success-color italic text-white rounded-md px-4 h-7 leading-7 animate-pulse">
                     Mới nhất
@@ -181,12 +200,16 @@ const Dashboard = React.memo(() => {
                     Chưa có dữ liệu!
                   </div>
                 )}
-                <PaginationComponent
-                  location="center"
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                />
+                {data && paginatedData?.length > 0 ? (
+                  <PaginationComponent
+                    location="center"
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                  />
+                ) : (
+                  ""
+                )}
               </Grid>
             </Grid>
           </Grid>

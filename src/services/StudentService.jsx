@@ -59,9 +59,12 @@ const updateStudent = async (accessToken, data) => {
   formData.append("motherProfession", data.motherProfession);
   formData.append("address", data.address);
   formData.append("avatar", data.avatar);
+  if (data?.password) {
+    formData.append("password", data.password);
+  }
 
   try {
-    const res = await axios.put(`${API_HOST}/Students/${data.id}`, formData, {
+    const res = await axios.put(`${API_HOST}/Students/${data.id}`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${accessToken}`,

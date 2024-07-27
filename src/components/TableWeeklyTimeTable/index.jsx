@@ -5,6 +5,11 @@ import AccessAlarmsIcon from "@mui/icons-material/AccessAlarms";
 import { Link, useNavigate } from "react-router-dom";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { getTodayDate } from "../../utils/CommonFunctions";
+import { PRINCIPAL_ROLE } from "services/APIConfig";
+import { HEADTEACHER_ROLE } from "services/APIConfig";
+import { SUBJECT_ROLE } from "services/APIConfig";
+import { HOMEROOM_ROLE } from "services/APIConfig";
+import { STUDENT_ROLE } from "services/APIConfig";
 
 const TableWeeklyTimeTableComponent = ({
   data,
@@ -86,7 +91,7 @@ const TableWeeklyTimeTableComponent = ({
                         </p>
                         <div className="flex justify-between mt-1 items-center">
                           {renderSlotStatus(slotData.status)}
-                          {userRole === "SubjectTeacher" || userRole === "HomeroomTeacher" ? (
+                          {userRole.includes(SUBJECT_ROLE) || userRole.includes(HOMEROOM_ROLE) ? (
                             <Link to={`/register-notebook`}>
                               <button className="text-center text-white px-2 max-w-max h-6 leading-6 rounded bg-warning-color">
                                 SĐB
@@ -95,7 +100,8 @@ const TableWeeklyTimeTableComponent = ({
                           ) : (
                             ""
                           )}
-                          {userRole === "Principal" || userRole === "Headteacher" ? (
+                          {userRole.includes(PRINCIPAL_ROLE) ||
+                          userRole.includes(HEADTEACHER_ROLE) ? (
                             <button
                               className="text-center text-white px-3 max-w-max h-6 leading-6 rounded bg-error-color"
                               onClick={() => onDelete(slotData)}
@@ -106,7 +112,7 @@ const TableWeeklyTimeTableComponent = ({
                             ""
                           )}
                         </div>
-                        {userRole === "Student" || userRole === "SubjectTeacher" ? (
+                        {userRole.includes(STUDENT_ROLE) || userRole.includes(SUBJECT_ROLE) ? (
                           <p className="text-center text-white px-1 max-w-max h-6 leading-6 rounded bg-warning-color mt-2">
                             <LocationOnIcon className="mb-0.5" />
                             {slotData.classroom}
@@ -114,7 +120,7 @@ const TableWeeklyTimeTableComponent = ({
                         ) : (
                           ""
                         )}
-                        {userRole === "SubjectTeacher" ? (
+                        {userRole.includes(SUBJECT_ROLE) ? (
                           <>
                             <button
                               className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color mt-2"
@@ -128,8 +134,8 @@ const TableWeeklyTimeTableComponent = ({
                         ) : (
                           ""
                         )}
-
-                        {userRole === "Principal" || userRole === "Headteacher" ? (
+                        {userRole.includes(PRINCIPAL_ROLE) ||
+                        userRole.includes(HEADTEACHER_ROLE) ? (
                           <button
                             className="text-center text-white px-2 w-full h-6 leading-6 rounded bg-primary-color mt-3"
                             onClick={() => onEdit(slotData, date)}

@@ -2,6 +2,7 @@ import axios from "axios";
 import { API_HOST } from "./APIConfig";
 
 const getAllNotifications = async (accessToken) => {
+  // console.log(accessToken);
   const res = await axios.get(`${API_HOST}/Notifications`, {
     headers: {
       "Content-Type": "application/json",

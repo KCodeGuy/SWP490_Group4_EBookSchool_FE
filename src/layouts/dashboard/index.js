@@ -20,6 +20,7 @@ import PaginationComponent from "../../components/PaginationComponent/Pagination
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import { getAllNotifications } from "../../services/NotificationService";
 import noDataImage3 from "../../assets/images/noDataImage3.avif";
+import { getInnerTextInsideHTML } from "utils/CommonFunctions";
 
 const Dashboard = React.memo(() => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -163,14 +164,14 @@ const Dashboard = React.memo(() => {
                       <Card sx={{ padding: "12px", marginBottom: "12px" }}>
                         <div className="flex max-[639px]:flex-wrap">
                           <img
-                            className="w-40 h-32 object-cover object-right rounded-md max-[639px]:w-full"
+                            className="w-40 h-32 object-cover object-center rounded-md max-[639px]:w-full"
                             src={item.thumbnail}
                             alt="Ảnh bìa"
                           />
-                          <div className="text-base ml-4 max-[639px]:ml-0 max-[639px]:mt-3">
+                          <div className="flex-1 text-base ml-4 max-[639px]:ml-0 max-[639px]:mt-3">
                             <p className="font-bold uppercase text-blue-500 ">[{item.title}]</p>
                             <p className="max-line-3 text-sm text-color text-justify text-container">
-                              {item.content}
+                              {getInnerTextInsideHTML(item.content.toString())}
                             </p>
                             <div className="flex justify-between items-end mt-2 w-full">
                               <p className="font-medium">

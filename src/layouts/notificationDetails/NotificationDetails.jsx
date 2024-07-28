@@ -12,11 +12,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "react-query";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 
-// Get access token
-const accessToken = localStorage.getItem("authToken");
-const permissions = localStorage.getItem("permissions");
-
 export default function NotificationDetails() {
+  // Get access token
+  const accessToken = localStorage.getItem("authToken");
+  const permissions = localStorage.getItem("permissions");
+  const schoolSetting = JSON.parse(localStorage.getItem("schoolSetting"));
   const { notificationID } = useParams();
   const { data, error, isLoading } = useQuery(["notificationDetails", { accessToken }], () =>
     getNotificationByID(accessToken, notificationID)
@@ -40,7 +40,7 @@ export default function NotificationDetails() {
                   </div>
                 </div>
                 <div className="flex items-baseline max-[639px]:mt-2">
-                  <p>
+                  <p className="font-bold">
                     <EventAvailableIcon className="mr-2" />
                     {data?.createAt}
                   </p>
@@ -73,7 +73,7 @@ export default function NotificationDetails() {
                 dangerouslySetInnerHTML={{ __html: data?.content }}
               ></div>
               <div className="flex mt-5 font-medium justify-end">
-                <span>Trường THPT Nguyễn Văn A</span>
+                <span>{schoolSetting?.schoolName}</span>
                 <span className="mx-2">|</span>
                 <span>{data?.createBy}</span>
               </div>

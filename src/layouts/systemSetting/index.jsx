@@ -62,6 +62,17 @@ export default function SystemSetting() {
     },
   });
 
+  const handleOpenModalEdit = () => {
+    setModalEditOpen(true);
+    if (data) {
+      setValue("schoolName", data.schoolName);
+      setValue("schoolAddress", data.schoolAddress);
+      setValue("schoolPhone", data.schoolPhone);
+      setValue("schoolEmail", data.schoolEmail);
+      setValue("schoolLevel", data.schoolLevel);
+    }
+  };
+
   const handleEdit = (data) => {
     if (data) {
       const schoolSetting = {
@@ -88,7 +99,7 @@ export default function SystemSetting() {
             </div>
           </div>
           <div className="text-right">
-            <ButtonComponent onClick={() => setModalEditOpen(true)}>
+            <ButtonComponent onClick={handleOpenModalEdit}>
               <BorderColorIcon className="text-3xl mr-1" />
               CẬP NHẬT
             </ButtonComponent>
@@ -161,7 +172,7 @@ export default function SystemSetting() {
                   errors={errorsEditAction}
                   options={schoolLevelOptions}
                 />
-                <InputBaseComponent
+                {/* <InputBaseComponent
                   type="text"
                   placeholder="Thông tin khác..."
                   control={controlEditAction}
@@ -169,6 +180,15 @@ export default function SystemSetting() {
                   name="otherInfor"
                   label="Thông tin khác"
                   className="w-1/2"
+                  errors={errorsEditAction}
+                /> */}
+                <InputBaseComponent
+                  type="file"
+                  className="w-1/2"
+                  control={controlEditAction}
+                  setValue={setValue}
+                  name="logo"
+                  label="Ảnh logo"
                   errors={errorsEditAction}
                 />
               </div>
@@ -226,7 +246,14 @@ export default function SystemSetting() {
               </div>
               <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ trước khi cập nhật!" />
               <div className="mt-4 flex justify-end">
-                <ButtonComponent type="error" action="reset" onClick={() => resetEditAction()}>
+                <ButtonComponent
+                  type="error"
+                  action="reset"
+                  onClick={() => {
+                    setModalEditOpen(false);
+                    resetEditAction();
+                  }}
+                >
                   <CancelIcon className="text-3xl mr-1 mb-0.5" />
                   HỦY BỎ
                 </ButtonComponent>

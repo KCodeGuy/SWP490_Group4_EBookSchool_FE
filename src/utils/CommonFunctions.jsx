@@ -216,3 +216,10 @@ export const formatUrlToFile = async (url, filename, mimeType) => {
     throw error;
   }
 };
+
+// Function to remove HTML tags from a string
+export const getInnerTextInsideHTML = (html) => {
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = html;
+  return tempDiv.textContent || tempDiv.innerText || "";
+};

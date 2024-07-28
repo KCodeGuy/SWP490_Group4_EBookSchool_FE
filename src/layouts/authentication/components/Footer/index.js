@@ -50,7 +50,8 @@ function Footer({ light }) {
             color={light ? "white" : "text"}
             fontSize={size.sm}
           >
-            &copy; {new Date().getFullYear()}, made with by G4-TEAM for a better web.
+            &copy; {new Date().getFullYear()}, Online-Register-Notebook - bản quyền thuộc về
+            G4-TEAM.
           </MDBox>
           <MDBox
             component="ul"

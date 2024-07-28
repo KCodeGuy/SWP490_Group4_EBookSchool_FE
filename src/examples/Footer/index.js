@@ -59,7 +59,7 @@ function Footer({ company, links }) {
         fontSize={size.sm}
         px={1.5}
       >
-        &copy; {new Date().getFullYear()}, copyright by G4-TEAM for a better web.
+        &copy; {new Date().getFullYear()}, Online-Register-Notebook - bản quyền thuộc về G4-TEAM.
       </MDBox>
       <MDBox
         component="ul"
@@ -88,8 +88,8 @@ function Footer({ company, links }) {
 Footer.defaultProps = {
   company: { href: "/", name: "G4-TEAM" },
   links: [
-    { href: "/", name: "About Us" },
-    { href: "/", name: "Instruction" },
+    { href: "/", name: "Giới thiệu" },
+    { href: "/", name: "Hướng dẫn" },
   ],
 };
 

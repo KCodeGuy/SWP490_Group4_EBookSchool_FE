@@ -11,6 +11,8 @@ import Footer from "examples/Footer";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import EditIcon from "@mui/icons-material/Edit";
+import CancelIcon from "@mui/icons-material/Cancel";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
 import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
 
 import noDataImage3 from "../../assets/images/noDataImage3.avif";
@@ -29,6 +31,8 @@ import { useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { formatUrlToFile } from "utils/CommonFunctions";
+import { getInnerTextInsideHTML } from "utils/CommonFunctions";
+import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
 
 // Notification Management (UolLT)
 // Get access token
@@ -53,11 +57,6 @@ export default function NotificationManagement() {
   const [fileThumbnail, setFileThumbnail] = useState(null);
   const [contentQuillValue, setContentQuillValue] = useState("");
   const navigate = useNavigate();
-
-  if (contentQuillValue) {
-    console.log(contentQuillValue);
-  }
-
   const queryClient = useQueryClient();
 
   // Call API Get all notifications
@@ -150,31 +149,47 @@ export default function NotificationManagement() {
         reset();
         setModalEditOpen(false);
       },
+      onError: (error) => {
+        toast.error("Cập nhật thông báo thất bại! ", error);
+      },
     }
   );
-
-  const handleEditNotification = (data) => {
-    // try {
-    //   console.log("Before: ", data.thumbnailEdit);
-    //   const fileName = data.thumbnailEdit.split("/").pop(); // Extract the file name from the URL
-    //   const mimeType = "image/jpeg"; // Adjust the MIME type if necessary
-    //   const thumbnailFile = await formatUrlToFile(data.thumbnailEdit, fileName, mimeType);
-    //   console.log("After: ", thumbnailFile);
-    // } catch (error) {
-    //   toast.error("Failed to process the image URL");
-    // }
-    const notificationData = {
-      id: data.idEdit,
-      title: data.nameEdit,
-      content: contentQuillValue,
-      thumbnail: data.thumbnailEdit,
+  const handleEditNotification = async (data) => {
+    // Function to fetch an image from a URL and convert it to a File object
+    const urlToFile = async (url, filename, mimeType) => {
+      const response = await fetch(url);
+      const buffer = await response.arrayBuffer();
+      return new File([buffer], filename, { type: mimeType });
     };
-    if (contentQuillValue && contentQuillValue !== "<p><br></p>") {
-      updateNotificationMutation.mutate(notificationData);
-    } else if (!data.thumbnailEdit) {
-      toast.error(`Hãy chọn ảnh bìa!`);
-    } else {
+
+    // Check if the contentQuillValue is valid
+    if (!contentQuillValue || contentQuillValue === "<p><br></p>") {
       toast.error(`Nội dung không được bỏ trống!`);
+      return;
+    }
+
+    let thumbnailFile;
+
+    try {
+      // Check if the thumbnail is a URL or a File object
+      if (typeof data.thumbnailEdit === "string") {
+        // Convert the thumbnail URL to a File object
+        thumbnailFile = await urlToFile(data.thumbnailEdit, "thumbnail.jpg", "image/jpeg");
+      } else {
+        // Assume it's already a File object
+        thumbnailFile = data.thumbnailEdit;
+      }
+
+      const notificationData = {
+        id: data.idEdit,
+        title: data.nameEdit,
+        content: contentQuillValue,
+        thumbnail: thumbnailFile,
+      };
+      // Call the mutation to update the notification
+      updateNotificationMutation.mutate(notificationData);
+    } catch (error) {
+      toast.error(`Có lỗi khi chuyển file: ${error.message}`);
     }
   };
 
@@ -216,6 +231,9 @@ export default function NotificationManagement() {
     return data.filter((item) => {
       return (
         (item.title && item.title.toLowerCase().includes(search)) ||
+        (item.createAt && item.createAt.toLowerCase().includes(search)) ||
+        (item.updateAt && item.updateAt.toLowerCase().includes(search)) ||
+        (item.createBy && item.createBy.toLowerCase().includes(search)) ||
         (item.content && item.content.toLowerCase().includes(search))
       );
     });
@@ -247,7 +265,7 @@ export default function NotificationManagement() {
                 }}
               >
                 <AddCircleOutlineIcon className="text-3xl mr-1" />
-                Tạo
+                TẠO
               </ButtonComponent>
               <PopupComponent
                 title="TẠO THÔNG BÁO"
@@ -281,21 +299,7 @@ export default function NotificationManagement() {
                     }}
                   />
 
-                  {/* <InputBaseComponent
-                    className="w-96"
-                    name="content"
-                    placeholder="Nhập nội dung thông báo"
-                    type="textArea"
-                    control={control}
-                    rowTextArea={6}
-                    setValue={noSetValue}
-                    label="Nội dung"
-                    errors={errors}
-                    validationRules={{
-                      required: "Không được bỏ trống!",
-                    }}
-                  /> */}
-                  <div className="mt-5 max-w-md">
+                  <div className="mt-5 max-w-md mb-2">
                     <ReactQuill
                       theme="snow"
                       value={contentQuillValue}
@@ -303,12 +307,13 @@ export default function NotificationManagement() {
                       modules={modules}
                       placeholder="Nhập nội dung thông báo..."
                     />
-                    {/* {contentQuillValue !== "" && contentQuillValue !== "<p><br></p>" ? (
+                    {contentQuillValue !== "" || contentQuillValue !== "<p><br></p>" ? (
                       ""
                     ) : (
                       <p className="error-color mt-1 text-base">Không được bỏ trống!</p>
-                    )} */}
+                    )}
                   </div>
+                  <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi tạo!" />
                   <div className="mt-4 flex justify-end">
                     <ButtonComponent
                       type="error"
@@ -318,6 +323,7 @@ export default function NotificationManagement() {
                         setModalOpen(false);
                       }}
                     >
+                      <CancelIcon className="text-3xl mr-1 mb-0.5" />
                       HỦY BỎ
                     </ButtonComponent>
                     <ButtonComponent action="submit">
@@ -354,7 +360,7 @@ export default function NotificationManagement() {
                   item.createAt.toString(),
                   item.updateAt.toString(),
                   item.createBy.toString(),
-                  item.content.toString(),
+                  getInnerTextInsideHTML(item.content.toString()), // Strip HTML tags from content
                 ])}
                 itemsPerPage={10}
                 onEdit={handleEdit}
@@ -397,13 +403,11 @@ export default function NotificationManagement() {
 
                 <div className="flex max-w-md">
                   <InputBaseComponent
-                    placeholder="Chọn file"
                     type="file"
                     control={controlEditAction}
+                    setValue={setValue}
                     name="thumbnailEdit"
                     label="Ảnh bìa"
-                    setValue={setValue}
-                    className="flex-1"
                     errors={errorsEditAction}
                     validationRules={{
                       required: "Không được bỏ trống!",
@@ -417,20 +421,7 @@ export default function NotificationManagement() {
                     />
                   )}
                 </div>
-                {/* <InputBaseComponent
-                  name="contentEdit"
-                  placeholder="Nhập nội dung thông báo"
-                  type="textArea"
-                  control={controlEditAction}
-                  rowTextArea={6}
-                  setValue={setValue}
-                  label="Nội dung"
-                  errors={errorsEditAction}
-                  validationRules={{
-                    required: "Không được bỏ trống!",
-                  }}
-                /> */}
-                <div className="mt-5 max-w-md ">
+                <div className="mt-5 max-w-md mb-2">
                   <ReactQuill
                     theme="snow"
                     value={contentQuillValue}
@@ -438,12 +429,8 @@ export default function NotificationManagement() {
                     modules={modules}
                     placeholder="Nhập nội dung thông báo..."
                   />
-                  {/* {contentQuillValue !== "" && contentQuillValue !== "<p><br></p>" ? (
-                      ""
-                    ) : (
-                      <p className="error-color mt-1 text-base">Không được bỏ trống!</p>
-                    )} */}
                 </div>
+                <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi cập nhật!" />
                 <div className="mt-4 flex justify-end">
                   <ButtonComponent
                     type="error"
@@ -453,9 +440,13 @@ export default function NotificationManagement() {
                       resetEditAction();
                     }}
                   >
+                    <CancelIcon className="text-3xl mr-1 mb-0.5" />
                     HỦY BỎ
                   </ButtonComponent>
-                  <ButtonComponent action="submit">CẬP NHẬT</ButtonComponent>
+                  <ButtonComponent action="submit">
+                    <BorderColorIcon className="text-3xl mr-1" />
+                    CẬP NHẬT
+                  </ButtonComponent>
                 </div>
               </form>
             </PopupComponent>
@@ -473,9 +464,11 @@ export default function NotificationManagement() {
                   action="button"
                   onClick={() => setModalDeleteOpen(false)}
                 >
+                  <CancelIcon className="text-3xl mr-1 mb-0.5" />
                   HỦY BỎ
                 </ButtonComponent>
                 <ButtonComponent action="button" onClick={handleDeleteAPI}>
+                  <DeleteIcon className="text-3xl mr-1" />
                   XÓA
                 </ButtonComponent>
               </div>

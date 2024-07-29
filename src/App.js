@@ -66,6 +66,7 @@ import { PRINCIPAL_ROLE } from "services/APIConfig";
 import { SUBJECT_ROLE } from "services/APIConfig";
 import { HOMEROOM_ROLE } from "services/APIConfig";
 import { STUDENT_ROLE } from "services/APIConfig";
+import { HEADTEACHER_ROLE } from "services/APIConfig";
 const queryClient = new QueryClient();
 
 export default function App() {
@@ -77,7 +78,7 @@ export default function App() {
     if (userRole) {
       if (userRole.includes(PRINCIPAL_ROLE)) {
         setCurrentRoutes(routes);
-      } else if (userRole.includes(PRINCIPAL_ROLE)) {
+      } else if (userRole.includes(HEADTEACHER_ROLE)) {
         setCurrentRoutes(routes);
       } else if (userRole.includes(SUBJECT_ROLE)) {
         setCurrentRoutes(subjectTeacherRoutes);

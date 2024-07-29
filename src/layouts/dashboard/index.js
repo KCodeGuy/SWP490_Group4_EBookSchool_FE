@@ -140,7 +140,7 @@ const Dashboard = React.memo(() => {
           </Grid>
 
           <Grid container marginTop={10}>
-            <Grid item xs={12} className="shadow rounded-md">
+            <Grid item xs={12} className="">
               <Grid container paddingX={2} paddingY={2}>
                 <div className="flex justify-between item-center w-full">
                   <p className="font-bold animate-pulse text-lg">
@@ -161,7 +161,11 @@ const Dashboard = React.memo(() => {
                 ) : data && paginatedData?.length > 0 ? (
                   paginatedData?.map((item, index) => (
                     <Grid key={index} item xs={12} marginTop={1}>
-                      <Card sx={{ padding: "12px", marginBottom: "12px" }}>
+                      <Card
+                        sx={{ padding: "12px", marginBottom: "12px", cursor: "pointer" }}
+                        onClick={() => handleNotificationDetails(item.id)}
+                        className="hover:bg-slate-100 animation-button"
+                      >
                         <div className="flex max-[639px]:flex-wrap">
                           <img
                             className="w-40 h-32 object-cover object-center rounded-md max-[639px]:w-full"

@@ -383,7 +383,7 @@ export default function ClassManagement() {
                   icon={<AddCircleOutlineIcon />}
                   isOpen={modalOpen}
                   onClose={() => setModalOpen(false)}
-                  tabs={[{ label: "TẠO MÔN" }, { label: "TẠO BẰNG EXCEL" }]}
+                  tabs={[{ label: "TẠO LỚP" }, { label: "TẠO BẰNG EXCEL" }]}
                   currentTab={currentTab}
                   onTabChange={(newValue) => {
                     reset();

@@ -174,7 +174,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 onClick={handleOpenMenu}
               >
                 <Icon sx={iconsStyle}>notifications</Icon>
-              </IconButton>
+              </IconButton> */}
               <IconButton
                 size="small"
                 disableRipple
@@ -185,8 +185,8 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 <Icon sx={iconsStyle} fontSize="medium">
                   {miniSidenav ? "menu_open" : "menu"}
                 </Icon>
-              </IconButton> */}
-              {/* <IconButton
+              </IconButton>
+              <IconButton
                 size="small"
                 disableRipple
                 color="inherit"
@@ -194,7 +194,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 onClick={handleConfiguratorOpen}
               >
                 <Icon sx={iconsStyle}>settings</Icon>
-              </IconButton> */}
+              </IconButton>
               {currentUser && (
                 <div className="flex items-center text-base font-medium ml-2 ">
                   <Link to={userRole == "Student" ? "/studentProfile" : "/profile"}>

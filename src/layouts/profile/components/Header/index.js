@@ -49,9 +49,13 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { updateTeacher } from "services/TeacherService";
 import { ToastContainer, toast } from "react-toastify";
 import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
+import { nationOptions } from "mock/student";
 
 const accessToken = localStorage.getItem("authToken");
-
+const genderOptions = [
+  { label: "Nam", value: "Nam" },
+  { label: "Nữ", value: "Nữ" },
+];
 function Header({ children, currentUser, permissions }) {
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
   const [tabValue, setTabValue] = useState(0);
@@ -99,38 +103,46 @@ function Header({ children, currentUser, permissions }) {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("teacherState");
-        if (response && response.success) {
-          toast.success("Cập nhật giáo viên thành công!");
+        if (response) {
+          toast.success("Cập nhật tài khoản thành công!");
         } else {
-          toast.error(`${response.data}!`);
+          toast.error(`Cập nhật tài khoản thất bại! ${response}`);
         }
         resetEditAction();
         setModalEditOpen(false);
       },
       onError: (error) => {
         console.error("Error updating teacher:", error);
-        toast.error("Cập nhật giáo viên thất bại!");
+        toast.error("Cập nhật tài khoản thất bại!");
       },
     }
   );
 
   const handleEdit = (data) => {
-    const teacherData = {
-      id: data.id,
-      fullName: data.fullName,
-      birthday: data.birthday,
-      gender: data.gender,
-      nation: data.nation,
-      email: data.email,
-      phone: data.phone,
-      isBachelor: data.isBachelor,
-      isMaster: data.isMaster,
-      isDoctor: data.isDoctor,
-      isProfessor: data.isProfessor,
-      address: data.address,
-      avatar: data.avatar, // Assuming the avatar input returns a FileList
-    };
-    updateTeacherMutation.mutate(teacherData);
+    if (data) {
+      if (!data.gender || data.gender == "") {
+        data.gender = genderOptions[0].value;
+      }
+      if (!data.nation || data.nation == "") {
+        data.nation = nationOptions[0].value;
+      }
+      const teacherData = {
+        id: data.id,
+        fullName: data.fullName,
+        birthday: data.birthday,
+        gender: data.gender,
+        nation: data.nation,
+        email: data.email,
+        phone: data.phone,
+        isBachelor: data.isBachelor,
+        isMaster: data.isMaster,
+        isDoctor: data.isDoctor,
+        isProfessor: data.isProfessor,
+        address: data.address,
+        avatar: data.avatar, // Assuming the avatar input returns a FileList
+      };
+      updateTeacherMutation.mutate(teacherData);
+    }
   };
 
   useEffect(() => {
@@ -158,6 +170,7 @@ function Header({ children, currentUser, permissions }) {
 
   return (
     <MDBox position="relative" mb={5}>
+      <ToastContainer autoClose={3000} />
       <MDBox
         display="flex"
         alignItems="center"
@@ -256,32 +269,26 @@ function Header({ children, currentUser, permissions }) {
                         }}
                       />
                       <InputBaseComponent
-                        type="text"
-                        className="w-1/2"
+                        type="select"
+                        className="w-1/2 "
                         control={controlEditAction}
                         setValue={setValue}
                         name="gender"
-                        placeholder="Nam"
                         label="Giới tính"
                         errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
+                        options={genderOptions}
                       />
                     </div>
                     <div className="flex">
                       <InputBaseComponent
-                        type="text"
+                        type="select"
                         label="Dân tộc"
                         className="w-1/2 mr-2"
                         control={controlEditAction}
                         setValue={setValue}
                         name="nation"
-                        placeholder="Kinh"
                         errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
+                        options={nationOptions}
                       />
                       <InputBaseComponent
                         type="email"

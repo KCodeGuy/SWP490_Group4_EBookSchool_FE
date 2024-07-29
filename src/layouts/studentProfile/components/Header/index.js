@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
+import CancelIcon from "@mui/icons-material/Cancel";
 import breakpoints from "assets/theme/base/breakpoints";
 import backgroundImage from "assets/images/bg-profile.jpeg";
 import { useMutation, useQuery, useQueryClient } from "react-query";
@@ -19,8 +20,14 @@ import { ToastContainer, toast } from "react-toastify";
 import { updateStudent } from "services/StudentService";
 import LockClockIcon from "@mui/icons-material/LockClock";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
+import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
+import { nationOptions } from "mock/student";
 
 const accessToken = localStorage.getItem("authToken");
+const genderOptions = [
+  { label: "Nam", value: "Nam" },
+  { label: "Nữ", value: "Nữ" },
+];
 
 function Header({ children, currentUser, permissions }) {
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
@@ -43,17 +50,17 @@ function Header({ children, currentUser, permissions }) {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("studentState");
-        if (response && response.success) {
-          toast.success("Cập nhật học sinh thành công!");
+        if (response) {
+          toast.success("Cập nhật tài khoản thành công!");
         } else {
-          toast.error(`${response.data}!`);
+          toast.error(`Cập nhật tài khoản thất bại! ${response.data}!`);
         }
         resetEditAction();
         setModalEditOpen(false);
       },
       onError: (error) => {
         console.error("Error updating student:", error);
-        toast.error("Cập nhật học sinh thất bại!");
+        toast.error("Cập nhật tài khoản thất bại!");
       },
     }
   );
@@ -122,6 +129,7 @@ function Header({ children, currentUser, permissions }) {
 
   return (
     <MDBox position="relative" mb={5}>
+      <ToastContainer autoClose={3000} />
       <MDBox
         display="flex"
         alignItems="center"
@@ -220,17 +228,14 @@ function Header({ children, currentUser, permissions }) {
                         }}
                       />
                       <InputBaseComponent
-                        type="text"
-                        className="w-1/2"
+                        type="select"
+                        className="w-1/2 "
                         control={controlEditAction}
                         setValue={setValue}
                         name="gender"
-                        placeholder="Nam"
                         label="Giới tính"
                         errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
+                        options={genderOptions}
                       />
                     </div>
                     <div className="flex">
@@ -247,17 +252,14 @@ function Header({ children, currentUser, permissions }) {
                         }}
                       />
                       <InputBaseComponent
-                        type="text"
+                        type="select"
                         label="Dân tộc"
                         className="w-1/2 mr-2"
                         control={controlEditAction}
                         setValue={setValue}
                         name="nation"
-                        placeholder="Kinh"
                         errors={errorsEditAction}
-                        validationRules={{
-                          required: "Không được bỏ trống!",
-                        }}
+                        options={nationOptions}
                       />
                       <InputBaseComponent
                         type="text"
@@ -419,15 +421,20 @@ function Header({ children, currentUser, permissions }) {
                         required: "Không được bỏ trống!",
                       }}
                     /> */}
+                    <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi cập nhật!" />
                     <div className="mt-4 flex justify-end">
                       <ButtonComponent
                         type="error"
                         action="reset"
                         onClick={() => resetEditAction()}
                       >
-                        CLEAR
+                        <CancelIcon className="mr-1" />
+                        HỦY BỎ
                       </ButtonComponent>
-                      <ButtonComponent action="submit">CẬP NHẬT</ButtonComponent>
+                      <ButtonComponent action="submit">
+                        <BorderColorIcon className="mr-1" />
+                        CẬP NHẬT
+                      </ButtonComponent>
                     </div>
                   </form>
                 </PopupComponent>

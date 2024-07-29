@@ -88,7 +88,11 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   // Render all the routes from the routes.js (All the visible items on the Sidenav)
   const renderRoutes = routes.map(({ type, name, icon, title, noCollapse, key, href, route }) => {
     let returnValue;
-    const hidden = key === "takeAttendance" || key === "notificationDetails";
+    const hidden =
+      key === "takeAttendance" ||
+      key === "notificationDetails" ||
+      key.includes("sign-in") ||
+      key.includes("reset-password");
     if (type === "collapse") {
       returnValue = href ? (
         <Link

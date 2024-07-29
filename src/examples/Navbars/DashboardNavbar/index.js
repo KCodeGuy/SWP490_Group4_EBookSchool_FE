@@ -53,11 +53,13 @@ import {
   setMiniSidenav,
   setOpenConfigurator,
 } from "context";
+import CancelIcon from "@mui/icons-material/Cancel";
 import { Grid } from "@mui/material";
 import MDAvatar from "components/MDAvatar";
 import { logoutUser } from "services/AuthService";
 import PopupComponent from "components/PopupComponent/PopupComponent";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
+import { getRouteName } from "utils/CommonFunctions";
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const navigate = useNavigate();
@@ -69,6 +71,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [modalLogout, setModalLogout] = useState(false);
   let currentUser = JSON.parse(localStorage.getItem("user"));
   const userRole = localStorage.getItem("userRole");
+  let schoolSetting = JSON.parse(localStorage.getItem("schoolSetting"));
 
   const handleLogoutUser = () => {
     logoutUser();
@@ -93,13 +96,13 @@ function DashboardNavbar({ absolute, light, isMini }) {
      The event listener that's calling the handleTransparentNavbar function when 
      scrolling the window.
     */
-    window.addEventListener("scroll", handleTransparentNavbar);
+    // window.addEventListener("scroll", handleTransparentNavbar);
 
     // Call the handleTransparentNavbar function to set the state with the initial value.
-    handleTransparentNavbar();
+    // handleTransparentNavbar();
 
     // Remove event listener on cleanup
-    return () => window.removeEventListener("scroll", handleTransparentNavbar);
+    // return () => window.removeEventListener("scroll", handleTransparentNavbar);
   }, [dispatch, fixedNavbar]);
 
   const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav);
@@ -150,12 +153,17 @@ function DashboardNavbar({ absolute, light, isMini }) {
     >
       <Toolbar sx={(theme) => navbarContainer(theme)}>
         <MDBox color="inherit" mb={{ xs: 1, md: 0 }} sx={(theme) => navbarRow(theme, { isMini })}>
-          <Breadcrumbs icon="home" title={route[route.length - 1]} route={route} light={light} />
+          <Breadcrumbs
+            icon="home"
+            route={route}
+            title={getRouteName(route[route.length - 1])}
+            light={light}
+          />
         </MDBox>
         {isMini ? null : (
           <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
             <div className="flex items-center">
-              <IconButton
+              {/* <IconButton
                 size="small"
                 disableRipple
                 color="inherit"
@@ -177,8 +185,8 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 <Icon sx={iconsStyle} fontSize="medium">
                   {miniSidenav ? "menu_open" : "menu"}
                 </Icon>
-              </IconButton>
-              <IconButton
+              </IconButton> */}
+              {/* <IconButton
                 size="small"
                 disableRipple
                 color="inherit"
@@ -186,7 +194,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 onClick={handleConfiguratorOpen}
               >
                 <Icon sx={iconsStyle}>settings</Icon>
-              </IconButton>
+              </IconButton> */}
               {currentUser && (
                 <div className="flex items-center text-base font-medium ml-2 ">
                   <Link to={userRole == "Student" ? "/studentProfile" : "/profile"}>
@@ -221,6 +229,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                         action="button"
                         onClick={() => setModalLogout(false)}
                       >
+                        <CancelIcon className="text-3xl mr-1 mb-0.5" />
                         HỦY BỎ
                       </ButtonComponent>
                       <ButtonComponent action="button" onClick={handleLogoutUser}>

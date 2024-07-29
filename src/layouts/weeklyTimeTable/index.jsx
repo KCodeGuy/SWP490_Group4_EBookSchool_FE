@@ -9,6 +9,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import DownloadIcon from "@mui/icons-material/Download";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import LockClockIcon from "@mui/icons-material/LockClock";
@@ -994,11 +995,6 @@ export default function WeeklyTimeTable() {
                   variantValue="success"
                 />
                 <TextValueComponent
-                  label="Lớp"
-                  value={currentSlot.classroom}
-                  icon={<LocationOnIcon />}
-                />
-                <TextValueComponent
                   label="Phòng"
                   value={currentSlot.classroom}
                   icon={<LocationOnIcon />}
@@ -1021,9 +1017,9 @@ export default function WeeklyTimeTable() {
                 />
                 <TextValueComponent
                   label="Trạng thái"
-                  value={currentSlot.status}
+                  value={`(${currentSlot.status})`}
                   icon={<AccessAlarmIcon />}
-                  customValue="error-color"
+                  customValue="text-color font-medium"
                 />
                 <TextValueComponent
                   label="Điểm danh"
@@ -1041,21 +1037,27 @@ export default function WeeklyTimeTable() {
                     <ButtonComponent
                       type="success"
                       action="button"
-                      className="mx-2"
+                      className="mr-2"
                       onClick={() => {
                         navigate(`/takeAttendance/${currentSlot.id}`);
                       }}
                     >
-                      <BorderColorIcon className="" />
+                      <BorderColorIcon className="mr-2" />
                       ĐIỂM DANH
                     </ButtonComponent>
                   ) : (
                     ""
                   )}
                   {!userRole.includes(STUDENT_ROLE) ? (
-                    <Link to="/register-notebook">
-                      <ButtonComponent action="button">SỔ ĐẦU BÀI</ButtonComponent>
-                    </Link>
+                    <ButtonComponent
+                      action="button"
+                      onClick={() => {
+                        navigate(`/register-notebook`);
+                      }}
+                    >
+                      <AssignmentIcon className="mr-2" />
+                      SỔ ĐẦU BÀI
+                    </ButtonComponent>
                   ) : (
                     ""
                   )}

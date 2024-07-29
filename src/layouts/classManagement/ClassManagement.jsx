@@ -194,7 +194,6 @@ export default function ClassManagement() {
   const handleEdit = (rowItem) => {
     if (rowItem) {
       const result = getClassByID(accessToken, rowItem[1]);
-      console.log("Class: ", result);
       setValue("idEdit", rowItem[0]);
       setValue("classroomEdit", rowItem[1]);
       setValue("schoolYearEdit", rowItem[2]);

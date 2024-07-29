@@ -144,7 +144,7 @@ export default function LogManagement() {
               </FormControl>
               <div className="max-[639px]:mt-2 ml-3">
                 <ButtonComponent type="success" onClick={handleStatistic}>
-                  <FilterAltIcon className="" /> Tìm kiếm
+                  <FilterAltIcon className="" /> TÌM KIẾM
                 </ButtonComponent>
               </div>
             </div>

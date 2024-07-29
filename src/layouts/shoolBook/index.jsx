@@ -527,11 +527,11 @@ const SchoolBook = () => {
                         navigate(`/takeAttendance/${currentSlot.id}`);
                       }}
                     >
-                      <BorderColorIcon className="" />
+                      <BorderColorIcon className="mr-2" />
                       ĐIỂM DANH
                     </ButtonComponent>
                     <ButtonComponent action="submit">
-                      <BorderColorIcon className="text-3xl mr-1" />
+                      <BorderColorIcon className="text-3xl mr-2" />
                       ĐÁNH GIÁ
                     </ButtonComponent>
                   </div>

@@ -46,20 +46,16 @@ import ResetPassword from "layouts/authentication/reset-password";
 // @mui icons
 import Icon from "@mui/material/Icon";
 import SchoolBook from "./layouts/shoolBook";
-import Wiki from "./layouts/wiki/Wiki";
 import MarkManagement from "./layouts/markManagement";
-import RoomManagement from "./layouts/roomManagement/RoomManagement";
 import ClassManagement from "./layouts/classManagement/ClassManagement";
 import NotificationManagement from "./layouts/notificationManagement/NotificationManagement";
 import SubjectManagement from "./layouts/subjectManagement/SubjectManagement";
 import AccountManagement from "./layouts/accountManagement/AccountManagement";
 import StudentAccountManagement from "./layouts/studentAccountManagement/StudentAccountManagement";
-import Demo from "./layouts/demo/Demo";
 import WeeklyTimeTable from "./layouts/weeklyTimeTable";
 import MarkStatistics from "./layouts/markStatistics/MarkStatistics";
 import TakeAttendance from "layouts/takeAttendance";
 import AcademicPerformanceStatistics from "./layouts/academicPerformanceStatistics/AcademicPerformanceStatistics";
-import ConductStatistics from "./layouts/conductStatistics/ConductStatistics";
 import NotificationDetails from "layouts/notificationDetails/NotificationDetails";
 import LogManagement from "layouts/logManagement/LogManagement";
 import SystemSetting from "layouts/systemSetting";
@@ -151,14 +147,6 @@ const routes = [
     route: "/academicPerformanceStatistics",
     component: <AcademicPerformanceStatistics />,
   },
-  // {
-  //   type: "collapse",
-  //   name: "Thống kê hạnh kiểm",
-  //   key: "conductStatistics",
-  //   icon: <Icon fontSize="small">leaderboard</Icon>,
-  //   route: "/conductStatistics",
-  //   component: <ConductStatistics />,
-  // },
   {
     type: "title",
     title: "Quản lí",
@@ -213,28 +201,6 @@ const routes = [
     icon: <Icon fontSize="small">group</Icon>,
     route: "/studentAccountManagement",
     component: <StudentAccountManagement />,
-  },
-  {
-    type: "title",
-    title: "Demo",
-    key: "demoExample",
-  },
-  {
-    type: "collapse",
-    name: "Wiki",
-    key: "wiki",
-    icon: <Icon fontSize="small">dashboard</Icon>,
-    route: "/wiki",
-    component: <Wiki />,
-  },
-
-  {
-    type: "collapse",
-    name: "Demo",
-    key: "demo",
-    icon: <Icon fontSize="small">dashboard</Icon>,
-    route: "/demo",
-    component: <Demo />,
   },
 
   {

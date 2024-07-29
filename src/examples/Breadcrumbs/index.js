@@ -29,7 +29,7 @@ import MDTypography from "components/MDTypography";
 
 function Breadcrumbs({ icon, title, route, light }) {
   const routes = route.slice(0, -1);
-
+  console.log(route);
   return (
     <MDBox mr={{ xs: 0, xl: 8 }}>
       <MuiBreadcrumbs
@@ -50,30 +50,38 @@ function Breadcrumbs({ icon, title, route, light }) {
             <Icon>{icon}</Icon>
           </MDTypography>
         </Link>
-        {routes.map((el) => (
-          <Link to={`/${el}`} key={el}>
-            <MDTypography
-              component="span"
-              variant="button"
-              fontWeight="regular"
-              textTransform="capitalize"
-              color={light ? "white" : "dark"}
-              opacity={light ? 0.8 : 0.5}
-              sx={{ lineHeight: 0 }}
-            >
-              {el}
-            </MDTypography>
-          </Link>
-        ))}
-        <MDTypography
-          variant="button"
-          fontWeight="regular"
-          textTransform="capitalize"
-          color={light ? "white" : "dark"}
-          sx={{ lineHeight: 0 }}
+        <Link
+          to={`/${
+            route[0] == "takeAttendance"
+              ? "Điểm danh"
+              : route[0] == "notificationDetails"
+              ? "Chi tiết thông báo"
+              : route
+          }`}
+          key={
+            route[0] == "takeAttendance"
+              ? "Điểm danh"
+              : route[0] == "notificationDetails"
+              ? "Chi tiết thông báo"
+              : route
+          }
         >
-          {title.replace("-", " ")}
-        </MDTypography>
+          <MDTypography
+            component="span"
+            variant="button"
+            fontWeight="regular"
+            textTransform="capitalize"
+            color={light ? "white" : "dark"}
+            opacity={light ? 0.8 : 0.5}
+            sx={{ lineHeight: 0 }}
+          >
+            {route[0] == "takeAttendance"
+              ? "Điểm danh"
+              : route[0] == "notificationDetails"
+              ? "Chi tiết thông báo"
+              : title.replace("-", " ")}
+          </MDTypography>
+        </Link>
       </MuiBreadcrumbs>
       <MDTypography
         fontWeight="bold"
@@ -82,7 +90,11 @@ function Breadcrumbs({ icon, title, route, light }) {
         color={light ? "white" : "dark"}
         noWrap
       >
-        {title.replace("-", " ")}
+        {route[0] == "takeAttendance"
+          ? "Điểm danh"
+          : route[0] == "notificationDetails"
+          ? "Chi tiết thông báo"
+          : title.replace("-", " ")}
       </MDTypography>
     </MDBox>
   );
@@ -97,7 +109,7 @@ Breadcrumbs.defaultProps = {
 Breadcrumbs.propTypes = {
   icon: PropTypes.node.isRequired,
   title: PropTypes.string.isRequired,
-  route: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired,
+  route: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   light: PropTypes.bool,
 };
 

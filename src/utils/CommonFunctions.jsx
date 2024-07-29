@@ -1,4 +1,5 @@
 import * as XLSX from "xlsx";
+
 // contains common methods
 export function countDuplicateItemsInArray(array, semester) {
   const keyOrder = ["Miệng", "15p", "1 Tiết", "Cuối kỳ"];
@@ -222,4 +223,188 @@ export const getInnerTextInsideHTML = (html) => {
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = html;
   return tempDiv.textContent || tempDiv.innerText || "";
+};
+
+// utils/getRouteName.js
+export const getRouteName = (path) => {
+  // Function to check if a string is a GUID
+  const isGuid = (str) => {
+    // Regular expression to match GUID format
+    const guidPattern =
+      /^[{]?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}[}]?$/;
+    return guidPattern.test(str);
+  };
+  const routes = [
+    {
+      title: "Học tập",
+      key: "studying",
+    },
+    {
+      name: "Trang chủ",
+      key: "dashboard",
+      route: "/dashboard",
+    },
+    {
+      name: "Sổ đầu bài",
+      key: "register-notebook",
+      route: "/register-notebook",
+    },
+    {
+      name: "Thời khóa biểu",
+      key: "weeklyTimeTable",
+      route: "/weeklyTimeTable",
+    },
+    {
+      name: "Điểm danh",
+      key: "takeAttendance",
+      route: "/takeAttendance/:attendanceID",
+    },
+    {
+      name: "Thông báo",
+      key: "notificationDetails",
+      route: "/notificationDetails/:notificationID",
+    },
+    {
+      title: "Thống kê",
+      key: "statistic",
+    },
+    {
+      name: "Thống kê sổ đầu bài",
+      key: "registerNotebookStatistics",
+      route: "/registerNotebookStatistics",
+    },
+    {
+      name: "Thống kê lượt vắng",
+      key: "attendanceStatistics",
+      route: "/attendanceStatistics",
+    },
+    {
+      name: "Thống kê điểm",
+      key: "markStatistics",
+      route: "/markStatistics",
+    },
+    {
+      name: "Thống kê học lực",
+      key: "academicPerformanceStatistics",
+      route: "/academicPerformanceStatistics",
+    },
+    {
+      title: "Quản lí",
+      key: "management",
+    },
+    {
+      name: "Quản lí điểm",
+      key: "markManagement",
+      route: "/markManagement",
+    },
+    {
+      name: "Quản lí lớp",
+      key: "classManagement",
+      route: "/classManagement",
+    },
+    {
+      name: "Quản lí môn",
+      key: "subjectManagement",
+      route: "/subjectManagement",
+    },
+    {
+      name: "Quản lí thông báo",
+      key: "notificationManagement",
+      route: "/notificationManagement",
+    },
+    {
+      name: "Quản lí giáo viên",
+      key: "accountManagement",
+      route: "/accountManagement",
+    },
+    {
+      name: "Quản lí học sinh",
+      key: "studentAccountManagement",
+      route: "/studentAccountManagement",
+    },
+    {
+      title: "Demo",
+      key: "demoExample",
+    },
+    {
+      name: "Wiki",
+      key: "wiki",
+      route: "/wiki",
+    },
+    {
+      name: "Demo",
+      key: "demo",
+      route: "/demo",
+    },
+    {
+      title: "Hệ thống",
+      key: "system",
+    },
+    {
+      name: "Đăng nhập",
+      key: "sign-in",
+      route: "/authentication/sign-in",
+    },
+    {
+      name: "Quên mật khẩu",
+      key: "reset-password",
+      route: "/authentication/reset-password",
+    },
+    {
+      name: "Ghi log",
+      key: "logHistory",
+      route: "/logHistory",
+    },
+    {
+      name: "Cài đặt hệ thống",
+      key: "systemSetting",
+      route: "/systemSetting",
+    },
+    {
+      name: "Tài khoản",
+      key: "profile",
+      route: "/profile",
+    },
+  ];
+
+  const foundRoute = routes.find((route) => route.key.toLowerCase().includes(path.toLowerCase()));
+  if (path == ":attendanceID") {
+    return "Điểm danh";
+  }
+
+  if (path == ":notificationID") {
+    return "Chi tiết thông báo";
+  }
+
+  if (isGuid(path)) {
+    return "";
+  }
+  return foundRoute ? foundRoute.name : path;
+};
+
+export const splitStringBySecondWord = (input) => {
+  // Split the input string into words
+  const words = input.split(" ");
+
+  // Check if there are at least two words
+  if (words.length < 2) {
+    return [input]; // If not enough words, return the original string in an array
+  }
+
+  // The second word is the one we need to find the last occurrence of
+  const secondWord = words[1];
+
+  // Find the last occurrence of the second word in the input string
+  const index = input.lastIndexOf(secondWord);
+
+  // If the second word is not found, return the original string in an array
+  if (index === -1) {
+    return [input];
+  }
+
+  // Split the input string into two parts based on the last occurrence of the second word
+  const part1 = input.substring(0, index + secondWord.length).trim();
+  const part2 = input.substring(index + secondWord.length).trim();
+
+  return [part1, part2];
 };

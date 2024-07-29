@@ -46,12 +46,14 @@ import {
   setTransparentSidenav,
   setWhiteSidenav,
 } from "context";
+import { splitStringBySecondWord } from "utils/CommonFunctions";
 
 function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode, sidenavColor } = controller;
   const location = useLocation();
   const collapseName = location.pathname.replace("/", "");
+  let schoolSetting = JSON.parse(localStorage.getItem("schoolSetting"));
 
   let textColor = "white";
 
@@ -86,7 +88,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   // Render all the routes from the routes.js (All the visible items on the Sidenav)
   const renderRoutes = routes.map(({ type, name, icon, title, noCollapse, key, href, route }) => {
     let returnValue;
-
+    const hidden = key === "takeAttendance" || key === "notificationDetails";
     if (type === "collapse") {
       returnValue = href ? (
         <Link
@@ -95,7 +97,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
           target="_blank"
           rel="noreferrer"
           fontWeight="bold"
-          sx={{ textDecoration: "none" }}
+          sx={{ textDecoration: "none", display: hidden ? "none" : "block" }}
         >
           <SidenavCollapse
             name={name}
@@ -105,7 +107,12 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
           />
         </Link>
       ) : (
-        <NavLink key={key} to={route} className="font-bold">
+        <NavLink
+          key={key}
+          to={route}
+          className="font-bold"
+          style={{ display: hidden ? "none" : "block" }}
+        >
           <SidenavCollapse name={name} icon={icon} active={key === collapseName} />
         </NavLink>
       );
@@ -141,6 +148,8 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
     return returnValue;
   });
 
+  const [part1, part2] = splitStringBySecondWord(schoolSetting?.schoolName || "ORB");
+
   return (
     <SidenavRoot
       {...rest}
@@ -161,12 +170,16 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
             <Icon sx={{ fontWeight: "bold" }}>close</Icon>
           </MDTypography>
         </MDBox>
-        <div className="flex items-center">
-          {brand && <MDBox component="img" src={brand} alt="Brand" width="2rem" />}
-          <p className="text-left text-sm font-medium ml-2">
-            Trường THPT <br /> Nguyễn Việt Hồng
-          </p>
-        </div>
+        <Link href="/" key="dashboard">
+          <div className="flex items-center">
+            {brand && <MDBox component="img" src={brand} alt="Brand" width="2rem" />}
+            <p className="text-left text-sm font-medium ml-2">
+              {part1}
+              <br />
+              {part2}
+            </p>
+          </div>
+        </Link>
       </MDBox>
       <Divider
         light={

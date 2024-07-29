@@ -6,6 +6,7 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
 import EditCalendarIcon from "@mui/icons-material/EditCalendar";
 import Checkbox from "@mui/material/Checkbox";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
@@ -207,7 +208,13 @@ function TableComponent({
           <span className="mr-4 text-sm">
             <span className="font-bold">Tổng:</span> {data.length}
           </span>
-          {showCheckboxes && <ButtonComponent onClick={handleSave}>{saveName}</ButtonComponent>}
+          {showCheckboxes && (
+            <ButtonComponent onClick={handleSave}>
+              {" "}
+              <BorderColorIcon className="mr-2" />
+              {saveName}
+            </ButtonComponent>
+          )}
         </div>
         <div className="text-sm">
           <span className="font-bold">Số lượng: {itemsPerPage}</span>

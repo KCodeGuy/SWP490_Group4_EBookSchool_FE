@@ -54,8 +54,7 @@ function Overview() {
   );
 
   useEffect(() => {
-    console.dir(data?.data);
-    setCurrentData(data?.data);
+    setCurrentData(data);
   }, [data]);
   return (
     <DashboardLayout>

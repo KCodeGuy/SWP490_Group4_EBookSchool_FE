@@ -8,6 +8,10 @@ const getStudentByID = async (accessToken, studentID) => {
       Authorization: `Bearer ${accessToken}`,
     },
   });
+  console.log("accessToken:", accessToken);
+  console.log("studentID:", studentID);
+  console.log(accessToken);
+  console.log(res.data);
   return res.data;
 };
 

@@ -24,6 +24,7 @@ import Grid from "@mui/material/Grid";
 import AppBar from "@mui/material/AppBar";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import CancelIcon from "@mui/icons-material/Cancel";
 import Icon from "@mui/material/Icon";
 
 // Material Dashboard 2 React components
@@ -33,9 +34,10 @@ import MDAvatar from "components/MDAvatar";
 
 // Material Dashboard 2 React base styles
 import breakpoints from "assets/theme/base/breakpoints";
-
+import BorderColorIcon from "@mui/icons-material/BorderColor";
 // Images
 import burceMars from "assets/images/bruce-mars.jpg";
+import LockClockIcon from "@mui/icons-material/LockClock";
 import backgroundImage from "assets/images/bg-profile.jpeg";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import { useNavigate } from "react-router-dom";
@@ -46,6 +48,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { updateTeacher } from "services/TeacherService";
 import { ToastContainer, toast } from "react-toastify";
+import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
 
 const accessToken = localStorage.getItem("authToken");
 
@@ -211,9 +214,13 @@ function Header({ children, currentUser, permissions }) {
                     navigate("/authentication/reset-password");
                   }}
                 >
+                  <LockClockIcon className="mr-2" />
                   ĐỔI MẬT KHẨU
                 </ButtonComponent>
-                <ButtonComponent onClick={() => setModalEditOpen(true)}>CẬP NHẬT</ButtonComponent>
+                <ButtonComponent onClick={() => setModalEditOpen(true)}>
+                  <BorderColorIcon className="mr-2" />
+                  CẬP NHẬT
+                </ButtonComponent>
                 <PopupComponent
                   title="CẬP NHẬT"
                   description="Cập nhật tài khoản"
@@ -393,15 +400,23 @@ function Header({ children, currentUser, permissions }) {
                       //   required: "Không được bỏ trống!",
                       // }}
                     /> */}
+                    <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi cập nhật!" />
                     <div className="mt-4 flex justify-end">
                       <ButtonComponent
                         type="error"
                         action="reset"
-                        onClick={() => resetEditAction()}
+                        onClick={() => {
+                          resetEditAction();
+                          setModalEditOpen(false);
+                        }}
                       >
-                        CLEAR
+                        <CancelIcon className="mr-1" />
+                        HỦY BỎ
                       </ButtonComponent>
-                      <ButtonComponent action="submit">CẬP NHẬT</ButtonComponent>
+                      <ButtonComponent action="submit">
+                        <BorderColorIcon className="mr-1" />
+                        CẬP NHẬT
+                      </ButtonComponent>
                     </div>
                   </form>
                 </PopupComponent>

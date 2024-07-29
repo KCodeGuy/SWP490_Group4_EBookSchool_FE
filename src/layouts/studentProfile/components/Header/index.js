@@ -17,6 +17,8 @@ import backgroundImage from "assets/images/bg-profile.jpeg";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { ToastContainer, toast } from "react-toastify";
 import { updateStudent } from "services/StudentService";
+import LockClockIcon from "@mui/icons-material/LockClock";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
 
 const accessToken = localStorage.getItem("authToken");
 
@@ -175,9 +177,13 @@ function Header({ children, currentUser, permissions }) {
                     navigate("/authentication/reset-password");
                   }}
                 >
+                  <LockClockIcon className="mr-2" />
                   ĐỔI MẬT KHẨU
                 </ButtonComponent>
-                <ButtonComponent onClick={openEditModal}>CẬP NHẬT</ButtonComponent>
+                <ButtonComponent onClick={openEditModal}>
+                  <BorderColorIcon className="mr-2" />
+                  CẬP NHẬT
+                </ButtonComponent>
                 <PopupComponent
                   title="CẬP NHẬT"
                   description="Cập nhật tài khoản"

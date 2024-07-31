@@ -34,6 +34,7 @@ function Header({ children, currentUser, permissions }) {
   const [tabValue, setTabValue] = useState(0);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [avatar, setAvatar] = useState(null);
+  const [currentStudent, setCurrentStudent] = useState({});
 
   const queryClient = useQueryClient();
 
@@ -51,6 +52,9 @@ function Header({ children, currentUser, permissions }) {
       onSuccess: (response) => {
         queryClient.invalidateQueries("studentState");
         if (response) {
+          // if (currentStudent) {
+          //   localStorage.setItem("user", JSON.stringify(currentStudent));
+          // }
           toast.success("Cập nhật tài khoản thành công!");
         } else {
           toast.error(`Cập nhật tài khoản thất bại! ${response.data}!`);
@@ -84,6 +88,17 @@ function Header({ children, currentUser, permissions }) {
       address: data.address,
       avatar: data.avatar, // Assuming the avatar input returns a FileList
     };
+
+    const studentShowData = {
+      id: data.id,
+      username: data.id,
+      fullname: data.fullName,
+      address: data.address,
+      email: data.email,
+      phone: data.phone,
+      avatar: data.avatar,
+    };
+    setCurrentStudent(studentShowData);
     updateStudentMutation.mutate(studentData);
   };
 

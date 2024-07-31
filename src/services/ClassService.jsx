@@ -11,28 +11,31 @@ const getAllClasses = async (accessToken) => {
   return res.data;
 };
 // CallAPI_ClassManagement_UolLT_V1
-const getClassByID = async (accessToken, classID) => {
-  const res = await axios.get(`${API_HOST}/Classes/${classID}?schoolYear=2024-2025`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  return res.data;
-};
-
-const addClass = async (accessToken, classData) => {
+const getClassByID = async (accessToken, classID, schoolYear) => {
   try {
-    const response = await axios.post(`${API_HOST}/Classes`, classData, {
+    const res = await axios.get(`${API_HOST}/Classes/${classID}?schoolYear=${schoolYear}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return response;
+    return res.data;
   } catch (error) {
-    throw error.message;
-    console.log(error);
+    return error;
+  }
+};
+
+const addClass = async (accessToken, classData) => {
+  try {
+    const res = await axios.post(`${API_HOST}/Classes`, classData, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res;
+  } catch (error) {
+    return error;
   }
 };
 
@@ -46,8 +49,7 @@ const updateClass = async (accessToken, classData) => {
     });
     return res.data;
   } catch (error) {
-    console.error("Error updating subject:", error);
-    throw error;
+    return error;
   }
 };
 
@@ -61,8 +63,7 @@ const deleteClass = async (accessToken, classID) => {
     });
     return res.data;
   } catch (error) {
-    console.error("Error deleting class:", error);
-    throw error;
+    return error;
   }
 };
 
@@ -80,10 +81,9 @@ const addClassByExcel = async (accessToken, file) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return res.data;
+    return res;
   } catch (error) {
-    console.error("Error adding timetable:", error);
-    throw error;
+    return error;
   }
 };
 export {

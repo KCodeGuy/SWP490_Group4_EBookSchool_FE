@@ -55,6 +55,8 @@ function Breadcrumbs({ icon, title, route, light }) {
               ? "Điểm danh"
               : route[0] == "notificationDetails"
               ? "Chi tiết thông báo"
+              : route[0] == "studentProfile"
+              ? "Tài khoản"
               : route
           }`}
           key={
@@ -62,6 +64,8 @@ function Breadcrumbs({ icon, title, route, light }) {
               ? "Điểm danh"
               : route[0] == "notificationDetails"
               ? "Chi tiết thông báo"
+              : route[0] == "studentProfile"
+              ? "Tài khoản"
               : route
           }
         >
@@ -78,6 +82,8 @@ function Breadcrumbs({ icon, title, route, light }) {
               ? "Điểm danh"
               : route[0] == "notificationDetails"
               ? "Chi tiết thông báo"
+              : route[0] == "studentProfile"
+              ? "Tài khoản"
               : title.replace("-", " ")}
           </MDTypography>
         </Link>
@@ -93,6 +99,8 @@ function Breadcrumbs({ icon, title, route, light }) {
           ? "Điểm danh"
           : route[0] == "notificationDetails"
           ? "Chi tiết thông báo"
+          : route[0] == "studentProfile"
+          ? "Tài khoản"
           : title.replace("-", " ")}
       </MDTypography>
     </MDBox>

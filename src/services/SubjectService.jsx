@@ -11,6 +11,20 @@ const getAllSubjects = async (accessToken) => {
   return res.data;
 };
 
+const getSubjectByID = async (accessToken, subjectID) => {
+  try {
+    const res = await axios.get(`${API_HOST}/Subjects/${subjectID}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 const addSubject = async (accessToken, subjectData) => {
   try {
     const response = await axios.post(`${API_HOST}/Subjects`, subjectData, {
@@ -19,10 +33,9 @@ const addSubject = async (accessToken, subjectData) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return response.data;
+    return response;
   } catch (error) {
-    console.error("Error adding subject:", error);
-    throw error;
+    return error;
   }
 };
 
@@ -35,10 +48,9 @@ const updateSubject = async (accessToken, subjectData) => {
       },
     });
 
-    return res.data;
+    return res;
   } catch (error) {
-    console.error("Error updating subject:", error);
-    throw error;
+    return error;
   }
 };
 
@@ -50,10 +62,9 @@ const deleteSubject = async (accessToken, subjectID) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return res.data;
+    return res;
   } catch (error) {
-    console.error("Error deleting subject:", error);
-    throw error;
+    return error;
   }
 };
 
@@ -71,10 +82,9 @@ const addSubjectByExcel = async (accessToken, file) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return res.data;
+    return res;
   } catch (error) {
-    console.error("Error adding timetable:", error);
-    throw error;
+    return error;
   }
 };
 
@@ -85,4 +95,5 @@ export {
   deleteSubject,
   downloadTemplateSubject,
   addSubjectByExcel,
+  getSubjectByID,
 };

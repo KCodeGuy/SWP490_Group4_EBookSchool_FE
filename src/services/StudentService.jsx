@@ -8,10 +8,6 @@ const getStudentByID = async (accessToken, studentID) => {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  console.log("accessToken:", accessToken);
-  console.log("studentID:", studentID);
-  console.log(accessToken);
-  console.log(res.data);
   return res.data;
 };
 
@@ -37,15 +33,13 @@ const addStudentByExcel = async (accessToken, file) => {
     });
     return res.data;
   } catch (error) {
-    console.error("Error adding timetable:", error);
-    throw error;
+    console.log("Error adding timetable:", error);
   }
 };
 
 const handleDownloadStudentExcel = () => {
   window.location.href = `${ORB_HOST}/Templates/template_student.xlsx`;
 };
-
 const updateStudent = async (accessToken, data) => {
   const formData = new FormData();
   formData.append("fullName", data.fullName);
@@ -77,8 +71,7 @@ const updateStudent = async (accessToken, data) => {
 
     return res.data;
   } catch (error) {
-    console.error("Error updating student:", error);
-    throw error;
+    console.log("Error updating student:", error);
   }
 };
 
@@ -110,8 +103,7 @@ const createStudent = async (accessToken, data) => {
 
     return res.data;
   } catch (error) {
-    console.error("Error updating student:", error);
-    throw error;
+    console.log("Error updating student:", error);
   }
 };
 
@@ -125,8 +117,7 @@ const deleteStudent = async (accessToken, username) => {
     });
     return res.data;
   } catch (error) {
-    console.error("Error deleting notification:", error);
-    throw error;
+    console.log("Error deleting notification:", error);
   }
 };
 

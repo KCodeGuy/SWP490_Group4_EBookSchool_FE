@@ -104,6 +104,7 @@ function Header({ children, currentUser, permissions }) {
       onSuccess: (response) => {
         queryClient.invalidateQueries("teacherState");
         if (response) {
+          localStorage.setItem("user", JSON.stringify(teacherData));
           toast.success("Cập nhật tài khoản thành công!");
         } else {
           toast.error(`Cập nhật tài khoản thất bại! ${response}`);

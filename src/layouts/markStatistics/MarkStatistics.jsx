@@ -327,13 +327,13 @@ export default function MarkStatistics() {
                   </FormControl>
                   {value == 1 ? (
                     <FormControl sx={{ minWidth: 120 }}>
-                      <InputLabel id="select-school-grade-lable">Khối lớp</InputLabel>
+                      <InputLabel id="select-school-grade-lable">Khối</InputLabel>
                       <Select
                         labelId="select-school-grade-lable"
                         id="select-grade"
                         value={schoolGrade}
                         className="h-10 mr-2 max-[767px]:mb-4"
-                        label="Năm học"
+                        label="Khối"
                         onChange={handleGradeSelectedChange}
                       >
                         {grades?.map((item, index) => (

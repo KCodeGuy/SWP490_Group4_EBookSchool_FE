@@ -408,3 +408,27 @@ export const splitStringBySecondWord = (input) => {
 
   return [part1, part2];
 };
+
+// Helper function to check if the file is an .xlsx file
+export const isXlsxFile = (file) => {
+  return (
+    file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+    file.name.endsWith(".xlsx")
+  );
+};
+
+export const isImageFie = (file) => {
+  // List of image MIME types
+  const imageMimeTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/bmp",
+    "image/webp",
+    "image/svg+xml",
+    "image/x-icon",
+    "image/tiff",
+  ];
+
+  return imageMimeTypes.includes(file.type);
+};

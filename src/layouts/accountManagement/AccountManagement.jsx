@@ -235,13 +235,13 @@ export default function AccountManagement() {
       setValue("avatar", teacherData?.avatar);
       setAvatar(teacherData?.avatar);
 
-      teacherData?.roles.forEach((role) => {
+      teacherData?.roles?.forEach((role) => {
         const formattedRole = `role${role}`;
         setValue(formattedRole, true);
       });
 
       // Handling permissions
-      teacherData?.permissions.forEach((permission) => {
+      teacherData?.permissions?.forEach((permission) => {
         const formattedPermission = `is${permission.replace(/\s+/g, "")}`;
         setValue(formattedPermission, true);
       });

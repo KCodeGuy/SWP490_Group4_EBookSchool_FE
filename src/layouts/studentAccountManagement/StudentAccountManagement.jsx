@@ -117,11 +117,11 @@ export default function StudentAccountManagement() {
       queryClient.invalidateQueries("studentsState");
       if (response) {
         toast.success("Tạo học sinh thành công!");
+        reset();
+        setModalOpen(false);
       } else {
         toast.error(`Tạo học sinh thất bại. ${response.data}!`);
       }
-      reset();
-      setModalOpen(false);
     },
   });
 

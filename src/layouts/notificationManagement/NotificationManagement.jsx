@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Card, CircularProgress } from "@mui/material";
+import { Card, CircularProgress, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import MDBox from "components/MDBox";
@@ -14,6 +14,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
 
 import noDataImage3 from "../../assets/images/noDataImage3.avif";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
@@ -33,6 +34,7 @@ import "react-quill/dist/quill.snow.css";
 import { formatUrlToFile } from "utils/CommonFunctions";
 import { getInnerTextInsideHTML } from "utils/CommonFunctions";
 import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
+import { isImageFie } from "utils/CommonFunctions";
 
 // Notification Management (UolLT)
 // Get access token
@@ -58,6 +60,25 @@ export default function NotificationManagement() {
   const [contentQuillValue, setContentQuillValue] = useState("");
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  let schoolYearsAPI = JSON.parse(localStorage.getItem("schoolYears"));
+  // Function to transform schoolYearsAPI to an array of individual years
+  const transformSchoolYears = (years) => {
+    const allYears = new Set();
+    years.forEach((year) => {
+      const [startYear, endYear] = year.split("-");
+      allYears.add(parseInt(startYear));
+      allYears.add(parseInt(endYear));
+    });
+    return Array.from(allYears).sort();
+  };
+
+  const transformedYears = transformSchoolYears(schoolYearsAPI);
+
+  const [schoolYear, setSchoolYear] = React.useState(transformedYears[transformedYears.length - 1]);
+
+  const handleSchoolYearSelectedChange = (event) => {
+    setSchoolYear(event.target.value);
+  };
 
   // Call API Get all notifications
   const { data, error, isLoading } = useQuery(["notificationState", { accessToken }], () =>
@@ -115,10 +136,15 @@ export default function NotificationManagement() {
       content: contentQuillValue,
       thumbnail: data.thumbnail,
     };
-    if (contentQuillValue && contentQuillValue !== "<p><br></p>") {
-      addNotificationMutation.mutate(notificationData);
-    } else {
+
+    const isNotEmptyQuill = contentQuillValue && contentQuillValue !== "<p><br></p>";
+    const isImage = isImageFie(data.thumbnail);
+    if (!isNotEmptyQuill) {
       toast.error(`Nội dung không được bỏ trống!`);
+    } else if (!isImage) {
+      toast.error(`File không đúng định dạnh hình ảnh!`);
+    } else {
+      addNotificationMutation.mutate(notificationData);
     }
   };
 
@@ -186,8 +212,12 @@ export default function NotificationManagement() {
         content: contentQuillValue,
         thumbnail: thumbnailFile,
       };
+      if (!isImageFie(thumbnailFile)) {
+        toast.error(`File không đúng định dạnh hình ảnh!`);
+      } else {
+        updateNotificationMutation.mutate(notificationData);
+      }
       // Call the mutation to update the notification
-      updateNotificationMutation.mutate(notificationData);
     } catch (error) {
       toast.error(`Có lỗi khi chuyển file: ${error.message}`);
     }
@@ -239,6 +269,21 @@ export default function NotificationManagement() {
     });
   };
 
+  const filterByButton = (action, data) => {
+    if (data) {
+      return data.filter((item) => {
+        return (
+          item.createAt.toString().includes(action) || item.updateAt.toString().includes(action)
+        );
+      });
+    }
+  };
+
+  const handleFilterNotificationByYear = () => {
+    setCurrentData(filterByButton(schoolYear, data));
+  };
+  handleFilterNotificationByYear;
+
   return (
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
@@ -251,88 +296,113 @@ export default function NotificationManagement() {
               <h4 className="text-xl font-bold ml-3">QUẢN LÍ THÔNG BÁO</h4>
             </div>
           </div>
-          <div className="flex justify-end items-center mt-5">
-            <SearchInputComponent
-              onSearch={handleChangeSearchValue}
-              placeHolder="Nhập từ khóa..."
-            />
-            <div className="ml-3">
-              <ButtonComponent
-                onClick={() => {
-                  reset();
-                  setModalOpen(true);
-                  setContentQuillValue("");
-                }}
-              >
-                <AddCircleOutlineIcon className="text-3xl mr-1" />
-                TẠO
+          <div className="flex justify-between items-center mt-5">
+            <div className="">
+              <FormControl sx={{ minWidth: 120 }}>
+                <InputLabel id="select-school-year-label">Năm</InputLabel>
+                <Select
+                  labelId="select-school-year-label"
+                  id="select-school-year"
+                  value={schoolYear}
+                  className="h-10 mr-2 max-[767px]:mb-4"
+                  label="Năm"
+                  onChange={handleSchoolYearSelectedChange}
+                >
+                  {transformedYears.map((year, index) => (
+                    <MenuItem key={index} value={year}>
+                      {year}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <ButtonComponent type="success" onClick={handleFilterNotificationByYear}>
+                <FilterAltIcon className="mr-1" /> TÌM KIẾM
               </ButtonComponent>
-              <PopupComponent
-                title="TẠO THÔNG BÁO"
-                description="Tạo thông báo cho năm học"
-                icon={<AddCircleOutlineIcon />}
-                isOpen={modalOpen}
-                onClose={() => setModalOpen(false)}
-              >
-                <form onSubmit={handleSubmit(handleAddNotification)}>
-                  <InputBaseComponent
-                    placeholder="Nhập tên thông báo"
-                    type="text"
-                    control={control}
-                    setValue={noSetValue}
-                    name="title"
-                    label="Tiêu đề"
-                    errors={errors}
-                    validationRules={{
-                      required: "Không được bỏ trống!",
-                    }}
-                  />
-                  <InputBaseComponent
-                    type="file"
-                    control={control}
-                    setValue={noSetValue}
-                    name="thumbnail"
-                    label="Ảnh bìa"
-                    errors={errors}
-                    validationRules={{
-                      required: "Không được bỏ trống!",
-                    }}
-                  />
+            </div>
+            <div className="flex items-center">
+              <SearchInputComponent
+                onSearch={handleChangeSearchValue}
+                placeHolder="Nhập từ khóa..."
+              />
 
-                  <div className="mt-5 max-w-md mb-2">
-                    <ReactQuill
-                      theme="snow"
-                      value={contentQuillValue}
-                      onChange={setContentQuillValue}
-                      modules={modules}
-                      placeholder="Nhập nội dung thông báo..."
-                    />
-                    {contentQuillValue !== "" || contentQuillValue !== "<p><br></p>" ? (
-                      ""
-                    ) : (
-                      <p className="error-color mt-1 text-base">Không được bỏ trống!</p>
-                    )}
-                  </div>
-                  <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi tạo!" />
-                  <div className="mt-4 flex justify-end">
-                    <ButtonComponent
-                      type="error"
-                      action="reset"
-                      onClick={() => {
-                        reset();
-                        setModalOpen(false);
+              <div className="ml-3">
+                <ButtonComponent
+                  onClick={() => {
+                    reset();
+                    setModalOpen(true);
+                    setContentQuillValue("");
+                  }}
+                >
+                  <AddCircleOutlineIcon className="text-3xl mr-1" />
+                  TẠO
+                </ButtonComponent>
+                <PopupComponent
+                  title="TẠO THÔNG BÁO"
+                  description="Tạo thông báo cho năm học"
+                  icon={<AddCircleOutlineIcon />}
+                  isOpen={modalOpen}
+                  onClose={() => setModalOpen(false)}
+                >
+                  <form onSubmit={handleSubmit(handleAddNotification)}>
+                    <InputBaseComponent
+                      placeholder="Nhập tên thông báo"
+                      type="text"
+                      control={control}
+                      setValue={noSetValue}
+                      name="title"
+                      label="Tiêu đề"
+                      errors={errors}
+                      validationRules={{
+                        required: "Không được bỏ trống!",
                       }}
-                    >
-                      <CancelIcon className="text-3xl mr-1 mb-0.5" />
-                      HỦY BỎ
-                    </ButtonComponent>
-                    <ButtonComponent action="submit">
-                      <AddCircleOutlineIcon className="mr-1" />
-                      TẠO
-                    </ButtonComponent>
-                  </div>
-                </form>
-              </PopupComponent>
+                    />
+                    <InputBaseComponent
+                      type="file"
+                      control={control}
+                      setValue={noSetValue}
+                      name="thumbnail"
+                      label="Ảnh bìa"
+                      errors={errors}
+                      validationRules={{
+                        required: "Không được bỏ trống!",
+                      }}
+                    />
+
+                    <div className="mt-5 max-w-md mb-2">
+                      <ReactQuill
+                        theme="snow"
+                        value={contentQuillValue}
+                        onChange={setContentQuillValue}
+                        modules={modules}
+                        placeholder="Nhập nội dung thông báo..."
+                      />
+                      {contentQuillValue !== "" || contentQuillValue !== "<p><br></p>" ? (
+                        ""
+                      ) : (
+                        <p className="error-color mt-1 text-base">Không được bỏ trống!</p>
+                      )}
+                    </div>
+                    <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi tạo!" />
+                    <div className="mt-4 flex justify-end">
+                      <ButtonComponent
+                        type="error"
+                        action="reset"
+                        onClick={() => {
+                          reset();
+                          setModalOpen(false);
+                        }}
+                      >
+                        <CancelIcon className="text-3xl mr-1 mb-0.5" />
+                        HỦY BỎ
+                      </ButtonComponent>
+                      <ButtonComponent action="submit">
+                        <AddCircleOutlineIcon className="mr-1" />
+                        TẠO
+                      </ButtonComponent>
+                    </div>
+                  </form>
+                </PopupComponent>
+              </div>
             </div>
           </div>
           <div>
@@ -362,13 +432,13 @@ export default function NotificationManagement() {
                   item.createBy.toString(),
                   getInnerTextInsideHTML(item.content.toString()), // Strip HTML tags from content
                 ])}
-                itemsPerPage={10}
+                itemsPerPage={20}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 onDetails={handleNotificationDetails}
                 hiddenColumns={[0]}
                 isImage={2}
-                className="mt-4"
+                className="mt-8"
               />
             ) : (
               <div className="text-center primary-color my-10 text-xl italic font-medium">

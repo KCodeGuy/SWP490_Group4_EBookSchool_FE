@@ -15,11 +15,10 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { useNavigate } from "react-router-dom";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
 import DownloadIcon from "@mui/icons-material/Download";
 
 import "./style.scss";
-import { schoolYears } from "../../mock/schoolYear";
 import noDataImage3 from "../../assets/images/noDataImage3.avif";
 import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
@@ -36,10 +35,9 @@ import {
   getClassByID,
 } from "../../services/ClassService";
 import { getAllTeachers } from "../../services/TeacherService";
-import { getStudents } from "services/StudentService";
 import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
 import { getAllStudents } from "services/StudentService";
-import { downloadTemplateSubject } from "services/SubjectService";
+import { isXlsxFile } from "utils/CommonFunctions";
 
 export default function ClassManagement() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -135,7 +133,7 @@ export default function ClassManagement() {
         setAddedStudents([]);
         setModalOpen(false);
       } else {
-        toast.error(`Tạo lớp thất bại!`);
+        toast.error(`Tạo lớp thất bại! ${response?.response?.data}!`);
       }
     },
     onError: (error) => {
@@ -186,19 +184,22 @@ export default function ClassManagement() {
         // Xử lý lỗi nếu cần
       }
     } else {
-      toast.error("Bạn chưa thêm học sinh!");
+      toast.error("Bạn chưa thêm học sinh vào danh sách!");
     }
   };
 
   // Xử lí show lên form edit thôi
   const handleEdit = (rowItem) => {
     if (rowItem) {
-      const result = getClassByID(accessToken, rowItem[1]);
+      const classByID = getClassByID(accessToken, rowItem[1], rowItem[2]);
       setValue("idEdit", rowItem[0]);
       setValue("classroomEdit", rowItem[1]);
       setValue("schoolYearEdit", rowItem[2]);
       setValue("teacherIDEdit", rowItem[4]);
       setModalEditOpen(true);
+      classByID.then((result) => {
+        setAddedStudents(result?.students);
+      });
     } else {
       setModalEditOpen(false);
     }
@@ -207,31 +208,39 @@ export default function ClassManagement() {
   const updateClassMutation = useMutation((classData) => updateClass(accessToken, classData), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("classState");
-      if (response) {
+      if (response && response == "Chỉnh sửa lớp thành công") {
         refetch().then((result) => {
           if (result.data) {
             setCurrentData(result.data);
           }
         });
+        resetEditAction();
+        setModalEditOpen(false);
         toast.success("Cập nhật lớp học thành công!");
       } else {
-        toast.error(`${response} !`);
+        toast.error(`Cập nhật lớp thất bại! ${response?.response?.data}!`);
       }
-      reset();
-      setModalOpen(false);
+    },
+    onError: (error) => {
+      toast.error(`Cập nhật lớp thất bại! ${error.message}!`);
     },
   });
 
   // Xử lí get dữ liệu khi submit
   const handleUpdateClass = (data) => {
-    const classData = {
-      id: data.idEdit,
-      classroom: data.classroomEdit,
-      schoolYear: data.schoolYearEdit,
-      teacherID: data.teacherIDEdit,
-      students: ["HS0001", "HS0002"],
-    };
-    updateClassMutation.mutate(classData);
+    if (addedStudents.length > 0) {
+      const studentIds = addedStudents.map((student) => student.id);
+      const classData = {
+        id: data.idEdit,
+        classroom: data.classroomEdit,
+        schoolYear: data.schoolYearEdit,
+        teacherID: data.teacherIDEdit,
+        students: studentIds,
+      };
+      updateClassMutation.mutate(classData);
+    } else {
+      toast.error("Bạn chưa thêm học sinh vào danh sách!");
+    }
   };
 
   const handleStatistic = () => {
@@ -252,6 +261,9 @@ export default function ClassManagement() {
         toast.error("Xóa lớp học thất bại!");
       }
       setModalDeleteOpen(false);
+    },
+    onError: (error) => {
+      toast.error(`Xóa lớp thất bại. ${error.message}!`);
     },
   });
 
@@ -309,27 +321,33 @@ export default function ClassManagement() {
   const addClassByExcelMutation = useMutation((file) => addClassByExcel(accessToken, file), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("addSubjectExcel");
-      if (response) {
+      if (response && response?.status === 200) {
         refetch().then((result) => {
           if (result.data) {
             setCurrentData(data);
           }
         });
         toast.success("Tạo lớp học thành công!");
+        reset();
+        setModalOpen(false);
       } else {
-        toast.error(`${response}!`);
+        toast.error(`Tạo lớp thất bại! ${response?.response?.data}!`);
       }
-      reset();
-      setModalOpen(false);
+    },
+    onError: (error) => {
+      toast.error(`Tạo lớp thất bại. ${error.message}!`);
     },
   });
   const handleAddSubjectByExcel = (data) => {
     if (data) {
-      addClassByExcelMutation.mutate(data.classFile);
+      if (isXlsxFile(data?.classFile)) {
+        addClassByExcelMutation.mutate(data.classFile);
+      } else {
+        toast.error(`Tạo lớp thất bại! File không đúng định dạng ".xlsx"!`);
+      }
     }
   };
 
-  console.log(data);
   return (
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
@@ -374,7 +392,7 @@ export default function ClassManagement() {
               />
               <div className="ml-3">
                 <ButtonComponent className="" onClick={() => setModalOpen(true)}>
-                  <AddCircleOutlineIcon className="text-3xl mr-1" />
+                  <AddCircleOutlineIcon className="mr-1" focusable="false" />
                   TẠO
                 </ButtonComponent>
                 <PopupComponent
@@ -440,7 +458,7 @@ export default function ClassManagement() {
                         <span className="text-red-500">*</span>
                       </label>
                       <div className="outline-none px-3 py-2 border border-blue-500 rounded flex flex-wrap mb-2">
-                        {addedStudents.length > 0 ? (
+                        {addedStudents?.length > 0 ? (
                           addedStudents?.map((item, index) => (
                             <p
                               key={index}
@@ -466,7 +484,7 @@ export default function ClassManagement() {
                         )}
                       </div>
                       <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi tạo!" />
-                      <div className="mt-4 flex justify-end">
+                      <div className="mt-4 flex justify-end min-w-fit-table">
                         <ButtonComponent
                           type="error"
                           action="reset"
@@ -479,7 +497,7 @@ export default function ClassManagement() {
                           ĐẶT LẠI
                         </ButtonComponent>
                         <ButtonComponent action="submit">
-                          <AddCircleOutlineIcon className="text-3xl mr-1" />
+                          <AddCircleOutlineIcon className="text-3xl mr-1" focusable="false" />
                           TẠO
                         </ButtonComponent>
                       </div>
@@ -508,7 +526,7 @@ export default function ClassManagement() {
                           <CircularProgress size={24} color="inherit" />
                         </div>
                       </div>
-                    ) : listAllStudents ? (
+                    ) : currentStudents?.length > 0 ? (
                       <TableComponent
                         header={["Mã HS", "Họ và tên", "Ảnh"]}
                         data={currentStudents?.map((item) => [item.id, item.fullname, item.avatar])}
@@ -561,7 +579,7 @@ export default function ClassManagement() {
                           HỦY BỎ
                         </ButtonComponent>
                         <ButtonComponent action="submit">
-                          <AddCircleOutlineIcon className="text-3xl mr-1" />
+                          <AddCircleOutlineIcon className="mr-1" />
                           TẠO
                         </ButtonComponent>
                       </div>
@@ -586,10 +604,10 @@ export default function ClassManagement() {
                   item.id,
                   item.classroom,
                   item.schoolYear,
-                  item.classroom,
+                  `Phòng ${item.classroom}`,
                   item.teacher,
                 ])}
-                itemsPerPage={10}
+                itemsPerPage={20}
                 onEdit={handleEdit}
                 hiddenColumns={[0]}
                 onDelete={handleDelete}
@@ -642,7 +660,7 @@ export default function ClassManagement() {
                   <InputBaseComponent
                     label="Năm học"
                     name="schoolYearEdit"
-                    className="w-1/2 mr-2"
+                    className="w-1/2"
                     control={controlEditAction}
                     type="select"
                     options={formattedSchoolYears}
@@ -664,7 +682,7 @@ export default function ClassManagement() {
                   <span className="text-red-500">*</span>
                 </label>
                 <div className="outline-none px-3 py-2 border border-blue-500 rounded flex flex-wrap mb-2">
-                  {addedStudents.length > 0 ? (
+                  {addedStudents?.length > 0 ? (
                     addedStudents?.map((item, index) => (
                       <p
                         key={index}
@@ -690,7 +708,7 @@ export default function ClassManagement() {
                   )}
                 </div>
                 <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi cập nhật!" />
-                <div className="mt-4 flex justify-end">
+                <div className="mt-4 flex justify-end min-w-fit-table">
                   <ButtonComponent
                     type="error"
                     action="reset"
@@ -703,16 +721,16 @@ export default function ClassManagement() {
                     HỦY BỎ
                   </ButtonComponent>
                   <ButtonComponent action="submit">
-                    <CancelIcon className="text-3xl mr-1 mb-0.5" />
+                    <BorderColorIcon className="text-3xl mr-1  mb-0.5" />
                     CẬP NHẬT
                   </ButtonComponent>
                 </div>
               </form>
               <SearchInputComponent
                 className="-translate-y-11"
-                onSearch={(txtSearch) => {
-                  setCurrentStudents(filterStudentsForAdding(txtSearch, listAllStudents?.data));
-                  reset();
+                onSearch={(txt) => {
+                  setCurrentStudents(filterStudentsForAdding(txt, listAllStudents));
+                  resetEditAction();
                 }}
                 placeHolder="Nhập từ khóa..."
               />
@@ -730,7 +748,7 @@ export default function ClassManagement() {
                     <CircularProgress size={24} color="inherit" />
                   </div>
                 </div>
-              ) : listAllStudents?.success ? (
+              ) : currentStudents?.length > 0 ? (
                 <TableComponent
                   header={["Mã HS", "Họ và tên", "Ảnh"]}
                   data={currentStudents?.map((item) => [item.id, item.fullname, item.avatar])}

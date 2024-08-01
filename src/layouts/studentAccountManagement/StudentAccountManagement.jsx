@@ -40,7 +40,6 @@ const genderOptions = [
 ];
 
 const sortOptions = [
-  { label: "Chưa xài được", value: { index: 0, option: "ASC" } },
   { label: "Mã học sinh(A-Z)", value: { index: 1, option: "ASC" } },
   { label: "Mã học sinh(Z-A)", value: { index: 1, option: "DESC" } },
   { label: "Tên đăng nhập(A-Z)", value: { index: 2, option: "ASC" } },
@@ -62,13 +61,17 @@ export default function StudentAccountManagement() {
   const [sortOption, setSortOption] = useState(sortOptions[0].value);
 
   // 1. Get all students
-  const { data, error, isLoading } = useQuery(["studentsState", { accessToken }], () =>
-    getAllStudents(accessToken)
-  );
+  const { data, error, isLoading, refetch } = useQuery({
+    queryKey: ["studentsState", { accessToken }],
+    queryFn: () => getAllStudents(accessToken),
+    enabled: false,
+  });
   useEffect(() => {
-    if (data) {
-      setAccounts(data);
-    }
+    refetch().then((result) => {
+      if (result.data) {
+        setAccounts(data);
+      }
+    });
   }, [data]);
 
   //3.1 React-hook-from of adding action
@@ -97,9 +100,13 @@ export default function StudentAccountManagement() {
         queryClient.invalidateQueries("studentsState");
         if (response && response?.status === 200) {
           toast.success("Tạo học sinh thành công!");
+          refetch().then((result) => {
+            if (result.data) {
+              setAccounts(data);
+            }
+          });
           reset();
           setModalOpen(false);
-          setAccounts(data);
         } else {
           toast.error(`Tạo học sinh thất bại. Dữ liệu file không đúng định dạng!`);
         }
@@ -125,6 +132,11 @@ export default function StudentAccountManagement() {
       queryClient.invalidateQueries("studentsState");
       if (response && response?.status === 200) {
         toast.success("Tạo học sinh thành công!");
+        refetch().then((result) => {
+          if (result.data) {
+            setAccounts(data);
+          }
+        });
         reset();
         setModalOpen(false);
       } else {
@@ -192,6 +204,11 @@ export default function StudentAccountManagement() {
         } else {
           toast.error(`Cập nhật học sinh thất bại. ${response.data}!`);
         }
+        refetch().then((result) => {
+          if (result.data) {
+            setAccounts(data);
+          }
+        });
         resetEditAction();
         setModalEditOpen(false);
       },
@@ -213,10 +230,15 @@ export default function StudentAccountManagement() {
       if (response) {
         queryClient.invalidateQueries(["studentsState", { accessToken }]); // Invalidate the getStudents query
         toast.success("Xóa học sinh thành công!");
+        refetch().then((result) => {
+          if (result.data) {
+            setAccounts(data);
+          }
+        });
+        setModalDeleteOpen(false);
       } else {
         toast.error("Xóa học sinh thất bại!");
       }
-      setModalDeleteOpen(false);
     },
   });
 
@@ -246,6 +268,39 @@ export default function StudentAccountManagement() {
         (item.phone && item.phone.toLowerCase().includes(search))
       );
     });
+  };
+
+  const handleSortStudent = () => {
+    const { index, option } = sortOption;
+    if (accounts?.length > 0) {
+      const sortedData = [...accounts].sort((a, b) => {
+        let valueA, valueB;
+
+        switch (index) {
+          case 1:
+            valueA = a.id;
+            valueB = b.id;
+            break;
+          case 2:
+            valueA = a.username;
+            valueB = b.username;
+            break;
+          case 3:
+            valueA = a.fullname;
+            valueB = b.fullname;
+            break;
+          default:
+            return 0;
+        }
+
+        if (option === "ASC") {
+          return valueA.localeCompare(valueB);
+        } else {
+          return valueB.localeCompare(valueA);
+        }
+      });
+      setAccounts(sortedData);
+    }
   };
 
   return (
@@ -280,7 +335,7 @@ export default function StudentAccountManagement() {
                 </Select>
               </FormControl>
               <div className="max-[639px]:mt-2 ml-3">
-                <ButtonComponent type="success" onClick={() => {}}>
+                <ButtonComponent type="success" onClick={handleSortStudent}>
                   <SwapVertIcon className="text-3xl mr-1" /> SẮP XẾP
                 </ButtonComponent>
               </div>
@@ -593,7 +648,7 @@ export default function StudentAccountManagement() {
                   <CircularProgress size={24} color="inherit" />
                 </div>
               </div>
-            ) : data && accounts.length > 0 ? (
+            ) : data && accounts?.length > 0 ? (
               <TableComponent
                 header={[
                   "Mã học sinh",

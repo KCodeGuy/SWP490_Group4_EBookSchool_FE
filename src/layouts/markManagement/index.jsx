@@ -47,6 +47,7 @@ import { TabPanel } from "components/TabPanelComponent";
 import { SUBJECT_ROLE } from "services/APIConfig";
 import { PRINCIPAL_ROLE } from "services/APIConfig";
 import { HOMEROOM_ROLE } from "services/APIConfig";
+import { isXlsxFile } from "utils/CommonFunctions";
 
 // Mark management (HieuTTN)
 const semesters = [
@@ -239,23 +240,30 @@ export default function MarkManagement() {
   const updateMarkMutation = useMutation((file) => updateMarkByMarkComponent(accessToken, file), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("timeTableState");
-      if (response) {
+      if (response && response?.status === 200) {
         toast.success("Nhập điểm thành công!");
+        reset();
+        setModalAdd(false);
+        refetch().then((result) => {
+          if (result.data) {
+            setCurrentOfStudentsMarkBySubject(result.data);
+          }
+        });
       } else {
-        toast.error(`${response.data}!`);
+        toast.error(`Nhập điểm thất bại! ${response?.response?.data}!`);
       }
-      reset();
-      setModalAdd(false);
-      refetch().then((result) => {
-        if (result.data) {
-          setCurrentOfStudentsMarkBySubject(result.data);
-        }
-      });
+    },
+    onError: (error) => {
+      toast.error(`Nhập điểm thất bại! ${error.message}!`);
     },
   });
   const handleUploadTemplate = (data) => {
-    if (data) {
-      updateMarkMutation.mutate(data.markFile);
+    if (data && data?.markFile) {
+      if (isXlsxFile(data?.markFile)) {
+        updateMarkMutation.mutate(data.markFile);
+      } else {
+        toast.error(`Nhập điểm thất bại! File không đúng định dạng ".xlsx"!`);
+      }
     }
   };
 
@@ -585,7 +593,7 @@ export default function MarkManagement() {
                   <TableMarkAllStudentsComponent
                     className="mt-4"
                     semester={schoolSemester}
-                    itemsPerPage={30}
+                    itemsPerPage={50}
                     data={currentMarkOfClass?.averages}
                     onViewDetails={handleDetails}
                   />
@@ -682,7 +690,7 @@ export default function MarkManagement() {
                       data={currentOfStudentsMarkBySubject?.score}
                       className="mt-4 text-left"
                       onDetails={handleDetails}
-                      itemsPerPage={30}
+                      itemsPerPage={50}
                     />
                   ) : (
                     <div className="text-center primary-color my-10 text-xl italic font-medium">
@@ -782,21 +790,25 @@ export default function MarkManagement() {
             ))}
             <div className="flex justify-between text-base mt-3 border-t-2 pt-2">
               <div>
-                <span className="font-bold">Xếp loại: </span>
                 {markDetails?.average != -1 && markDetails?.average != 0 ? (
-                  <span className={renderRankingStyles(markDetails?.average)}>
-                    {renderRanking(markDetails?.average)}
-                  </span>
+                  <>
+                    <span className="font-bold">Xếp loại: </span>
+                    <span className={renderRankingStyles(markDetails?.average)}>
+                      {renderRanking(markDetails?.average)}
+                    </span>
+                  </>
                 ) : (
                   <span className="text-base italic">Chưa xếp loại</span>
                 )}
               </div>
               <div>
-                <span className="font-bold">TBM: </span>
                 {markDetails?.average != -1 && markDetails?.average != 0 ? (
-                  <span className="mx-auto text-center text-white px-3 py-1 rounded bg-success-color">
-                    {markDetails ? markDetails?.average : "_"}
-                  </span>
+                  <>
+                    <span className="font-bold">TBM: </span>
+                    <span className="mx-auto text-center text-white px-3 py-1 rounded bg-success-color">
+                      {markDetails ? markDetails?.average : "_"}
+                    </span>
+                  </>
                 ) : (
                   <span className="text-base italic">Chưa có điểm</span>
                 )}

@@ -2,23 +2,31 @@ import axios from "axios";
 import { API_HOST, ORB_HOST } from "./APIConfig";
 
 const getAllTeachers = async (accessToken) => {
-  const res = await axios.get(`${API_HOST}/Teachers`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  return res.data;
+  try {
+    const res = await axios.get(`${API_HOST}/Teachers`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
 };
 
 const getTeacherByID = async (accessToken, teacherID) => {
-  const res = await axios.get(`${API_HOST}/Teachers/${teacherID}`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  return res.data;
+  try {
+    const res = await axios.get(`${API_HOST}/Teachers/${teacherID}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
 };
 
 const createTeacher = async (accessToken, data) => {
@@ -100,7 +108,7 @@ const updateTeacher = async (accessToken, data) => {
       },
     });
 
-    return res.data;
+    return res;
   } catch (error) {
     return error;
   }

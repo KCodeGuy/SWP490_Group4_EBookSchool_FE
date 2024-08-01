@@ -35,7 +35,6 @@ import { isXlsxFile } from "utils/CommonFunctions";
 import { nationOptions } from "mock/student";
 
 const sortOptions = [
-  { label: "Chưa xài được", value: { index: 0, option: "ASC" } },
   { label: "Mã giáo viên(A-Z)", value: { index: 1, option: "ASC" } },
   { label: "Mã giáo viên(Z-A)", value: { index: 1, option: "DESC" } },
   { label: "Tên đăng nhập(A-Z)", value: { index: 2, option: "ASC" } },
@@ -64,13 +63,17 @@ export default function AccountManagement() {
   const [sortOption, setSortOption] = useState(sortOptions[0].value);
   const queryClient = useQueryClient();
 
-  const { data, error, isLoading } = useQuery(["teacherAccounts", { accessToken }], () =>
-    getAllTeachers(accessToken)
-  );
+  const { data, error, isLoading, refetch } = useQuery({
+    queryKey: ["teacherAccounts"],
+    queryFn: () => getAllTeachers(accessToken),
+    enabled: false,
+  });
   useEffect(() => {
-    if (data) {
-      setAccounts(data);
-    }
+    refetch().then((result) => {
+      if (result.data) {
+        setAccounts(data);
+      }
+    });
   }, [data]);
 
   //3.1 React-hook-from of adding action
@@ -97,6 +100,11 @@ export default function AccountManagement() {
       queryClient.invalidateQueries("teacherState");
       if (response && response?.status === 200) {
         toast.success("Tạo giáo viên thành công!");
+        refetch().then((result) => {
+          if (result.data) {
+            setAccounts(data);
+          }
+        });
         reset();
         setModalOpen(false);
       } else {
@@ -115,6 +123,11 @@ export default function AccountManagement() {
         queryClient.invalidateQueries("teacherState");
         if (response && response?.status === 200) {
           toast.success("Tạo giáo viên thành công!");
+          refetch().then((result) => {
+            if (result.data) {
+              setAccounts(data);
+            }
+          });
           reset();
           setModalOpen(false);
         } else {
@@ -198,7 +211,39 @@ export default function AccountManagement() {
   const handleEdit = (rowItem) => {
     if (rowItem) {
       setTeacherID(rowItem[0]);
-      setModalEditOpen(true);
+      const teacherByID = getTeacherByID(accessToken, rowItem[0]);
+      teacherByID.then((result) => {
+        setValue("id", result?.id);
+        setValue("fullName", result?.fullname);
+        if (result?.birthday) {
+          setValue("birthday", result?.birthday.split("T")[0]);
+        }
+        setValue("gender", result?.gender);
+        setValue("nation", result?.nation);
+        setValue("email", result?.email);
+        setValue("phone", result?.phone);
+        setValue("isBachelor", result?.isBachelor);
+        setValue("isMaster", result?.isMaster);
+        setValue("isDoctor", result?.isDoctor);
+        setValue("isProfessor", result?.isProfessor);
+        setValue("address", result?.address);
+        setValue("avatar", result?.avatar);
+        setAvatar(result?.avatar);
+
+        result?.roles?.forEach((role) => {
+          const formattedRole = `role${role}`;
+          setValue(formattedRole, true);
+        });
+
+        // Handling permissions
+        result?.permissions?.forEach((permission) => {
+          const formattedPermission = `is${permission.replace(/\s+/g, "")}`;
+          setValue(formattedPermission, true);
+        });
+        if (result) {
+          setModalEditOpen(true);
+        }
+      });
     } else {
       setModalEditOpen(false);
     }
@@ -208,18 +253,22 @@ export default function AccountManagement() {
     (teacherData) => updateTeacher(accessToken, teacherData),
     {
       onSuccess: (response) => {
-        queryClient.invalidateQueries("teacherAccounts");
-        if (response && response) {
+        queryClient.invalidateQueries("teacherState");
+        if (response && response?.status === 200) {
           toast.success("Cập nhật giáo viên thành công!");
+          refetch().then((result) => {
+            if (result.data) {
+              setAccounts(data);
+            }
+          });
+          resetEditAction();
+          setModalEditOpen(false);
         } else {
-          toast.error(`${response}!`);
+          toast.error(`Cập nhật giáo viên thất bại! ${response?.response?.data}!`);
         }
-        resetEditAction();
-        setModalEditOpen(false);
       },
       onError: (error) => {
-        console.error("Error updating teacher:", error);
-        toast.error("Cập nhật giáo viên thất bại!");
+        toast.error(`Cập nhật giáo viên thất bại! ${error.message}!`);
       },
     }
   );
@@ -249,77 +298,62 @@ export default function AccountManagement() {
         return obj;
       }, {});
 
+    if (!otherValues.gender || otherValues.gender == "") {
+      otherValues.gender = genderOptions[0].value;
+    }
+    if (!otherValues.nation || otherValues.nation == "") {
+      otherValues.nation = nationOptions[0].value;
+    }
+
     const newObj = {
       id: teacherID,
       permissions,
       roles,
-      otherValues,
+      fullName: otherValues.fullName,
+      birthday: otherValues.birthday,
+      gender: otherValues.gender,
+      nation: otherValues.nation,
+      email: otherValues.email,
+      phone: otherValues.phone,
+      isBachelor: otherValues.bachelor,
+      isMaster: otherValues.master,
+      isDoctor: otherValues.doctor,
+      isProfessor: otherValues.professor,
+      address: otherValues.address,
+      avatar: otherValues.avatar,
     };
 
-    updateTeacherMutation.mutate(newObj);
+    const isCorrectOtherValue =
+      otherValues.birthday &&
+      otherValues.gender &&
+      otherValues.nation &&
+      otherValues.email &&
+      otherValues.phone &&
+      (otherValues.bachelor || otherValues.master || otherValues.doctor || otherValues.professor) &&
+      otherValues.address &&
+      otherValues.avatar;
+
+    if (!isCorrectOtherValue) {
+      toast.error("Cập nhật giáo viên thất bại! Bạn phải điền đủ thông tin chi tiết!");
+    } else if (roles?.length <= 0) {
+      toast.error("Cập nhật giáo viên thất bại! Bạn chưa chọn vai trò!");
+    } else if (permissions?.length <= 0) {
+      toast.error("Cập nhật giáo viên thất bại! Bạn chưa phân quyền!");
+    } else if (roles?.length > 0 && permissions?.length > 0 && isCorrectOtherValue) {
+      updateTeacherMutation.mutate(newObj);
+    }
   };
-
-  const {
-    data: teacherData,
-    error: teacherError,
-    isLoading: teacherLoading,
-  } = useQuery(
-    ["teacherState", { accessToken, teacherID }],
-    () => getTeacherByID(accessToken, teacherID),
-    {
-      enabled: !!teacherID,
-    }
-  );
-
-  useEffect(() => {
-    if (teacherData) {
-      setValue("id", teacherData?.id);
-      setValue("fullName", teacherData?.fullname);
-      if (teacherData?.birthday) {
-        setValue("birthday", teacherData?.birthday.split("T")[0]);
-      }
-      setValue("gender", teacherData?.gender);
-      setValue("nation", teacherData?.nation);
-      setValue("email", teacherData?.email);
-      setValue("phone", teacherData?.phone);
-      setValue("isBachelor", teacherData?.isBachelor);
-      setValue("isMaster", teacherData?.isMaster);
-      setValue("isDoctor", teacherData?.isDoctor);
-      setValue("isProfessor", teacherData?.isProfessor);
-      setValue("address", teacherData?.address);
-      setValue("avatar", teacherData?.avatar);
-      setAvatar(teacherData?.avatar);
-
-      teacherData?.roles?.forEach((role) => {
-        const formattedRole = `role${role}`;
-        setValue(formattedRole, true);
-      });
-
-      // Handling permissions
-      teacherData?.permissions?.forEach((permission) => {
-        const formattedPermission = `is${permission.replace(/\s+/g, "")}`;
-        setValue(formattedPermission, true);
-      });
-    }
-  }, [teacherData, setValue]);
-
-  const formValues = watch();
-
-  useEffect(() => {
-    queryClient.invalidateQueries(["teacherState", { accessToken, teacherID }]);
-  }, [teacherID]);
-
-  useEffect(() => {
-    if (data) {
-      setAccounts(data);
-    }
-  }, [data]);
 
   const deleteTeacherMutation = useMutation((username) => deleteTeacher(accessToken, username), {
     onSuccess: (response) => {
       if (response) {
         queryClient.invalidateQueries(["teacherAccounts", { accessToken }]); // Invalidate the getTeachers query
         toast.success(`Xóa giáo viên thành công!`);
+        refetch().then((result) => {
+          if (result.data) {
+            setAccounts(data);
+          }
+        });
         setModalDeleteOpen(false);
       } else {
         toast.error("Xóa giáo viên thất bại!");
@@ -359,8 +393,37 @@ export default function AccountManagement() {
     setCurrentTab(newValue);
   };
 
-  const handleTabEditChange = (event, newValue) => {
-    setCurrentTabEdits(newValue);
+  const handleSortTeacher = () => {
+    const { index, option } = sortOption;
+    if (accounts?.length > 0) {
+      const sortedData = [...accounts].sort((a, b) => {
+        let valueA, valueB;
+
+        switch (index) {
+          case 1:
+            valueA = a.id;
+            valueB = b.id;
+            break;
+          case 2:
+            valueA = a.username;
+            valueB = b.username;
+            break;
+          case 3:
+            valueA = a.fullname;
+            valueB = b.fullname;
+            break;
+          default:
+            return 0;
+        }
+
+        if (option === "ASC") {
+          return valueA.localeCompare(valueB);
+        } else {
+          return valueB.localeCompare(valueA);
+        }
+      });
+      setAccounts(sortedData);
+    }
   };
 
   const handleAddAccount = () => {};
@@ -397,7 +460,7 @@ export default function AccountManagement() {
                 </Select>
               </FormControl>
               <div className="max-[639px]:mt-2 ml-3">
-                <ButtonComponent type="success" onClick={() => {}}>
+                <ButtonComponent type="success" onClick={handleSortTeacher}>
                   <SwapVertIcon className="text-3xl mr-1" /> SẮP XẾP
                 </ButtonComponent>
               </div>
@@ -894,7 +957,7 @@ export default function AccountManagement() {
                             errors={errors}
                           />
                         </div>
-                        <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5 mr-3">
+                        <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mr-3">
                           <p className="uppercase font-medium mb-2 primary-color">sổ đầu bài</p>
                           <InputBaseComponent
                             type="checkbox"
@@ -1149,26 +1212,26 @@ export default function AccountManagement() {
                   <CircularProgress size={24} color="inherit" />
                 </div>
               </div>
-            ) : data && accounts.length > 0 ? (
+            ) : data && accounts?.length > 0 ? (
               <TableComponent
                 header={[
                   "Mã giáo viên",
+                  "Tên đăng nhập",
                   "Họ và tên",
                   "Hình ảnh",
-                  "Tên đăng nhập",
                   "Email",
                   "Số điện thoại",
                 ]}
                 data={accounts.map((item) => [
                   item.id,
+                  item.username,
                   item.fullname,
                   item.avatar,
-                  item.username,
                   item.email,
                   item.phone,
                 ])}
                 itemsPerPage={30}
-                isImage={2}
+                isImage={3}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 className="mt-8"
@@ -1183,62 +1246,44 @@ export default function AccountManagement() {
                 Chưa có dữ liệu!
               </div>
             )}
-            {/* show data table */}
-            {/* {accounts != null && accounts.length > 0 ? (
-              <TableComponent
-                header={["Mã giáo viên", "Tên đăng nhập", "Họ và tên", "Email", "Số điện thoại"]}
-                data={accounts.map((item) => [
-                  item.id,
-                  item.username,
-                  item.fullname,
-                  item.email,
-                  item.phone,
-                ])}
-                itemsPerPage={30}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                className="mt-8"
-              />
-            ) : null} */}
             <PopupComponent
               title="CẬP NHẬT"
               description="Hãy chỉnh sửa để bắt đầu năm học mới"
               icon={<EditIcon />}
               isOpen={modalEditOpen}
               onClose={() => setModalEditOpen(false)}
-              tabs={[{ label: "THÊM THÔNG TIN" }, { label: "VAI TRÒ" }, { label: "PHÂN QUYỀN" }]}
+              tabs={[{ label: "1. CHI TIẾT" }, { label: "2. VAI TRÒ" }, { label: "3. PHÂN QUYỀN" }]}
               currentTab={currentTabEdit}
-              onTabChange={handleTabEditChange}
+              onTabChange={(newTab) => {
+                setCurrentTabEdit(newTab);
+              }}
             >
-              {/* Content for Tab 2 */}
               <div role="tabpanel" hidden={currentTabEdit !== 0}>
-                {/* Form để nhập thêm thông tin */}
                 <form onSubmit={handleSubmit(handleAddInfomation)}>
-                  {/* Left column */}
                   <div className="w-full flex">
                     <InputBaseComponent
-                      placeholder="Nhập họ và tên"
-                      className="w/1/3 mr-3"
+                      placeholder="Nguyễn Văn A"
+                      className="w-1/3 mr-2"
                       type="text"
                       control={controlEditAction}
                       setValue={setValue}
                       name="fullName"
-                      label="Họ & Tên"
-                      errors={errors}
+                      label="Họ và tên"
+                      errors={errorsEditAction}
                       validationRules={{
                         required: "Không được bỏ trống!",
                       }}
                     />
 
                     <InputBaseComponent
-                      placeholder="Nhập email"
-                      className="w/1/3 mr-3"
+                      placeholder=""
+                      className="w-1/3 mr-2"
                       type="email"
                       control={controlEditAction}
                       setValue={setValue}
                       name="email"
                       label="Email"
-                      errors={errors}
+                      errors={errorsEditAction}
                       validationRules={{
                         required: "Không được bỏ trống!",
                         pattern: {
@@ -1249,13 +1294,13 @@ export default function AccountManagement() {
                     />
                     <InputBaseComponent
                       placeholder="Nhập số điện thoại"
-                      className="w/1/3"
+                      className="w-1/3"
                       type="text"
                       control={controlEditAction}
                       setValue={setValue}
                       name="phone"
                       label="Số điện thoại"
-                      errors={errors}
+                      errors={errorsEditAction}
                       validationRules={{
                         required: "Không được bỏ trống!",
                         pattern: {
@@ -1265,63 +1310,57 @@ export default function AccountManagement() {
                       }}
                     />
                   </div>
-                  <div className="flex">
-                    <InputBaseComponent
-                      placeholder="Nhập mã số căn cước"
-                      className="w/1/3 mr-3"
-                      type="text"
-                      control={controlEditAction}
-                      setValue={setValue}
-                      name="address"
-                      label="Địa chỉ"
-                      errors={errors}
-                      validationRules={{
-                        required: "Không được bỏ trống!",
-                      }}
-                    />
+
+                  <div className="flex ">
                     <InputBaseComponent
                       placeholder="Nhập ngày sinh"
-                      className="w/1/3 mr-3"
+                      className="w-1/3 mr-2"
                       type="date"
                       control={controlEditAction}
                       setValue={setValue}
                       name="birthday"
                       label="Ngày sinh"
-                      errors={errors}
+                      errors={errorsEditAction}
                       validationRules={{
                         required: "Không được bỏ trống!",
                       }}
                     />
+
+                    <InputBaseComponent
+                      type="select"
+                      className="w-1/3 mr-2"
+                      control={controlEditAction}
+                      setValue={setValue}
+                      name="gender"
+                      label="Giới tính"
+                      errors={errorsEditAction}
+                      options={genderOptions}
+                    />
+                    <InputBaseComponent
+                      type="select"
+                      label="Dân tộc"
+                      className="w-1/3"
+                      control={controlEditAction}
+                      setValue={setValue}
+                      name="nation"
+                      errors={errorsEditAction}
+                      options={nationOptions}
+                    />
                   </div>
 
                   <InputBaseComponent
-                    placeholder="Nhập gới tính"
+                    placeholder="Nhập mã số căn cước"
+                    className="w-full"
                     type="text"
                     control={controlEditAction}
                     setValue={setValue}
-                    name="gender"
-                    label="Giới tính"
-                    errors={errors}
+                    name="address"
+                    label="Địa chỉ"
+                    errors={errorsEditAction}
                     validationRules={{
                       required: "Không được bỏ trống!",
                     }}
-                    className="mt-4"
                   />
-
-                  <InputBaseComponent
-                    placeholder="Nhập dân tộc"
-                    type="text"
-                    control={controlEditAction}
-                    setValue={setValue}
-                    name="nation"
-                    label="Dân tộc"
-                    errors={errors}
-                    validationRules={{
-                      required: "Không được bỏ trống!",
-                    }}
-                    className="mt-4"
-                  />
-
                   <div className="flex justify-evenly">
                     <InputBaseComponent
                       type="checkbox"
@@ -1330,7 +1369,7 @@ export default function AccountManagement() {
                       setValue={setValue}
                       name="bachelor"
                       label="Cử nhân"
-                      errors={errors}
+                      errors={errorsEditAction}
                     />
 
                     <InputBaseComponent
@@ -1340,7 +1379,7 @@ export default function AccountManagement() {
                       setValue={setValue}
                       name="master"
                       label="Thạc sĩ"
-                      errors={errors}
+                      errors={errorsEditAction}
                     />
 
                     <InputBaseComponent
@@ -1350,7 +1389,7 @@ export default function AccountManagement() {
                       setValue={setValue}
                       name="doctor"
                       label="Tiến sĩ"
-                      errors={errors}
+                      errors={errorsEditAction}
                     />
 
                     <InputBaseComponent
@@ -1360,7 +1399,7 @@ export default function AccountManagement() {
                       setValue={setValue}
                       name="professor"
                       label="Giáo sư"
-                      errors={errors}
+                      errors={errorsEditAction}
                     />
                   </div>
 
@@ -1372,7 +1411,7 @@ export default function AccountManagement() {
                       setValue={setValue}
                       name="avatar"
                       label="Ảnh đại diện"
-                      errors={errors}
+                      errors={errorsEditAction}
                       validationRules={{
                         required: "Không được bỏ trống!",
                       }}
@@ -1381,13 +1420,13 @@ export default function AccountManagement() {
                       <img
                         className="w-24 ml-2 h-24 rounded-md object-cover object-center"
                         src={avatar}
-                        alt="avatar"
+                        alt="Ảnh bìa"
                       />
                     )}
                   </div>
                 </form>
+                <NotifyCheckInfoForm actionText="Hãy chuyển sang tab tiếp theo để tiếp tục cập nhật!" />
               </div>
-              {/* Content for Tab 3 */}
               <div role="tabpanel" hidden={currentTabEdit == 1}>
                 {/* phân quyền*/}
                 <form onSubmit={handleSubmit(handleAddRole)}>
@@ -1398,8 +1437,8 @@ export default function AccountManagement() {
                     control={controlEditAction}
                     setValue={setValue}
                     name="roleAmin"
-                    label="Hiệu trưởng/Hiệu phó"
-                    errors={errors}
+                    label="1. Hiệu trưởng/Hiệu phó"
+                    errors={errorsEditAction}
                   />
                   <InputBaseComponent
                     type="checkbox"
@@ -1408,8 +1447,8 @@ export default function AccountManagement() {
                     control={controlEditAction}
                     setValue={setValue}
                     name="roleSupervisor"
-                    label="Tổng phụ trách"
-                    errors={errors}
+                    label="2. Tổng phụ trách"
+                    errors={errorsEditAction}
                   />
                   <InputBaseComponent
                     type="checkbox"
@@ -1418,8 +1457,8 @@ export default function AccountManagement() {
                     control={controlEditAction}
                     setValue={setValue}
                     name="roleHomeroomTeacher"
-                    label="Giáo viên chủ nhiệm"
-                    errors={errors}
+                    label="3. Giáo viên chủ nhiệm"
+                    errors={errorsEditAction}
                   />
                   <InputBaseComponent
                     type="checkbox"
@@ -1428,8 +1467,8 @@ export default function AccountManagement() {
                     control={controlEditAction}
                     setValue={setValue}
                     name="roleSubjectTeacher"
-                    label="Giáo viên bộ môn"
-                    errors={errors}
+                    label="4. Giáo viên bộ môn"
+                    errors={errorsEditAction}
                   />
                   <InputBaseComponent
                     type="checkbox"
@@ -1438,395 +1477,412 @@ export default function AccountManagement() {
                     control={controlEditAction}
                     setValue={setValue}
                     name="roleStudent"
-                    label="Học sinh"
-                    errors={errors}
+                    label="5. Học sinh"
+                    errors={errorsEditAction}
                   />
                 </form>
+                <NotifyCheckInfoForm actionText="Hãy chuyển sang tab tiếp theo để tiếp tục cập nhật!" />
               </div>
               <div role="tabpanel" hidden={currentTabEdit == 2}>
-                {/* phân quyền*/}
                 <form onSubmit={handleSubmitEditAction(handleEditSubject)}>
-                  <div className="flex w-full">
-                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
-                      {/* Left in right column */}
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isGetTeacher"
-                        label="Xem giáo viên"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isAddTeacher"
-                        label="Thêm giáo viên"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isUpdateTeacher"
-                        label="Chỉnh sửa giáo viên"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isDeleteTeacher"
-                        label="Xóa giáo viên"
-                        errors={errors}
-                      />
+                  <div className="">
+                    <div className="w-full flex mb-2 mt-5">
+                      <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mr-3">
+                        <p className="uppercase font-medium mb-2 primary-color">
+                          Tài khoản giáo viên
+                        </p>
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isGetTeacher"
+                          label="Xem giáo viên"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isAddTeacher"
+                          label="Thêm giáo viên"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isUpdateTeacher"
+                          label="Chỉnh sửa giáo viên"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isDeleteTeacher"
+                          label="Xóa giáo viên"
+                          errors={errorsEditAction}
+                        />
+                      </div>
+                      <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2">
+                        <p className="uppercase font-medium mb-2 primary-color">
+                          Tài khoản học sinh
+                        </p>
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isGetStudent"
+                          label="Xem học sinh"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isAddStudent"
+                          label="Thêm học sinh"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isUpdateStudent"
+                          label="Chỉnh sửa học sinh"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isDeleteStudent"
+                          label="Xóa học sinh"
+                          errors={errorsEditAction}
+                        />
+                      </div>
                     </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
-                      {/* Left in right column */}
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isGetStudent"
-                        label="Xem học sinh"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isAddStudent"
-                        label="Thêm học sinh"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isUpdateStudent"
-                        label="Chỉnh sửa học sinh"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isDeleteStudent"
-                        label="Xóa học sinh"
-                        errors={errors}
-                      />
+                    <div className="w-full flex mb-2 mt-5">
+                      <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mr-3">
+                        <p className="uppercase font-medium mb-2 primary-color">Môn học</p>
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isGetSubject"
+                          label="Xem môn học"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isAddSubject"
+                          label="Thêm môn học"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isUpdateSubject"
+                          label="Chỉnh sửa môn học"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isDeleteSubject"
+                          label="Xóa môn học"
+                          errors={errorsEditAction}
+                        />
+                      </div>
+                      <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2">
+                        <p className="uppercase font-medium mb-2 primary-color">Lớp học</p>
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isGetClass"
+                          label="Xem lớp"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isAddClass"
+                          label="Thêm lớp"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isUpdateClass"
+                          label="Chỉnh sửa lớp"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isDeleteClass"
+                          label="Xóa lớp"
+                          errors={errorsEditAction}
+                        />
+                      </div>
                     </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
-                      {/* Left in right column */}
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isGetSubject"
-                        label="Xem môn học"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isAddSubject"
-                        label="Thêm môn học"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isUpdateSubject"
-                        label="Chỉnh sửa môn học"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isDeleteSubject"
-                        label="Xóa môn học"
-                        errors={errors}
-                      />
+                    <div className="w-full flex mb-2 mt-5">
+                      <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mr-3">
+                        <p className="uppercase font-medium mb-2 primary-color">Thời khóa biểu</p>
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isGetSchedule"
+                          label="Xem thời khóa biểu"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isAddSchedule"
+                          label="Thêm thời khóa biểu"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isUpdateSchedule"
+                          label="Chỉnh sửa thời khóa biểu"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isDeleteSchedule"
+                          label="Xóa thời khóa biểu"
+                          errors={errorsEditAction}
+                        />
+                      </div>
+                      <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 ">
+                        <p className="uppercase font-medium mb-2 primary-color">Sổ đầu bài</p>
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isGetRegisterBook"
+                          label="Xem sổ đầu bài"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isAddRegisterBook"
+                          label="Thêm sổ đầu bài"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isUpdateRegisterBook"
+                          label="Chỉnh sửa sổ đầu bài"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isDeleteRegisterBook"
+                          label="Xóa sổ đầu bài"
+                          errors={errorsEditAction}
+                        />
+                      </div>
                     </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
-                      {/* Left in right column */}
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isGetClass"
-                        label="Xem lớp"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isAddClass"
-                        label="Thêm lớp"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isUpdateClass"
-                        label="Chỉnh sửa lớp"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isDeleteClass"
-                        label="Xóa lớp"
-                        errors={errors}
-                      />
+
+                    <div className="w-full flex mb-2 mt-5">
+                      <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mr-3">
+                        <p className="uppercase font-medium mb-2 primary-color">Điểm danh</p>
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isGetAttendance"
+                          label="Xem điểm danh"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isAddAttendance"
+                          label="Thêm điểm danh"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isUpdateAttendance"
+                          label="Chỉnh sửa điểm danh"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isDeleteAttendance"
+                          label="Xóa điểm danh"
+                          errors={errorsEditAction}
+                        />
+                      </div>
+                      <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 ">
+                        <p className="uppercase font-medium mb-2 primary-color">Điểm số</p>
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isGetMark"
+                          label="Xem điểm"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isAddMark"
+                          label="Thêm điểm"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isUpdateMark"
+                          label="Chỉnh sửa điểm"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isDeleteMark"
+                          label="Xóa điểm"
+                          errors={errorsEditAction}
+                        />
+                      </div>
                     </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
-                      {/* Left in right column */}
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isGetSchedule"
-                        label="Xem thời khóa biểu"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isAddSchedule"
-                        label="Thêm thời khóa biểu"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isUpdateSchedule"
-                        label="Chỉnh sửa thời khóa biểu"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isDeleteSchedule"
-                        label="Xóa thời khóa biểu"
-                        errors={errors}
-                      />
-                    </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
-                      {/* Left in right column */}
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isGetRegisterBook"
-                        label="Xem sổ đầu bài"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isAddRegisterBook"
-                        label="Thêm sổ đầu bài"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isUpdateRegisterBook"
-                        label="Chỉnh sửa sổ đầu bài"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isDeleteRegisterBook"
-                        label="Xóa sổ đầu bài"
-                        errors={errors}
-                      />
-                    </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
-                      {/* Left in right column */}
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isGetAttendance"
-                        label="Xem điểm danh"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isAddAttendance"
-                        label="Thêm điểm danh"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isUpdateAttendance"
-                        label="Chỉnh sửa điểm danh"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isDeleteAttendance"
-                        label="Xóa điểm danh"
-                        errors={errors}
-                      />
-                    </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
-                      {/* Left in right column */}
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isGetMark"
-                        label="Xem điểm"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isAddMark"
-                        label="Thêm điểm"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isUpdateMark"
-                        label="Chỉnh sửa điểm"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isDeleteMark"
-                        label="Xóa điểm"
-                        errors={errors}
-                      />
-                    </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
-                      {/* Left in right column */}
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isGetNotification"
-                        label="Xem thông báo"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isAddNotification"
-                        label="Thêm thông báo"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isUpdateNotification"
-                        label="Chỉnh sửa thông báo"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isDeleteNotification"
-                        label="Xóa thông báo"
-                        errors={errors}
-                      />
-                    </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
-                      {/* Left in right column */}
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isUpdateSetting"
-                        label="Cài đặt"
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        type="checkbox"
-                        horizontalLabel={true}
-                        control={controlEditAction}
-                        setValue={setValue}
-                        name="isGetLog"
-                        label="Xem lịch sử hoạt động"
-                        errors={errors}
-                      />
+                    <div className="w-full flex mb-2 mt-5">
+                      <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mr-3">
+                        <p className="uppercase font-medium mb-2 primary-color">Thông báo</p>
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isGetNotification"
+                          label="Xem thông báo"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isAddNotification"
+                          label="Thêm thông báo"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isUpdateNotification"
+                          label="Chỉnh sửa thông báo"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isDeleteNotification"
+                          label="Xóa thông báo"
+                          errors={errorsEditAction}
+                        />
+                      </div>
+                      <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 ">
+                        <p className="uppercase font-medium mb-2 primary-color">Hệ thống</p>
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isUpdateSetting"
+                          label="Cài đặt hệ thống"
+                          errors={errorsEditAction}
+                        />
+                        <InputBaseComponent
+                          type="checkbox"
+                          horizontalLabel={true}
+                          control={controlEditAction}
+                          setValue={setValue}
+                          name="isGetLog"
+                          label="Xem lịch sử hoạt động"
+                          errors={errors}
+                        />
+                      </div>
                     </div>
                   </div>
+                  <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi cập nhật!" />
+
                   <div className="mt-5 flex justify-end">
                     <ButtonComponent
                       type="error"
                       action="reset"
                       onClick={() => {
-                        reset();
-                        setModalOpen(false);
+                        resetEditAction();
+                        setModalEditOpen(false);
                       }}
                     >
                       <CancelIcon className="text-3xl mr-1 mb-0.5" />

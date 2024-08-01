@@ -52,10 +52,9 @@ const updateMarkByMarkComponent = async (accessToken, file) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return res.data;
+    return res;
   } catch (error) {
-    // console.error("Error adding timetable:", error);
-    // throw error;
+    return error;
   }
 };
 

@@ -132,7 +132,7 @@ function TableMarkOfSubjectComponent({
                 ? sortScores(row.scores).map((item, index) =>
                     item.semester === semester ? (
                       <td key={index} className="min-w-9">
-                        {isHideMark || item.value === -1 ? "_" : item.value}
+                        {isHideMark || item.value == -1 ? "_" : item.value}
                       </td>
                     ) : (
                       ""

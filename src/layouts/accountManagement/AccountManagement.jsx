@@ -29,6 +29,10 @@ import { getTeacherByID } from "services/TeacherService";
 import { createTeacher } from "services/TeacherService";
 import { updateTeacher } from "services/TeacherService";
 import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
+import { handleDownloadTeacherExcel } from "services/TeacherService";
+import { addTeacherByExcel } from "services/TeacherService";
+import { isXlsxFile } from "utils/CommonFunctions";
+import { nationOptions } from "mock/student";
 
 const sortOptions = [
   { label: "Chưa xài được", value: { index: 0, option: "ASC" } },
@@ -38,6 +42,11 @@ const sortOptions = [
   { label: "Tên đăng nhập(Z-A)", value: { index: 2, option: "DESC" } },
   { label: "Họ và tên(A-Z)", value: { index: 3, option: "ASC" } },
   { label: "Họ và tên(Z-A)", value: { index: 3, option: "DESC" } },
+];
+
+const genderOptions = [
+  { label: "Nam", value: "Nam" },
+  { label: "Nữ", value: "Nữ" },
 ];
 
 // Account management (UolLT)
@@ -83,29 +92,50 @@ export default function AccountManagement() {
     formState: { errors: errorsEditAction },
   } = useForm();
 
-  const handleAddAccount = (data) => {
-    // console.log("Call API add subject: ", data);
-    // Call API add subject here
-  };
-
-  const handleAddInfomation = (data) => {
-    // console.log("Call API add mark: ", data);
-    // Call API add subject here
-  };
-
   const addTeacherMutation = useMutation((data) => createTeacher(accessToken, data), {
     onSuccess: (response) => {
-      queryClient.invalidateQueries("teacherAccounts");
-      if (response) {
+      queryClient.invalidateQueries("teacherState");
+      if (response && response?.status === 200) {
         toast.success("Tạo giáo viên thành công!");
+        reset();
+        setModalOpen(false);
       } else {
-        toast.error(`${response}!`);
+        toast.error(`Tạo giáo viên thất bại! ${response?.response?.data}!`);
       }
-      reset();
-      setModalOpen(false);
+    },
+    onError: (error) => {
+      toast.error(`Tạo giáo viên thất bại! ${error.message}!`);
     },
   });
 
+  const addTeacherMutationByExcel = useMutation(
+    (templateFile) => addTeacherByExcel(accessToken, templateFile),
+    {
+      onSuccess: (response) => {
+        queryClient.invalidateQueries("teacherState");
+        if (response && response?.status === 200) {
+          toast.success("Tạo giáo viên thành công!");
+          reset();
+          setModalOpen(false);
+        } else {
+          toast.error(`Tạo giáo viên thất bại! ${response?.response?.data}!`);
+        }
+      },
+      onError: (error) => {
+        toast.error(`Tạo giáo viên thất bại! ${error.message}!`);
+      },
+    }
+  );
+
+  const handleAddTeacherByExcel = (data) => {
+    if (data && data?.teacherFile) {
+      if (isXlsxFile(data?.teacherFile)) {
+        addTeacherMutationByExcel.mutate(data?.teacherFile);
+      } else {
+        toast.error(`Tạo tài khoản thất bại! File không đúng định dạng ".xlsx"!`);
+      }
+    }
+  };
   const handleAddRole = (data) => {
     const permissionKeys = Object.keys(data).filter((key) => key.startsWith("is") && data[key]);
     const roleKeys = Object.keys(data).filter((key) => key.startsWith("role") && data[key]);
@@ -137,7 +167,32 @@ export default function AccountManagement() {
       otherValues,
     };
 
-    addTeacherMutation.mutate(newObj);
+    if (!otherValues.gender || otherValues.gender == "") {
+      otherValues.gender = genderOptions[0].value;
+    }
+    if (!otherValues.nation || otherValues.nation == "") {
+      otherValues.nation = nationOptions[0].value;
+    }
+    const isCorrectOtherValue =
+      otherValues.fullName &&
+      otherValues.birthday &&
+      otherValues.gender &&
+      otherValues.nation &&
+      otherValues.email &&
+      otherValues.phone &&
+      (otherValues.bachelor || otherValues.master || otherValues.doctor || otherValues.professor) &&
+      otherValues.address &&
+      otherValues.avatar;
+
+    if (!isCorrectOtherValue) {
+      toast.error("Tạo giáo viên thất bại! Bạn phải điền đủ thông tin chi tiết!");
+    } else if (roles?.length <= 0) {
+      toast.error("Tạo giáo viên thất bại! Bạn chưa chọn vai trò!");
+    } else if (permissions?.length <= 0) {
+      toast.error("Tạo giáo viên thất bại! Bạn chưa phân quyền!");
+    } else if (roles?.length > 0 && permissions?.length > 0 && isCorrectOtherValue) {
+      addTeacherMutation.mutate(newObj);
+    }
   };
 
   const handleEdit = (rowItem) => {
@@ -264,11 +319,11 @@ export default function AccountManagement() {
     onSuccess: (response) => {
       if (response) {
         queryClient.invalidateQueries(["teacherAccounts", { accessToken }]); // Invalidate the getTeachers query
-        toast.success(`Xóa giáo viên "${username}" thành công!`);
+        toast.success(`Xóa giáo viên thành công!`);
+        setModalDeleteOpen(false);
       } else {
         toast.error("Xóa giáo viên thất bại!");
       }
-      setModalDeleteOpen(false);
     },
   });
 
@@ -307,6 +362,9 @@ export default function AccountManagement() {
   const handleTabEditChange = (event, newValue) => {
     setCurrentTabEdits(newValue);
   };
+
+  const handleAddAccount = () => {};
+  const handleAddInfomation = () => {};
   return (
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
@@ -440,33 +498,27 @@ export default function AccountManagement() {
                           }}
                         />
                         <InputBaseComponent
-                          placeholder="Nam"
-                          className="w-1/2"
-                          type="text"
+                          type="select"
+                          className="w-1/2 "
                           control={control}
                           setValue={noSetValue}
                           name="gender"
                           label="Giới tính"
                           errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
+                          options={genderOptions}
                         />
                       </div>
 
                       <div className="w-full flex">
                         <InputBaseComponent
-                          placeholder="Kinh"
-                          type="text"
+                          type="select"
+                          label="Dân tộc"
                           className="w-1/2 mr-2"
                           control={control}
                           setValue={noSetValue}
                           name="nation"
-                          label="Dân tộc"
                           errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
+                          options={nationOptions}
                         />
                         <InputBaseComponent
                           placeholder="gv@gmail.com"
@@ -481,7 +533,7 @@ export default function AccountManagement() {
                             required: "Không được bỏ trống!",
                             pattern: {
                               value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                              message: "Email không đúng định dạng!",
+                              message: "Không đúng định dạng!",
                             },
                           }}
                         />
@@ -498,12 +550,12 @@ export default function AccountManagement() {
                             required: "Không được bỏ trống!",
                             pattern: {
                               value: /^[0-9]{10}$/,
-                              message: "Số điện thoại không đúng định dạng!",
+                              message: "Không đúng định dạng!",
                             },
                           }}
                         />
                       </div>
-                      <div className="flex">
+                      <div className="flex mt-2">
                         <InputBaseComponent
                           type="checkbox"
                           className="mr-3"
@@ -587,7 +639,7 @@ export default function AccountManagement() {
                         control={control}
                         setValue={noSetValue}
                         name="roleAmin"
-                        label="Hiệu trưởng/Hiệu phó"
+                        label="1. Hiệu trưởng/Hiệu phó"
                         errors={errors}
                       />
                       <InputBaseComponent
@@ -597,7 +649,7 @@ export default function AccountManagement() {
                         control={control}
                         setValue={noSetValue}
                         name="roleSupervisor"
-                        label="Tổng phụ trách"
+                        label="2. Tổng phụ trách"
                         errors={errors}
                       />
                       <InputBaseComponent
@@ -607,7 +659,7 @@ export default function AccountManagement() {
                         control={control}
                         setValue={noSetValue}
                         name="roleHomeroomTeacher"
-                        label="Giáo viên chủ nhiệm"
+                        label="3. Giáo viên chủ nhiệm"
                         errors={errors}
                       />
                       <InputBaseComponent
@@ -617,7 +669,7 @@ export default function AccountManagement() {
                         control={control}
                         setValue={noSetValue}
                         name="roleSubjectTeacher"
-                        label="Giáo viên bộ môn"
+                        label="4. Giáo viên bộ môn"
                         errors={errors}
                       />
                       <InputBaseComponent
@@ -627,7 +679,7 @@ export default function AccountManagement() {
                         control={control}
                         setValue={noSetValue}
                         name="roleStudent"
-                        label="Học sinh"
+                        label="5. Học sinh"
                         errors={errors}
                       />
                     </form>
@@ -637,8 +689,11 @@ export default function AccountManagement() {
                     {/* phân quyền*/}
                     <form onSubmit={handleSubmit(handleAddRole)}>
                       <div className="flex w-full">
-                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5 mr-3">
+                        <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5 mr-3">
                           {/* Left in right column */}
+                          <p className="uppercase font-medium mb-2 primary-color">
+                            Tài khoản giáo viên
+                          </p>
                           <InputBaseComponent
                             type="checkbox"
                             horizontalLabel={true}
@@ -676,8 +731,11 @@ export default function AccountManagement() {
                             errors={errors}
                           />
                         </div>
-                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                        <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
                           {/* Left in right column */}
+                          <p className="uppercase font-medium mb-2 primary-color">
+                            Tài khoản học SINH
+                          </p>
                           <InputBaseComponent
                             type="checkbox"
                             horizontalLabel={true}
@@ -717,8 +775,8 @@ export default function AccountManagement() {
                         </div>
                       </div>
                       <div className="w-full flex">
-                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5 mr-3">
-                          {/* Left in right column */}
+                        <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5 mr-3">
+                          <p className="uppercase font-medium mb-2 primary-color">Môn học</p>
                           <InputBaseComponent
                             type="checkbox"
                             horizontalLabel={true}
@@ -756,8 +814,8 @@ export default function AccountManagement() {
                             errors={errors}
                           />
                         </div>
-                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
-                          {/* Left in right column */}
+                        <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
+                          <p className="uppercase font-medium mb-2 primary-color">lớp học</p>
                           <InputBaseComponent
                             type="checkbox"
                             horizontalLabel={true}
@@ -797,8 +855,8 @@ export default function AccountManagement() {
                         </div>
                       </div>
                       <div className="w-full flex">
-                        <div className="w-1/2 border-2 order-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
-                          {/* Left in right column */}
+                        <div className="w-1/2 border-2 order-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
+                          <p className="uppercase font-medium mb-2 primary-color">Thời khóa biểu</p>
                           <InputBaseComponent
                             type="checkbox"
                             horizontalLabel={true}
@@ -836,8 +894,8 @@ export default function AccountManagement() {
                             errors={errors}
                           />
                         </div>
-                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5 mr-3">
-                          {/* Left in right column */}
+                        <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5 mr-3">
+                          <p className="uppercase font-medium mb-2 primary-color">sổ đầu bài</p>
                           <InputBaseComponent
                             type="checkbox"
                             horizontalLabel={true}
@@ -877,8 +935,8 @@ export default function AccountManagement() {
                         </div>
                       </div>
                       <div className="w-full flex">
-                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5 mr-3">
-                          {/* Left in right column */}
+                        <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5 mr-3">
+                          <p className="uppercase font-medium mb-2 primary-color">Điểm danh</p>
                           <InputBaseComponent
                             type="checkbox"
                             horizontalLabel={true}
@@ -916,8 +974,9 @@ export default function AccountManagement() {
                             errors={errors}
                           />
                         </div>
-                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                        <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
                           {/* Left in right column */}
+                          <p className="uppercase font-medium mb-2 primary-color">Điểm số</p>
                           <InputBaseComponent
                             type="checkbox"
                             horizontalLabel={true}
@@ -956,9 +1015,9 @@ export default function AccountManagement() {
                           />
                         </div>
                       </div>
-                      <div className="w-full flex">
-                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5 mr-3">
-                          {/* Left in right column */}
+                      <div className="w-full flex mb-2">
+                        <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5 mr-3">
+                          <p className="uppercase font-medium mb-2 primary-color">Thông báo</p>
                           <InputBaseComponent
                             type="checkbox"
                             horizontalLabel={true}
@@ -996,15 +1055,15 @@ export default function AccountManagement() {
                             errors={errors}
                           />
                         </div>
-                        <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
-                          {/* Left in right column */}
+                        <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
+                          <p className="uppercase font-medium mb-2 primary-color">Hệ thống</p>
                           <InputBaseComponent
                             type="checkbox"
                             horizontalLabel={true}
                             control={control}
                             setValue={noSetValue}
                             name="isUpdateSetting"
-                            label="Cài đặt"
+                            label="Cài đặt hệ thống"
                             errors={errors}
                           />
                           <InputBaseComponent
@@ -1019,7 +1078,7 @@ export default function AccountManagement() {
                         </div>
                       </div>
                       <NotifyCheckInfoForm
-                        className="mt-2"
+                        className="mt-4"
                         actionText="Hãy kiểm tra kĩ thông tin trước khi tạo!"
                       />
                       <div className="mt-5 flex justify-end">
@@ -1042,13 +1101,13 @@ export default function AccountManagement() {
                     </form>
                   </div>
                   <div role="tabpanel" hidden={currentTab == 4}>
-                    <ButtonComponent action="submit">
+                    <ButtonComponent action="submit" onClick={() => handleDownloadTeacherExcel()}>
                       <DownloadIcon className="mr-2" />
                       TẢI XUỐNG
                     </ButtonComponent>
-                    <form onSubmit={handleSubmit(handleAddAccount)}>
+                    <form onSubmit={handleSubmit(handleAddTeacherByExcel)}>
                       <InputBaseComponent
-                        name="timeTableFile"
+                        name="teacherFile"
                         label="Tài khoản(Excel)"
                         className="w-full mt-5"
                         control={control}
@@ -1263,45 +1322,47 @@ export default function AccountManagement() {
                     className="mt-4"
                   />
 
-                  <InputBaseComponent
-                    type="checkbox"
-                    horizontalLabel={true}
-                    control={controlEditAction}
-                    setValue={setValue}
-                    name="bachelor"
-                    label="Cử nhân"
-                    errors={errors}
-                  />
+                  <div className="flex justify-evenly">
+                    <InputBaseComponent
+                      type="checkbox"
+                      horizontalLabel={true}
+                      control={controlEditAction}
+                      setValue={setValue}
+                      name="bachelor"
+                      label="Cử nhân"
+                      errors={errors}
+                    />
 
-                  <InputBaseComponent
-                    type="checkbox"
-                    horizontalLabel={true}
-                    control={controlEditAction}
-                    setValue={setValue}
-                    name="master"
-                    label="Thạc sĩ"
-                    errors={errors}
-                  />
+                    <InputBaseComponent
+                      type="checkbox"
+                      horizontalLabel={true}
+                      control={controlEditAction}
+                      setValue={setValue}
+                      name="master"
+                      label="Thạc sĩ"
+                      errors={errors}
+                    />
 
-                  <InputBaseComponent
-                    type="checkbox"
-                    horizontalLabel={true}
-                    control={controlEditAction}
-                    setValue={setValue}
-                    name="doctor"
-                    label="Tiến sĩ"
-                    errors={errors}
-                  />
+                    <InputBaseComponent
+                      type="checkbox"
+                      horizontalLabel={true}
+                      control={controlEditAction}
+                      setValue={setValue}
+                      name="doctor"
+                      label="Tiến sĩ"
+                      errors={errors}
+                    />
 
-                  <InputBaseComponent
-                    type="checkbox"
-                    horizontalLabel={true}
-                    control={controlEditAction}
-                    setValue={setValue}
-                    name="professor"
-                    label="Giáo sư"
-                    errors={errors}
-                  />
+                    <InputBaseComponent
+                      type="checkbox"
+                      horizontalLabel={true}
+                      control={controlEditAction}
+                      setValue={setValue}
+                      name="professor"
+                      label="Giáo sư"
+                      errors={errors}
+                    />
+                  </div>
 
                   <div className="flex">
                     <InputBaseComponent
@@ -1386,7 +1447,7 @@ export default function AccountManagement() {
                 {/* phân quyền*/}
                 <form onSubmit={handleSubmitEditAction(handleEditSubject)}>
                   <div className="flex w-full">
-                    <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
                       {/* Left in right column */}
                       <InputBaseComponent
                         type="checkbox"
@@ -1425,7 +1486,7 @@ export default function AccountManagement() {
                         errors={errors}
                       />
                     </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
                       {/* Left in right column */}
                       <InputBaseComponent
                         type="checkbox"
@@ -1464,7 +1525,7 @@ export default function AccountManagement() {
                         errors={errors}
                       />
                     </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
                       {/* Left in right column */}
                       <InputBaseComponent
                         type="checkbox"
@@ -1503,7 +1564,7 @@ export default function AccountManagement() {
                         errors={errors}
                       />
                     </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
                       {/* Left in right column */}
                       <InputBaseComponent
                         type="checkbox"
@@ -1542,7 +1603,7 @@ export default function AccountManagement() {
                         errors={errors}
                       />
                     </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
                       {/* Left in right column */}
                       <InputBaseComponent
                         type="checkbox"
@@ -1581,7 +1642,7 @@ export default function AccountManagement() {
                         errors={errors}
                       />
                     </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
                       {/* Left in right column */}
                       <InputBaseComponent
                         type="checkbox"
@@ -1620,7 +1681,7 @@ export default function AccountManagement() {
                         errors={errors}
                       />
                     </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
                       {/* Left in right column */}
                       <InputBaseComponent
                         type="checkbox"
@@ -1659,7 +1720,7 @@ export default function AccountManagement() {
                         errors={errors}
                       />
                     </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
                       {/* Left in right column */}
                       <InputBaseComponent
                         type="checkbox"
@@ -1698,7 +1759,7 @@ export default function AccountManagement() {
                         errors={errors}
                       />
                     </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
                       {/* Left in right column */}
                       <InputBaseComponent
                         type="checkbox"
@@ -1737,7 +1798,7 @@ export default function AccountManagement() {
                         errors={errors}
                       />
                     </div>
-                    <div className="w-1/2 border-2 border-gray-300 rounded-xl justify-center p-5 mt-5">
+                    <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
                       {/* Left in right column */}
                       <InputBaseComponent
                         type="checkbox"

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_HOST } from "./APIConfig";
+import { API_HOST, ORB_HOST } from "./APIConfig";
 
 const getAllTeachers = async (accessToken) => {
   const res = await axios.get(`${API_HOST}/Teachers`, {
@@ -58,10 +58,9 @@ const createTeacher = async (accessToken, data) => {
       },
     });
 
-    return res.data;
+    return res;
   } catch (error) {
-    console.error("Error updating user:", error);
-    throw error;
+    return error;
   }
 };
 
@@ -93,8 +92,6 @@ const updateTeacher = async (accessToken, data) => {
     });
   }
 
-  console.log("formData:", formData);
-
   try {
     const res = await axios.put(`${API_HOST}/Teachers/${data.id}`, formData, {
       headers: {
@@ -105,8 +102,7 @@ const updateTeacher = async (accessToken, data) => {
 
     return res.data;
   } catch (error) {
-    console.error("Error updating user:", error);
-    throw error;
+    return error;
   }
 };
 
@@ -120,8 +116,7 @@ const deleteTeacher = async (accessToken, username) => {
     });
     return res.data;
   } catch (error) {
-    console.error("Error deleting notification:", error);
-    throw error;
+    return error;
   }
 };
 
@@ -135,10 +130,9 @@ const addTeacherByExcel = async (accessToken, file) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return res.data;
+    return res;
   } catch (error) {
-    console.error("Error adding timetable:", error);
-    throw error;
+    return error;
   }
 };
 

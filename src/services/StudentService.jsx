@@ -2,23 +2,31 @@ import axios from "axios";
 import { API_HOST, ORB_HOST } from "./APIConfig";
 
 const getStudentByID = async (accessToken, studentID) => {
-  const res = await axios.get(`${API_HOST}/Students/${studentID}`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  return res.data;
+  try {
+    const res = await axios.get(`${API_HOST}/Students/${studentID}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
 };
 
 const getAllStudents = async (accessToken) => {
-  const res = await axios.get(`${API_HOST}/Students`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  return res.data;
+  try {
+    const res = await axios.get(`${API_HOST}/Students`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
 };
 
 const addStudentByExcel = async (accessToken, file) => {
@@ -31,9 +39,9 @@ const addStudentByExcel = async (accessToken, file) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return res.data;
+    return res;
   } catch (error) {
-    console.log("Error adding timetable:", error);
+    return error;
   }
 };
 
@@ -69,9 +77,9 @@ const updateStudent = async (accessToken, data) => {
       },
     });
 
-    return res.data;
+    return res;
   } catch (error) {
-    console.log("Error updating student:", error);
+    return error;
   }
 };
 
@@ -101,9 +109,9 @@ const createStudent = async (accessToken, data) => {
       },
     });
 
-    return res.data;
+    return res;
   } catch (error) {
-    console.log("Error updating student:", error);
+    return error;
   }
 };
 
@@ -115,9 +123,9 @@ const deleteStudent = async (accessToken, username) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return res.data;
+    return res;
   } catch (error) {
-    console.log("Error deleting notification:", error);
+    return error;
   }
 };
 

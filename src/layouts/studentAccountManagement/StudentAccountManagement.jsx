@@ -32,6 +32,7 @@ import { getAllStudents } from "../../services/StudentService";
 import NotifyCheckInfoForm from "../../components/NotifyCheckInfoForm";
 import { handleDownloadStudentExcel } from "../../services/StudentService";
 import { addStudentByExcel } from "../../services/StudentService";
+import { isXlsxFile } from "utils/CommonFunctions";
 
 const genderOptions = [
   { label: "Nam", value: "Nam" },
@@ -94,34 +95,44 @@ export default function StudentAccountManagement() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("studentsState");
-        if (response) {
+        if (response && response?.status === 200) {
           toast.success("Tạo học sinh thành công!");
+          reset();
+          setModalOpen(false);
           setAccounts(data);
         } else {
-          toast.error(`Tạo học sinh thất bại. ${response.data}!`);
+          toast.error(`Tạo học sinh thất bại. Dữ liệu file không đúng định dạng!`);
         }
-        reset();
-        setModalOpen(false);
+      },
+      onError: (error) => {
+        toast.error(`Tạo học sinh thất bại. ${error.message}!`);
       },
     }
   );
 
   const handleAddAccountByExcel = (data) => {
-    if (data) {
-      addStudentMutationByExcel.mutate(data.studentFileExcel);
+    if (data && data?.studentFileExcel) {
+      if (isXlsxFile(data?.studentFileExcel)) {
+        addStudentMutationByExcel.mutate(data?.studentFileExcel);
+      } else {
+        toast.error(`Tạo tài khoản thất bại! File không đúng định dạng ".xlsx"!`);
+      }
     }
   };
 
   const addStudentMutationManually = useMutation((data) => createStudent(accessToken, data), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("studentsState");
-      if (response) {
+      if (response && response?.status === 200) {
         toast.success("Tạo học sinh thành công!");
         reset();
         setModalOpen(false);
       } else {
-        toast.error(`Tạo học sinh thất bại. ${response.data}!`);
+        toast.error(`Tạo học sinh thất bại!. ${response?.response?.data}!`);
       }
+    },
+    onError: (error) => {
+      toast.error(`Tạo học sinh thất bại. ${error.message}!`);
     },
   });
 
@@ -141,7 +152,31 @@ export default function StudentAccountManagement() {
   const handleEdit = (rowItem) => {
     if (rowItem) {
       setStudentID(rowItem[0]);
-      setModalEditOpen(true);
+      const studentByID = getStudentByID(accessToken, rowItem[0]);
+      studentByID.then((result) => {
+        setValue("id", result?.id);
+        setValue("fullName", result?.fullname);
+        setValue("email", result?.email);
+        setValue("gender", result?.gender);
+        setValue("fatherFullName", result?.fatherFullName);
+        setValue("fatherPhone", result?.fatherPhone);
+        setValue("fatherProfession", result?.fatherProfession);
+        setValue("motherFullName", result?.motherFullName);
+        setValue("motherPhone", result?.motherPhone);
+        setValue("motherProfession", result?.motherProfession);
+        setValue("phone", result?.phone);
+        if (result?.birthday) {
+          setValue("birthday", result?.birthday.split("T")[0]);
+        }
+        setValue("birthplace", result?.birthplace);
+        setValue("nation", result?.nation);
+        setValue("avatar", result?.avatar);
+        setValue("address", result?.address);
+        setAvatar(result?.avatar);
+        if (result) {
+          setModalEditOpen(true);
+        }
+      });
     } else {
       setModalEditOpen(false);
     }
@@ -168,58 +203,10 @@ export default function StudentAccountManagement() {
   );
 
   const handleEditSubject = (data) => {
-    updateStudentMutation.mutate(data);
-  };
-
-  const {
-    data: studentData,
-    error: studentError,
-    isLoading: studentLoading,
-  } = useQuery(
-    ["studentState", { accessToken, studentID }],
-    () => getStudentByID(accessToken, studentID),
-    {
-      enabled: !!studentID,
-    }
-  );
-
-  useEffect(() => {
-    if (studentData?.data) {
-      setValue("id", studentData.data.id);
-      setValue("fullName", studentData.data.fullname);
-      setValue("email", studentData.data.email);
-      setValue("gender", studentData.data.gender);
-      setValue("fatherFullName", studentData.data.fatherFullName);
-      setValue("fatherPhone", studentData.data.fatherPhone);
-      setValue("fatherProfession", studentData.data.fatherProfession);
-      setValue("motherFullName", studentData.data.motherFullName);
-      setValue("motherPhone", studentData.data.motherPhone);
-      setValue("motherProfession", studentData.data.motherProfession);
-      setValue("phone", studentData.data.phone);
-      if (studentData?.data?.birthday) {
-        setValue("birthday", studentData.data.birthday.split("T")[0]);
-      }
-      setValue("birthplace", studentData.data.birthplace);
-      setValue("nation", studentData.data.nation);
-      setValue("avatar", studentData.data.avatar);
-      setValue("address", studentData.data.address);
-      setAvatar(studentData.data.avatar);
-    }
-  }, [studentData, setValue]);
-
-  const formValues = watch();
-
-  useEffect(() => {}, [formValues]);
-
-  useEffect(() => {
-    queryClient.invalidateQueries(["studentState", { accessToken, studentID }]);
-  }, [studentID]);
-
-  useEffect(() => {
     if (data) {
-      setAccounts(data);
+      updateStudentMutation.mutate(data);
     }
-  }, [data]);
+  };
 
   const deleteStudentMutation = useMutation((studentID) => deleteStudent(accessToken, studentID), {
     onSuccess: (response) => {

@@ -59,10 +59,9 @@ export const addTimeTableByExcel = async (accessToken, file) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return res.data;
+    return res;
   } catch (error) {
-    console.error("Error adding timetable:", error);
-    throw error;
+    return error;
   }
 };
 
@@ -74,11 +73,9 @@ export const addTimeTableManually = async (accessToken, slotData) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    // console.log("Add slot: ", res.data);
-    return res.data;
+    return res;
   } catch (error) {
-    console.error("Error adding timetable:", error);
-    throw error;
+    return error;
   }
 };
 
@@ -93,8 +90,7 @@ export const updateSlotOfTimeTable = async (accessToken, slotData) => {
 
     return res.data;
   } catch (error) {
-    console.error("Error updating class:", error);
-    throw error;
+    return error;
   }
 };
 
@@ -108,7 +104,6 @@ export const deleteSlotOfTimeTable = async (accessToken, slotID) => {
     });
     return res.data;
   } catch (error) {
-    console.error("Error deleting timetable:", error);
-    throw error;
+    return error;
   }
 };

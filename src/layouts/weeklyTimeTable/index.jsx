@@ -45,6 +45,7 @@ import {
   countNumberOfSlotsInWeek,
   generateClasses,
   generateSchoolWeeks,
+  isXlsxFile,
 } from "../../utils/CommonFunctions";
 import { getTodayDate } from "../../utils/CommonFunctions";
 import { getWeekForDate } from "../../utils/CommonFunctions";
@@ -240,18 +241,21 @@ export default function WeeklyTimeTable() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("timeTableState");
-        if (response) {
-          toast.success("Tạo slot thành công!");
+        if (response && response?.status == 200) {
+          toast.success("Tạo tiết học thành công!");
+          reset();
+          refetch().then((result) => {
+            if (result.data) {
+              setCurrentTimeTable(result.data?.details);
+            }
+          });
+          setOpenModelAdd(false);
         } else {
-          toast.error(`${response.data}!`);
+          toast.error(`Tạo tiết học thất bại! ${response?.response?.data}!`);
         }
-        reset();
-        refetch().then((result) => {
-          if (result.data) {
-            setCurrentTimeTable(result.data?.details);
-          }
-        });
-        setOpenModelAdd(false);
+      },
+      onError: (error) => {
+        toast.error(`Tạo tiết học thất bại! ${error.message}!`);
       },
     }
   );
@@ -265,24 +269,33 @@ export default function WeeklyTimeTable() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("timeTableState");
-        if (response) {
+        if (response && response?.status == 200) {
           toast.success("Tạo thời khóa biểu thành công!");
+          reset();
+          setOpenModelAdd(false);
+          refetch().then((result) => {
+            if (result.data) {
+              setCurrentTimeTable(result.data?.details);
+            }
+          });
         } else {
-          toast.error(`${response.data}!`);
+          toast.error(`Tạo thời khóa biểu thất bại! ${response?.response?.data}!`);
         }
-        reset();
-        setOpenModelAdd(false);
-        refetch().then((result) => {
-          if (result.data) {
-            setCurrentTimeTable(result.data?.details);
-          }
-        });
+      },
+      onError: (error) => {
+        toast.error(`Tạo khóa biểu thất bại! ${error.message}!`);
       },
     }
   );
 
   const handleAddTimetableByExcel = (data) => {
-    addTimeTableMutationByExcel.mutate(data.timeTableFile);
+    if (data) {
+      if (isXlsxFile(data?.timeTableFile)) {
+        addTimeTableMutationByExcel.mutate(data.timeTableFile);
+      } else {
+        toast.error(`Tạo thời khoá biểu thất bại! File không đúng định dạng ".xlsx"!`);
+      }
+    }
   };
   //-----------------------------------------
   const handleEditSlot = (rowItem, slotDate) => {
@@ -976,7 +989,7 @@ export default function WeeklyTimeTable() {
           {data && currentTimeTable.length > 0 ? (
             <PopupComponent
               title="CHI TIẾT"
-              description={`TIẾT: ${currentSlot.slot}`}
+              description={`TIẾT: ${currentSlot?.slot}`}
               rightNote={`NGÀY: ${currentSlotDate}`}
               isOpen={openModalDetail}
               onClose={() => setOpenModalDetail(false)}
@@ -984,54 +997,53 @@ export default function WeeklyTimeTable() {
               <div className="max-w-md">
                 <TextValueComponent
                   label="Tên môn học"
-                  value={currentSlot.subject}
+                  value={currentSlot?.subject}
                   icon={<AutoStoriesIcon />}
                   customValue="text-black font-medium"
                 />
                 <TextValueComponent
                   label="Thời gian"
-                  value={currentSlot.slotTime}
+                  value={currentSlot?.slotTime}
                   icon={<AccessAlarmIcon />}
                   variantValue="success"
                 />
                 <TextValueComponent
                   label="Phòng"
-                  value={currentSlot.classroom}
+                  value={currentSlot?.classroom}
                   icon={<LocationOnIcon />}
                 />
                 <TextValueComponent
                   label="Giáo viên"
-                  value={currentSlot.teacher}
+                  value={currentSlot?.teacher}
                   icon={<AccountCircleIcon />}
                   variantValue="warning"
                 />
                 <TextValueComponent
                   label="Bài học"
-                  value={currentSlot.content}
+                  value={currentSlot?.content}
                   icon={<EventAvailableIcon />}
                 />
                 <TextValueComponent
                   label="Tiết giáo án"
-                  value={currentSlot.slotByLessonPlans}
+                  value={currentSlot?.slotByLessonPlans}
                   icon={<LockClockIcon />}
                 />
                 <TextValueComponent
                   label="Trạng thái"
-                  value={`(${currentSlot.status})`}
+                  value={`(${currentSlot?.status})`}
                   icon={<AccessAlarmIcon />}
-                  customValue="text-color font-medium"
-                />
-                <TextValueComponent
-                  label="Điểm danh"
-                  value={currentSlot.isAttendance ? "Có mặt" : "Vắng"}
-                  icon={<CheckCircleIcon />}
                   customValue={
-                    currentSlot.isAttendance
+                    currentSlot?.status == "Có mặt"
                       ? "success-color font-medium"
-                      : "error-color font-medium"
+                      : currentSlot?.status == "Vắng có phép"
+                      ? "warning-color font-medium"
+                      : currentSlot?.status == "Vắng không phép"
+                      ? "error-color font-medium"
+                      : currentSlot?.status == "Chưa bắt đầu"
+                      ? "text-color font-medium"
+                      : ""
                   }
                 />
-
                 <div className="mt-4 flex justify-end">
                   {userRole.includes(SUBJECT_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
                     <ButtonComponent

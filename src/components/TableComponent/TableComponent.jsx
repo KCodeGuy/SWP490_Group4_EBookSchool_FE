@@ -27,6 +27,7 @@ function TableComponent({
   isOrdered,
   isShowImage,
   showCheckboxes,
+  showCheckboxesConfirm,
   isCheckedAll,
   isImage,
   sortOption,
@@ -36,6 +37,7 @@ function TableComponent({
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [checkedItems, setCheckedItems] = useState([]);
+  const [checkedItemsConfirm, setCheckedItemsConfirm] = useState([]);
 
   useEffect(() => {
     if (isCheckedAll) {
@@ -44,9 +46,6 @@ function TableComponent({
       setCheckedItems([]);
     }
   }, [isCheckedAll, data]);
-
-  // console.log("data", data);
-  // console.log("sortOption trong table", sortOption);
 
   const isShowActions =
     onDelete !== undefined ||
@@ -77,9 +76,23 @@ function TableComponent({
     }
   };
 
+  const handleCheckboxConfirmChange = (row) => {
+    const isChecked = checkedItemsConfirm.includes(row);
+    let newCheckedItems = [...checkedItemsConfirm];
+    if (isChecked) {
+      newCheckedItems = newCheckedItems.filter((item) => item !== row);
+    } else {
+      newCheckedItems.push(row);
+    }
+    setCheckedItemsConfirm(newCheckedItems);
+    if (onCheckboxChange) {
+      onCheckboxChange(newCheckedItems);
+    }
+  };
+
   const handleSave = () => {
     if (onSave) {
-      onSave(checkedItems);
+      onSave({ checkedItems, checkedItemsConfirm });
     }
   };
 
@@ -140,14 +153,28 @@ function TableComponent({
                           ) : (
                             <div
                               className={`max-line-4 max-w-56 mx-auto ${
-                                cell === "Vắng" ? "error-color font-bold" : ""
-                              } ${cell === "Có mặt" ? "success-color font-bold" : ""}`}
+                                cell === "Có mặt"
+                                  ? "success-color font-bold"
+                                  : cell === "Vắng có phép"
+                                  ? "warning-color font-bold"
+                                  : cell === "Vắng không phép"
+                                  ? "error-color font-bold"
+                                  : ""
+                              }`}
                             >
                               {cell}
                             </div>
                           )}
                         </td>
                       )
+                  )}
+                  {showCheckboxesConfirm && (
+                    <td className="max-w-28">
+                      <Checkbox
+                        checked={checkedItemsConfirm.includes(row)}
+                        onChange={() => handleCheckboxConfirmChange(row)}
+                      />
+                    </td>
                   )}
                   {showCheckboxes && (
                     <td className="max-w-28">
@@ -157,6 +184,7 @@ function TableComponent({
                       />
                     </td>
                   )}
+
                   {isShowActions && (
                     <td className="max-w-28">
                       {onGet && (
@@ -257,6 +285,7 @@ TableComponent.propTypes = {
   isOrdered: PropTypes.bool,
   isShowImage: PropTypes.bool,
   showCheckboxes: PropTypes.bool,
+  showCheckboxesConfirm: PropTypes.bool,
   isCheckedAll: PropTypes.bool,
   isImage: PropTypes.number,
   hiddenColumns: PropTypes.array,
@@ -270,6 +299,7 @@ TableComponent.defaultProps = {
   itemsPerPage: 10, // Default items per page
   isOrdered: true, // Default to not showing row numbers
   showCheckboxes: false, // Default to not showing checkboxes
+  showCheckboxesConfirm: false, // Default to not showing checkboxes
   isCheckedAll: false, // Default to not all rows checked
 };
 

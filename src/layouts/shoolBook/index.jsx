@@ -36,6 +36,8 @@ import { generateClasses } from "utils/CommonFunctions.jsx";
 import NotifyCheckInfoForm from "components/NotifyCheckInfoForm/index.jsx";
 import TextValueComponent from "../../components/TextValueComponent/index.jsx";
 import { SUBJECT_ROLE } from "services/APIConfig.jsx";
+import { PRINCIPAL_ROLE } from "services/APIConfig.jsx";
+import { HEADTEACHER_ROLE } from "services/APIConfig.jsx";
 
 const ratingOptions = [
   { id: 1, label: "Loại A (Tốt)", value: "A" },
@@ -242,7 +244,7 @@ const SchoolBook = () => {
       const today = new Date();
       const dateEdit = new Date(data.dateEdit);
 
-      if (data.teacherEdit === currentUser?.username) {
+      if (data.teacherEdit === currentUser?.username || userRole.includes(PRINCIPAL_ROLE)) {
         if (dateEdit <= today) {
           updateSlotRegisterNotebookMutation.mutate(evaluateSlotDate);
         } else {
@@ -250,7 +252,7 @@ const SchoolBook = () => {
         }
       } else {
         toast.error(
-          `Cập nhật thất bại. Bạn không thể đánh giá tiếc học của giáo viên "${data.teacherEdit}"!`
+          `Cập nhật thất bại. Bạn không thể đánh giá tiết học của giáo viên "${data.teacherEdit}"!`
         );
       }
     }
@@ -365,13 +367,6 @@ const SchoolBook = () => {
                 <FilterAltIcon className="mr-1" /> TÌM KIẾM
               </ButtonComponent>
             </div>
-            {/* <div className="flex items-center">
-              <SearchInputComponent
-                onSearch={handleChangeSearchValue}
-                placeHolder="Nhập từ khóa..."
-                className="mr-3"
-              />
-            </div> */}
           </div>
           <div className="text-center mt-10 ">
             <div className="flex justify-center items-center text-3xl mx-auto w-full">
@@ -504,7 +499,7 @@ const SchoolBook = () => {
                 icon={<PersonOffIcon />}
               />
               {/* </div> */}
-              {userRole.includes(SUBJECT_ROLE) ? (
+              {userRole.includes(SUBJECT_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
                 <>
                   <InputBaseComponent
                     name="id"
@@ -546,7 +541,26 @@ const SchoolBook = () => {
                       action="button"
                       className="mx-2"
                       onClick={() => {
-                        navigate(`/takeAttendance/${currentSlot.id}`);
+                        const today = new Date();
+                        const [day, month, year] = currentSlot?.date.split("/").map(Number);
+                        const date = new Date(year, month - 1, day);
+
+                        if (
+                          currentSlot?.teacher === currentUser?.username ||
+                          userRole.includes(PRINCIPAL_ROLE)
+                        ) {
+                          if (date <= today) {
+                            navigate(`/takeAttendance/${currentSlot.id}`);
+                          } else {
+                            toast.error(
+                              `Bạn không thể điểm danh tiết học! Tiết học bắt đầu vào ngày "${currentSlot?.date}"!`
+                            );
+                          }
+                        } else {
+                          toast.error(
+                            `Bạn không thể điểm danh tiết học của giáo viên "${currentSlot?.teacher}"!`
+                          );
+                        }
                       }}
                     >
                       <BorderColorIcon className="mr-2" />

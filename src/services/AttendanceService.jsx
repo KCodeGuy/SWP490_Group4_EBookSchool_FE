@@ -2,13 +2,17 @@ import axios from "axios";
 import { API_HOST } from "./APIConfig";
 
 const getAttendanceBySlot = async (accessToken, slotID) => {
-  const res = await axios.get(`${API_HOST}/Attendance/GetAttendanceBySlot/${slotID}`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  return res.data;
+  try {
+    const res = await axios.get(`${API_HOST}/Attendance/GetAttendanceBySlot/${slotID}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
 };
 
 const updateAttendance = async (accessToken, attendanceData) => {
@@ -20,10 +24,9 @@ const updateAttendance = async (accessToken, attendanceData) => {
       },
     });
 
-    return res.data;
+    return res;
   } catch (error) {
-    console.error("Error updating class:", error);
-    throw error;
+    return error;
   }
 };
 

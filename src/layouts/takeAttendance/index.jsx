@@ -41,7 +41,7 @@ export default function TakeAttendance() {
   const { attendanceID } = useParams();
   const [isCheckedAll, setIsCheckedAll] = useState(false);
   const [currentData, setCurrentData] = useState([]);
-  const [currentSubject, setCurrentSubject] = useState("");
+  const [currentSubject, setCurrentSubject] = useState({});
   let accessToken,
     currentUser,
     userRole,
@@ -64,19 +64,15 @@ export default function TakeAttendance() {
 
   useEffect(() => {
     if (data) {
-      setCurrentSubject(data[0].subject);
+      setCurrentSubject({
+        teacher: data[0].teacher,
+        subject: data[0].subject,
+        date: data[0].date,
+      });
       setCurrentData(data);
     }
   }, [data]);
 
-  const handleFindSlotAttendance = () => {
-    refetch().then((result) => {
-      if (result?.data) {
-        setCurrentSubject(result?.data[0].subject);
-        setCurrentData(result?.data);
-      }
-    });
-  };
   const handleChecked = (rowItem) => {
     // console.log("checked:", rowItem);
     // Implement delete logic here
@@ -87,7 +83,7 @@ export default function TakeAttendance() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("attendanceData");
-        if (response) {
+        if (response && response.status == 200) {
           refetch().then((result) => {
             if (result?.data) {
               setCurrentData(result?.data);
@@ -95,38 +91,45 @@ export default function TakeAttendance() {
           });
           toast.success("Điểm danh thành công!");
         } else {
-          toast.error(`${response.data}!`);
+          toast.error(`Điểm danh thất bại! ${response?.response?.data}`);
         }
       },
     }
   );
 
   const handleSaveData = (rowItem) => {
-    const attendedStudentIDs = rowItem.map((student) => student[0]);
-    const result = currentData
-      ?.filter((student) => attendedStudentIDs.includes(student.attendenceID))
-      .map((student) => ({
-        attendenceID: student.attendenceID,
-        present: true,
-      }));
-    console.log(result);
+    const { checkedItems, checkedItemsConfirm } = rowItem;
+
+    // console.log("rowItem", rowItem);
+    // console.log("checkedItems", checkedItems);
+    // console.log("checkedItemsConfirm", checkedItemsConfirm);
+    // console.log("currentData", currentData);
+
+    // Ensure checkedItems and checkedItemsConfirm are arrays
+    if (!Array.isArray(checkedItems) || !Array.isArray(checkedItemsConfirm)) {
+      console.error("checkedItems or checkedItemsConfirm is not an array");
+      return;
+    }
+
+    // Create a set of IDs from checkedItems and checkedItemsConfirm for quick lookup
+    // Extract IDs from the arrays (assuming they are already arrays of IDs)
+    const attendedStudentIDs = new Set(checkedItems.map((item) => item[0]));
+    const confirmedStudentIDs = new Set(checkedItemsConfirm.map((item) => item[0]));
+
+    // console.log("attendedStudentIDs", attendedStudentIDs);
+    // console.log("confirmedStudentIDs", confirmedStudentIDs);
+
+    // Filter and map the currentData based on the presence in attendedStudentIDs and confirmedStudentIDs
+    const result = currentData.map((student) => ({
+      attendenceID: student.attendenceID,
+      present: attendedStudentIDs.has(student.attendenceID),
+      confirmed: confirmedStudentIDs.has(student.attendenceID),
+    }));
+
+    // Call the mutation to update attendance data
     updateAttendanceMutation.mutate(result);
   };
 
-  const handleChangeSearchValue = (txtSearch) => {
-    setCurrentData(filterStudentClasses(txtSearch, currentData));
-  };
-
-  const filterStudentClasses = (txtSearch, data) => {
-    const search = txtSearch.trim().toLowerCase();
-    return data.filter((student) => {
-      return (
-        student.studentID.toLowerCase().includes(search) ||
-        student.studentName.toString().toLowerCase().includes(search) ||
-        student.status.toLowerCase().includes(search)
-      );
-    });
-  };
   return (
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
@@ -138,7 +141,7 @@ export default function TakeAttendance() {
               <GradingIcon />
               {currentSubject ? (
                 <h4 className="text-xl font-bold ml-3">
-                  ĐIỂM DANH MÔN {currentSubject?.toUpperCase()}
+                  ĐIỂM DANH MÔN {currentSubject?.subject?.toUpperCase()}
                 </h4>
               ) : (
                 <h4 className="text-xl font-bold ml-3">ĐIỂM DANH</h4>
@@ -148,22 +151,22 @@ export default function TakeAttendance() {
           <div className="flex justify-between mt-10 flex-wrap max-[767px]:mt-4">
             <div className="flex max-[767px]:mb-4">
               <div className="text-sm mr-4">
-                <span className="mr-2 font-bold">GVCN:</span>
+                <span className="mr-2 font-bold">Gíáo viên:</span>
                 <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                  Le Van A
+                  {currentSubject?.teacher || "Chưa có thông tin!"}
                 </span>
               </div>
 
               <div className="text-sm">
                 <span className="mr-2 font-bold">Ngày:</span>
                 <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                  12/06/2024
+                  {currentSubject?.date || "Chưa có thông tin!"}
                 </span>
               </div>
               <div className="text-sm ml-4">
                 <span className="mr-2 font-bold">Môn:</span>
                 <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                  {currentSubject || "Chưa có môn"}
+                  {currentSubject?.subject || "Chưa có thông tin"}
                 </span>
               </div>
             </div>
@@ -188,8 +191,8 @@ export default function TakeAttendance() {
                 "Tên học sinh",
                 "Hình ảnh",
                 "Môn học",
-                "Điểm danh",
                 "Trạng thái",
+                "Vắng phép",
               ]}
               data={currentData?.map((item) => [
                 item.attendenceID.toString(),
@@ -198,16 +201,15 @@ export default function TakeAttendance() {
                 item.avatar.toString(),
                 item.subject.toString(),
                 item.status.toString(),
-                item.present.toString(),
               ])}
               onCheckboxChange={handleChecked}
               showCheckboxes={true}
+              showCheckboxesConfirm={true}
               className="mt-4"
               itemsPerPage={30}
               onSave={handleSaveData}
               isImage={3}
               hiddenColumns={[0]}
-              // isShowImage={true}
               isCheckedAll={isCheckedAll}
               saveName="ĐIỂM DANH"
             />

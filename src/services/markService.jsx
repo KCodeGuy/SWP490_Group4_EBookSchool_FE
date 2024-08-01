@@ -2,34 +2,42 @@ import axios from "axios";
 import { API_HOST } from "./APIConfig";
 
 const getMarkOfAllStudentsBySubject = async (accessToken, schoolYear, className, subjectName) => {
-  let params = {
-    className,
-    subjectName,
-    schoolYear,
-  };
-  const res = await axios.get(`${API_HOST}/Scores/ByClassBySubject`, {
-    params,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  return res.data;
+  try {
+    let params = {
+      className,
+      subjectName,
+      schoolYear,
+    };
+    const res = await axios.get(`${API_HOST}/Scores/ByClassBySubject`, {
+      params,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
 };
 
 const getMarkOfClassAllSubjects = async (accessToken, schoolYear, className) => {
-  let params = {
-    className,
-    schoolYear,
-  };
-  const res = await axios.get(`${API_HOST}/Scores/ByClassAllSubject`, {
-    params,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  return res.data;
+  try {
+    let params = {
+      className,
+      schoolYear,
+    };
+    const res = await axios.get(`${API_HOST}/Scores/ByClassAllSubject`, {
+      params,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
 };
 const downloadTemplateMarkByMarkComponent = async ({
   className,

@@ -154,8 +154,8 @@ function TableMarkOfSubjectComponent({
                   </td>
                   <td>
                     {" "}
-                    {row.averageSemester1 != -1 && row.averageSemester1 != 0
-                      ? row.averageSemester1
+                    {row.averageSemester2 != -1 && row.averageSemester2 != 0
+                      ? row.averageSemester2
                       : "_"}
                   </td>
                 </>

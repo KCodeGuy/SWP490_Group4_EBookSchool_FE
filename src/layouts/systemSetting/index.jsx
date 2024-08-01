@@ -41,7 +41,7 @@ export default function SystemSetting() {
   const queryClient = useQueryClient();
 
   //call api get all
-  const { data, error, isLoading } = useQuery(["settingState"], () => getSetting());
+  const { data, error, isLoading } = useQuery(["settingState"], () => getSetting(accessToken));
 
   const {
     control: controlEditAction,
@@ -51,16 +51,22 @@ export default function SystemSetting() {
     formState: { errors: errorsEditAction },
   } = useForm();
 
-  const updateSchoolSettingMutation = useMutation((setting) => updateSetting(setting), {
-    onSuccess: (response) => {
-      queryClient.invalidateQueries("settingState");
-      if (response) {
-        toast.success("Cập nhật hệ thống thành công!");
-      } else {
-        toast.error(`Cập nhật hệ thống thất bại. ${response.data}!`);
-      }
-    },
-  });
+  const updateSchoolSettingMutation = useMutation(
+    (setting) => updateSetting(accessToken, setting),
+    {
+      onSuccess: (response) => {
+        queryClient.invalidateQueries("settingState");
+        if (response && response.status == 200) {
+          toast.success("Cập nhật hệ thống thành công!");
+        } else {
+          toast.error(`Cập nhật hệ thống thất bại. ${response?.response?.data}!`);
+        }
+      },
+      onError: (error) => {
+        toast.error(`Cập nhật hệ thống thất bại! ${error.message}!`);
+      },
+    }
+  );
 
   const handleOpenModalEdit = () => {
     setModalEditOpen(true);

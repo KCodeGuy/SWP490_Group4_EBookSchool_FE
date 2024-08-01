@@ -70,7 +70,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Dashboard",
+    name: "Trang chủ",
     key: "dashboard",
     icon: <Icon fontSize="small">home</Icon>,
     route: "/dashboard",
@@ -259,7 +259,7 @@ const studentRoutes = [
   },
   {
     type: "collapse",
-    name: "Dashboard",
+    name: "Trang chủ",
     key: "dashboard",
     icon: <Icon fontSize="small">home</Icon>,
     route: "/dashboard",
@@ -343,7 +343,7 @@ const subjectTeacherRoutes = [
   },
   {
     type: "collapse",
-    name: "Dashboard",
+    name: "Trang chủ",
     key: "dashboard",
     icon: <Icon fontSize="small">home</Icon>,
     route: "/dashboard",
@@ -482,7 +482,7 @@ const homeRoomTeacherRoutes = [
   },
   {
     type: "collapse",
-    name: "Dashboard",
+    name: "Trang chủ",
     key: "dashboard",
     icon: <Icon fontSize="small">home</Icon>,
     route: "/dashboard",

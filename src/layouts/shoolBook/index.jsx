@@ -244,7 +244,7 @@ const SchoolBook = () => {
       const today = new Date();
       const dateEdit = new Date(data.dateEdit);
 
-      if (data.teacherEdit === currentUser?.username || userRole.includes(PRINCIPAL_ROLE)) {
+      if (data.teacherEdit === currentUser?.username) {
         if (dateEdit <= today) {
           updateSlotRegisterNotebookMutation.mutate(evaluateSlotDate);
         } else {
@@ -499,7 +499,9 @@ const SchoolBook = () => {
                 icon={<PersonOffIcon />}
               />
               {/* </div> */}
-              {userRole.includes(SUBJECT_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
+              {userRole.includes(SUBJECT_ROLE) ||
+              (userRole.includes(PRINCIPAL_ROLE) &&
+                currentSlot?.teacher === currentUser?.username) ? (
                 <>
                   <InputBaseComponent
                     name="id"
@@ -545,10 +547,7 @@ const SchoolBook = () => {
                         const [day, month, year] = currentSlot?.date.split("/").map(Number);
                         const date = new Date(year, month - 1, day);
 
-                        if (
-                          currentSlot?.teacher === currentUser?.username ||
-                          userRole.includes(PRINCIPAL_ROLE)
-                        ) {
+                        if (currentSlot?.teacher === currentUser?.username) {
                           if (date <= today) {
                             navigate(`/takeAttendance/${currentSlot.id}`);
                           } else {

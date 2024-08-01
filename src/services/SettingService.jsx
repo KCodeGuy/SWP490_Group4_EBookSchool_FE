@@ -2,13 +2,17 @@ import axios from "axios";
 import { API_HOST } from "./APIConfig";
 
 const getSetting = async () => {
-  const res = await axios.get(`${API_HOST}/Setting`, {
-    headers: {
-      "Content-Type": "application/json",
-      // Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  return res.data;
+  try {
+    const res = await axios.get(`${API_HOST}/Setting`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
 };
 
 const updateSetting = async (data) => {
@@ -16,13 +20,12 @@ const updateSetting = async (data) => {
     const res = await axios.put(`${API_HOST}/Setting`, data, {
       headers: {
         "Content-Type": "application/json",
-        // Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
-    return res.data;
+    return res;
   } catch (error) {
-    console.error("Error updating class:", error);
-    throw error;
+    return error;
   }
 };
 export { getSetting, updateSetting };

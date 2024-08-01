@@ -48,6 +48,7 @@ import { SUBJECT_ROLE } from "services/APIConfig";
 import { PRINCIPAL_ROLE } from "services/APIConfig";
 import { HOMEROOM_ROLE } from "services/APIConfig";
 import { isXlsxFile } from "utils/CommonFunctions";
+import { renderAverageMarkStyles } from "utils/RenderStyle";
 
 // Mark management (HieuTTN)
 const semesters = [
@@ -143,6 +144,7 @@ export default function MarkManagement() {
 
   const handleDetails = (rowItem) => {
     if (rowItem) {
+      console.log("rowItem", rowItem);
       setMarkDetails(rowItem);
       setOpenModalDetails(true);
     }
@@ -761,56 +763,154 @@ export default function MarkManagement() {
             isOpen={openModalDetails}
             onClose={() => setOpenModalDetails(false)}
           >
-            {nameScore?.map((markComponent, index) => (
-              <div key={index}>
-                <div className="flex justify-between bg-primary-color text-white rounded-sm italic px-2 text-sm py-1 mb-1">
-                  <span>
-                    <AssignmentIcon className="mb-0.5" /> {markComponent.label}
-                  </span>
-                  <span>{schoolSemester}</span>
-                </div>
-                {markDetails && markDetails?.scores && markDetails?.scores.length > 0 ? (
-                  markDetails?.scores.map((item, index) =>
-                    item.key == markComponent.value && item.semester == schoolSemester ? (
-                      <TextValueComponent
-                        label={`Lần ${item.indexCol}`}
-                        key={index}
-                        className="px-4 justify-between justify-between"
-                        value={`${item.value != -1 ? `${item.value} điểm` : "_"}`}
-                        icon={<LockClockIcon />}
-                      />
-                    ) : (
-                      ""
+            {schoolSemester != "Cả năm" ? (
+              nameScore?.map((markComponent, index) => (
+                <div key={index}>
+                  <div className="flex justify-between bg-primary-color text-white rounded-sm italic px-2 text-sm py-1 mb-1">
+                    <span>
+                      <AssignmentIcon className="mb-0.5" /> {markComponent.label}
+                    </span>
+                    <span>{schoolSemester}</span>
+                  </div>
+                  {markDetails && markDetails?.scores && markDetails?.scores.length > 0 ? (
+                    markDetails?.scores.map((item, index) =>
+                      item.key == markComponent.value && item.semester == schoolSemester ? (
+                        <TextValueComponent
+                          label={`Lần ${item.indexCol}`}
+                          key={index}
+                          className="px-4 justify-between justify-between"
+                          value={`${item.value != -1 ? `${item.value} điểm` : "_"}`}
+                          icon={<LockClockIcon />}
+                        />
+                      ) : (
+                        ""
+                      )
                     )
-                  )
-                ) : (
-                  <span className="italic text-base">Chưa có điểm</span>
-                )}
-              </div>
-            ))}
+                  ) : (
+                    <span className="italic text-base">Chưa có điểm</span>
+                  )}
+                </div>
+              ))
+            ) : (
+              <>
+                <div>
+                  <div className="flex justify-between bg-primary-color text-white rounded-sm italic px-2 text-sm py-1 mb-1">
+                    <span>
+                      <AssignmentIcon className="mb-0.5" /> Học kỳ I
+                    </span>
+                    <span>TBM</span>
+                  </div>
+                  {markDetails?.averageSemester1 != -1 && markDetails?.averageSemester1 != 0 ? (
+                    <TextValueComponent
+                      label={`Học kỳ I`}
+                      key="Học kỳ I"
+                      className="px-4 justify-between justify-between"
+                      value={`${markDetails?.averageSemester1} điểm`}
+                      icon={<LockClockIcon />}
+                    />
+                  ) : (
+                    <span className="italic text-base">_</span>
+                  )}
+                </div>
+                <div>
+                  <div className="flex justify-between bg-primary-color text-white rounded-sm italic px-2 text-sm py-1 mb-1">
+                    <span>
+                      <AssignmentIcon className="mb-0.5" /> Học kỳ II
+                    </span>
+                    <span>TBM</span>
+                  </div>
+                  {markDetails?.averageSemester2 != -1 && markDetails?.averageSemester2 != 0 ? (
+                    <TextValueComponent
+                      label={`Học kỳ II`}
+                      key="Học kỳ II"
+                      className="px-4 justify-between justify-between"
+                      value={`${markDetails?.averageSemester2} điểm`}
+                      icon={<LockClockIcon />}
+                    />
+                  ) : (
+                    <span className="italic text-base">_</span>
+                  )}
+                </div>
+                <div>
+                  <div className="flex justify-between bg-primary-color text-white rounded-sm italic px-2 text-sm py-1 mb-1">
+                    <span>
+                      <AssignmentIcon className="mb-0.5" /> Cả năm
+                    </span>
+                    <span>TBM</span>
+                  </div>
+                  {markDetails?.averageYear != -1 && markDetails?.averageYear != 0 ? (
+                    <TextValueComponent
+                      label={`Cả năm`}
+                      key="Cả năm"
+                      className="px-4 justify-between justify-between"
+                      value={`${markDetails?.averageYear} điểm`}
+                      icon={<LockClockIcon />}
+                    />
+                  ) : (
+                    <span className="italic text-base">_</span>
+                  )}
+                </div>
+              </>
+            )}
             <div className="flex justify-between text-base mt-3 border-t-2 pt-2">
               <div>
-                {markDetails?.average != -1 && markDetails?.average != 0 ? (
-                  <>
-                    <span className="font-bold">Xếp loại: </span>
-                    <span className={renderRankingStyles(markDetails?.average)}>
-                      {renderRanking(markDetails?.average)}
+                <span className="font-bold">Xếp loại: </span>
+                {schoolSemester == "Học kỳ I" ? (
+                  markDetails?.averageSemester1 != -1 && markDetails?.averageSemester1 != 0 ? (
+                    <span className={renderRankingStyles(markDetails?.averageSemester1)}>
+                      {renderRanking(markDetails?.averageSemester1)}
                     </span>
-                  </>
+                  ) : (
+                    <span className="text-base italic">Chưa xếp loại!</span>
+                  )
+                ) : schoolSemester == "Học kỳ II" ? (
+                  markDetails?.averageSemester2 != -1 && markDetails?.averageSemester2 != 0 ? (
+                    <span className={renderRankingStyles(markDetails?.averageSemester2)}>
+                      {renderRanking(markDetails?.averageSemester2)}
+                    </span>
+                  ) : (
+                    <span className="text-base italic">Chưa xếp loại!</span>
+                  )
+                ) : schoolSemester == "Cả năm" ? (
+                  markDetails?.averageYear != -1 && markDetails?.averageYear != 0 ? (
+                    <span className={renderRankingStyles(markDetails?.averageYear)}>
+                      {renderRanking(markDetails?.averageYear)}
+                    </span>
+                  ) : (
+                    <span className="text-base italic">Chưa xếp loại!</span>
+                  )
                 ) : (
-                  <span className="text-base italic">Chưa xếp loại</span>
+                  ""
                 )}
               </div>
               <div>
-                {markDetails?.average != -1 && markDetails?.average != 0 ? (
-                  <>
-                    <span className="font-bold">TBM: </span>
-                    <span className="mx-auto text-center text-white px-3 py-1 rounded bg-success-color">
-                      {markDetails ? markDetails?.average : "_"}
+                <span className="font-bold">TBM: </span>
+                {schoolSemester == "Học kỳ I" ? (
+                  markDetails?.averageSemester1 != -1 && markDetails?.averageSemester1 != 0 ? (
+                    <span className={renderAverageMarkStyles(markDetails?.averageSemester1)}>
+                      {markDetails ? markDetails?.averageSemester1 : "_"}
                     </span>
-                  </>
+                  ) : (
+                    <span className="text-base italic">Chưa có điểm!</span>
+                  )
+                ) : schoolSemester == "Học kỳ II" ? (
+                  markDetails?.averageSemester2 != -1 && markDetails?.averageSemester2 != 0 ? (
+                    <span className={renderAverageMarkStyles(markDetails?.averageSemester2)}>
+                      {markDetails ? markDetails?.averageSemester2 : "_"}
+                    </span>
+                  ) : (
+                    <span className="text-base italic">Chưa có điểm!</span>
+                  )
+                ) : schoolSemester == "Cả năm" ? (
+                  markDetails?.averageYear != -1 && markDetails?.averageYear != 0 ? (
+                    <span className={renderAverageMarkStyles(markDetails?.averageYear)}>
+                      {markDetails ? markDetails?.averageYear : "_"}
+                    </span>
+                  ) : (
+                    <span className="text-base italic">Chưa có điểm!</span>
+                  )
                 ) : (
-                  <span className="text-base italic">Chưa có điểm</span>
+                  ""
                 )}
               </div>
             </div>

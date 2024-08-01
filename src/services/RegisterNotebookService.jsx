@@ -2,20 +2,24 @@ import axios from "axios";
 import { API_HOST } from "./APIConfig";
 
 const getRegisterNotebook = async (userID, userRole, accessToken, schoolWeek, classID) => {
-  let params = {
-    classID,
-    fromDate: schoolWeek,
-  };
+  try {
+    let params = {
+      classID,
+      fromDate: schoolWeek,
+    };
 
-  const res = await axios.get(`${API_HOST}/RegisterBook`, {
-    params,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+    const res = await axios.get(`${API_HOST}/RegisterBook`, {
+      params,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
-  return res.data;
+    return res.data;
+  } catch (error) {
+    return error;
+  }
 };
 
 const updateRegisterNotebook = async (accessToken, slotData) => {
@@ -27,10 +31,9 @@ const updateRegisterNotebook = async (accessToken, slotData) => {
       },
     });
 
-    return res.data;
+    return res;
   } catch (error) {
-    console.error("Error updating class:", error);
-    throw error;
+    return error;
   }
 };
 export { getRegisterNotebook, updateRegisterNotebook };

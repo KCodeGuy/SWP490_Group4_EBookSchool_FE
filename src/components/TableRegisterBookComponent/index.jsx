@@ -189,7 +189,7 @@ function TableRegisterBookComponent({
                   <td className="px-2">{renderRating(date.rating) || "_"}</td>
                   {isShowActions && (
                     <td className="max-w-28 text-center">
-                      {onDetails && (
+                      {onDetails && date.weekDate != "Chủ Nhật" ? (
                         <button
                           title="Detail button "
                           className="text-xl primary-color"
@@ -197,6 +197,8 @@ function TableRegisterBookComponent({
                         >
                           <EditCalendarIcon />
                         </button>
+                      ) : (
+                        "_"
                       )}
                     </td>
                   )}

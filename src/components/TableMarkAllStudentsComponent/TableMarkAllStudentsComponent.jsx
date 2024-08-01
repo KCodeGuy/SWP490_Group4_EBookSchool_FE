@@ -21,7 +21,7 @@ const TableMarkAllStudentsComponent = ({
     "Mã học sinh",
     "TBM",
     "Học lực",
-    "Hạnh kiểm",
+    // "Hạnh kiểm",
     // "Xếp hạng",
     "Chi tiết",
   ];
@@ -191,9 +191,9 @@ const TableMarkAllStudentsComponent = ({
                   ""
                 )}
               </td>
-              <td className="font-medium">
+              {/* <td className="font-medium">
                 <span className={renderRankingStyles(10)}>Tốt</span>
-              </td>
+              </td> */}
               {/* <td>1</td> */}
               <td>
                 <button className="primary-color text-xl" onClick={() => onViewDetails(student)}>

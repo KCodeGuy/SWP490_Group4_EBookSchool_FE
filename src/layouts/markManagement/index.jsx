@@ -144,7 +144,6 @@ export default function MarkManagement() {
 
   const handleDetails = (rowItem) => {
     if (rowItem) {
-      console.log("rowItem", rowItem);
       setMarkDetails(rowItem);
       setOpenModalDetails(true);
     }

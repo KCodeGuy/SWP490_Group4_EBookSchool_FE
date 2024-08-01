@@ -37,6 +37,12 @@ import NotifyCheckInfoForm from "components/NotifyCheckInfoForm/index.jsx";
 import TextValueComponent from "../../components/TextValueComponent/index.jsx";
 import { SUBJECT_ROLE } from "services/APIConfig.jsx";
 
+const ratingOptions = [
+  { id: 1, label: "Loại A (Tốt)", value: "A" },
+  { id: 2, label: "Loại B (Khá)", value: "B" },
+  { id: 3, label: "Loại C (Trung bình)", value: "C" },
+  { id: 4, label: "Loại D (Kém)", value: "D" },
+];
 const SchoolBook = () => {
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [openModalEditSchoolBook, setOpenModalEditSchoolBook] = useState(false);
@@ -196,37 +202,58 @@ const SchoolBook = () => {
   const totalItems = schoolWeeks.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+  // const handlePageChange = (page) => {
+  //   setCurrentPage(page);
+  // };
 
   const updateSlotRegisterNotebookMutation = useMutation(
     (slotData) => updateRegisterNotebook(accessToken, slotData),
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("slotData");
-        if (response) {
+        if (response && response?.status === 200) {
           refetch().then((result) => {
             const transformedData = formatRegisterNotebook(result.data?.details);
             setCurrentRegisterNotebook(transformedData);
           });
+          resetEditAction();
+          setOpenModalEditSchoolBook(false);
           toast.success("Cập nhật tiết học thành công!");
         } else {
-          toast.error(`${response.data}!`);
+          toast.error(`Cập nhật tiết học thất bại. ${response?.response?.data}`);
         }
-        resetEditAction();
-        setOpenModalEditSchoolBook(false);
+      },
+      onError: (error) => {
+        toast.error(`Cập nhật tiết học thất bại! ${error.message}!`);
       },
     }
   );
-
   const handleEvaluateSlot = (data) => {
-    const evaluateSlotDate = {
-      id: data.id,
-      note: data.noteEdit,
-      rating: data.ratingEdit,
-    };
-    updateSlotRegisterNotebookMutation.mutate(evaluateSlotDate);
+    if (data) {
+      if (!data.ratingEdit || data.ratingEdit === "") {
+        data.ratingEdit = "A";
+      }
+      const evaluateSlotDate = {
+        id: data.id,
+        note: data.noteEdit,
+        rating: data.ratingEdit,
+      };
+
+      const today = new Date();
+      const dateEdit = new Date(data.dateEdit);
+
+      if (data.teacherEdit === currentUser?.username) {
+        if (dateEdit <= today) {
+          updateSlotRegisterNotebookMutation.mutate(evaluateSlotDate);
+        } else {
+          toast.error(`Cập nhật thất bại. Tiết học bắt đầu vào ngày "${data.dateEdit}"!`);
+        }
+      } else {
+        toast.error(
+          `Cập nhật thất bại. Bạn không thể đánh giá tiếc học của giáo viên "${data.teacherEdit}"!`
+        );
+      }
+    }
   };
 
   const renderRatingStyle = (rating) => {
@@ -431,7 +458,10 @@ const SchoolBook = () => {
             rightNote={`Lớp: ${currentClass}`}
             icon={<BorderColorIcon />}
             isOpen={openModalEditSchoolBook}
-            onClose={() => setOpenModalEditSchoolBook(false)}
+            onClose={() => {
+              resetEditAction();
+              setOpenModalEditSchoolBook(false);
+            }}
           >
             <form onSubmit={handleSubmitEditAction(handleEvaluateSlot)}>
               <TextValueComponent
@@ -493,16 +523,8 @@ const SchoolBook = () => {
                     control={controlEditAction}
                     setValue={setValue}
                     type="select"
-                    options={[
-                      { id: 1, label: "Loại A (Tốt)", value: "A" },
-                      { id: 2, label: "Loại B (Khá)", value: "B" },
-                      { id: 3, label: "Loại C (Trung bình)", value: "C" },
-                      { id: 4, label: "Loại D (Kém)", value: "D" },
-                    ]}
+                    options={ratingOptions}
                     errors={errorsEditAction}
-                    validationRules={{
-                      required: "Hãy xếp loại tiết!",
-                    }}
                   />
                   <InputBaseComponent
                     name="noteEdit"

@@ -1690,7 +1690,7 @@ export default function AccountManagement() {
                           errors={errorsEditAction}
                         />
                       </div>
-                      <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2 ">
+                      <div className="w-1/2 border-2 border-gray-300 rounded-md justify-center px-5 py-2">
                         <p className="uppercase font-medium mb-2 primary-color">Sổ đầu bài</p>
                         <InputBaseComponent
                           type="checkbox"

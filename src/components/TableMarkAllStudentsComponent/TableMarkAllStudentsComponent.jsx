@@ -65,7 +65,7 @@ const TableMarkAllStudentsComponent = ({
         count++;
       }
     });
-    return Math.round((sumOfAllSubject / count) * 10) / 10;
+    return Math.round((sumOfAllSubject / (count - 1)) * 10) / 10;
   };
 
   const sortedData = data.map((student) => {

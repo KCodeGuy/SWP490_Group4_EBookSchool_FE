@@ -499,9 +499,7 @@ const SchoolBook = () => {
                 icon={<PersonOffIcon />}
               />
               {/* </div> */}
-              {userRole.includes(SUBJECT_ROLE) ||
-              (userRole.includes(PRINCIPAL_ROLE) &&
-                currentSlot?.teacher === currentUser?.username) ? (
+              {currentSlot?.teacher === currentUser?.username ? (
                 <>
                   <InputBaseComponent
                     name="id"

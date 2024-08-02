@@ -1045,7 +1045,7 @@ export default function WeeklyTimeTable() {
                   }
                 />
                 <div className="mt-4 flex justify-end">
-                  {userRole.includes(SUBJECT_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
+                  {currentSlot?.teacher === currentUser?.username ? (
                     <ButtonComponent
                       type="success"
                       action="button"

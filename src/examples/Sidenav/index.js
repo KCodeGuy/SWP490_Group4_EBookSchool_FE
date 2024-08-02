@@ -13,7 +13,7 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // react-router-dom components
 import { useLocation, NavLink } from "react-router-dom";
@@ -54,6 +54,14 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const location = useLocation();
   const collapseName = location.pathname.replace("/", "");
   let schoolSetting = JSON.parse(localStorage.getItem("schoolSetting"));
+  const [imageURL, setImageURL] = useState(localStorage.getItem("schoolLogoURL") || brand);
+
+  useEffect(() => {
+    let schoolLogoURL = localStorage.getItem("schoolLogoURL");
+    if (schoolLogoURL) {
+      setImageURL(schoolLogoURL);
+    }
+  }, []);
 
   let textColor = "white";
 
@@ -176,7 +184,11 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
         </MDBox>
         <Link href="/" key="dashboard">
           <div className="flex items-center">
-            {brand && <MDBox component="img" src={brand} alt="Brand" width="2rem" />}
+            <img
+              className="w-11 ml-2 h-11 rounded-full object-cover object-center"
+              src={imageURL ? imageURL : brand}
+              alt="avatar"
+            />
             <p className="text-left text-sm font-medium ml-2">
               {part1}
               <br />

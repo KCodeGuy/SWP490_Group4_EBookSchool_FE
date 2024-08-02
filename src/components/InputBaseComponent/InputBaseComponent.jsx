@@ -64,7 +64,7 @@ const InputBaseComponent = ({
             type === "select" ? (
               <select
                 id={name}
-                className={`outline-none px-3 py-2 h-11 border rounded text-base
+                className={`outline-none px-3 h-10-5 border rounded text-base
                 ${errors[name] ? "border-red-400" : "border-blue-500"}`}
                 {...field}
                 disabled={disabled}

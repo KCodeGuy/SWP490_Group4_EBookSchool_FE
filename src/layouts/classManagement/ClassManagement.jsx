@@ -41,6 +41,7 @@ import { isXlsxFile } from "utils/CommonFunctions";
 
 export default function ClassManagement() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalDetailsOpen, setModalDetailsOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [deletedData, setDeletedData] = useState({});
@@ -202,6 +203,23 @@ export default function ClassManagement() {
       });
     } else {
       setModalEditOpen(false);
+    }
+  };
+
+  // Xử lí show lên form edit thôi
+  const handleDetails = (rowItem) => {
+    if (rowItem) {
+      const classByID = getClassByID(accessToken, rowItem[1], rowItem[2]);
+      setValue("idEdit", rowItem[0]);
+      setValue("classroomEdit", rowItem[1]);
+      setValue("schoolYearEdit", rowItem[2]);
+      setValue("teacherIDEdit", rowItem[4]);
+      setModalDetailsOpen(true);
+      classByID.then((result) => {
+        setAddedStudents(result?.students);
+      });
+    } else {
+      setModalDetailsOpen(false);
     }
   };
 
@@ -609,6 +627,7 @@ export default function ClassManagement() {
                 ])}
                 itemsPerPage={20}
                 onEdit={handleEdit}
+                onDetails={handleDetails}
                 hiddenColumns={[0]}
                 onDelete={handleDelete}
                 className="mt-8"
@@ -756,6 +775,103 @@ export default function ClassManagement() {
                   className="-translate-y-7"
                   isOrdered={true}
                   itemsPerPage={5}
+                  isImage={2}
+                />
+              ) : (
+                <div className="text-center primary-color my-10 text-xl italic font-medium">
+                  <img
+                    className="w-60 h-60 object-cover object-center mx-auto"
+                    src={noDataImage3}
+                    alt="Chưa có dữ liệu!"
+                  />
+                  Chưa có dữ liệu!
+                </div>
+              )}
+            </PopupComponent>
+            <PopupComponent
+              title="CHI TIẾT"
+              description="Thông tin chi tiết lớp học"
+              icon={<EditIcon />}
+              isOpen={modalDetailsOpen}
+              onClose={() => {
+                setAddedStudents([]);
+                setModalDetailsOpen(false);
+              }}
+            >
+              <form onSubmit={handleSubmitEditAction(handleUpdateClass)}>
+                <div className="flex">
+                  <InputBaseComponent
+                    disabled
+                    type="text"
+                    control={controlEditAction}
+                    className="hidden"
+                    name="idEdit"
+                    label="Tên lớp"
+                    setValue={setValue}
+                    errors={errorsEditAction}
+                  />
+                  <InputBaseComponent
+                    disabled
+                    placeholder="Nhập tên lớp học"
+                    type="text"
+                    control={controlEditAction}
+                    className="w-1/2 mr-2"
+                    name="classroomEdit"
+                    label="Tên lớp"
+                    setValue={setValue}
+                    errors={errorsEditAction}
+                  />
+                  <InputBaseComponent
+                    disabled
+                    label="Năm học"
+                    name="schoolYearEdit"
+                    className="w-1/2"
+                    control={controlEditAction}
+                    type="text"
+                    options={formattedSchoolYears}
+                    setValue={setValue}
+                    errors={errorsEditAction}
+                  />
+                </div>
+                <InputBaseComponent
+                  disabled
+                  label="Giáo viên chủ nhiệm"
+                  name="teacherIDEdit"
+                  control={controlEditAction}
+                  setValue={setValue}
+                  type="text"
+                  options={formattedTeachers}
+                  errors={errorsEditAction}
+                />
+              </form>
+              {/* <SearchInputComponent
+                className=""
+                onSearch={(txt) => {
+                  setCurrentStudents(filterStudentsForAdding(txt, listAllStudents));
+                  resetEditAction();
+                }}
+                placeHolder="Nhập từ khóa..."
+              /> */}
+              <div className="flex justify-between mt-1">
+                <p className="text-sm font-bold">
+                  Danh sách học sinh {`(${addedStudents?.length})`}
+                </p>
+              </div>
+
+              {isLoadingStudents ? (
+                <div className="text-center primary-color my-10 text-xl italic font-medium">
+                  <div className="mx-auto flex items-center justify-center">
+                    <p className="mr-3">Loading</p>
+                    <CircularProgress size={24} color="inherit" />
+                  </div>
+                </div>
+              ) : addedStudents?.length > 0 ? (
+                <TableComponent
+                  header={["Mã HS", "Họ và tên", "Ảnh"]}
+                  data={addedStudents?.map((item) => [item.id, item.fullname, item.avatar])}
+                  className="mt-2"
+                  isOrdered={true}
+                  itemsPerPage={50}
                   isImage={2}
                 />
               ) : (

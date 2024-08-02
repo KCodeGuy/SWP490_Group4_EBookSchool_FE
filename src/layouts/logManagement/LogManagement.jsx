@@ -28,14 +28,19 @@ import TextValueComponent from "components/TextValueComponent";
 import { getAllLogs } from "services/LogService";
 import { useQuery } from "react-query";
 
-const logActions = ["CREATE", "UPDATE", "DELETE", "OTHERS"];
+const logActions = [
+  { label: "TẠO", value: "CREATE" },
+  { label: "CẬP NHẬT", value: "UPDATE" },
+  { label: "XÓA", value: "DELETE" },
+  { label: "KHÁC", value: "OTHERS" },
+];
 const accessToken = localStorage.getItem("authToken");
 
 // Class management (UolLT)
 export default function LogManagement() {
   //1. Modal form states open, close
   const [modalEditOpen, setModalEditOpen] = useState(false);
-  const [currentLog, setCurrentLog] = useState({});
+  const [currentLog, setCurrentLog] = useState(logActions[0]);
   const [currentData, setCurrentData] = useState([]);
 
   const { data, error, isLoading } = useQuery(["logState", { accessToken }], () =>
@@ -49,7 +54,7 @@ export default function LogManagement() {
   }, [data]);
 
   //2. Set data by Call API
-  const [logAction, setLogAction] = React.useState(logActions[0]);
+  const [logAction, setLogAction] = React.useState(logActions[0].value);
   const handleLogChange = (event) => {
     setLogAction(event.target.value);
   };
@@ -98,12 +103,12 @@ export default function LogManagement() {
   const renderStyleByLogType = (logType) => {
     let logTypeStyle = "";
     switch (logType) {
-      case "CREATE":
+      case "TẠO":
         logTypeStyle = "success-color font-medium";
         break;
-      case "UPDATE":
+      case "CẬP NHẬT":
         logTypeStyle = "warning-color font-medium";
-      case "DELETE":
+      case "XÓA":
         logTypeStyle = "error-color font-medium";
       default:
         logTypeStyle = "success-color font-medium";
@@ -136,8 +141,8 @@ export default function LogManagement() {
                   onChange={handleLogChange}
                 >
                   {logActions.map((item, index) => (
-                    <MenuItem key={index} value={item}>
-                      {item.toString()}
+                    <MenuItem key={index} value={item.value}>
+                      {item.label.toString()}
                     </MenuItem>
                   ))}
                 </Select>
@@ -168,7 +173,13 @@ export default function LogManagement() {
                 header={["Mã log", "Loại thao tác", "Ghi chú", "Thời gian"]}
                 data={currentData?.map((item) => [
                   item.id.toString(),
-                  item.type.toString(),
+                  item.type.toString() == "CREATE"
+                    ? "TẠO"
+                    : item.type.toString() == "UPDATE"
+                    ? "CẬP NHẬT"
+                    : item.type.toString() == "DELETE"
+                    ? "XÓA"
+                    : "KHÁC",
                   item.note.toString(),
                   item.date.toString(),
                 ])}

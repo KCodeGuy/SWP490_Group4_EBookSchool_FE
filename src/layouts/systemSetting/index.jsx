@@ -19,7 +19,11 @@ import TodayIcon from "@mui/icons-material/Today";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import FilterIcon from "@mui/icons-material/Filter";
 
-import React, { useState } from "react";
+import logoImage from "assets/images/logo1.png";
+import sliderImage1 from "assets/images/slider1.png";
+import sliderImage2 from "assets/images/slider2.png";
+import sliderImage3 from "assets/images/slider3.png";
+import React, { useEffect, useState } from "react";
 import MDTypography from "components/MDTypography";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import PopupComponent from "components/PopupComponent/PopupComponent";
@@ -29,16 +33,26 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getSetting } from "services/SettingService";
 import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
 import { updateSetting } from "services/SettingService";
+import { uploadImage } from "services/SettingService";
+import { LOGO_IMAGE } from "services/APIConfig";
+import { SCHOOL_SLIDER_1 } from "services/APIConfig";
+import { SCHOOL_SLIDER_2 } from "services/APIConfig";
+import { SCHOOL_SLIDER_3 } from "services/APIConfig";
+import MDAvatar from "components/MDAvatar";
 
 const schoolLevelOptions = [
-  { label: "Trường THCS", value: "Trường trung học cơ sở" },
   { label: "Trường THPT", value: "Trường trung học phổ thông" },
+  { label: "Trường THCS", value: "Trường trung học cơ sở" },
   { label: "Trường THCS & THPT", value: "Trường trung học cơ sở và trung học phổ thông" },
 ];
 export default function SystemSetting() {
   const accessToken = localStorage.getItem("authToken");
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const queryClient = useQueryClient();
+  const [imageURL, setImageURL] = useState(localStorage.getItem("schoolLogoURL"));
+  const [schoolSlider1, setSchoolSlider1] = useState(localStorage.getItem("schoolSlider1"));
+  const [schoolSlider2, setSchoolSlider2] = useState(localStorage.getItem("schoolSlider2"));
+  const [schoolSlider3, setSchoolSlider3] = useState(localStorage.getItem("schoolSlider3"));
 
   //call api get all
   const { data, error, isLoading } = useQuery(["settingState"], () => getSetting(accessToken));
@@ -58,6 +72,7 @@ export default function SystemSetting() {
         queryClient.invalidateQueries("settingState");
         if (response && response.status == 200) {
           toast.success("Cập nhật hệ thống thành công!");
+          setModalEditOpen(false);
         } else {
           toast.error(`Cập nhật hệ thống thất bại. ${response?.response?.data}!`);
         }
@@ -67,6 +82,14 @@ export default function SystemSetting() {
       },
     }
   );
+
+  const uploadImageMutation = useMutation((data) => uploadImage(accessToken, data), {
+    onSuccess: (response) => {
+      queryClient.invalidateQueries("uploadImageState");
+      if (response && response.status == 200) {
+      }
+    },
+  });
 
   const handleOpenModalEdit = () => {
     setModalEditOpen(true);
@@ -79,7 +102,7 @@ export default function SystemSetting() {
     }
   };
 
-  const handleEdit = (data) => {
+  const handleEdit = async (data) => {
     if (data) {
       const schoolSetting = {
         schoolName: data.schoolName,
@@ -88,7 +111,49 @@ export default function SystemSetting() {
         schoolEmail: data.schoolEmail,
         schoolLevel: data.schoolLevel,
       };
-      updateSchoolSettingMutation.mutate(schoolSetting);
+
+      // Create an array to hold image upload promises
+      const uploadPromises = [];
+
+      if (data?.logo) {
+        const logoData = {
+          file: data.logo,
+          name: LOGO_IMAGE,
+        };
+        uploadPromises.push(uploadImageMutation.mutateAsync(logoData));
+      }
+      if (data?.schoolSlider1) {
+        const schoolSlider1 = {
+          file: data.schoolSlider1,
+          name: SCHOOL_SLIDER_1,
+        };
+        uploadPromises.push(uploadImageMutation.mutateAsync(schoolSlider1));
+      }
+      if (data?.schoolSlider2) {
+        const schoolSlider2 = {
+          file: data.schoolSlider2,
+          name: SCHOOL_SLIDER_2,
+        };
+        uploadPromises.push(uploadImageMutation.mutateAsync(schoolSlider2));
+      }
+      if (data?.schoolSlider3) {
+        const schoolSlider3 = {
+          file: data.schoolSlider3,
+          name: SCHOOL_SLIDER_3,
+        };
+        uploadPromises.push(uploadImageMutation.mutateAsync(schoolSlider3));
+      }
+
+      // Wait for all upload promises to complete
+      try {
+        await Promise.all(uploadPromises);
+        updateSchoolSettingMutation.mutate(schoolSetting);
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      } catch (error) {
+        toast.error(`Tải ảnh lên thất bại! ${error.message}`);
+      }
     }
   };
 
@@ -120,7 +185,7 @@ export default function SystemSetting() {
               <div className="flex">
                 <InputBaseComponent
                   type="text"
-                  className="w-1/3 mr-2"
+                  className="w-1/2 mr-2"
                   control={controlEditAction}
                   name="schoolName"
                   placeholder="Trường THPT Nguyễn Việt Hồng..."
@@ -138,29 +203,12 @@ export default function SystemSetting() {
                   setValue={setValue}
                   name="schoolEmail"
                   label="Email"
-                  className="w-1/3 mr-2"
+                  className="w-1/2"
                   errors={errorsEditAction}
                   validationRules={{
                     required: "Không được bỏ trống!",
                     pattern: {
                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: "Không đúng định dạng!",
-                    },
-                  }}
-                />
-                <InputBaseComponent
-                  placeholder="0234567890..."
-                  type="text"
-                  control={controlEditAction}
-                  setValue={setValue}
-                  name="schoolPhone"
-                  label="Số điện thoại"
-                  className="w-1/3"
-                  errors={errorsEditAction}
-                  validationRules={{
-                    required: "Không được bỏ trống!",
-                    pattern: {
-                      value: /^[0-9]{10}$/,
                       message: "Không đúng định dạng!",
                     },
                   }}
@@ -178,24 +226,22 @@ export default function SystemSetting() {
                   errors={errorsEditAction}
                   options={schoolLevelOptions}
                 />
-                {/* <InputBaseComponent
-                  type="text"
-                  placeholder="Thông tin khác..."
-                  control={controlEditAction}
-                  setValue={setValue}
-                  name="otherInfor"
-                  label="Thông tin khác"
-                  className="w-1/2"
-                  errors={errorsEditAction}
-                /> */}
                 <InputBaseComponent
-                  type="file"
-                  className="w-1/2"
+                  placeholder="0234567890..."
+                  type="text"
                   control={controlEditAction}
                   setValue={setValue}
-                  name="logo"
-                  label="Ảnh logo"
+                  name="schoolPhone"
+                  label="Số điện thoại"
+                  className="w-1/2"
                   errors={errorsEditAction}
+                  validationRules={{
+                    required: "Không được bỏ trống!",
+                    pattern: {
+                      value: /^[0-9]{10}$/,
+                      message: "Không đúng định dạng!",
+                    },
+                  }}
                 />
               </div>
               <InputBaseComponent
@@ -212,44 +258,71 @@ export default function SystemSetting() {
                 }}
               />
 
-              <div className="flex">
+              <div className="flex items-center">
                 <InputBaseComponent
                   type="file"
-                  className="w-1/2 mr-2"
+                  className="w-full"
+                  control={controlEditAction}
+                  setValue={setValue}
+                  name="logo"
+                  label="Ảnh logo"
+                  errors={errorsEditAction}
+                />
+                <img
+                  className="w-14 ml-2 h-14 rounded-md object-cover object-center mt-3"
+                  src={imageURL ? imageURL : logoImage}
+                  alt="avatar"
+                />
+              </div>
+              <div className="flex items-center">
+                <InputBaseComponent
+                  type="file"
+                  className="w-full"
                   control={controlEditAction}
                   setValue={setValue}
                   name="schoolSlider1"
-                  label="Ảnh 1"
+                  label="Ảnh nổi bậc(1)"
                   errors={errorsEditAction}
-                  // validationRules={{
-                  //   required: "Không được bỏ trống!",
-                  // }}
                 />
+                <img
+                  className="w-14 ml-2 h-14 rounded-md object-cover object-center"
+                  src={schoolSlider1 ? schoolSlider1 : sliderImage1}
+                  alt="Ảnh nổi bậc 1"
+                />
+              </div>
+              <div className="flex items-center">
                 <InputBaseComponent
                   type="file"
-                  className="w-1/2 mr-2"
+                  className="w-full"
                   control={controlEditAction}
                   setValue={setValue}
                   name="schoolSlider2"
-                  label="Ảnh 2"
+                  label="Ảnh nổi bậc(2)"
                   errors={errorsEditAction}
-                  // validationRules={{
-                  //   required: "Không được bỏ trống!",
-                  // }}
                 />
+                <img
+                  className="w-14 ml-2 h-14 rounded-md object-cover object-center"
+                  src={schoolSlider2 ? schoolSlider2 : sliderImage2}
+                  alt="Ảnh nổi bậc 2"
+                />
+              </div>
+              <div className="flex items-center">
                 <InputBaseComponent
                   type="file"
-                  className="w-1/2"
+                  className="w-full"
                   control={controlEditAction}
                   setValue={setValue}
                   name="schoolSlider3"
-                  label="Ảnh 3"
+                  label="Ảnh nổi bậc(3)"
                   errors={errorsEditAction}
-                  // validationRules={{
-                  //   required: "Không được bỏ trống!",
-                  // }}
+                />
+                <img
+                  className="w-14 ml-2 h-14 rounded-md object-cover object-center"
+                  src={schoolSlider3 ? schoolSlider3 : sliderImage3}
+                  alt="Ảnh nổi bậc 3"
                 />
               </div>
+
               <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ trước khi cập nhật!" />
               <div className="mt-4 flex justify-end">
                 <ButtonComponent
@@ -264,8 +337,14 @@ export default function SystemSetting() {
                   HỦY BỎ
                 </ButtonComponent>
                 <ButtonComponent action="submit">
-                  <BorderColorIcon className="text-3xl mr-1" />
-                  CẬP NHẬT
+                  {uploadImageMutation?.isLoading || updateSchoolSettingMutation?.isLoading ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : (
+                    <>
+                      <BorderColorIcon className="text-3xl mr-1" />
+                      CẬP NHẬT
+                    </>
+                  )}
                 </ButtonComponent>
               </div>
             </form>
@@ -322,35 +401,7 @@ export default function SystemSetting() {
                   </span>
                 </div>
               </Grid>
-              <Grid item xs={12} md={4}>
-                <MDBox mb={4}>
-                  <MDTypography variant="h6" fontWeight="medium" textTransform="capitalize">
-                    THÔNG TIN KHÁC
-                  </MDTypography>
-                </MDBox>
-                <div className="flex items-center">
-                  <DomainIcon />
-                  <span className="text-base font-bold mx-2">Logo: </span>
-                  <span className="text-sm text-color">Chưa có dữ liệu!</span>
-                </div>
-                <div className="flex items-center mt-4">
-                  <EmojiEventsIcon />
-                  <span className="text-base font-bold mx-2">Giới thiệu: </span>
-                  <span className="text-sm text-color">
-                    {data?.schoolName || "Chưa có dữ liệu!"}
-                  </span>
-                </div>
-                <div className="flex items-center mt-4">
-                  <TodayIcon />
-                  <span className="text-base font-bold mx-2">Số năm thành lập: </span>
-                  <span className="text-sm text-color">2024</span>
-                </div>
-                <div className="flex items-center mt-4">
-                  <TodayIcon />
-                  <span className="text-base font-bold mx-2">Sự kiện: </span>
-                  <span className="text-sm text-color">100</span>
-                </div>
-              </Grid>
+
               <Grid item xs={12} md={4}>
                 <MDBox mb={4}>
                   <MDTypography variant="h6" fontWeight="medium" textTransform="capitalize">
@@ -359,18 +410,46 @@ export default function SystemSetting() {
                 </MDBox>
                 <div className="flex items-center">
                   <FilterIcon />
-                  <span className="text-base font-bold mx-2">Ảnh 1: </span>
-                  <span className="text-sm text-color">Chưa có dữ liệu!</span>
+                  <span className="text-base font-bold mx-2">Ảnh nổi bậc(1): </span>
+                  <img
+                    className="w-14 ml-2 h-14 rounded-md object-cover object-center"
+                    src={schoolSlider1 ? schoolSlider1 : sliderImage1}
+                    alt="Ảnh nổi bậc 1"
+                  />
                 </div>
                 <div className="flex items-center mt-4">
                   <FilterIcon />
-                  <span className="text-base font-bold mx-2">Ảnh 2: </span>
-                  <span className="text-sm text-color">Chưa có dữ liệu!</span>
+                  <span className="text-base font-bold mx-2">Ảnh nổi bậc(2): </span>
+                  <img
+                    className="w-14 ml-2 h-14 rounded-md object-cover object-center"
+                    src={schoolSlider2 ? schoolSlider2 : sliderImage2}
+                    alt="Ảnh nổi bậc 1"
+                  />
                 </div>
                 <div className="flex items-center mt-4">
                   <FilterIcon />
-                  <span className="text-base font-bold mx-2">Ảnh 3: </span>
-                  <span className="text-sm text-color">Chưa có dữ liệu!</span>
+                  <span className="text-base font-bold mx-2">Ảnh nổi bậc(3): </span>
+                  <img
+                    className="w-14 ml-2 h-14 rounded-md object-cover object-center"
+                    src={schoolSlider3 ? schoolSlider3 : sliderImage3}
+                    alt="Ảnh nổi bậc 1"
+                  />
+                </div>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <MDBox mb={4}>
+                  <MDTypography variant="h6" fontWeight="medium" textTransform="capitalize">
+                    THÔNG TIN KHÁC
+                  </MDTypography>
+                </MDBox>
+                <div className="flex items-center">
+                  <DomainIcon />
+                  <span className="text-base font-bold mx-2">Ảnh logo: </span>
+                  <img
+                    className="w-14 ml-2 h-14 rounded-md object-cover object-center mt-3"
+                    src={imageURL ? imageURL : logoImage}
+                    alt="avatar"
+                  />
                 </div>
               </Grid>
             </Grid>

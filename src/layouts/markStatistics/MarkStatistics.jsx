@@ -231,15 +231,15 @@ export default function MarkStatistics() {
       amount: `${highestMark} điểm`,
       label: "chiếm tỉ lệ cao nhất",
     },
-    {
-      color: "success",
-      icon: "leaderboard",
-      title: "Điểm trung bình",
-      count: `7.6 điểm`,
-      textDescriptionColor: "success",
-      amount: `7.6 điểm`,
-      label: "là điểm trung bình",
-    },
+    // {
+    //   color: "success",
+    //   icon: "leaderboard",
+    //   title: "Điểm trung bình",
+    //   count: `7.6 điểm`,
+    //   textDescriptionColor: "success",
+    //   amount: `7.6 điểm`,
+    //   label: "là điểm trung bình",
+    // },
   ];
 
   (React.useState < "middle") | ("tick" > "middle");
@@ -419,7 +419,7 @@ export default function MarkStatistics() {
                       </div>
                     ) : data && currentData.length > 0 ? (
                       <>
-                        <div className="mt-8 grid gap-4 sm:grid-cols-1 md:grid-cols-3 custom">
+                        <div className="mt-8 grid gap-4 sm:grid-cols-1 md:grid-cols- custom">
                           {detailedMarksfForSubjectOfClassBox.map((item, index) => (
                             <ComplexStatisticsCard
                               key={index}

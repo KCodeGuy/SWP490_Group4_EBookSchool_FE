@@ -696,13 +696,8 @@ export default function SubjectManagement() {
               </div>
             ) : data ? (
               <TableComponent
-                header={["Tên môn học", "Khối", "Trạng thái điểm"]}
-                data={currentData?.map((item) => [
-                  item.id,
-                  item.name,
-                  item.grade,
-                  `${item.isMark ? "Đã nhập điểm" : "Chưa nhập điểm"}`,
-                ])}
+                header={["Tên môn học", "Khối"]}
+                data={currentData?.map((item) => [item.id, item.name, item.grade])}
                 itemsPerPage={20}
                 hiddenColumns={[0]}
                 onEdit={handleEdit}

@@ -5,3 +5,7 @@ export const SUBJECT_ROLE = "Subject Teacher";
 export const HOMEROOM_ROLE = "Homeroom Teacher";
 export const HEADTEACHER_ROLE = "Headteacher";
 export const PRINCIPAL_ROLE = "Admin";
+export const LOGO_IMAGE = "schoolLogo";
+export const SCHOOL_SLIDER_1 = "schoolSlider1";
+export const SCHOOL_SLIDER_2 = "schoolSlider2";
+export const SCHOOL_SLIDER_3 = "schoolSlider3";

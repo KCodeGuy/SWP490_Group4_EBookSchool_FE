@@ -27,12 +27,38 @@ const Dashboard = React.memo(() => {
   const queryClient = useQueryClient();
   const itemsPerPage = 20;
   const navigate = useNavigate();
+  const [schoolSlider1, setSchoolSlider1] = useState(
+    localStorage.getItem("schoolSlider1") || sliderImage1
+  );
+
+  const [schoolSlider2, setSchoolSlider2] = useState(
+    localStorage.getItem("schoolSlider2") || sliderImage2
+  );
+  const [schoolSlider3, setSchoolSlider3] = useState(
+    localStorage.getItem("schoolSlider3") || sliderImage3
+  );
 
   let accessToken, userRole;
+  const schoolSetting = JSON.parse(localStorage.getItem("schoolSetting"));
   userRole = localStorage.getItem("userRole");
   if (userRole) {
     accessToken = localStorage.getItem("authToken");
   }
+
+  useEffect(() => {
+    let schoolSlider1 = localStorage.getItem("schoolSlider1");
+    if (schoolSlider1) {
+      setSchoolSlider1(schoolSlider1);
+    }
+    let schoolSlider2 = localStorage.getItem("schoolSlider2");
+    if (schoolSlider2) {
+      setSchoolSlider2(schoolSlider2);
+    }
+    let schoolSlider3 = localStorage.getItem("schoolSlider3");
+    if (schoolSlider3) {
+      setSchoolSlider3(schoolSlider3);
+    }
+  }, [schoolSlider1, schoolSlider2, schoolSlider3]);
 
   // Call API Get all notifications
   const { data, error, isLoading } = useQuery(
@@ -88,17 +114,17 @@ const Dashboard = React.memo(() => {
                   {
                     title: "",
                     description: "",
-                    image: sliderImage1,
+                    image: schoolSlider1 ? schoolSlider1 : sliderImage1,
                   },
                   {
                     title: "",
                     description: "",
-                    image: sliderImage2,
+                    image: schoolSlider2 ? schoolSlider2 : sliderImage2,
                   },
                   {
                     title: "",
-                    description: "!",
-                    image: sliderImage3,
+                    description: "",
+                    image: schoolSlider3 ? schoolSlider3 : sliderImage3,
                   },
                 ]}
               />
@@ -109,32 +135,32 @@ const Dashboard = React.memo(() => {
             <div className="w-full text-center font-bold text-base mb-6">
               <p className="animate-pulse uppercase text-2xl primary-color ">
                 <HomeWorkIcon className="mb-1 mr-2" />
-                TRƯỜNG THPT NGUYỄN VIỆT HỒNG
+                {schoolSetting?.schoolName || "Trường THPT Nguyễn Việt Hồng"}
               </p>
               <p className="mt-4 mx-auto max-w-screen-sm">
-                Trường THPT Châu Văn Liêm là một trong những trường có uy tín và chất lượng giáo dục
-                hàng đầu tại thành phố Cần Thơ. Với hơn 100 năm kinh nghiệm trong lĩnh vực giáo dục,
-                trường đã đào tạo ra nhiều thế hệ học sinh tài năng đem lại đóng góp to lớn cho xã
-                hội. Trường gắn bó với định hướng phát triển bền vững, đem lại cho học sinh một môi
-                trường học tập và rèn luyện vượt trội. Đội ngũ giáo viên tâm huyết, giàu kinh nghiệm
-                và nhiệt tình với nghề giáo, chắp cánh cho học sinh tiến bộ và phát triển trong
-                nhiều lĩnh vực.
+                {schoolSetting?.schoolName || "Trường THPT Nguyễn Việt Hồng"} là một trong những
+                trường có uy tín và chất lượng giáo dục hàng đầu tại khu vực. Với hơn nhiều kinh
+                nghiệm trong lĩnh vực giáo dục, trường đã đào tạo ra nhiều thế hệ học sinh tài năng
+                đem lại đóng góp to lớn cho xã hội. Trường gắn bó với định hướng phát triển bền
+                vững, đem lại cho học sinh một môi trường học tập và rèn luyện vượt trội. Đội ngũ
+                giáo viên tâm huyết, giàu kinh nghiệm và nhiệt tình với nghề giáo, chắp cánh cho học
+                sinh tiến bộ và phát triển trong nhiều lĩnh vực.
               </p>
             </div>
             <Grid item xs={12} md={3} className="text-center">
-              <p className="text-5xl font-bold primary-color">50+</p>
-              <p className="text-lg mt-2 font-medium">GIÁO VIÊN</p>
+              <p className="text-5xl font-bold primary-color">20+</p>
+              <p className="text-lg mt-2 font-medium">CÁN BỘ NHÂN VIÊN</p>
             </Grid>
             <Grid item xs={12} md={3} className="text-center">
-              <p className="text-5xl font-bold primary-color">12+</p>
-              <p className="text-lg mt-2 font-medium">TUỔI</p>
+              <p className="text-5xl font-bold primary-color">1000+</p>
+              <p className="text-lg mt-2 font-medium">HỌC SINH</p>
             </Grid>
             <Grid item xs={12} md={3} className="text-center">
-              <p className="text-5xl font-bold primary-color">98+</p>
+              <p className="text-5xl font-bold primary-color">90+</p>
               <p className="text-lg mt-2 font-medium">TRÚNG TUYỂN ĐẠI HỌC</p>
             </Grid>
             <Grid item xs={12} md={3} className="text-center">
-              <p className="text-5xl font-bold primary-color">20+</p>
+              <p className="text-5xl font-bold primary-color">100+</p>
               <p className="text-lg mt-2 font-medium">SỰ KIỆN/NĂM</p>
             </Grid>
           </Grid>

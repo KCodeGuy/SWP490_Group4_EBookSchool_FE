@@ -76,27 +76,22 @@ function Header({ children, currentUser, permissions }) {
   useEffect(() => {
     // Set form values with currentUser data
     if (currentUser) {
-      setValue("id", currentUser.id);
-      setValue("fullName", currentUser.fullname);
-      setValue("birthday", currentUser.birthday.split("T")[0]);
-      setValue("gender", currentUser.gender);
-      setValue("nation", currentUser.nation);
-      setValue("email", currentUser.email);
-      setValue("phone", currentUser.phone);
-      setValue("isBachelor", currentUser.isBachelor);
-      setValue("isMaster", currentUser.isMaster);
-      setValue("isDoctor", currentUser.isDoctor);
-      setValue("isProfessor", currentUser.isProfessor);
-      setValue("address", currentUser.address);
-      setValue("avatar", currentUser.avatar);
-      setAvatar(currentUser.avatar);
+      setValue("id", currentUser?.id);
+      setValue("fullName", currentUser?.fullname);
+      setValue("birthday", currentUser?.birthday?.split("T")[0]);
+      setValue("gender", currentUser?.gender);
+      setValue("nation", currentUser?.nation);
+      setValue("email", currentUser?.email);
+      setValue("phone", currentUser?.phone);
+      setValue("isBachelor", currentUser?.isBachelor);
+      setValue("isMaster", currentUser?.isMaster);
+      setValue("isDoctor", currentUser?.isDoctor);
+      setValue("isProfessor", currentUser?.isProfessor);
+      setValue("address", currentUser?.address);
+      setValue("avatar", currentUser?.avatar);
+      setAvatar(currentUser?.avatar);
     }
-  }, [currentUser, setValue]);
-
-  // const handleEdit = (data) => {
-  //   // Handle form submission for editing user data
-  //   console.log("Form Data:", data);
-  // };
+  }, [currentUser]);
 
   const updateTeacherMutation = useMutation(
     (teacherData) => updateTeacher(accessToken, teacherData),

@@ -71,32 +71,32 @@ function Header({ children, currentUser, permissions }) {
 
   const handleEdit = (data) => {
     const studentData = {
-      id: data.id,
-      fullName: data.fullName,
-      birthday: data.birthday,
-      birthplace: data.birthplace,
-      gender: data.gender,
-      nation: data.nation,
-      email: data.email,
-      phone: data.phone,
-      fatherFullName: data.fatherFullName,
-      fatherPhone: data.fatherPhone,
-      fatherProfession: data.fatherProfession,
-      motherFullName: data.motherFullName,
-      motherPhone: data.motherPhone,
-      motherProfession: data.motherProfession,
-      address: data.address,
-      avatar: data.avatar, // Assuming the avatar input returns a FileList
+      id: data?.id,
+      fullName: data?.fullName,
+      birthday: data?.birthday,
+      birthplace: data?.birthplace,
+      gender: data?.gender,
+      nation: data?.nation,
+      email: data?.email,
+      phone: data?.phone,
+      fatherFullName: data?.fatherFullName,
+      fatherPhone: data?.fatherPhone,
+      fatherProfession: data?.fatherProfession,
+      motherFullName: data?.motherFullName,
+      motherPhone: data?.motherPhone,
+      motherProfession: data?.motherProfession,
+      address: data?.address,
+      avatar: data?.avatar, // Assuming the avatar input returns a FileList
     };
 
     const studentShowData = {
-      id: data.id,
-      username: data.id,
-      fullname: data.fullName,
-      address: data.address,
-      email: data.email,
-      phone: data.phone,
-      avatar: data.avatar,
+      id: data?.id,
+      username: data?.id,
+      fullname: data?.fullName,
+      address: data?.address,
+      email: data?.email,
+      phone: data?.phone,
+      avatar: data?.avatar,
     };
     setCurrentStudent(studentShowData);
     updateStudentMutation.mutate(studentData);
@@ -104,25 +104,25 @@ function Header({ children, currentUser, permissions }) {
 
   const openEditModal = () => {
     if (currentUser) {
-      setValue("id", currentUser.id);
-      setValue("fullName", currentUser.fullname);
-      setValue("email", currentUser.email);
-      setValue("gender", currentUser.gender);
-      setValue("fatherFullName", currentUser.fatherFullName);
-      setValue("fatherPhone", currentUser.fatherPhone);
-      setValue("fatherProfession", currentUser.fatherProfession);
-      setValue("motherFullName", currentUser.motherFullName);
-      setValue("motherPhone", currentUser.motherPhone);
-      setValue("motherProfession", currentUser.motherProfession);
-      setValue("phone", currentUser.phone);
-      setValue("birthday", currentUser.birthday.split("T")[0]);
-      setValue("birthplace", currentUser.birthplace);
-      setValue("nation", currentUser.nation);
-      setValue("avatar", currentUser.avatar);
-      setValue("address", currentUser.address);
-      // setValue("otherInfo", currentUser.otherInfo);
+      setValue("id", currentUser?.id);
+      setValue("fullName", currentUser?.fullname);
+      setValue("email", currentUser?.email);
+      setValue("gender", currentUser?.gender);
+      setValue("fatherFullName", currentUser?.fatherFullName);
+      setValue("fatherPhone", currentUser?.fatherPhone);
+      setValue("fatherProfession", currentUser?.fatherProfession);
+      setValue("motherFullName", currentUser?.motherFullName);
+      setValue("motherPhone", currentUser?.motherPhone);
+      setValue("motherProfession", currentUser?.motherProfession);
+      setValue("phone", currentUser?.phone);
+      setValue("birthday", currentUser?.birthday?.split("T")[0]);
+      setValue("birthplace", currentUser?.birthplace);
+      setValue("nation", currentUser?.nation);
+      setValue("avatar", currentUser?.avatar);
+      setValue("address", currentUser?.address);
+      // setValue("otherInfo", currentUser?.otherInfo);
 
-      setAvatar(currentUser.avatar);
+      setAvatar(currentUser?.avatar);
     }
     setModalEditOpen(true);
   };
@@ -186,7 +186,7 @@ function Header({ children, currentUser, permissions }) {
                 {currentUser ? currentUser.fullname : "Chưa có thông tin!"}
               </MDTypography>
               <MDTypography variant="button" color="text" fontWeight="regular">
-                Giáo viên | {currentUser ? currentUser.id : "Chưa có thông tin!"} |{" "}
+                Học sinh | {currentUser ? currentUser.id : "Chưa có thông tin!"} |{" "}
                 {currentUser ? currentUser.email : "Chưa có thông tin!"}
               </MDTypography>
             </MDBox>

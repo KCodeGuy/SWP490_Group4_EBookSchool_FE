@@ -917,8 +917,8 @@ export default function AccountManagement() {
                           />
                         </div>
                       </div>
-                      <div className="w-full flex">
-                        <div className="w-1/2 border-2 order-2 border-gray-300 rounded-md justify-center px-5 py-2 mt-5">
+                      <div className="w-full flex mt-5">
+                        <div className="w-1/2 border-2 order-2 border-gray-300 rounded-md justify-center px-5 py-2">
                           <p className="uppercase font-medium mb-2 primary-color">Thời khóa biểu</p>
                           <InputBaseComponent
                             type="checkbox"

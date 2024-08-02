@@ -207,7 +207,11 @@ export default function App() {
         <Routes>
           {getRoutes(currentRoutes)}
           {userRole ? (
-            <Route path="*" element={<Navigate to={pathname} />} />
+            pathname === "/" ? (
+              <Route path="*" element={<Navigate to="/dashboard" />} />
+            ) : (
+              <Route path="*" element={<Navigate to={pathname} />} />
+            )
           ) : (
             <Route path="*" element={<Navigate to="/authentication/sign-in" />} />
           )}

@@ -105,6 +105,8 @@ export default function AttendanceStatistics() {
     enabled: false,
   });
 
+  console.log(currentData);
+
   const handleDetails = (rowItem) => {
     setOpenModalDetail(true);
     const attendanceDetail = {
@@ -136,11 +138,15 @@ export default function AttendanceStatistics() {
     });
   };
 
-  const totalNumberOfAbsent = currentData?.reduce((sum, item) => sum + item.numberOfAbsent, 0);
+  const totalNumberOfAbsent = currentData?.reduce(
+    (sum, item) => sum + item.numberOfAbsent + item.numberOfConfirmed,
+    0
+  );
   const totalNumberOfConfirmed = currentData?.reduce(
     (sum, item) => sum + item.numberOfConfirmed,
     0
   );
+
   const attendanceOfEntireSchoolBox = [
     {
       color: "info",
@@ -287,8 +293,8 @@ export default function AttendanceStatistics() {
                     <BarChart
                       dataset={currentData?.map((item) => ({
                         className: item.className,
-                        numberOfAbsent: item.numberOfAbsent,
-                        numberOfUnconfirmed: item.numberOfAbsent - item.numberOfConfirmed,
+                        numberOfAbsent: item.numberOfAbsent + item.numberOfConfirmed,
+                        numberOfUnconfirmed: item.numberOfAbsent,
                         numberOfConfirmed: item.numberOfConfirmed,
                       }))}
                       xAxis={[
@@ -412,13 +418,13 @@ export default function AttendanceStatistics() {
                     customValue="text-black "
                     className="justify-between w-full"
                   />
-                  <TextValueComponent
+                  {/* <TextValueComponent
                     label="Chưa điểm danh"
                     value={`${currentAttendanceDetail.numberOfAbsent} lượt` || "_"}
                     icon={<RemoveCircleOutlineIcon />}
                     customValue="text-black "
                     className="justify-between w-full"
-                  />
+                  /> */}
                   <TextValueComponent
                     label="Vắng(phép)"
                     value={`${currentAttendanceDetail.numberOfConfirmed} lượt` || "_"}
@@ -428,7 +434,7 @@ export default function AttendanceStatistics() {
                   />
                   <TextValueComponent
                     label="Vắng(K)"
-                    value={`${currentAttendanceDetail.numberOfUnconfirmed} lượt` || "_"}
+                    value={`${currentAttendanceDetail.numberOfAbsent} lượt` || "_"}
                     icon={<DoNotDisturbOffIcon />}
                     customValue="text-black "
                     className="justify-between w-full"
@@ -437,7 +443,12 @@ export default function AttendanceStatistics() {
                   <div className="w-full h-0.5 bg-slate-400 my-2"></div>
                   <TextValueComponent
                     label="Tổng lượt vắng"
-                    value={`${currentAttendanceDetail.numberOfAbsent} lượt` || "_"}
+                    value={
+                      `${
+                        currentAttendanceDetail.numberOfAbsent +
+                        currentAttendanceDetail.numberOfConfirmed
+                      } lượt` || "_"
+                    }
                     icon={<AutoStoriesIcon />}
                     variantValue="primary"
                     className="justify-between w-full"

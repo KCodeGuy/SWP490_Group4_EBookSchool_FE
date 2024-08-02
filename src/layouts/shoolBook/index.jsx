@@ -138,7 +138,7 @@ const SchoolBook = () => {
 
   const formatRegisterNotebook = (registerNotebook) => {
     const transformedData = [];
-    if (registerNotebook.length > 0) {
+    if (registerNotebook?.length > 0) {
       registerNotebook.forEach((detail) => {
         const date = detail.date;
         const weekDate = detail.weekDate;

@@ -419,7 +419,7 @@ export default function MarkStatistics() {
                       </div>
                     ) : data && currentData.length > 0 ? (
                       <>
-                        <div className="mt-8 grid gap-4 sm:grid-cols-1 md:grid-cols- custom">
+                        <div className="mt-8 grid gap-4 sm:grid-cols-1 md:grid-cols-2 custom">
                           {detailedMarksfForSubjectOfClassBox.map((item, index) => (
                             <ComplexStatisticsCard
                               key={index}

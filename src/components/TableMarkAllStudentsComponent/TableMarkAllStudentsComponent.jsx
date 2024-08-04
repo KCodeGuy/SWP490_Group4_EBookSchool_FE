@@ -22,7 +22,7 @@ const TableMarkAllStudentsComponent = ({
     "TBM",
     "Học lực",
     // "Hạnh kiểm",
-    // "Xếp hạng",
+    "Hạng",
     "Chi tiết",
   ];
 
@@ -39,6 +39,7 @@ const TableMarkAllStudentsComponent = ({
     "Tin học",
     "Công nghệ",
     "GD QP-AN",
+    "Thể dục",
   ];
 
   const sortSubjects = (subjects) => {
@@ -67,6 +68,14 @@ const TableMarkAllStudentsComponent = ({
     });
     return Math.round((sumOfAllSubject / (count - 1)) * 10) / 10;
   };
+  const calculateRankings = (students, key) => {
+    const averages = students.map((student) => student[key]);
+    const sortedAverages = [...averages].sort((a, b) => b - a);
+    return students.map((student) => ({
+      ...student,
+      ranking: sortedAverages.indexOf(student[key]) + 1,
+    }));
+  };
 
   const sortedData = data.map((student) => {
     const sortedSubjects = sortSubjects(student.subjectAverages);
@@ -83,130 +92,129 @@ const TableMarkAllStudentsComponent = ({
     };
   });
 
+  const rankedData = calculateRankings(sortedData, "totalAverage");
+
   const dynamicHeaders = sortedData[0].subjectAverages.map((subject) => subject.subject);
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const totalPages = Math.ceil(rankedData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
 
-  const currentData = sortedData.slice(startIndex, endIndex);
+  const currentData = rankedData.slice(startIndex, endIndex);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
   return (
-    <div className={`max-[1023px]:overflow-scroll lg:overflow-auto ${className}`}>
-      <table className="rounded-md table-auto">
-        <thead>
-          <tr>
-            {staticHeaders.slice(0, 3).map((header, index) => (
-              <th key={index} rowSpan={2}>
-                {header}
+    <div className={`${className} overflow-auto`}>
+      <div className="table-container">
+        <table className="w-full">
+          <thead>
+            <tr>
+              {staticHeaders.slice(0, 3).map((header, index) => (
+                <th key={index} rowSpan={2}>
+                  {header}
+                </th>
+              ))}
+              <th rowSpan={1} colSpan={dynamicHeaders.length}>
+                Điểm trung bình các môn
               </th>
-            ))}
-            <th rowSpan={1} colSpan={dynamicHeaders.length}>
-              Điểm trung bình các môn
-            </th>
-            {staticHeaders.slice(3).map((header, index) => (
-              <th key={index} rowSpan={2}>
-                {header}
-              </th>
-            ))}
-          </tr>
-          <tr>
-            {dynamicHeaders.map((header, index) => (
-              <th key={index}>{header}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {currentData.map((student, index) => (
-            <tr key={student.id}>
-              <td>{index + 1}</td>
-              <td>{student.fullName}</td>
-              <td>{student.id}</td>
-              {student.subjectAverages.length > 0
-                ? student.subjectAverages.map((subject, index) =>
-                    semester == "Học kỳ I" ? (
-                      <td key={index}>
-                        {subject.averageSemester1 != -1 && subject.averageSemester1 != 0 ? (
-                          <span>{subject.averageSemester1}</span>
-                        ) : (
-                          "_"
-                        )}
-                      </td>
-                    ) : semester == "Học kỳ II" ? (
-                      <td key={index}>
-                        {subject.averageSemester2 != -1 && subject.averageSemester2 != 0 ? (
-                          <span>{subject.averageSemester2}</span>
-                        ) : (
-                          "_"
-                        )}
-                      </td>
-                    ) : semester == "Cả năm" ? (
-                      <td key={index}>
-                        {subject.averageWholeYear != -1 && subject.averageWholeYear != 0 ? (
-                          <span>{subject.averageWholeYear}</span>
-                        ) : (
-                          "_"
-                        )}
-                      </td>
-                    ) : (
-                      <td key={index}>_</td>
-                    )
-                  )
-                : "_"}
-              <td>
-                {semester == "Học kỳ I" ? (
-                  <span className={renderAverageMarkStyles(student.totalAverage1)}>
-                    {student.totalAverage1}
-                  </span>
-                ) : semester == "Học kỳ II" ? (
-                  <span className={renderAverageMarkStyles(student.totalAverage2)}>
-                    {student.totalAverage2}
-                  </span>
-                ) : semester == "Cả năm" ? (
-                  <span className={renderAverageMarkStyles(student.totalAverage)}>
-                    {student.totalAverage}
-                  </span>
-                ) : (
-                  ""
-                )}
-              </td>
-              <td>
-                {semester == "Học kỳ I" ? (
-                  <span className={renderRankingStyles(student.totalAverage1)}>
-                    {renderRanking(student.totalAverage1)}
-                  </span>
-                ) : semester == "Học kỳ II" ? (
-                  <span className={renderRankingStyles(student.totalAverage2)}>
-                    {renderRanking(student.totalAverage2)}
-                  </span>
-                ) : semester == "Cả năm" ? (
-                  <span className={renderRankingStyles(student.totalAverage)}>
-                    {renderRanking(student.totalAverage)}
-                  </span>
-                ) : (
-                  ""
-                )}
-              </td>
-              {/* <td className="font-medium">
-                <span className={renderRankingStyles(10)}>Tốt</span>
-              </td> */}
-              {/* <td>1</td> */}
-              <td>
-                <button className="primary-color text-xl" onClick={() => onViewDetails(student)}>
-                  <EditCalendarIcon />
-                </button>
-              </td>
+              {staticHeaders.slice(3).map((header, index) => (
+                <th key={index} rowSpan={2}>
+                  {header}
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+            <tr>
+              {dynamicHeaders.map((header, index) => (
+                <th key={index}>{header}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {currentData.map((student, index) => (
+              <tr key={student.id}>
+                <td>{index + 1}</td>
+                <td>{student.fullName}</td>
+                <td>{student.id}</td>
+                {student.subjectAverages.length > 0
+                  ? student.subjectAverages.map((subject, index) =>
+                      semester == "Học kỳ I" ? (
+                        <td key={index}>
+                          {subject.averageSemester1 != -1 && subject.averageSemester1 != 0 ? (
+                            <span>{subject.averageSemester1}</span>
+                          ) : (
+                            "_"
+                          )}
+                        </td>
+                      ) : semester == "Học kỳ II" ? (
+                        <td key={index}>
+                          {subject.averageSemester2 != -1 && subject.averageSemester2 != 0 ? (
+                            <span>{subject.averageSemester2}</span>
+                          ) : (
+                            "_"
+                          )}
+                        </td>
+                      ) : semester == "Cả năm" ? (
+                        <td key={index}>
+                          {subject.averageWholeYear != -1 && subject.averageWholeYear != 0 ? (
+                            <span>{subject.averageWholeYear}</span>
+                          ) : (
+                            "_"
+                          )}
+                        </td>
+                      ) : (
+                        <td key={index}>_</td>
+                      )
+                    )
+                  : "_"}
+                <td>
+                  {semester == "Học kỳ I" ? (
+                    <span className={renderAverageMarkStyles(student.totalAverage1)}>
+                      {student.totalAverage1}
+                    </span>
+                  ) : semester == "Học kỳ II" ? (
+                    <span className={renderAverageMarkStyles(student.totalAverage2)}>
+                      {student.totalAverage2}
+                    </span>
+                  ) : semester == "Cả năm" ? (
+                    <span className={renderAverageMarkStyles(student.totalAverage)}>
+                      {student.totalAverage}
+                    </span>
+                  ) : (
+                    ""
+                  )}
+                </td>
+                <td>
+                  {semester == "Học kỳ I" ? (
+                    <span className={renderRankingStyles(student.totalAverage1)}>
+                      {renderRanking(student.totalAverage1)}
+                    </span>
+                  ) : semester == "Học kỳ II" ? (
+                    <span className={renderRankingStyles(student.totalAverage2)}>
+                      {renderRanking(student.totalAverage2)}
+                    </span>
+                  ) : semester == "Cả năm" ? (
+                    <span className={renderRankingStyles(student.totalAverage)}>
+                      {renderRanking(student.totalAverage)}
+                    </span>
+                  ) : (
+                    ""
+                  )}
+                </td>
+                <td className="w-12">{student.ranking}</td>
+                <td>
+                  <button className="primary-color text-xl" onClick={() => onViewDetails(student)}>
+                    <EditCalendarIcon />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      <div className="pagination-container">
-        <div className="pagination border py-2 flex justify-between items-center px-3 text-base">
+        <div className="pagination-table border py-2 flex justify-between items-center px-3">
           <div className="text-sm">
             <span className="mr-4">Tổng: {data.length}</span>
           </div>

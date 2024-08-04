@@ -293,6 +293,14 @@ export const getRouteName = (path) => {
       key: "management",
     },
     {
+      name: "Báo cáo điểm",
+      key: "markReportStudent",
+    },
+    {
+      name: "Báo cáo điểm danh",
+      key: "attendanceReportStudent",
+    },
+    {
       name: "Quản lí điểm",
       key: "markManagement",
       route: "/markManagement",

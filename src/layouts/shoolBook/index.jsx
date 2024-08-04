@@ -192,7 +192,7 @@ const SchoolBook = () => {
   const handleFilterTimetable = () => {
     setIsFirstRender(false);
     refetch().then((result) => {
-      if (result.data) {
+      if (result?.data) {
         const transformedData = formatRegisterNotebook(result.data?.details);
         setCurrentRegisterNotebook(transformedData);
       }

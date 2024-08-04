@@ -27,12 +27,12 @@ table tbody tr:hover {
   transition: all 0.3s ease-in;
 }
 
-.pagination-container {
-  width: 100%;
-  overflow-x: auto;
+.table-container {
+  width: 100% !important;
+  overflow-x: auto !important;
 }
 
-.pagination {
-  min-width: 1000px; // Adjust this width based on your table's minimum width
-  white-space: nowrap;
+.pagination-table {
+  width: 100% !important;
+  box-sizing: border-box !important;
 }

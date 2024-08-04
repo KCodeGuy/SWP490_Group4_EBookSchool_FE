@@ -36,6 +36,7 @@ import {
   downloadTemplateMarkByMarkComponent,
   getMarkOfAllStudentsBySubject,
   getMarkOfClassAllSubjects,
+  getMarkOfStudentBySubject,
   updateMarkByMarkComponent,
 } from "../../services/markService";
 import TableMarkAllStudentsComponent from "../../components/TableMarkAllStudentsComponent/TableMarkAllStudentsComponent";
@@ -49,6 +50,8 @@ import { PRINCIPAL_ROLE } from "services/APIConfig";
 import { HOMEROOM_ROLE } from "services/APIConfig";
 import { isXlsxFile } from "utils/CommonFunctions";
 import { renderAverageMarkStyles } from "utils/RenderStyle";
+import { STUDENT_ROLE } from "services/APIConfig";
+import TableComponent from "components/TableComponent/TableComponent";
 
 // Mark management (HieuTTN)
 const semesters = [
@@ -72,9 +75,9 @@ const nameScore = [
   { label: "Kiểm tra học kì", value: "Cuối kỳ" },
 ];
 
-let tabs = ["ĐIỂM THEO MÔN", "ĐIỂM THEO LỚP"];
+let tabs = ["ĐIỂM THEO MÔN", "ĐIỂM TỔNG KẾT"];
 
-export default function MarkManagement() {
+export default function MarkReportStudent() {
   const [currentOfStudentsMarkBySubject, setCurrentOfStudentsMarkBySubject] = useState([]);
   const [currentMarkOfClass, setCurrentMarkOfClass] = useState([]);
   const [currentAction, setCurrentAction] = useState("adding");
@@ -87,8 +90,6 @@ export default function MarkManagement() {
     setValue(newValue);
     setSchoolSemester(semesters[0].label);
   };
-
-  console.log(currentMarkOfClass?.averages);
 
   const [markDetails, setMarkDetails] = useState({});
   const queryClient = useQueryClient();
@@ -163,9 +164,9 @@ export default function MarkManagement() {
     isLoading: isLoadingMark,
     refetch,
   } = useQuery({
-    queryKey: ["markOfStudentBySubject", { accessToken, schoolYear, schoolClass, schoolSubject }],
+    queryKey: ["markOfSubjectOfStudent"],
     queryFn: () =>
-      getMarkOfAllStudentsBySubject(accessToken, schoolYear, schoolClass, schoolSubject),
+      getMarkOfStudentBySubject(accessToken, currentUser?.id, schoolYear, schoolSubject),
     enabled: false,
   });
 
@@ -181,16 +182,43 @@ export default function MarkManagement() {
   });
 
   const handleFilterMark = () => {
+    const sortData = (data) => {
+      const semesterOrder = {
+        "Học kỳ I": 1,
+        "Học kỳ II": 2,
+      };
+
+      const keyOrder = {
+        Miệng: 1,
+        "15p": 2,
+        "1 Tiết": 3,
+        "Cuối kỳ": 4,
+      };
+
+      return data?.sort((a, b) => {
+        if (semesterOrder[a.semester] !== semesterOrder[b.semester]) {
+          return semesterOrder[a.semester] - semesterOrder[b.semester];
+        }
+        if (keyOrder[a.key] !== keyOrder[b.key]) {
+          return keyOrder[a.key] - keyOrder[b.key];
+        }
+        return a.indexCol - b.indexCol;
+      });
+    };
+
     if (value == 0) {
       refetch().then((result) => {
         if (result.data) {
-          setCurrentOfStudentsMarkBySubject(result.data);
+          console.log("result.data", result.data);
+          const sortedData = sortData(result.data.scores);
+          setCurrentOfStudentsMarkBySubject({ ...result.data, scores: sortedData });
         }
       });
     } else {
       refetchMarkOfClass().then((result) => {
         if (result.data) {
-          setCurrentMarkOfClass(result.data);
+          const sortedData = sortData(result.data.scores);
+          setCurrentMarkOfClass({ ...result.data, scores: sortedData });
         }
       });
     }
@@ -199,7 +227,7 @@ export default function MarkManagement() {
   const formattedSubjects = data
     ?.filter((item) => item.isMark) // filter only items with isMark = true
     ?.map((item) => ({
-      label: `${item.name} (Khối-${item.grade})`,
+      label: `${item.name}`,
       name: item.name,
       value: item.name,
       grade: item.grade,
@@ -287,7 +315,7 @@ export default function MarkManagement() {
       <DashboardNavbar />
       <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
-          {userRole.includes(PRINCIPAL_ROLE) ? (
+          {userRole.includes(STUDENT_ROLE) ? (
             <Tabs
               value={value}
               onChange={handleChange}
@@ -332,28 +360,7 @@ export default function MarkManagement() {
                   ))}
                 </Select>
               </FormControl>
-              <FormControl sx={{ minWidth: 120 }}>
-                <InputLabel id="select-school-class-lable">Lớp</InputLabel>
-                <Select
-                  labelId="select-school-class-lable"
-                  id="select-school-class"
-                  value={schoolClass}
-                  className="h-10 mr-2 max-[767px]:mb-4"
-                  label="Lớp"
-                  onChange={handleChangeClass}
-                >
-                  {classesOfSchoolYear?.map((item, index) => (
-                    <MenuItem key={index} value={item.Classroom}>
-                      {item.Classroom}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              {(userRole.includes(PRINCIPAL_ROLE) ||
-                userRole.includes(SUBJECT_ROLE) ||
-                userRole.includes(HOMEROOM_ROLE)) &&
-              value != 1 ? (
+              {userRole.includes(STUDENT_ROLE) && value == 0 ? (
                 <FormControl sx={{ minWidth: 120 }}>
                   <InputLabel id="select-school-subject-lable">Môn học</InputLabel>
                   <Select
@@ -379,185 +386,13 @@ export default function MarkManagement() {
                 <FilterAltIcon className="mr-1" /> TÌM KIẾM
               </ButtonComponent>
             </div>
-            {userRole.includes(SUBJECT_ROLE) ? (
-              <>
-                <div>
-                  <ButtonComponent
-                    className=""
-                    onClick={() => {
-                      setCurrentAction("adding");
-                      setModalAdd(true);
-                    }}
-                  >
-                    <AddCircleOutlineIcon className="text-3xl mr-1" />
-                    NHẬP ĐIỂM
-                  </ButtonComponent>
-                  <ButtonComponent
-                    type="success"
-                    onClick={() => {
-                      setCurrentAction("updating");
-                      setModalAdd(true);
-                    }}
-                  >
-                    <BorderColorIcon className="text-3xl mr-1" />
-                    CẬP NHẬT
-                  </ButtonComponent>
-                </div>
-                <PopupComponent
-                  title={currentAction == "adding" ? "NHẬP ĐIỂM" : "CẬP NHẬT"}
-                  description={
-                    currentAction == "adding" ? "Nhập điểm bằng Excel" : "Cập nhật điểm bằng Excel"
-                  }
-                  icon={<AddCircleOutlineIcon />}
-                  isOpen={modalAdd}
-                  onClose={() => setModalAdd(false)}
-                  tabs={[{ label: "TẢI XUỐNG" }, { label: "TẢI LÊN" }]}
-                  currentTab={currentTab}
-                  onTabChange={(event, newValue) => {
-                    setCurrentTab(newValue);
-                  }}
-                >
-                  <div role="tabpanel" hidden={currentTab !== 0}>
-                    <form onSubmit={handleSubmit(handleDownloadTemplate)}>
-                      <div className="flex">
-                        <InputBaseComponent
-                          name="schoolYear"
-                          label="Năm học"
-                          className="w-1/2 mr-2"
-                          control={control}
-                          setValue={noSetValue}
-                          type="select"
-                          options={formattedSchoolYear}
-                          errors={errors}
-                        />
-                        <InputBaseComponent
-                          name="className"
-                          label="Lớp học"
-                          className="w-1/2"
-                          control={control}
-                          setValue={noSetValue}
-                          type="select"
-                          options={formattedClasses}
-                          errors={errors}
-                        />
-                      </div>
-                      <div className="flex">
-                        <InputBaseComponent
-                          name="component"
-                          label="Điểm thành phần"
-                          className="w-1/2 mr-2"
-                          control={control}
-                          setValue={noSetValue}
-                          type="select"
-                          options={nameScore}
-                          errors={errors}
-                        />
-                        <InputBaseComponent
-                          name="semester"
-                          label="Học kì"
-                          className="w-1/2"
-                          control={control}
-                          setValue={noSetValue}
-                          type="select"
-                          options={semesters}
-                          errors={errors}
-                        />
-                      </div>
-                      <InputBaseComponent
-                        name="subjectName"
-                        label="Môn học"
-                        className="w-full"
-                        control={control}
-                        setValue={noSetValue}
-                        type="select"
-                        options={formattedSubjects}
-                        errors={errors}
-                      />
-                      <InputBaseComponent
-                        name="indexCol"
-                        label="Lần thứ"
-                        className="w-full"
-                        control={control}
-                        setValue={noSetValue}
-                        type="select"
-                        options={indexCols}
-                        errors={errors}
-                      />
-                      <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi tải xuống!" />
-                      <div className="mt-5 flex justify-end">
-                        <ButtonComponent
-                          type="error"
-                          action="reset"
-                          onClick={() => {
-                            reset();
-                            setModalAdd(false);
-                          }}
-                        >
-                          <CancelIcon className="text-3xl mr-1 mb-0.5" />
-                          HỦY BỎ
-                        </ButtonComponent>
-                        <ButtonComponent action="submit">
-                          <DownloadIcon className="mr-2" />
-                          TẢI XUỐNG
-                        </ButtonComponent>
-                      </div>
-                    </form>
-                  </div>
-                  <div role="tabpanel" hidden={currentTab == 1}>
-                    <form onSubmit={handleSubmit(handleUploadTemplate)}>
-                      <InputBaseComponent
-                        name="markFile"
-                        label="File điểm(Excel)"
-                        className="w-full mt-2"
-                        control={control}
-                        setValue={noSetValue}
-                        type="file"
-                        errors={errors}
-                        validationRules={{
-                          required: "Hãy chọn file!",
-                        }}
-                      />
-                      <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi tải lên!" />
-                      <div className="mt-5 flex justify-end">
-                        <ButtonComponent
-                          type="error"
-                          action="reset"
-                          onClick={() => {
-                            reset();
-                            setModalAdd(false);
-                          }}
-                        >
-                          <CancelIcon className="text-3xl mr-1 mb-0.5" />
-                          HỦY BỎ
-                        </ButtonComponent>
-                        <ButtonComponent action="submit">
-                          {currentAction == "adding" ? (
-                            <AddCircleOutlineIcon className="text-3xl mr-1" />
-                          ) : (
-                            <BorderColorIcon className="text-3xl mr-1" />
-                          )}
-                          {currentAction == "adding" ? "NHẬP ĐIỂM" : "CẬP NHẬT"}
-                        </ButtonComponent>
-                      </div>
-                    </form>
-                  </div>
-                </PopupComponent>
-              </>
-            ) : (
-              ""
-            )}
           </div>
-          <TabPanel
-            value={value}
-            index={userRole.includes(SUBJECT_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? 1 : 0}
-          >
+          <TabPanel value={value} index={userRole.includes(STUDENT_ROLE)}>
             <>
-              {userRole.includes(HOMEROOM_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
+              {userRole.includes(STUDENT_ROLE) ? (
                 <div className="text-center mt-10 uppercase">
-                  <h4 className="text-xl font-bold">Bảng điểm tổng kết lớp {schoolClass}</h4>
-                  <h4 className="text-xl font-bold">
-                    Học kỳ: {schoolSemester}. Năm học: {schoolYear}
-                  </h4>
+                  <h4 className="text-xl font-bold">Bảng điểm môn {schoolSubject}</h4>
+                  <h4 className="text-xl font-bold">Năm học: {schoolYear}</h4>
                 </div>
               ) : (
                 ""
@@ -565,9 +400,9 @@ export default function MarkManagement() {
               <div className="flex flex-nowrap justify-between icon-custom mt-5">
                 <div className="text-sm mr-4 flex">
                   <div className="mr-2">
-                    <span className="mr-2 font-bold">Giáo viên: </span>
+                    <span className="mr-2 font-bold">Lớp: </span>
                     <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                      {currentMarkOfClass?.teacherName || "Chưa có thông tin!"}
+                      {currentOfStudentsMarkBySubject?.className || "Chưa có thông tin!"}
                     </span>
                   </div>
                 </div>
@@ -595,7 +430,7 @@ export default function MarkManagement() {
                 </div>
               </div>
 
-              {userRole.includes(HOMEROOM_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
+              {userRole.includes(STUDENT_ROLE) ? (
                 isLoadingMarkOfClass ? (
                   <div className="text-center primary-color my-30 text-xl italic font-medium">
                     <div className="mx-auto flex items-center justify-center">
@@ -633,28 +468,36 @@ export default function MarkManagement() {
               )}
             </>
           </TabPanel>
-          <TabPanel
-            value={value}
-            index={userRole.includes(SUBJECT_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? 0 : 1}
-          >
+          <TabPanel value={value} index={userRole.includes(STUDENT_ROLE) ? 0 : 1}>
             <>
-              {userRole.includes(SUBJECT_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
+              {userRole.includes(STUDENT_ROLE) ? (
                 <>
                   <div className="text-center mt-10 uppercase">
+                    <h4 className="text-xl font-bold">Bảng điểm {`(${currentUser?.fullname})`}</h4>
                     <h4 className="text-xl font-bold">
-                      Bảng điểm môn {schoolSubject} lớp {schoolClass}
+                      Môn: {schoolSubject} Học kỳ: {schoolSemester}.
                     </h4>
-                    <h4 className="text-xl font-bold">
-                      Học kỳ: {schoolSemester}. Năm học: {schoolYear}
-                    </h4>
+                    <h4 className="text-xl font-bold">Năm học: {schoolYear}</h4>
                   </div>
                   <div className="flex flex-nowrap justify-between icon-custom mt-5">
-                    <div className="text-sm mr-4 flex">
-                      <div className="mr-2">
-                        <span className="mr-2 font-bold">Giáo viên: </span>
-                        <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                          {currentOfStudentsMarkBySubject?.teacherName || "Chưa có thông tin!"}
-                        </span>
+                    <div className="flex">
+                      <div className="text-sm mr-4 flex">
+                        <div className="mr-2">
+                          <span className="mr-2 font-bold">Lớp: </span>
+                          <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                            {currentOfStudentsMarkBySubject?.className || "Chưa có thông tin!"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-sm mr-4 flex">
+                        <div className="mr-2">
+                          <span className="mr-2 font-bold">Môn: </span>
+                          <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                            {currentOfStudentsMarkBySubject?.details
+                              ? currentOfStudentsMarkBySubject?.details[0]?.subject
+                              : "Chưa có thông tin!"}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex">
@@ -678,14 +521,6 @@ export default function MarkManagement() {
                           </Select>
                         </FormControl>
                       </div>
-                      <ButtonComponent
-                        onClick={() => {
-                          setOpenModalRandom(true);
-                        }}
-                      >
-                        <CardGiftcardIcon className="mr-2" />
-                        Random
-                      </ButtonComponent>
                     </div>
                   </div>
 
@@ -696,15 +531,21 @@ export default function MarkManagement() {
                         <CircularProgress size={24} color="inherit" />
                       </div>
                     </div>
-                  ) : markOfStudentsBySubject &&
-                    currentOfStudentsMarkBySubject?.score?.length > 0 ? (
-                    <TableMarkOfSubjectComponent
-                      semester={schoolSemester}
-                      isHideMark={openModalRandom}
-                      data={currentOfStudentsMarkBySubject?.score}
-                      className="mt-4 text-left"
-                      onDetails={handleDetails}
+                  ) : currentOfStudentsMarkBySubject?.details?.length > 0 ? (
+                    <TableComponent
+                      header={["Học kỳ", "Điểm thành phần", "Thứ tự", "Điểm"]}
+                      data={currentOfStudentsMarkBySubject?.details[0]?.scores?.map((item) => [
+                        item.semester,
+                        item.key,
+                        item.indexCol,
+                        item.value,
+                      ])}
                       itemsPerPage={50}
+                      isPaginate={false}
+                      onDetails={(data) => {
+                        console.log(data);
+                      }}
+                      className="mt-8"
                     />
                   ) : (
                     <div className="text-center primary-color my-10 text-xl italic font-medium">
@@ -751,23 +592,6 @@ export default function MarkManagement() {
               </li>
             </ul>
           </div>
-          <PopupComponent
-            title="RANDOM HỌC SINH"
-            description="Chọn ngẫu nhiên học sinh"
-            isOpen={openModalRandom}
-            onClose={() => setOpenModalRandom(false)}
-          >
-            <div className="mt-4 flex justify-end">
-              <ButtonComponent
-                type="error"
-                action="button"
-                onClick={() => setOpenModalRandom(false)}
-              >
-                HỦY BỎ
-              </ButtonComponent>
-              <ButtonComponent action="button">RANDOM</ButtonComponent>
-            </div>
-          </PopupComponent>
           <PopupComponent
             title="CHI TIẾT ĐIỂM"
             description="Chi tiết các cột điểm môn học"

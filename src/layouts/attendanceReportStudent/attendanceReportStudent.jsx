@@ -50,7 +50,7 @@ const chartSetting = {
 
 const valueFormatter = (value) => `${value} học sinh`;
 
-export default function AttendanceStatistics() {
+export default function AttendanceReportStudent() {
   const [currentData, setCurrentData] = useState([]);
   const [currentAttendanceDetail, setCurrentAttendanceDetail] = useState({});
   const [openModalDetail, setOpenModalDetail] = useState(false);

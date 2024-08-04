@@ -61,6 +61,8 @@ import LogManagement from "layouts/logManagement/LogManagement";
 import SystemSetting from "layouts/systemSetting";
 import RegisterNotebookStatistics from "layouts/registerNotebookStatistics/RegisterNotebookStatistics";
 import AttendanceStatistics from "layouts/attendanceStatistics/AttendanceStatistics";
+import MarkReportStudent from "layouts/markReportStudent";
+import AttendanceReportStudent from "layouts/attendanceReportStudent/attendanceReportStudent";
 
 const routes = [
   {
@@ -290,19 +292,19 @@ const studentRoutes = [
   {
     type: "collapse",
     name: "Báo cáo điểm",
-    key: "markManagement",
+    key: "markReportStudent",
     icon: <Icon fontSize="small">ballot</Icon>,
-    route: "/markManagement",
-    component: <MarkManagement />,
+    route: "/markReportStudent",
+    component: <MarkReportStudent />,
   },
 
   {
     type: "collapse",
     name: "Báo cáo điểm danh",
-    key: "attendanceStatistics",
+    key: "attendanceReportStudent",
     icon: <Icon fontSize="small">leaderboard</Icon>,
-    route: "/attendanceStatistics",
-    component: <AttendanceStatistics />,
+    route: "/attendanceReportStudent",
+    component: <AttendanceReportStudent />,
   },
   {
     type: "title",

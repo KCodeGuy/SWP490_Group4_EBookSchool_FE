@@ -33,6 +33,7 @@ function TableComponent({
   sortOption,
   isLimitLine,
   hiddenColumns,
+  isPaginate,
   saveName = "Lưu",
 }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -232,7 +233,11 @@ function TableComponent({
             )}
           </tbody>
         </table>
-        <div className="pagination-table border py-2 flex justify-between items-center px-3">
+        <div
+          className={`pagination-table border py-2 flex justify-between items-center px-3 ${
+            !isPaginate ? "d-none" : ""
+          }`}
+        >
           <div>
             <span className="mr-4 text-sm">
               <span className="font-bold">Tổng:</span> {data.length}
@@ -283,6 +288,7 @@ TableComponent.propTypes = {
   className: PropTypes.string,
   itemsPerPage: PropTypes.number,
   isOrdered: PropTypes.bool,
+  isPaginate: PropTypes.bool,
   isShowImage: PropTypes.bool,
   showCheckboxes: PropTypes.bool,
   showCheckboxesConfirm: PropTypes.bool,
@@ -297,6 +303,7 @@ TableComponent.propTypes = {
 TableComponent.defaultProps = {
   data: [],
   itemsPerPage: 10, // Default items per page
+  isPaginate: true,
   isOrdered: true, // Default to not showing row numbers
   showCheckboxes: false, // Default to not showing checkboxes
   showCheckboxesConfirm: false, // Default to not showing checkboxes

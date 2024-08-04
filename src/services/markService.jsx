@@ -21,6 +21,27 @@ const getMarkOfAllStudentsBySubject = async (accessToken, schoolYear, className,
   }
 };
 
+const getMarkOfStudentBySubject = async (accessToken, studentID, schoolYear, subjectName) => {
+  try {
+    let params = {
+      studentID,
+      subject: subjectName,
+      schoolYear,
+    };
+    const res = await axios.get(`${API_HOST}/Scores/ByStudentBySubject`, {
+      params,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    console.log("res.data", res.data);
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 const getMarkOfClassAllSubjects = async (accessToken, schoolYear, className) => {
   try {
     let params = {
@@ -67,6 +88,7 @@ const updateMarkByMarkComponent = async (accessToken, file) => {
 };
 
 export {
+  getMarkOfStudentBySubject,
   getMarkOfAllStudentsBySubject,
   downloadTemplateMarkByMarkComponent,
   updateMarkByMarkComponent,

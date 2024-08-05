@@ -16,7 +16,7 @@ import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useQuery } from "react-query";
 import LeaderboardIcon from "@mui/icons-material/Leaderboard";
@@ -32,7 +32,7 @@ import { generateClasses } from "../../utils/CommonFunctions";
 import { getAllSubjects } from "../../services/SubjectService";
 import { grade } from "mock/grade";
 import { subject } from "mock/subject";
-import { Class } from "@mui/icons-material";
+import { Class, Subject } from "@mui/icons-material";
 import PopupComponent from "components/PopupComponent/PopupComponent";
 import TextValueComponent from "components/TextValueComponent";
 
@@ -138,6 +138,12 @@ export default function MarkStatistics() {
   const handleSchoolSubjectSelectedChange = (event) => {
     setSchoolSubject(event.target.value);
   };
+
+  useEffect(() => {
+    if (subjects && subjects.length > 0) {
+      setSchoolSubject(subjects[0].name);
+    }
+  }, [subjects]);
 
   const formattedSubjects = subjects
     ?.filter((item) => item.isMark) // filter only items with isMark = true
@@ -405,7 +411,7 @@ export default function MarkStatistics() {
                       : value == 3
                       ? `Lớp ${schoolClass}`
                       : ""}{" "}
-                    . Học kỳ {schoolSemester}
+                    . {schoolSemester}
                   </h4>
                 </div>
                 <div className="w-full mt-5">

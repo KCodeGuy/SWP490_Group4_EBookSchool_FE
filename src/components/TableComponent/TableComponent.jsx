@@ -34,19 +34,35 @@ function TableComponent({
   isLimitLine,
   hiddenColumns,
   isPaginate,
+  isShowNote,
   saveName = "Lưu",
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [checkedItems, setCheckedItems] = useState([]);
   const [checkedItemsConfirm, setCheckedItemsConfirm] = useState([]);
+  const [inputValues, setInputValues] = useState({});
 
   useEffect(() => {
     if (isCheckedAll) {
       setCheckedItems(data);
-    } else {
-      setCheckedItems([]);
+    } else if (showCheckboxes && data) {
+      const dataItems = data?.filter((item) => item[5] === "Có mặt");
+      const dataItemsConfirmed = data?.filter((item) => item[5] === "Vắng có phép");
+      setCheckedItems(dataItems);
+      setCheckedItemsConfirm(dataItemsConfirmed);
     }
   }, [isCheckedAll, data]);
+
+  useEffect(() => {
+    if (isShowNote) {
+      // Initialize inputValues based on the data if needed
+      const initialInputValues = data.reduce((acc, row, index) => {
+        acc[index] = row[7] || ""; // Ensure default value
+        return acc;
+      }, {});
+      setInputValues(initialInputValues);
+    }
+  }, [data]);
 
   const isShowActions =
     onDelete !== undefined ||
@@ -64,36 +80,52 @@ function TableComponent({
   };
 
   const handleCheckboxChange = (row) => {
-    const isChecked = checkedItems.includes(row);
+    const isChecked = checkedItems?.includes(row);
     let newCheckedItems = [...checkedItems];
     if (isChecked) {
-      newCheckedItems = newCheckedItems.filter((item) => item !== row);
+      newCheckedItems = newCheckedItems?.filter((item) => item !== row);
     } else {
       newCheckedItems.push(row);
     }
     setCheckedItems(newCheckedItems);
-    if (onCheckboxChange) {
-      onCheckboxChange(newCheckedItems);
-    }
   };
 
   const handleCheckboxConfirmChange = (row) => {
-    const isChecked = checkedItemsConfirm.includes(row);
+    const isChecked = checkedItemsConfirm?.includes(row);
     let newCheckedItems = [...checkedItemsConfirm];
     if (isChecked) {
-      newCheckedItems = newCheckedItems.filter((item) => item !== row);
+      newCheckedItems = newCheckedItems?.filter((item) => item !== row);
     } else {
       newCheckedItems.push(row);
     }
     setCheckedItemsConfirm(newCheckedItems);
-    if (onCheckboxChange) {
-      onCheckboxChange(newCheckedItems);
-    }
+  };
+
+  // const handleSave = () => {
+  //   if (onSave) {
+  //     onSave({ checkedItems, checkedItemsConfirm });
+  //     setCheckedItems([]);
+  //     setCheckedItemsConfirm([]);
+  //   }
+  // };
+
+  const handleInputChange = (rowIndex, value) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      [rowIndex]: value,
+    }));
   };
 
   const handleSave = () => {
     if (onSave) {
-      onSave({ checkedItems, checkedItemsConfirm });
+      onSave({
+        checkedItems,
+        checkedItemsConfirm,
+        inputValues, // Add this line to include input values
+      });
+      setCheckedItems([]);
+      setCheckedItemsConfirm([]);
+      setInputValues({});
     }
   };
 
@@ -102,21 +134,23 @@ function TableComponent({
   };
 
   return (
-    <div className={` ${className} overflow-auto`}>
+    <div className={`${className} overflow-auto`}>
       <div className="table-container">
         <table className="w-full">
           <thead>
             <tr>
               {isOrdered && <th className="w-8">STT.</th>}
-              {header.map((column, index) => (
+              {header?.map((column, index) => (
                 <th key={index}>{column}</th>
               ))}
-              {showCheckboxes && <th className="w-28">Có mặt</th>}
+              {showCheckboxesConfirm && <th className="w-20">Vắng có phép</th>}
+              {showCheckboxes && <th className="w-20">Có mặt</th>}
               {isShowActions && <th className="w-28">Thao tác</th>}
+              {isShowNote && <th className="w-36">Nhập ghi chú</th>}
             </tr>
           </thead>
           <tbody>
-            {currentData.length === 0 ? (
+            {currentData?.length === 0 ? (
               <tr>
                 <td
                   className="font-medium"
@@ -131,7 +165,7 @@ function TableComponent({
                 </td>
               </tr>
             ) : (
-              currentData.map((row, rowIndex) => (
+              currentData?.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   {isOrdered && <td>{startIndex + rowIndex + 1}</td>}
                   {isShowImage && (
@@ -172,7 +206,7 @@ function TableComponent({
                   {showCheckboxesConfirm && (
                     <td className="max-w-28">
                       <Checkbox
-                        checked={checkedItemsConfirm.includes(row)}
+                        checked={checkedItemsConfirm?.includes(row)}
                         onChange={() => handleCheckboxConfirmChange(row)}
                       />
                     </td>
@@ -180,8 +214,28 @@ function TableComponent({
                   {showCheckboxes && (
                     <td className="max-w-28">
                       <Checkbox
-                        checked={checkedItems.includes(row)}
+                        checked={checkedItems?.includes(row)}
                         onChange={() => handleCheckboxChange(row)}
+                      />
+                    </td>
+                  )}
+                  {/* {isShowNote && (
+                    <td className="max-w-36 px-3">
+                      <input
+                        type="text"
+                        value={row[7]}
+                        className="border border-blue-400 px-2 py-1 rounded-md w-full outline-blue-600"
+                        onChange={(e) => {}}
+                      />
+                    </td>
+                  )} */}
+                  {isShowNote && (
+                    <td className="max-w-36 px-3">
+                      <input
+                        type="text"
+                        value={inputValues[rowIndex] || row[7] || ""}
+                        className="border border-blue-400 px-2 py-1 rounded-md w-full outline-blue-600"
+                        onChange={(e) => handleInputChange(rowIndex, e.target.value)}
                       />
                     </td>
                   )}
@@ -291,6 +345,7 @@ TableComponent.propTypes = {
   isPaginate: PropTypes.bool,
   isShowImage: PropTypes.bool,
   showCheckboxes: PropTypes.bool,
+  isShowNote: PropTypes.bool,
   showCheckboxesConfirm: PropTypes.bool,
   isCheckedAll: PropTypes.bool,
   isImage: PropTypes.number,
@@ -302,6 +357,7 @@ TableComponent.propTypes = {
 
 TableComponent.defaultProps = {
   data: [],
+  isShowNote: false,
   itemsPerPage: 10, // Default items per page
   isPaginate: true,
   isOrdered: true, // Default to not showing row numbers

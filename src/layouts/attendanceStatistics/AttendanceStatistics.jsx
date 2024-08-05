@@ -48,7 +48,7 @@ const chartSetting = {
   },
 };
 
-const valueFormatter = (value) => `${value} học sinh`;
+const valueFormatter = (value) => `${value} lượt vắng`;
 
 export default function AttendanceStatistics() {
   const [currentData, setCurrentData] = useState([]);
@@ -306,15 +306,24 @@ export default function AttendanceStatistics() {
                         },
                       ]}
                       series={[
+                        // {
+                        //   dataKey: "numberOfAbsent",
+                        //   label: "Lựợt vắng",
+                        //   stack: "A",
+                        //   valueFormatter,
+                        // },
                         {
-                          dataKey: "numberOfAbsent",
-                          label: "Lựợt vắng",
+                          dataKey: "numberOfUnconfirmed",
+                          stack: "A",
+                          label: "Vắng(K)",
+                          color: "#287CD4",
                           valueFormatter,
                         },
-                        { dataKey: "numberOfUnconfirmed", label: "Vắng(K)", valueFormatter },
                         {
                           dataKey: "numberOfConfirmed",
+                          stack: "A",
                           label: "Vắng(phép)",
+                          color: "#A5A5A5",
                           valueFormatter,
                         },
                       ]}

@@ -562,7 +562,7 @@ export default function MarkManagement() {
               <div className="flex flex-nowrap justify-between icon-custom mt-5">
                 <div className="text-sm mr-4 flex">
                   <div className="mr-2">
-                    <span className="mr-2 font-bold">Giáo viên: </span>
+                    <span className="mr-2 font-bold">GVCN: </span>
                     <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
                       {currentMarkOfClass?.teacherName || "Chưa có thông tin!"}
                     </span>
@@ -604,7 +604,8 @@ export default function MarkManagement() {
                   <TableMarkAllStudentsComponent
                     className="mt-4"
                     semester={schoolSemester}
-                    itemsPerPage={50}
+                    isPaginate={false}
+                    itemsPerPage={200}
                     data={currentMarkOfClass?.averages}
                     onViewDetails={handleDetailsAllSubject}
                   />
@@ -648,7 +649,7 @@ export default function MarkManagement() {
                   <div className="flex flex-nowrap justify-between icon-custom mt-5">
                     <div className="text-sm mr-4 flex">
                       <div className="mr-2">
-                        <span className="mr-2 font-bold">Giáo viên: </span>
+                        <span className="mr-2 font-bold">GVBM: </span>
                         <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
                           {currentOfStudentsMarkBySubject?.teacherName || "Chưa có thông tin!"}
                         </span>
@@ -700,8 +701,9 @@ export default function MarkManagement() {
                       isHideMark={openModalRandom}
                       data={currentOfStudentsMarkBySubject?.score}
                       className="mt-4 text-left"
+                      isPaginate={false}
                       onDetails={handleDetails}
-                      itemsPerPage={50}
+                      itemsPerPage={200}
                     />
                   ) : (
                     <div className="text-center primary-color my-10 text-xl italic font-medium">

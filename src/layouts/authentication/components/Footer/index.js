@@ -38,7 +38,7 @@ function Footer({ light }) {
           width="100%"
           display="flex"
           flexDirection={{ xs: "column", lg: "row" }}
-          justifyContent="space-between"
+          justifyContent="center"
           alignItems="center"
           px={1.5}
         >
@@ -50,8 +50,7 @@ function Footer({ light }) {
             color={light ? "white" : "text"}
             fontSize={size.sm}
           >
-            &copy; {new Date().getFullYear()}, Online-Register-Notebook - bản quyền thuộc về
-            G4-TEAM.
+            &copy; {new Date().getFullYear()}, Online-Register-Notebook - bản quyền thuộc về ORB.
           </MDBox>
           <MDBox
             component="ul"
@@ -70,7 +69,7 @@ function Footer({ light }) {
               },
             })}
           >
-            <MDBox component="li" px={2} lineHeight={1}>
+            {/* <MDBox component="li" px={2} lineHeight={1}>
               <Link href="/" target="_blank">
                 <MDTypography
                   variant="button"
@@ -80,8 +79,8 @@ function Footer({ light }) {
                   Giới thiệu
                 </MDTypography>
               </Link>
-            </MDBox>
-            <MDBox component="li" px={2} lineHeight={1}>
+            </MDBox> */}
+            {/* <MDBox component="li" px={2} lineHeight={1}>
               <Link href="/" target="_blank">
                 <MDTypography
                   variant="button"
@@ -91,7 +90,7 @@ function Footer({ light }) {
                   Hướng dẫn
                 </MDTypography>
               </Link>
-            </MDBox>
+            </MDBox> */}
           </MDBox>
         </MDBox>
       </Container>

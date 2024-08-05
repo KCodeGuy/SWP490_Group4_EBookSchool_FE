@@ -59,7 +59,7 @@ function Footer({ company, links }) {
         fontSize={size.sm}
         px={1.5}
       >
-        &copy; {new Date().getFullYear()}, Online-Register-Notebook - bản quyền thuộc về G4-TEAM.
+        &copy; {new Date().getFullYear()}, Online-Register-Notebook - bản quyền thuộc về ORB.
       </MDBox>
       <MDBox
         component="ul"
@@ -86,11 +86,8 @@ function Footer({ company, links }) {
 
 // Setting default values for the props of Footer
 Footer.defaultProps = {
-  company: { href: "/", name: "G4-TEAM" },
-  links: [
-    { href: "/", name: "Giới thiệu" },
-    { href: "/", name: "Hướng dẫn" },
-  ],
+  company: { href: "/", name: "ORB" },
+  links: [],
 };
 
 // Typechecking props for the Footer

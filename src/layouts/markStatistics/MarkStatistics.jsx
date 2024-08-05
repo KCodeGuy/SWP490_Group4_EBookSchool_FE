@@ -63,7 +63,7 @@ const chartDetailedMarksfForSubjectOfClass = {
   series: [
     {
       dataKey: "count",
-      label: "Than điểm",
+      label: "Thang điểm",
       valueDetailedMarksfForSubjectOfClass,
       color: "#247CD4",
     },
@@ -395,7 +395,7 @@ export default function MarkStatistics() {
               <>
                 <div className="text-center mt-8">
                   <h4 className="text-xl font-bold uppercase">
-                    Thống kê than điểm, Năm học {schoolYear}.
+                    Thống kê thang điểm, Năm học {schoolYear}.
                   </h4>
                   <h4 className="text-xl font-bold uppercase">
                     {value == 1
@@ -459,7 +459,7 @@ export default function MarkStatistics() {
                         </p>
 
                         <TableComponent
-                          header={["Than điểm", "Số lượng"]}
+                          header={["Thang điểm", "Số lượng"]}
                           data={currentData?.map((item) => [item.averageScore, item.count])}
                           onDetails={handleDetails}
                           className="mt-4"
@@ -513,7 +513,7 @@ export default function MarkStatistics() {
                     ""
                   )}
                   <TextValueComponent
-                    label={`Than điểm`}
+                    label={`Thang điểm`}
                     value={`${detail.averageScore}` || "_"}
                     icon={<LeaderboardIcon />}
                     className="justify-between w-full"

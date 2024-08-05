@@ -14,6 +14,7 @@ const TableMarkAllStudentsComponent = ({
   className,
   itemsPerPage,
   semester,
+  isPaginate,
 }) => {
   const staticHeaders = [
     "STT.",
@@ -122,7 +123,7 @@ const TableMarkAllStudentsComponent = ({
   };
 
   return (
-    <div className={`${className} overflow-auto`}>
+    <div className={`${className}`}>
       <div className="table-container">
         <table className="w-full">
           <thead>
@@ -151,8 +152,8 @@ const TableMarkAllStudentsComponent = ({
             {currentData.map((student, index) => (
               <tr key={student.id}>
                 <td>{index + 1}</td>
-                <td>{student.fullName}</td>
-                <td>{student.id}</td>
+                <td className="px-1">{student.fullName}</td>
+                <td className="px-1">{student.id}</td>
                 {student.subjectAverages.length > 0
                   ? student.subjectAverages.map((subject, index) =>
                       semester == "Học kỳ I" ? (
@@ -229,7 +230,11 @@ const TableMarkAllStudentsComponent = ({
           </tbody>
         </table>
 
-        <div className="pagination-table border py-2 flex justify-between items-center px-3">
+        <div
+          className={`pagination-table border py-2 flex justify-between items-center px-3 ${
+            !isPaginate ? "hidden" : ""
+          }`}
+        >
           <div className="text-sm">
             <span className="mr-4">Tổng: {data.length}</span>
           </div>
@@ -265,10 +270,12 @@ TableMarkAllStudentsComponent.propTypes = {
   className: PropTypes.string,
   itemsPerPage: PropTypes.number,
   semester: PropTypes.string,
+  isPaginate: PropTypes.bool,
 };
 
 TableMarkAllStudentsComponent.defaultProps = {
-  itemsPerPage: 2, // Default items per page
+  itemsPerPage: 200, // Default items per page
+  isPaginate: true,
 };
 
 export default TableMarkAllStudentsComponent;

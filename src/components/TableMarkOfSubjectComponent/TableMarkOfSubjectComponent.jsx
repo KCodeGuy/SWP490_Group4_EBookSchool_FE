@@ -25,6 +25,7 @@ function TableMarkOfSubjectComponent({
   itemsPerPage,
   isOrdered,
   showCheckboxes,
+  isPaginate,
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const isShowActions = onDelete != undefined || onEdit != undefined || onDetails != undefined;
@@ -238,7 +239,11 @@ function TableMarkOfSubjectComponent({
           ))}
         </tbody>
       </table>
-      <div className="pagination border py-2 flex justify-between items-center px-3 text-base">
+      <div
+        className={`pagination-table border py-2 flex justify-between items-center px-3 ${
+          !isPaginate ? "hidden" : ""
+        }`}
+      >
         <div className="text-sm">
           <span className="mr-4">Tổng: {data.length}</span>
         </div>
@@ -281,12 +286,14 @@ TableMarkOfSubjectComponent.propTypes = {
   isOrdered: PropTypes.bool,
   showCheckboxes: PropTypes.bool,
   isHideMark: PropTypes.bool,
+  isPaginate: PropTypes.bool,
 };
 
 TableMarkOfSubjectComponent.defaultProps = {
-  itemsPerPage: 10, // Default items per page
+  itemsPerPage: 200, // Default items per page
   isOrdered: true, // Default to not showing row numbers
   showCheckboxes: false, // Default to not showing checkboxes
+  isPaginate: true,
 };
 
 export default TableMarkOfSubjectComponent;

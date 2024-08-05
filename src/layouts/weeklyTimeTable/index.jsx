@@ -742,7 +742,7 @@ export default function WeeklyTimeTable() {
                 userRole.includes(PRINCIPAL_ROLE) ||
                 userRole.includes(HEADTEACHER_ROLE)
                   ? `THỜI KHÓA BIỂU LỚP ${schoolClass}`
-                  : `THỜI KHÓA BIỂU(${currentUser.fullname.toString()})`}
+                  : `THỜI KHÓA BIỂU (${currentUser.fullname.toString()})`}
               </h4>
             </div>
           </div>

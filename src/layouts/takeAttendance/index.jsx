@@ -65,9 +65,9 @@ export default function TakeAttendance() {
   useEffect(() => {
     if (data) {
       setCurrentSubject({
-        teacher: data[0].teacher,
-        subject: data[0].subject,
-        date: data[0].date,
+        teacher: data[0]?.teacher,
+        subject: data[0]?.subject,
+        date: data[0]?.date,
       });
       setCurrentData(data);
     }
@@ -97,39 +97,66 @@ export default function TakeAttendance() {
     }
   );
 
+  // const handleSaveData = (rowItem) => {
+  //   const { checkedItems, checkedItemsConfirm } = rowItem;
+
+  //   // console.log("rowItem", rowItem);
+  //   // console.log("checkedItems", checkedItems);
+  //   // console.log("checkedItemsConfirm", checkedItemsConfirm);
+  //   // console.log("currentData", currentData);
+
+  //   // Ensure checkedItems and checkedItemsConfirm are arrays
+  //   if (!Array.isArray(checkedItems) || !Array.isArray(checkedItemsConfirm)) {
+  //     console.log("checkedItems or checkedItemsConfirm is not an array");
+  //     return;
+  //   }
+
+  //   // Create a set of IDs from checkedItems and checkedItemsConfirm for quick lookup
+  //   // Extract IDs from the arrays (assuming they are already arrays of IDs)
+  //   const attendedStudentIDs = new Set(checkedItems.map((item) => item[0]));
+  //   const confirmedStudentIDs = new Set(checkedItemsConfirm.map((item) => item[0]));
+
+  //   // console.log("attendedStudentIDs", attendedStudentIDs);
+  //   // console.log("confirmedStudentIDs", confirmedStudentIDs);
+
+  //   // Filter and map the currentData based on the presence in attendedStudentIDs and confirmedStudentIDs
+  //   const result = currentData?.map((student) => ({
+  //     attendenceID: student.attendenceID,
+  //     present: attendedStudentIDs.has(student.attendenceID),
+  //     confirmed: confirmedStudentIDs.has(student.attendenceID),
+  //   }));
+
+  //   // Call the mutation to update attendance data
+  //   if (result) {
+  //     updateAttendanceMutation.mutate(result);
+  //   }
+  // };
+
   const handleSaveData = (rowItem) => {
-    const { checkedItems, checkedItemsConfirm } = rowItem;
+    const { checkedItems, checkedItemsConfirm, inputValues } = rowItem;
 
-    // console.log("rowItem", rowItem);
-    // console.log("checkedItems", checkedItems);
-    // console.log("checkedItemsConfirm", checkedItemsConfirm);
-    // console.log("currentData", currentData);
-
-    // Ensure checkedItems and checkedItemsConfirm are arrays
     if (!Array.isArray(checkedItems) || !Array.isArray(checkedItemsConfirm)) {
-      console.error("checkedItems or checkedItemsConfirm is not an array");
+      console.log("checkedItems or checkedItemsConfirm is not an array");
       return;
     }
 
-    // Create a set of IDs from checkedItems and checkedItemsConfirm for quick lookup
-    // Extract IDs from the arrays (assuming they are already arrays of IDs)
     const attendedStudentIDs = new Set(checkedItems.map((item) => item[0]));
     const confirmedStudentIDs = new Set(checkedItemsConfirm.map((item) => item[0]));
 
-    // console.log("attendedStudentIDs", attendedStudentIDs);
-    // console.log("confirmedStudentIDs", confirmedStudentIDs);
-
-    // Filter and map the currentData based on the presence in attendedStudentIDs and confirmedStudentIDs
-    const result = currentData.map((student) => ({
+    const result = currentData?.map((student, index) => ({
       attendenceID: student.attendenceID,
       present: attendedStudentIDs.has(student.attendenceID),
       confirmed: confirmedStudentIDs.has(student.attendenceID),
+      note: inputValues[index] || student.note, // Include the updated note here
     }));
 
-    // Call the mutation to update attendance data
-    updateAttendanceMutation.mutate(result);
+    console.log("result", result);
+    if (result) {
+      updateAttendanceMutation.mutate(result);
+    }
   };
 
+  console.log("currentDataa", currentData);
   return (
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
@@ -192,7 +219,7 @@ export default function TakeAttendance() {
                 "Hình ảnh",
                 "Môn học",
                 "Trạng thái",
-                "Vắng phép",
+                "Ghi chú",
               ]}
               data={currentData?.map((item) => [
                 item.attendenceID.toString(),
@@ -201,12 +228,14 @@ export default function TakeAttendance() {
                 item.avatar.toString(),
                 item.subject.toString(),
                 item.status.toString(),
+                item.note.toString(),
               ])}
               onCheckboxChange={handleChecked}
               showCheckboxes={true}
+              isShowNote={true}
               showCheckboxesConfirm={true}
               className="mt-4"
-              itemsPerPage={30}
+              itemsPerPage={100}
               onSave={handleSaveData}
               isImage={3}
               hiddenColumns={[0]}
@@ -238,8 +267,16 @@ export default function TakeAttendance() {
                 <span className="italic">Học sinh/Giáo viên đã tham gia tiết học.</span>
               </li>
               <li>
-                <span className="error-color font-bold">(Vắng): </span>
-                <span className="italic">Học sinh/Giáo viên đã không tham gia tiết học.</span>
+                <span className="warning-color font-bold">(Vắng có phép): </span>
+                <span className="italic">
+                  Học sinh/Giáo viên đã không tham gia tiết học và có phép.
+                </span>
+              </li>
+              <li>
+                <span className="error-color font-bold">(Vắng không phép): </span>
+                <span className="italic">
+                  Học sinh/Giáo viên đã không tham gia tiết học và không có phép.
+                </span>
               </li>
             </ul>
           </div>

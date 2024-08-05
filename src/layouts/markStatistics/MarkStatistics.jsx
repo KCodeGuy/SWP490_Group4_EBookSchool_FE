@@ -38,7 +38,7 @@ import TextValueComponent from "components/TextValueComponent";
 
 const semesters = ["Học kì I", "Học kì II", "Cả năm"];
 
-const grades = [10, 11, 12];
+const grades = [12, 11, 10];
 
 const valueASubjectForAGrade = (value) => {
   if (typeof value === "number" || value === null) {

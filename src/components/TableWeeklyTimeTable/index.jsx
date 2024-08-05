@@ -89,8 +89,10 @@ const TableWeeklyTimeTableComponent = ({
                           <AccessAlarmsIcon className="mb-1 mr-1" />
                           {slotData.slotTime}
                         </p>
-                        <div className="flex justify-between mt-1 items-center">
-                          {renderSlotStatus(slotData.status)}
+                        <div className="flex justify-between mt-2 items-center">
+                          {userRole.includes(SUBJECT_ROLE) || userRole.includes(STUDENT_ROLE)
+                            ? renderSlotStatus(slotData.status)
+                            : ""}
                           {userRole.includes(SUBJECT_ROLE) || userRole.includes(HOMEROOM_ROLE) ? (
                             <Link to={`/register-notebook`}>
                               <button className="text-center text-white px-2 max-w-max h-6 leading-6 rounded bg-warning-color">

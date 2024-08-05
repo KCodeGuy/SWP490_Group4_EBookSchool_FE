@@ -334,50 +334,52 @@ export default function RegisterNotebookStatistics() {
               ))}
             </Tabs>
             <TabPanel value={value} index={0}>
-              <div className="left">
-                <FormControl sx={{ minWidth: 120 }}>
-                  <InputLabel id="select-school-year-lable">Năm học</InputLabel>
-                  <Select
-                    labelId="select-school-year-lable"
-                    id="elect-school-year"
-                    value={schoolYear}
-                    className="h-10 mr-2 max-[767px]:mb-4"
-                    label="Năm học"
-                    onChange={handleSchoolYearSelectedChange}
-                  >
-                    {schoolYearsAPI?.map((item, index) => (
-                      <MenuItem key={index} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+              <div className="w-full flex justify-between">
+                <div className="">
+                  <FormControl sx={{ minWidth: 120 }}>
+                    <InputLabel id="select-school-year-lable">Năm học</InputLabel>
+                    <Select
+                      labelId="select-school-year-lable"
+                      id="elect-school-year"
+                      value={schoolYear}
+                      className="h-10 mr-2 max-[767px]:mb-4"
+                      label="Năm học"
+                      onChange={handleSchoolYearSelectedChange}
+                    >
+                      {schoolYearsAPI?.map((item, index) => (
+                        <MenuItem key={index} value={item}>
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
 
-                <FormControl sx={{ minWidth: 120 }}>
-                  <InputLabel id="select-school-week-lable">Tuần</InputLabel>
-                  <Select
-                    labelId="select-school-week-lable"
-                    id="select-school-week"
-                    value={schoolWeek}
-                    className="h-10 mr-2 max-[767px]:mb-4"
-                    label="Tuần"
-                    onChange={handleSchoolWeeksSelectedChange}
-                  >
-                    {schoolWeeks.map((item, index) => (
-                      <MenuItem key={index} value={item.startTime}>
-                        {item.startTime} - {item.endTime}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                  <FormControl sx={{ minWidth: 120 }}>
+                    <InputLabel id="select-school-week-lable">Tuần</InputLabel>
+                    <Select
+                      labelId="select-school-week-lable"
+                      id="select-school-week"
+                      value={schoolWeek}
+                      className="h-10 mr-2 max-[767px]:mb-4"
+                      label="Tuần"
+                      onChange={handleSchoolWeeksSelectedChange}
+                    >
+                      {schoolWeeks.map((item, index) => (
+                        <MenuItem key={index} value={item.startTime}>
+                          {item.startTime} - {item.endTime}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
 
-                <ButtonComponent
-                  type="success"
-                  className="max-[639px]:w-full"
-                  onClick={handleStatisticWeekly}
-                >
-                  <FilterAltIcon className="mr-1" /> THỐNG KÊ
-                </ButtonComponent>
+                  <ButtonComponent
+                    type="success"
+                    className="max-[639px]:w-full"
+                    onClick={handleStatisticWeekly}
+                  >
+                    <FilterAltIcon className="mr-1" /> THỐNG KÊ
+                  </ButtonComponent>
+                </div>
                 <ButtonComponent
                   type="primary"
                   className="max-[639px]:w-full"
@@ -386,6 +388,7 @@ export default function RegisterNotebookStatistics() {
                   <FilterAltIcon className="mr-1" /> CẢ NĂM
                 </ButtonComponent>
               </div>
+
               <>
                 <div className="text-center mt-8">
                   <h4 className="text-xl font-bold uppercase">Thống kê sổ đầu bài</h4>
@@ -490,68 +493,70 @@ export default function RegisterNotebookStatistics() {
               </>
             </TabPanel>
             <TabPanel value={value} index={1}>
-              <div className="left">
-                <FormControl sx={{ minWidth: 120 }}>
-                  <InputLabel id="select-school-year-lable">Năm học</InputLabel>
-                  <Select
-                    labelId="select-school-year-lable"
-                    id="elect-school-year"
-                    value={schoolYear}
-                    className="h-10 mr-2 max-[767px]:mb-4"
-                    label="Năm học"
-                    onChange={handleSchoolYearSelectedChange}
-                  >
-                    {schoolYearsAPI?.map((item, index) => (
-                      <MenuItem key={index} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+              <div className="w-full flex justify-between">
+                <div>
+                  <FormControl sx={{ minWidth: 120 }}>
+                    <InputLabel id="select-school-year-lable">Năm học</InputLabel>
+                    <Select
+                      labelId="select-school-year-lable"
+                      id="elect-school-year"
+                      value={schoolYear}
+                      className="h-10 mr-2 max-[767px]:mb-4"
+                      label="Năm học"
+                      onChange={handleSchoolYearSelectedChange}
+                    >
+                      {schoolYearsAPI?.map((item, index) => (
+                        <MenuItem key={index} value={item}>
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
 
-                <FormControl sx={{ minWidth: 120 }}>
-                  <InputLabel id="select-school-week-lable">Tuần</InputLabel>
-                  <Select
-                    labelId="select-school-week-lable"
-                    id="select-school-week"
-                    value={schoolWeek}
-                    className="h-10 mr-2 max-[767px]:mb-4"
-                    label="Tuần"
-                    onChange={handleSchoolWeeksSelectedChange}
-                  >
-                    {schoolWeeks.map((item, index) => (
-                      <MenuItem key={index} value={item.startTime}>
-                        {item.startTime} - {item.endTime}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                  <FormControl sx={{ minWidth: 120 }}>
+                    <InputLabel id="select-school-week-lable">Tuần</InputLabel>
+                    <Select
+                      labelId="select-school-week-lable"
+                      id="select-school-week"
+                      value={schoolWeek}
+                      className="h-10 mr-2 max-[767px]:mb-4"
+                      label="Tuần"
+                      onChange={handleSchoolWeeksSelectedChange}
+                    >
+                      {schoolWeeks.map((item, index) => (
+                        <MenuItem key={index} value={item.startTime}>
+                          {item.startTime} - {item.endTime}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
 
-                <FormControl sx={{ minWidth: 120 }}>
-                  <InputLabel id="select-school-grade-lable">Khối</InputLabel>
-                  <Select
-                    labelId="select-school-grade-lable"
-                    id="select-school-grade"
-                    value={grade}
-                    className="h-10 mr-2 max-[767px]:mb-4"
-                    label="Khối"
-                    onChange={handleGradeSelectedChange}
-                  >
-                    {grades?.map((item, index) => (
-                      <MenuItem key={index} value={item}>
-                        {`Khối ${item}`}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                  <FormControl sx={{ minWidth: 120 }}>
+                    <InputLabel id="select-school-grade-lable">Khối</InputLabel>
+                    <Select
+                      labelId="select-school-grade-lable"
+                      id="select-school-grade"
+                      value={grade}
+                      className="h-10 mr-2 max-[767px]:mb-4"
+                      label="Khối"
+                      onChange={handleGradeSelectedChange}
+                    >
+                      {grades?.map((item, index) => (
+                        <MenuItem key={index} value={item}>
+                          {`Khối ${item}`}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
 
-                <ButtonComponent
-                  type="success"
-                  className="max-[639px]:w-full"
-                  onClick={handleStatisticWeeklyByGrade}
-                >
-                  <FilterAltIcon className="mr-1" /> THỐNG KÊ
-                </ButtonComponent>
+                  <ButtonComponent
+                    type="success"
+                    className="max-[639px]:w-full"
+                    onClick={handleStatisticWeeklyByGrade}
+                  >
+                    <FilterAltIcon className="mr-1" /> THỐNG KÊ
+                  </ButtonComponent>
+                </div>
                 <ButtonComponent
                   type="primary"
                   className="max-[639px]:w-full"

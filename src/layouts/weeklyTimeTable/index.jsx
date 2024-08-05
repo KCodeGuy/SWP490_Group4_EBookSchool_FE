@@ -261,6 +261,18 @@ export default function WeeklyTimeTable() {
   );
 
   const handleAddTimetableManually = (data) => {
+    if (!data?.subjectID || data?.subjectID === "") {
+      data.subjectID = formattedSubjects[0].value;
+    }
+    if (!data?.teacherID || data?.teacherID === "") {
+      data.teacherID = formattedTeachers[0].value;
+    }
+    if (!data?.classID || data?.classID === "") {
+      data.classID = formattedClasses[0].value;
+    }
+    if (!data?.slotByDate || data?.slotByDate === "") {
+      data.slotByDate = formattedSlotByDate[0].value;
+    }
     addTimeTableMutationManually.mutate(data);
   };
 
@@ -334,18 +346,21 @@ export default function WeeklyTimeTable() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("slotData");
-        if (response) {
+        if (response && response?.status == 200) {
+          resetEditAction();
+          setOpenModalUpdate(false);
+          refetch().then((result) => {
+            if (result.data) {
+              setCurrentTimeTable(result.data?.details);
+            }
+          });
           toast.success("Cập nhật tiết học thành công!");
         } else {
-          toast.error(`${response.data}!`);
+          toast.error(`Cập nhật học thất bại! ${response?.response?.data}!`);
         }
-        resetEditAction();
-        setOpenModalUpdate(false);
-        refetch().then((result) => {
-          if (result.data) {
-            setCurrentTimeTable(result.data?.details);
-          }
-        });
+      },
+      onError: (error) => {
+        toast.error(`Cập nhật tiết học thất bại! ${error.message}!`);
       },
     }
   );
@@ -541,9 +556,6 @@ export default function WeeklyTimeTable() {
                         type="select"
                         options={formattedSubjects}
                         errors={errors}
-                        validationRules={{
-                          required: "Hãy chọn môn học!",
-                        }}
                       />
                       <InputBaseComponent
                         name="teacherID"
@@ -554,9 +566,6 @@ export default function WeeklyTimeTable() {
                         type="select"
                         options={formattedTeachers}
                         errors={errors}
-                        validationRules={{
-                          required: "Hãy chọn giáo viên!",
-                        }}
                       />
                       <div className="w-full flex">
                         <InputBaseComponent
@@ -568,23 +577,16 @@ export default function WeeklyTimeTable() {
                           type="select"
                           options={formattedClasses}
                           errors={errors}
-                          validationRules={{
-                            required: "Hãy chọn lớp học!",
-                          }}
                         />
-
                         <InputBaseComponent
-                          name="slotByLessonPlans"
-                          label="Tiết theo giáo án"
-                          placeholder="Tiết giáo án..."
+                          name="slotByDate"
+                          label="Tiết học"
                           className="w-1/2"
                           control={control}
                           setValue={noSetValue}
-                          type="number"
+                          type="select"
+                          options={formattedSlotByDate}
                           errors={errors}
-                          validationRules={{
-                            required: "Không được bỏ trống!",
-                          }}
                         />
                       </div>
 
@@ -603,16 +605,16 @@ export default function WeeklyTimeTable() {
                           }}
                         />
                         <InputBaseComponent
-                          name="slotByDate"
-                          label="Tiết học"
+                          name="slotByLessonPlans"
+                          label="Tiết theo giáo án"
+                          placeholder="Tiết giáo án..."
                           className="w-1/2"
                           control={control}
                           setValue={noSetValue}
-                          type="select"
-                          options={formattedSlotByDate}
+                          type="number"
                           errors={errors}
                           validationRules={{
-                            required: "Hãy chọn tiết học!",
+                            required: "Không được bỏ trống!",
                           }}
                         />
                       </div>
@@ -688,7 +690,6 @@ export default function WeeklyTimeTable() {
               <PopupComponent
                 title="CẬP NHẬT THỜI KHÓA BIỂU"
                 description={`Cập nhật khóa biểu bằng Excel`}
-                // rightNote={`Lớp: ${currentClass}`}
                 icon={<BorderColorIcon />}
                 isOpen={isUpdateAction}
                 onClose={() => setIsUpdateAction(false)}

@@ -235,7 +235,7 @@ function TableComponent({
         </table>
         <div
           className={`pagination-table border py-2 flex justify-between items-center px-3 ${
-            !isPaginate ? "d-none" : ""
+            !isPaginate ? "hidden" : ""
           }`}
         >
           <div>

@@ -49,25 +49,40 @@ const TableMarkAllStudentsComponent = ({
   };
 
   // Calculate averages and add them to each student object
-  const calculateAverages = (subjects, key) => {
-    let sumOfAllSubject = 0;
+
+  const roundToNearestTenth = (num) => {
+    return Math.round(num * 10) / 10;
+  };
+
+  const calculateAverages = (data, semester) => {
+    let total = 0;
     let count = 0;
-    subjects.map((item) => {
-      if (key === "averageSemester1" && !isNaN(item.averageSemester1)) {
-        sumOfAllSubject += parseInt(item.averageSemester1);
-        count++;
+
+    data.forEach((subject) => {
+      let value;
+      switch (semester) {
+        case "averageSemester1":
+          value = subject.averageSemester1;
+          break;
+        case "averageSemester2":
+          value = subject.averageSemester2;
+          break;
+        case "averageWholeYear":
+          value = subject.averageWholeYear;
+          break;
+        default:
+          return;
       }
-      if (key === "averageSemester2" && !isNaN(item.averageSemester2)) {
-        sumOfAllSubject += parseInt(item.averageSemester2);
-        count++;
-      }
-      if (key === "averageWholeYear" && !isNaN(item.averageWholeYear)) {
-        sumOfAllSubject += parseInt(item.averageWholeYear);
-        count++;
+
+      if (!isNaN(value) && value !== "Đ" && value !== "CĐ") {
+        total += parseFloat(value);
+        count += 1;
       }
     });
-    return Math.round((sumOfAllSubject / (count - 1)) * 10) / 10;
+    const average = count === 0 ? 0 : total / count;
+    return roundToNearestTenth(average).toFixed(1);
   };
+
   const calculateRankings = (students, key) => {
     const averages = students.map((student) => student[key]);
     const sortedAverages = [...averages].sort((a, b) => b - a);

@@ -8,6 +8,10 @@ const renderAverageMarkStyles = (averageMark) => {
     defaultStyles = `${defaultStyles} bg-warning-color`;
   } else if (averageMark < 5) {
     defaultStyles = `${defaultStyles} bg-error-color`;
+  } else if (averageMark == "Đ") {
+    defaultStyles = `${defaultStyles} bg-success-color`;
+  } else if (averageMark == "CĐ") {
+    defaultStyles = `${defaultStyles} bg-error-color`;
   }
   return defaultStyles;
 };
@@ -21,9 +25,15 @@ const renderRanking = (averageMark) => {
   } else if (averageMark >= 5 && averageMark < 6.5) {
     ranking = "Trung bình";
   } else if (averageMark < 5) {
-    ranking = "Kém";
+    ranking = "Yếu";
   } else if (averageMark == -1) {
     ranking = "Chưa xếp loại";
+  } else if (averageMark == "Đ") {
+    ranking = "Đạt";
+  } else if (averageMark == "CĐ") {
+    ranking = "Chưa Đạt";
+  } else {
+    ranking = "_";
   }
   return ranking;
 };
@@ -37,6 +47,10 @@ const renderRankingStyles = (averageMark) => {
   } else if (averageMark >= 5 && averageMark < 6.5) {
     defaultStyles = `${defaultStyles} warning-color`;
   } else if (averageMark < 5) {
+    defaultStyles = `${defaultStyles} error-color`;
+  } else if (averageMark == "Đ") {
+    defaultStyles = `${defaultStyles} success-color`;
+  } else if (averageMark == "CĐ") {
     defaultStyles = `${defaultStyles} error-color`;
   }
   return defaultStyles;

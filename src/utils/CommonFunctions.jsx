@@ -213,8 +213,8 @@ export const formatUrlToFile = async (url, filename, mimeType) => {
     const blob = await response.blob();
     return new File([blob], filename, { type: mimeType });
   } catch (error) {
-    console.error("Failed to fetch the image:", error);
-    throw error;
+    // console.error("Failed to fetch the image:", error);
+    // throw error;
   }
 };
 

@@ -82,15 +82,13 @@ export default function MarkManagement() {
   const [openModalRandom, setOpenModalRandom] = useState(false);
   const [openModalDetailsAllSubject, setOpenModalDetailsAllSubject] = useState(false);
   const [openModalDetails, setOpenModalDetails] = useState(false);
+  const [markDetails, setMarkDetails] = useState({});
   const [value, setValue] = React.useState(0);
   const handleChange = (event, newValue) => {
     setValue(newValue);
     setSchoolSemester(semesters[0].label);
   };
 
-  console.log(currentMarkOfClass?.averages);
-
-  const [markDetails, setMarkDetails] = useState({});
   const queryClient = useQueryClient();
 
   const {
@@ -277,7 +275,6 @@ export default function MarkManagement() {
     if (rowItem) {
       setMarkDetails(rowItem);
       setOpenModalDetailsAllSubject(true);
-      console.log(rowItem);
     }
   };
 
@@ -731,7 +728,7 @@ export default function MarkManagement() {
               </li>
               <li>
                 <span className="black font-medium italic">(Chưa xếp loại): </span>
-                <span className="italic">Học sinh đạt điểm trung bình học kỳ loại giỏi.</span>
+                <span className="italic">Học sinh chưa được xếp loại trong kỳ học.</span>
               </li>
               <li>
                 <span className="success-color font-medium italic">(Giỏi): </span>
@@ -746,8 +743,8 @@ export default function MarkManagement() {
                 <span className="italic">Học sinh đạt điểm trung bình học kỳ loại trung bình.</span>
               </li>
               <li>
-                <span className="error-color font-medium italic">(Kém): </span>
-                <span className="italic">Học sinh đạt điểm trung bình học kỳ loại kém.</span>
+                <span className="error-color font-medium italic">(Yếu): </span>
+                <span className="italic">Học sinh đạt điểm trung bình học kỳ loại yếu.</span>
               </li>
             </ul>
           </div>
@@ -864,7 +861,7 @@ export default function MarkManagement() {
                 </div>
               </>
             )}
-            <div className="flex justify-between text-base mt-3 border-t-2 pt-2">
+            <div className="flex justify-between text-base mt-3 border-t-2 pt-3">
               <div>
                 <span className="font-bold">Xếp loại: </span>
                 {schoolSemester == "Học kỳ I" ? (

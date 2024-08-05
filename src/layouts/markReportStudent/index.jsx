@@ -1,4 +1,3 @@
-import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
 import {
   FormControl,
   InputLabel,
@@ -15,64 +14,31 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import noDataImage3 from "../../assets/images/noDataImage3.avif";
-import DownloadIcon from "@mui/icons-material/Download";
-import CancelIcon from "@mui/icons-material/Cancel";
-import { ToastContainer, toast } from "react-toastify";
-import BorderColorIcon from "@mui/icons-material/BorderColor";
+import { ToastContainer } from "react-toastify";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import LockClockIcon from "@mui/icons-material/LockClock";
 
-import React, { useState, useEffect, useRef } from "react";
-import TableMarkOfSubjectComponent from "../../components/TableMarkOfSubjectComponent/TableMarkOfSubjectComponent";
+import React, { useState, useEffect } from "react";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import PopupComponent from "../../components/PopupComponent/PopupComponent";
-import InputBaseComponent from "../../components/InputBaseComponent/InputBaseComponent";
 import { useForm } from "react-hook-form";
 import { generateClasses } from "utils/CommonFunctions";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import { getAllSubjects } from "services/SubjectService";
-import {
-  downloadTemplateMarkByMarkComponent,
-  getMarkOfAllStudentsBySubject,
-  getMarkOfClassAllSubjects,
-  getMarkOfStudentBySubject,
-  updateMarkByMarkComponent,
-} from "../../services/markService";
-import TableMarkAllStudentsComponent from "../../components/TableMarkAllStudentsComponent/TableMarkAllStudentsComponent";
-import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
+import { getMarkOfStudentAllSubject, getMarkOfStudentBySubject } from "../../services/markService";
 import TextValueComponent from "../../components/TextValueComponent";
 import { renderRankingStyles } from "utils/RenderStyle";
 import { renderRanking } from "utils/RenderStyle";
 import { TabPanel } from "components/TabPanelComponent";
-import { SUBJECT_ROLE } from "services/APIConfig";
-import { PRINCIPAL_ROLE } from "services/APIConfig";
-import { HOMEROOM_ROLE } from "services/APIConfig";
-import { isXlsxFile } from "utils/CommonFunctions";
 import { renderAverageMarkStyles } from "utils/RenderStyle";
 import { STUDENT_ROLE } from "services/APIConfig";
 import TableComponent from "components/TableComponent/TableComponent";
 
-// Mark management (HieuTTN)
+// MarkReportStudent (KhoaTD)
 const semesters = [
   { label: "Học kỳ I", value: "Học kỳ I" },
   { label: "Học kỳ II", value: "Học kỳ II" },
   { label: "Cả năm", value: "Cả năm" },
-];
-
-const indexCols = [
-  { label: "Lần 1", value: 1 },
-  { label: "Lần 2", value: 2 },
-  { label: "Lần 3", value: 3 },
-  { label: "Lần 4", value: 4 },
-  { label: "Lần 5", value: 5 },
-];
-
-const nameScore = [
-  { label: "Kiểm tra miệng", value: "Miệng" },
-  { label: "Kiểm tra 15 phút", value: "15p" },
-  { label: "Kiểm tra 1 tiết", value: "1 Tiết" },
-  { label: "Kiểm tra học kì", value: "Cuối kỳ" },
 ];
 
 let tabs = ["ĐIỂM THEO MÔN", "ĐIỂM TỔNG KẾT"];
@@ -80,9 +46,6 @@ let tabs = ["ĐIỂM THEO MÔN", "ĐIỂM TỔNG KẾT"];
 export default function MarkReportStudent() {
   const [currentOfStudentsMarkBySubject, setCurrentOfStudentsMarkBySubject] = useState([]);
   const [currentMarkOfClass, setCurrentMarkOfClass] = useState([]);
-  const [currentAction, setCurrentAction] = useState("adding");
-  const [currentTab, setCurrentTab] = useState(0);
-  const [openModalRandom, setOpenModalRandom] = useState(false);
   const [openModalDetailsAllSubject, setOpenModalDetailsAllSubject] = useState(false);
   const [openModalDetails, setOpenModalDetails] = useState(false);
   const [value, setValue] = React.useState(0);
@@ -92,7 +55,6 @@ export default function MarkReportStudent() {
   };
 
   const [markDetails, setMarkDetails] = useState({});
-  const queryClient = useQueryClient();
 
   const {
     control,
@@ -102,23 +64,19 @@ export default function MarkReportStudent() {
     formState: { errors },
   } = useForm();
 
-  let accessToken, currentUser, userRole, userID, schoolYearsAPI, classesAPI;
+  let accessToken, currentUser, userRole, schoolYearsAPI, classesAPI;
   userRole = localStorage.getItem("userRole");
   if (userRole) {
     accessToken = localStorage.getItem("authToken");
     schoolYearsAPI = JSON.parse(localStorage.getItem("schoolYears"));
     classesAPI = JSON.parse(localStorage.getItem("currentClasses"));
     currentUser = JSON.parse(localStorage.getItem("user"));
-    userID = currentUser.id;
   }
 
   //call api get all
   const { data, error, isLoading } = useQuery(["subjectState", { accessToken }], () =>
     getAllSubjects(accessToken)
   );
-
-  //1. Modal form states open, close
-  const [modalAdd, setModalAdd] = useState(false);
 
   const [schoolYear, setSchoolYear] = React.useState(schoolYearsAPI[schoolYearsAPI.length - 1]);
   const handleSchoolYearSelectedChange = (event) => {
@@ -127,9 +85,6 @@ export default function MarkReportStudent() {
 
   const classesOfSchoolYear = generateClasses(classesAPI, schoolYear);
   const [schoolClass, setSchoolClass] = React.useState(classesOfSchoolYear[0]?.Classroom);
-  const handleChangeClass = (event) => {
-    setSchoolClass(event.target.value);
-  };
 
   useEffect(() => {
     if (data) {
@@ -153,11 +108,6 @@ export default function MarkReportStudent() {
     }
   };
 
-  const formattedClasses = classesOfSchoolYear.map((item) => ({
-    label: item.Classroom,
-    value: item.Classroom,
-  }));
-
   const {
     data: markOfStudentsBySubject,
     isError: isErrorMark,
@@ -177,48 +127,48 @@ export default function MarkReportStudent() {
     refetch: refetchMarkOfClass,
   } = useQuery({
     queryKey: ["markOfClassAllSubject", { accessToken, schoolYear, schoolClass }],
-    queryFn: () => getMarkOfClassAllSubjects(accessToken, schoolYear, schoolClass),
+    queryFn: () => getMarkOfStudentAllSubject(accessToken, currentUser?.id, schoolYear),
     enabled: false,
   });
 
+  const sortData = (scores) => {
+    const keyOrder = ["Miệng", "15p", "1 Tiết", "Cuối kỳ"];
+    const semesterOrder = ["Học kỳ I", "Học kỳ II"];
+
+    let sortedScores = scores?.sort((a, b) => {
+      if (semesterOrder.indexOf(a.semester) !== semesterOrder.indexOf(b.semester)) {
+        return semesterOrder.indexOf(a.semester) - semesterOrder.indexOf(b.semester);
+      }
+      if (keyOrder.indexOf(a.key) !== keyOrder.indexOf(b.key)) {
+        return keyOrder.indexOf(a.key) - keyOrder.indexOf(b.key);
+      }
+      return a.indexCol - b.indexCol;
+    });
+    return sortedScores;
+  };
+
   const handleFilterMark = () => {
-    const sortData = (data) => {
-      const semesterOrder = {
-        "Học kỳ I": 1,
-        "Học kỳ II": 2,
-      };
-
-      const keyOrder = {
-        Miệng: 1,
-        "15p": 2,
-        "1 Tiết": 3,
-        "Cuối kỳ": 4,
-      };
-
-      return data?.sort((a, b) => {
-        if (semesterOrder[a.semester] !== semesterOrder[b.semester]) {
-          return semesterOrder[a.semester] - semesterOrder[b.semester];
-        }
-        if (keyOrder[a.key] !== keyOrder[b.key]) {
-          return keyOrder[a.key] - keyOrder[b.key];
-        }
-        return a.indexCol - b.indexCol;
-      });
-    };
-
     if (value == 0) {
       refetch().then((result) => {
-        if (result.data) {
-          console.log("result.data", result.data);
-          const sortedData = sortData(result.data.scores);
-          setCurrentOfStudentsMarkBySubject({ ...result.data, scores: sortedData });
+        if (result?.data) {
+          // Sort the scores for each subject in the result data
+          const sortedData = result.data.details.map((detail) => {
+            return {
+              ...detail,
+              scores: sortData(detail.scores),
+            };
+          });
+
+          setCurrentOfStudentsMarkBySubject({
+            ...result.data,
+            details: sortedData,
+          });
         }
       });
-    } else {
+    } else if (value == 1) {
       refetchMarkOfClass().then((result) => {
-        if (result.data) {
-          const sortedData = sortData(result.data.scores);
-          setCurrentMarkOfClass({ ...result.data, scores: sortedData });
+        if (result?.data) {
+          setCurrentMarkOfClass(result?.data);
         }
       });
     }
@@ -234,79 +184,61 @@ export default function MarkReportStudent() {
     }))
     ?.sort((a, b) => a.grade - b.grade); // sort by grade
 
-  const formattedSchoolYear = schoolYearsAPI?.map((item) => ({
-    label: item,
-    value: item,
-  }));
-
-  const handleDownloadTemplate = (data) => {
-    if (!data.className) {
-      data.className = classesOfSchoolYear[0].Classroom;
-    }
-    if (!data.schoolYear) {
-      data.schoolYear = formattedSchoolYear[formattedSchoolYear.length - 1].label;
-    }
-    if (!data.semester) {
-      data.semester = semesters[0].value;
-    }
-    if (!data.subjectName) {
-      data.subjectName = formattedSubjects[0].value;
-    }
-    if (!data.component) {
-      data.component = nameScore[0].value;
-    }
-    if (!data.indexCol) {
-      data.indexCol = 1;
-    }
-    const params = {
-      className: data.className,
-      schoolYear: data.schoolYear,
-      semester: data.semester,
-      subjectName: data.subjectName,
-      component: data.component,
-      indexCol: data.indexCol,
-    };
-    if (params) {
-      downloadTemplateMarkByMarkComponent(params);
-    }
-  };
-
-  const updateMarkMutation = useMutation((file) => updateMarkByMarkComponent(accessToken, file), {
-    onSuccess: (response) => {
-      queryClient.invalidateQueries("timeTableState");
-      if (response && response?.status === 200) {
-        toast.success("Nhập điểm thành công!");
-        reset();
-        setModalAdd(false);
-        refetch().then((result) => {
-          if (result.data) {
-            setCurrentOfStudentsMarkBySubject(result.data);
-          }
-        });
-      } else {
-        toast.error(`Nhập điểm thất bại! ${response?.response?.data}!`);
-      }
-    },
-    onError: (error) => {
-      toast.error(`Nhập điểm thất bại! ${error.message}!`);
-    },
-  });
-  const handleUploadTemplate = (data) => {
-    if (data && data?.markFile) {
-      if (isXlsxFile(data?.markFile)) {
-        updateMarkMutation.mutate(data.markFile);
-      } else {
-        toast.error(`Nhập điểm thất bại! File không đúng định dạng ".xlsx"!`);
-      }
-    }
-  };
-
   const handleDetailsAllSubject = (rowItem) => {
     if (rowItem) {
       setMarkDetails(rowItem);
       setOpenModalDetailsAllSubject(true);
-      console.log(rowItem);
     }
+  };
+
+  const getFilteredScores = () => {
+    const details = currentOfStudentsMarkBySubject?.details[0];
+    if (!details) return [];
+
+    return details.scores.filter((item) => {
+      if (schoolSemester === "Học kỳ I") {
+        return item.semester === "Học kỳ I";
+      } else if (schoolSemester === "Học kỳ II") {
+        return item.semester === "Học kỳ II";
+      } else if (schoolSemester === "Cả năm") {
+        return true;
+      }
+      return false;
+    });
+  };
+
+  const roundToNearestTenth = (num) => {
+    return Math.round(num * 10) / 10;
+  };
+
+  const calculateAverage = (data, semester) => {
+    let total = 0;
+    let count = 0;
+
+    data.forEach((subject) => {
+      let value;
+      switch (semester) {
+        case "Học kỳ I":
+          value = subject.semester1Average;
+          break;
+        case "Học kỳ II":
+          value = subject.semester2Average;
+          break;
+        case "Cả năm":
+          value = subject.yearAverage;
+          break;
+        default:
+          return;
+      }
+
+      if (!isNaN(value) && value !== "Đ" && value !== "CĐ") {
+        total += parseFloat(value);
+        count += 1;
+      }
+    });
+
+    const average = count === 0 ? 0 : total / count;
+    return roundToNearestTenth(average).toFixed(1);
   };
 
   return (
@@ -387,88 +319,8 @@ export default function MarkReportStudent() {
               </ButtonComponent>
             </div>
           </div>
-          <TabPanel value={value} index={userRole.includes(STUDENT_ROLE)}>
-            <>
-              {userRole.includes(STUDENT_ROLE) ? (
-                <div className="text-center mt-10 uppercase">
-                  <h4 className="text-xl font-bold">Bảng điểm môn {schoolSubject}</h4>
-                  <h4 className="text-xl font-bold">Năm học: {schoolYear}</h4>
-                </div>
-              ) : (
-                ""
-              )}
-              <div className="flex flex-nowrap justify-between icon-custom mt-5">
-                <div className="text-sm mr-4 flex">
-                  <div className="mr-2">
-                    <span className="mr-2 font-bold">Lớp: </span>
-                    <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                      {currentOfStudentsMarkBySubject?.className || "Chưa có thông tin!"}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex">
-                  <div className="flex items-center">
-                    <span className="mr-2 font-bold text-sm">Chọn học kỳ: </span>
-                    <FormControl sx={{ minWidth: 120 }}>
-                      <InputLabel id="select-school-semester-lable">Học kỳ</InputLabel>
-                      <Select
-                        labelId="select-school-semester-lable"
-                        id="select-school-semester"
-                        value={schoolSemester}
-                        className="h-10 mr-2 max-[767px]:mb-4"
-                        label="Học kỳ"
-                        onChange={handleSemesterChange}
-                      >
-                        {semesters.map((item, index) => (
-                          <MenuItem key={index} value={item.value}>
-                            {item.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </div>
-                </div>
-              </div>
 
-              {userRole.includes(STUDENT_ROLE) ? (
-                isLoadingMarkOfClass ? (
-                  <div className="text-center primary-color my-30 text-xl italic font-medium">
-                    <div className="mx-auto flex items-center justify-center">
-                      <p className="mr-3">Loading</p>
-                      <CircularProgress size={24} color="inherit" />
-                    </div>
-                  </div>
-                ) : markOfClassAllSubject && currentMarkOfClass?.averages?.length > 0 ? (
-                  <TableMarkAllStudentsComponent
-                    className="mt-4"
-                    semester={schoolSemester}
-                    itemsPerPage={50}
-                    data={currentMarkOfClass?.averages}
-                    onViewDetails={handleDetailsAllSubject}
-                  />
-                ) : (
-                  <div className="text-center primary-color my-10 text-xl italic font-medium">
-                    <img
-                      className="w-60 h-60 object-cover object-center mx-auto"
-                      src={noDataImage3}
-                      alt="Chưa có dữ liệu!"
-                    />
-                    Chưa có dữ liệu!
-                  </div>
-                )
-              ) : (
-                <div className="text-center primary-color my-10 text-xl italic font-medium">
-                  <img
-                    className="w-60 h-60 object-cover object-center mx-auto"
-                    src={noDataImage3}
-                    alt="Chưa có dữ liệu!"
-                  />
-                  Bạn không có quyền try cập!
-                </div>
-              )}
-            </>
-          </TabPanel>
-          <TabPanel value={value} index={userRole.includes(STUDENT_ROLE) ? 0 : 1}>
+          <TabPanel value={value} index={0}>
             <>
               {userRole.includes(STUDENT_ROLE) ? (
                 <>
@@ -532,21 +384,65 @@ export default function MarkReportStudent() {
                       </div>
                     </div>
                   ) : currentOfStudentsMarkBySubject?.details?.length > 0 ? (
-                    <TableComponent
-                      header={["Học kỳ", "Điểm thành phần", "Thứ tự", "Điểm"]}
-                      data={currentOfStudentsMarkBySubject?.details[0]?.scores?.map((item) => [
-                        item.semester,
-                        item.key,
-                        item.indexCol,
-                        item.value,
-                      ])}
-                      itemsPerPage={50}
-                      isPaginate={false}
-                      onDetails={(data) => {
-                        console.log(data);
-                      }}
-                      className="mt-8"
-                    />
+                    <>
+                      <TableComponent
+                        header={["Học kỳ", "Điểm thành phần", "Thứ tự", "Điểm"]}
+                        data={getFilteredScores().map((item) => [
+                          item.semester,
+                          item.key,
+                          `Lần ${item.indexCol}`,
+                          item.value,
+                        ])}
+                        itemsPerPage={50}
+                        isPaginate={false}
+                        onDetails={handleDetails}
+                        className="mt-6"
+                      />
+                      <div className="mt-5 text-base w-full flex justify-end">
+                        <div className="max-w-max">
+                          <div className="flex justify-between items-center">
+                            <span className="font-bold">Xếp loại: </span>
+                            {currentOfStudentsMarkBySubject?.details ? (
+                              currentOfStudentsMarkBySubject?.details[0]?.average != 0 &&
+                              currentOfStudentsMarkBySubject?.details[0]?.average != -1 ? (
+                                <span
+                                  className={renderRankingStyles(
+                                    currentOfStudentsMarkBySubject?.details[0]?.average
+                                  )}
+                                >
+                                  {renderRanking(
+                                    currentOfStudentsMarkBySubject?.details[0]?.average
+                                  )}
+                                </span>
+                              ) : (
+                                "_"
+                              )
+                            ) : (
+                              "_"
+                            )}
+                          </div>
+                          <div className="flex justify-between items-center mt-2 border-t-2 pt-2">
+                            <span className="font-bold mr-4">Trung bình môn: </span>
+                            {currentOfStudentsMarkBySubject?.details ? (
+                              currentOfStudentsMarkBySubject?.details[0]?.average != 0 &&
+                              currentOfStudentsMarkBySubject?.details[0]?.average != -1 ? (
+                                <span
+                                  className={renderAverageMarkStyles(
+                                    currentOfStudentsMarkBySubject?.details[0]?.average
+                                  )}
+                                >
+                                  {currentOfStudentsMarkBySubject?.details[0]?.average}
+                                </span>
+                              ) : (
+                                "_"
+                              )
+                            ) : (
+                              "_"
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </>
                   ) : (
                     <div className="text-center primary-color my-10 text-xl italic font-medium">
                       <img
@@ -563,6 +459,190 @@ export default function MarkReportStudent() {
               )}
             </>
           </TabPanel>
+          <TabPanel value={value} index={1}>
+            <>
+              <div className="text-center mt-10 uppercase">
+                <h4 className="text-xl font-bold">Bảng điểm {`(${currentUser?.fullname})`}</h4>
+                <h4 className="text-xl font-bold">Học kỳ: {schoolSemester}.</h4>
+                <h4 className="text-xl font-bold">Năm học: {schoolYear}</h4>
+              </div>
+              <div className="flex flex-nowrap icon-custom mt-5 w-full justify-between">
+                <div className="text-sm mr-4 flex">
+                  <div className="mr-2">
+                    <span className="mr-2 font-bold">Lớp: </span>
+                    <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                      {currentOfStudentsMarkBySubject?.className || "Chưa có thông tin!"}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <span className="mr-2 font-bold text-sm">Chọn học kỳ: </span>
+                  <FormControl sx={{ minWidth: 120 }}>
+                    <InputLabel id="select-school-semester-lable">Học kỳ</InputLabel>
+                    <Select
+                      labelId="select-school-semester-lable"
+                      id="select-school-semester"
+                      value={schoolSemester}
+                      className="h-10 mr-2 max-[767px]:mb-4"
+                      label="Học kỳ"
+                      onChange={handleSemesterChange}
+                    >
+                      {semesters.map((item, index) => (
+                        <MenuItem key={index} value={item.value}>
+                          {item.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+              </div>
+              {isLoadingMarkOfClass ? (
+                <div className="text-center primary-color my-30 text-xl italic font-medium">
+                  <div className="mx-auto flex items-center justify-center">
+                    <p className="mr-3">Loading</p>
+                    <CircularProgress size={24} color="inherit" />
+                  </div>
+                </div>
+              ) : markOfClassAllSubject && currentMarkOfClass?.length > 0 ? (
+                <>
+                  {schoolSemester != "Cả năm" ? (
+                    <>
+                      <TableComponent
+                        header={["Môn học", "Điểm trung bình", "Xếp loại môn"]}
+                        data={currentMarkOfClass.map((item) => [
+                          item.subject,
+                          schoolSemester == "Học kỳ I"
+                            ? item.semester1Average
+                            : schoolSemester == "Học kỳ II"
+                            ? item.semester2Average
+                            : "_",
+                          schoolSemester == "Học kỳ I"
+                            ? renderRanking(item.semester1Average)
+                            : schoolSemester == "Học kỳ II"
+                            ? renderRanking(item.semester1Average)
+                            : "_",
+                        ])}
+                        itemsPerPage={50}
+                        isPaginate={false}
+                        onDetails={handleDetailsAllSubject}
+                        className="mt-6"
+                      />
+                      <div className="mt-5 text-base w-full flex justify-end">
+                        <div className="max-w-max">
+                          <div className="flex justify-between items-center">
+                            <span className="font-bold">Xếp loại: </span>
+                            {currentMarkOfClass?.length > 0 ? (
+                              <span
+                                className={renderRankingStyles(
+                                  calculateAverage(currentMarkOfClass, schoolSemester)
+                                )}
+                              >
+                                {renderRanking(
+                                  calculateAverage(currentMarkOfClass, schoolSemester)
+                                )}
+                              </span>
+                            ) : (
+                              "_"
+                            )}
+                          </div>
+                          <div className="flex justify-between items-center mt-2 border-t-2 pt-2">
+                            <span className="font-bold mr-4">Trung bình môn: </span>
+                            {currentMarkOfClass?.length > 0 ? (
+                              <span
+                                className={renderAverageMarkStyles(
+                                  calculateAverage(currentMarkOfClass, schoolSemester)
+                                )}
+                              >
+                                {calculateAverage(currentMarkOfClass, schoolSemester)}
+                              </span>
+                            ) : (
+                              "_"
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <TableComponent
+                        header={[
+                          "Môn học",
+                          "Học kỳ I",
+                          "Học kỳ II",
+                          "Điểm trung bình",
+                          "Xếp loại môn",
+                        ]}
+                        data={currentMarkOfClass.map((item) => [
+                          item.subject,
+                          item.semester1Average,
+                          item.semester2Average,
+                          item.yearAverage,
+                          renderRanking(item.yearAverage),
+                        ])}
+                        itemsPerPage={50}
+                        isPaginate={false}
+                        onDetails={handleDetailsAllSubject}
+                        className="mt-6"
+                      />
+                      <div className="mt-5 text-base w-full flex justify-end">
+                        <div className="max-w-max">
+                          <div className="flex justify-between items-center">
+                            <span className="font-bold">Xếp loại: </span>
+                            {currentMarkOfClass?.length > 0 ? (
+                              <span
+                                className={renderRankingStyles(
+                                  calculateAverage(currentMarkOfClass, "Cả năm")
+                                )}
+                              >
+                                {renderRanking(calculateAverage(currentMarkOfClass, "Cả năm"))}
+                              </span>
+                            ) : (
+                              "_"
+                            )}
+                          </div>
+                          <div className="flex justify-between items-center mt-2 border-t-2 pt-2">
+                            <span className="font-bold mr-4">Trung bình môn (Kỳ I): </span>
+                            {currentMarkOfClass?.length > 0
+                              ? calculateAverage(currentMarkOfClass, "Học kỳ I")
+                              : "_"}
+                          </div>
+                          <div className="flex justify-between items-center mt-2 border-t-2 pt-2">
+                            <span className="font-bold mr-4">Trung bình môn (Kỳ II): </span>
+                            {currentMarkOfClass?.length > 0
+                              ? calculateAverage(currentMarkOfClass, "Học kỳ II")
+                              : "_"}
+                          </div>
+                          <div className="flex justify-between items-center mt-2 border-t-2 pt-2">
+                            <span className="font-bold mr-4">Trung bình môn (Cả năm): </span>
+                            {currentMarkOfClass?.length > 0 ? (
+                              <span
+                                className={renderAverageMarkStyles(
+                                  calculateAverage(currentMarkOfClass, "Cả năm")
+                                )}
+                              >
+                                {calculateAverage(currentMarkOfClass, "Cả năm")}
+                              </span>
+                            ) : (
+                              "_"
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </>
+              ) : (
+                <div className="text-center primary-color my-10 text-xl italic font-medium">
+                  <img
+                    className="w-60 h-60 object-cover object-center mx-auto"
+                    src={noDataImage3}
+                    alt="Chưa có dữ liệu!"
+                  />
+                  Chưa có dữ liệu!
+                </div>
+              )}
+            </>
+          </TabPanel>
           <div className="mt-5 text-base">
             <p className="font-bold">Ghi chú:</p>
             <ul className="list-disc ml-5">
@@ -572,7 +652,7 @@ export default function MarkReportStudent() {
               </li>
               <li>
                 <span className="black font-medium italic">(Chưa xếp loại): </span>
-                <span className="italic">Học sinh đạt điểm trung bình học kỳ loại giỏi.</span>
+                <span className="italic">Học sinh chưa được xếp loại trong kỳ học.</span>
               </li>
               <li>
                 <span className="success-color font-medium italic">(Giỏi): </span>
@@ -587,267 +667,113 @@ export default function MarkReportStudent() {
                 <span className="italic">Học sinh đạt điểm trung bình học kỳ loại trung bình.</span>
               </li>
               <li>
-                <span className="error-color font-medium italic">(Kém): </span>
-                <span className="italic">Học sinh đạt điểm trung bình học kỳ loại kém.</span>
+                <span className="error-color font-medium italic">(Yếu): </span>
+                <span className="italic">Học sinh đạt điểm trung bình học kỳ loại yếu.</span>
               </li>
             </ul>
           </div>
           <PopupComponent
             title="CHI TIẾT ĐIỂM"
             description="Chi tiết các cột điểm môn học"
-            rightNote={`HS: ${markDetails?.fullName}`}
+            rightNote={`HS: ${currentOfStudentsMarkBySubject?.fullName}`}
             isOpen={openModalDetails}
             onClose={() => setOpenModalDetails(false)}
           >
-            {schoolSemester != "Cả năm" ? (
-              nameScore?.map((markComponent, index) => (
-                <div key={index}>
-                  <div className="flex justify-between bg-primary-color text-white rounded-sm italic px-2 text-sm py-1 mb-1">
-                    <span>
-                      <AssignmentIcon className="mb-0.5" /> {markComponent.label}
-                    </span>
-                    <span>{schoolSemester}</span>
-                  </div>
-                  {markDetails && markDetails?.scores && markDetails?.scores.length > 0 ? (
-                    markDetails?.scores.map((item, index) =>
-                      item.key == markComponent.value && item.semester == schoolSemester ? (
-                        <TextValueComponent
-                          label={`Lần ${item.indexCol}`}
-                          key={index}
-                          className="px-4 justify-between justify-between"
-                          value={`${item.value != -1 ? `${item.value} điểm` : "_"}`}
-                          icon={<LockClockIcon />}
-                        />
-                      ) : (
-                        ""
-                      )
-                    )
-                  ) : (
-                    <span className="italic text-base">Chưa có điểm</span>
-                  )}
-                </div>
-              ))
-            ) : (
-              <>
-                <div>
-                  <div className="flex justify-between bg-primary-color text-white rounded-sm italic px-2 text-sm py-1 mb-1">
-                    <span>
-                      <AssignmentIcon className="mb-0.5" /> Học kỳ I
-                    </span>
-                    <span>TBM</span>
-                  </div>
-                  {markDetails?.averageSemester1 != -1 && markDetails?.averageSemester1 != 0 ? (
-                    <TextValueComponent
-                      label={`Học kỳ I`}
-                      key="Học kỳ I"
-                      className="px-4 justify-between justify-between"
-                      value={`${markDetails?.averageSemester1} điểm`}
-                      icon={<LockClockIcon />}
-                    />
-                  ) : (
-                    <span className="italic text-base">_</span>
-                  )}
-                </div>
-                <div>
-                  <div className="flex justify-between bg-primary-color text-white rounded-sm italic px-2 text-sm py-1 mb-1">
-                    <span>
-                      <AssignmentIcon className="mb-0.5" /> Học kỳ II
-                    </span>
-                    <span>TBM</span>
-                  </div>
-                  {markDetails?.averageSemester2 != -1 && markDetails?.averageSemester2 != 0 ? (
-                    <TextValueComponent
-                      label={`Học kỳ II`}
-                      key="Học kỳ II"
-                      className="px-4 justify-between justify-between"
-                      value={`${markDetails?.averageSemester2} điểm`}
-                      icon={<LockClockIcon />}
-                    />
-                  ) : (
-                    <span className="italic text-base">_</span>
-                  )}
-                </div>
-                <div>
-                  <div className="flex justify-between bg-primary-color text-white rounded-sm italic px-2 text-sm py-1 mb-1">
-                    <span>
-                      <AssignmentIcon className="mb-0.5" /> Cả năm
-                    </span>
-                    <span>TBM</span>
-                  </div>
-                  {markDetails?.averageYear != -1 && markDetails?.averageYear != 0 ? (
-                    <TextValueComponent
-                      label={`Cả năm`}
-                      key="Cả năm"
-                      className="px-4 justify-between justify-between"
-                      value={`${markDetails?.averageYear} điểm`}
-                      icon={<LockClockIcon />}
-                    />
-                  ) : (
-                    <span className="italic text-base">_</span>
-                  )}
-                </div>
-              </>
-            )}
-            <div className="flex justify-between text-base mt-3 border-t-2 pt-2">
-              <div>
-                <span className="font-bold">Xếp loại: </span>
-                {schoolSemester == "Học kỳ I" ? (
-                  markDetails?.averageSemester1 != -1 && markDetails?.averageSemester1 != 0 ? (
-                    <span className={renderRankingStyles(markDetails?.averageSemester1)}>
-                      {renderRanking(markDetails?.averageSemester1)}
-                    </span>
-                  ) : (
-                    <span className="text-base italic">Chưa xếp loại!</span>
-                  )
-                ) : schoolSemester == "Học kỳ II" ? (
-                  markDetails?.averageSemester2 != -1 && markDetails?.averageSemester2 != 0 ? (
-                    <span className={renderRankingStyles(markDetails?.averageSemester2)}>
-                      {renderRanking(markDetails?.averageSemester2)}
-                    </span>
-                  ) : (
-                    <span className="text-base italic">Chưa xếp loại!</span>
-                  )
-                ) : schoolSemester == "Cả năm" ? (
-                  markDetails?.averageYear != -1 && markDetails?.averageYear != 0 ? (
-                    <span className={renderRankingStyles(markDetails?.averageYear)}>
-                      {renderRanking(markDetails?.averageYear)}
-                    </span>
-                  ) : (
-                    <span className="text-base italic">Chưa xếp loại!</span>
-                  )
-                ) : (
-                  ""
-                )}
+            <div>
+              <div className="flex justify-between bg-primary-color text-white rounded-sm italic px-2 text-sm py-1 mb-1">
+                <span>
+                  <AssignmentIcon className="mb-0.5" /> {markDetails[1]}
+                </span>
+                <span>{schoolSemester != "Cả năm" ? schoolSemester : markDetails[0]}</span>
               </div>
-              <div>
-                <span className="font-bold">TBM: </span>
-                {schoolSemester == "Học kỳ I" ? (
-                  markDetails?.averageSemester1 != -1 && markDetails?.averageSemester1 != 0 ? (
-                    <span className={renderAverageMarkStyles(markDetails?.averageSemester1)}>
-                      {markDetails ? markDetails?.averageSemester1 : "_"}
-                    </span>
-                  ) : (
-                    <span className="text-base italic">Chưa có điểm!</span>
-                  )
-                ) : schoolSemester == "Học kỳ II" ? (
-                  markDetails?.averageSemester2 != -1 && markDetails?.averageSemester2 != 0 ? (
-                    <span className={renderAverageMarkStyles(markDetails?.averageSemester2)}>
-                      {markDetails ? markDetails?.averageSemester2 : "_"}
-                    </span>
-                  ) : (
-                    <span className="text-base italic">Chưa có điểm!</span>
-                  )
-                ) : schoolSemester == "Cả năm" ? (
-                  markDetails?.averageYear != -1 && markDetails?.averageYear != 0 ? (
-                    <span className={renderAverageMarkStyles(markDetails?.averageYear)}>
-                      {markDetails ? markDetails?.averageYear : "_"}
-                    </span>
-                  ) : (
-                    <span className="text-base italic">Chưa có điểm!</span>
-                  )
-                ) : (
-                  ""
-                )}
-              </div>
+              <TextValueComponent
+                label={`${markDetails[2]}`}
+                key={markDetails[0]}
+                className="px-4 justify-between justify-between"
+                value={`${markDetails[3] != -1 ? `${markDetails[3]} điểm` : "_"}`}
+                icon={<LockClockIcon />}
+              />
             </div>
           </PopupComponent>
           <PopupComponent
             title="CHI TIẾT ĐIỂM"
             description="Chi tiết điểm tất cả môn học"
-            rightNote={`HS: ${markDetails?.fullName}`}
+            rightNote={`HS: ${currentUser?.fullname}`}
             isOpen={openModalDetailsAllSubject}
             onClose={() => setOpenModalDetailsAllSubject(false)}
           >
-            {markDetails?.subjectAverages?.map((item, index) => (
-              <>
-                <div
-                  key={index}
-                  className="flex justify-between bg-primary-color text-white rounded-sm italic px-2 text-sm py-1 mb-1"
-                >
+            {schoolSemester != "Cả năm" ? (
+              <div>
+                <div className="flex justify-between bg-primary-color text-white rounded-sm italic px-2 text-sm py-1 mb-1">
                   <span>
-                    <AssignmentIcon className="mb-0.5" /> {item.subject}
+                    <AssignmentIcon className="mb-0.5" /> {markDetails[0]}
                   </span>
                   <span>TBM</span>
                 </div>
                 <TextValueComponent
-                  label={schoolSemester}
-                  key={schoolSemester}
+                  label={`${schoolSemester}`}
+                  key={markDetails[0]}
                   className="px-4 justify-between justify-between"
-                  value={`${
-                    schoolSemester == "Học kỳ I"
-                      ? item.averageSemester1
-                      : schoolSemester == "Học kỳ II"
-                      ? item.averageSemester2
-                      : schoolSemester == "Cả năm"
-                      ? item.averageWholeYear
-                      : "_"
-                  } điểm`}
+                  value={`${markDetails[1] != -1 ? `${markDetails[1]} điểm` : "_"}`}
                   icon={<LockClockIcon />}
                 />
-              </>
-            ))}
-            <div className="flex justify-between text-base mt-3 border-t-2 pt-2">
-              <div>
-                <span className="font-bold">Xếp loại: </span>
-                {schoolSemester == "Học kỳ I" ? (
-                  markDetails?.totalAverage1 != -1 && markDetails?.totalAverage1 != 0 ? (
-                    <span className={renderRankingStyles(markDetails?.totalAverage1)}>
-                      {renderRanking(markDetails?.totalAverage1)}
+                <div className="flex justify-between mt-4 border-t-2 pt-3">
+                  <div>
+                    <span className="font-bold">Xếp loại: </span>
+                    <span className={renderRankingStyles(markDetails[1])}> {markDetails[2]}</span>
+                  </div>
+                  <div>
+                    <span className="font-bold">TMB: </span>
+                    <span className={renderAverageMarkStyles(markDetails[1])}>
+                      {markDetails[1]}
                     </span>
-                  ) : (
-                    <span className="text-base italic">Chưa xếp loại!</span>
-                  )
-                ) : schoolSemester == "Học kỳ II" ? (
-                  markDetails?.totalAverage2 != -1 && markDetails?.totalAverage2 != 0 ? (
-                    <span className={renderRankingStyles(markDetails?.totalAverage2)}>
-                      {renderRanking(markDetails?.totalAverage2)}
-                    </span>
-                  ) : (
-                    <span className="text-base italic">Chưa xếp loại!</span>
-                  )
-                ) : schoolSemester == "Cả năm" ? (
-                  markDetails?.totalAverage != -1 && markDetails?.totalAverage != 0 ? (
-                    <span className={renderRankingStyles(markDetails?.totalAverage)}>
-                      {renderRanking(markDetails?.totalAverage)}
-                    </span>
-                  ) : (
-                    <span className="text-base italic">Chưa xếp loại!</span>
-                  )
-                ) : (
-                  ""
-                )}
+                  </div>
+                </div>
               </div>
+            ) : (
               <div>
-                <span className="font-bold">TBM: </span>
-                {schoolSemester == "Học kỳ I" ? (
-                  markDetails?.totalAverage1 != -1 && markDetails?.totalAverage1 != 0 ? (
-                    <span className={renderAverageMarkStyles(markDetails?.totalAverage1)}>
-                      {markDetails ? markDetails?.totalAverage1 : "_"}
+                <div className="flex justify-between bg-primary-color text-white rounded-sm italic px-2 text-sm py-1 mb-1">
+                  <span>
+                    <AssignmentIcon className="mb-0.5" /> {markDetails[0]}
+                  </span>
+                  <span>TBM</span>
+                </div>
+                <TextValueComponent
+                  label={`Học kỳ I`}
+                  key={markDetails[1]}
+                  className="px-4 justify-between justify-between"
+                  value={`${markDetails[1] != -1 ? `${markDetails[1]} điểm` : "_"}`}
+                  icon={<LockClockIcon />}
+                />
+                <TextValueComponent
+                  label={`Học kỳ II`}
+                  key={markDetails[2]}
+                  className="px-4 justify-between justify-between"
+                  value={`${markDetails[2] != -1 ? `${markDetails[2]} điểm` : "_"}`}
+                  icon={<LockClockIcon />}
+                />
+                <TextValueComponent
+                  label={`Cả năm`}
+                  key={markDetails[3]}
+                  className="px-4 justify-between justify-between"
+                  value={`${markDetails[3] != -1 ? `${markDetails[3]} điểm` : "_"}`}
+                  icon={<LockClockIcon />}
+                />
+                <div className="flex justify-between mt-4 border-t-2 pt-3">
+                  <div>
+                    <span className="font-bold">Xếp loại: </span>
+                    <span className={renderRankingStyles(markDetails[3])}> {markDetails[4]}</span>
+                  </div>
+                  <div>
+                    <span className="font-bold">TMB: </span>
+                    <span className={renderAverageMarkStyles(markDetails[3])}>
+                      {" "}
+                      {markDetails[3]}
                     </span>
-                  ) : (
-                    <span className="text-base italic">Chưa có điểm!</span>
-                  )
-                ) : schoolSemester == "Học kỳ II" ? (
-                  markDetails?.totalAverage2 != -1 && markDetails?.totalAverage2 != 0 ? (
-                    <span className={renderAverageMarkStyles(markDetails?.totalAverage2)}>
-                      {markDetails ? markDetails?.totalAverage2 : "_"}
-                    </span>
-                  ) : (
-                    <span className="text-base italic">Chưa có điểm!</span>
-                  )
-                ) : schoolSemester == "Cả năm" ? (
-                  markDetails?.totalAverage != -1 && markDetails?.totalAverage != 0 ? (
-                    <span className={renderAverageMarkStyles(markDetails?.totalAverage)}>
-                      {markDetails ? markDetails?.totalAverage : "_"}
-                    </span>
-                  ) : (
-                    <span className="text-base italic">Chưa có điểm!</span>
-                  )
-                ) : (
-                  ""
-                )}
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </PopupComponent>
         </MDBox>
       </Card>

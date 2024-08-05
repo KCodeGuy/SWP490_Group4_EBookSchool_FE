@@ -35,7 +35,25 @@ const getMarkOfStudentBySubject = async (accessToken, studentID, schoolYear, sub
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    console.log("res.data", res.data);
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+const getMarkOfStudentAllSubject = async (accessToken, studentID, schoolYear) => {
+  try {
+    let params = {
+      studentID,
+      schoolYear,
+    };
+    const res = await axios.get(`${API_HOST}/Scores/AVGByStudentAllSubject`, {
+      params,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
     return res.data;
   } catch (error) {
     return error;
@@ -93,4 +111,5 @@ export {
   downloadTemplateMarkByMarkComponent,
   updateMarkByMarkComponent,
   getMarkOfClassAllSubjects,
+  getMarkOfStudentAllSubject,
 };

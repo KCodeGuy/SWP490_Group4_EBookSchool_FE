@@ -35,6 +35,7 @@ function TableComponent({
   hiddenColumns,
   isPaginate,
   isShowNote,
+  isMaxLine,
   saveName = "Lưu",
 }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -101,14 +102,6 @@ function TableComponent({
     setCheckedItemsConfirm(newCheckedItems);
   };
 
-  // const handleSave = () => {
-  //   if (onSave) {
-  //     onSave({ checkedItems, checkedItemsConfirm });
-  //     setCheckedItems([]);
-  //     setCheckedItemsConfirm([]);
-  //   }
-  // };
-
   const handleInputChange = (rowIndex, value) => {
     setInputValues((prevValues) => ({
       ...prevValues,
@@ -143,7 +136,13 @@ function TableComponent({
               {header?.map((column, index) => (
                 <th key={index}>{column}</th>
               ))}
-              {showCheckboxesConfirm && <th className="w-20">Vắng có phép</th>}
+              {isShowNote && <th className="w-40">Ghi chú</th>}
+              {showCheckboxesConfirm && (
+                <th className="w-20">
+                  Vắng <br />
+                  có phép
+                </th>
+              )}
               {showCheckboxes && <th className="w-20">Có mặt</th>}
               {isShowActions && <th className="w-28">Thao tác</th>}
               {isShowNote && <th className="w-36">Nhập ghi chú</th>}
@@ -187,7 +186,7 @@ function TableComponent({
                             />
                           ) : (
                             <div
-                              className={`max-line-4 max-w-56 mx-auto ${
+                              className={`${isMaxLine ? "max-line-4" : ""} max-w-56 mx-auto ${
                                 cell === "Có mặt"
                                   ? "success-color font-bold"
                                   : cell === "Vắng có phép"
@@ -219,22 +218,13 @@ function TableComponent({
                       />
                     </td>
                   )}
-                  {/* {isShowNote && (
-                    <td className="max-w-36 px-3">
-                      <input
-                        type="text"
-                        value={row[7]}
-                        className="border border-blue-400 px-2 py-1 rounded-md w-full outline-blue-600"
-                        onChange={(e) => {}}
-                      />
-                    </td>
-                  )} */}
                   {isShowNote && (
                     <td className="max-w-36 px-3">
                       <input
                         type="text"
+                        placeholder="Ghi chú..."
                         value={inputValues[rowIndex] || row[7] || ""}
-                        className="border border-blue-400 px-2 py-1 rounded-md w-full outline-blue-600"
+                        className="border border-blue-400 px-2 py-2 rounded-md w-full outline-blue-600"
                         onChange={(e) => handleInputChange(rowIndex, e.target.value)}
                       />
                     </td>
@@ -344,6 +334,7 @@ TableComponent.propTypes = {
   isOrdered: PropTypes.bool,
   isPaginate: PropTypes.bool,
   isShowImage: PropTypes.bool,
+  isMaxLine: PropTypes.bool,
   showCheckboxes: PropTypes.bool,
   isShowNote: PropTypes.bool,
   showCheckboxesConfirm: PropTypes.bool,
@@ -358,6 +349,7 @@ TableComponent.propTypes = {
 TableComponent.defaultProps = {
   data: [],
   isShowNote: false,
+  isMaxLine: true,
   itemsPerPage: 10, // Default items per page
   isPaginate: true,
   isOrdered: true, // Default to not showing row numbers

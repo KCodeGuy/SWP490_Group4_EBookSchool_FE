@@ -1,57 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { Card, CircularProgress, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { Card, CircularProgress } from "@mui/material";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import CheckIcon from "@mui/icons-material/Check";
-import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import TableComponent from "../../components/TableComponent/TableComponent";
 import noDataImage3 from "../../assets/images/noDataImage3.avif";
-import { students } from "../../mock/student";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
-import { studentClasses } from "../../mock/class";
-import { schoolYears } from "../../mock/schoolYear";
-import SearchInputComponent from "components/SearchInputComponent/SearchInputComponent";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getAttendanceBySlot, updateAttendance } from "../../services/AttendanceService";
 import { useParams } from "react-router-dom";
 import GradingIcon from "@mui/icons-material/Grading";
-
-const schoolWeeks = [
-  { id: 1, name: "week 1", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 2, name: "week 2", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 3, name: "week 3", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 4, name: "week 4", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 5, name: "week 5", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 6, name: "week 6", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 7, name: "week 7", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 8, name: "week 8", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 9, name: "week 9", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 10, name: "week 10", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 11, name: "week 11", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 12, name: "week 12", startTime: "20/1/2024", endTime: "28/1/2024" },
-  { id: 13, name: "week 13", startTime: "20/1/2024", endTime: "28/1/2024" },
-];
 
 export default function TakeAttendance() {
   const { attendanceID } = useParams();
   const [isCheckedAll, setIsCheckedAll] = useState(false);
   const [currentData, setCurrentData] = useState([]);
   const [currentSubject, setCurrentSubject] = useState({});
-  let accessToken,
-    currentUser,
-    userRole,
-    userID,
-    numberOfSlotInWeek = 0;
+  let accessToken, currentUser, userRole;
   userRole = localStorage.getItem("userRole");
   if (userRole) {
     accessToken = localStorage.getItem("authToken");
     currentUser = JSON.parse(localStorage.getItem("user"));
-    userID = currentUser.id;
   }
 
   const queryClient = useQueryClient();
@@ -97,41 +71,6 @@ export default function TakeAttendance() {
     }
   );
 
-  // const handleSaveData = (rowItem) => {
-  //   const { checkedItems, checkedItemsConfirm } = rowItem;
-
-  //   // console.log("rowItem", rowItem);
-  //   // console.log("checkedItems", checkedItems);
-  //   // console.log("checkedItemsConfirm", checkedItemsConfirm);
-  //   // console.log("currentData", currentData);
-
-  //   // Ensure checkedItems and checkedItemsConfirm are arrays
-  //   if (!Array.isArray(checkedItems) || !Array.isArray(checkedItemsConfirm)) {
-  //     console.log("checkedItems or checkedItemsConfirm is not an array");
-  //     return;
-  //   }
-
-  //   // Create a set of IDs from checkedItems and checkedItemsConfirm for quick lookup
-  //   // Extract IDs from the arrays (assuming they are already arrays of IDs)
-  //   const attendedStudentIDs = new Set(checkedItems.map((item) => item[0]));
-  //   const confirmedStudentIDs = new Set(checkedItemsConfirm.map((item) => item[0]));
-
-  //   // console.log("attendedStudentIDs", attendedStudentIDs);
-  //   // console.log("confirmedStudentIDs", confirmedStudentIDs);
-
-  //   // Filter and map the currentData based on the presence in attendedStudentIDs and confirmedStudentIDs
-  //   const result = currentData?.map((student) => ({
-  //     attendenceID: student.attendenceID,
-  //     present: attendedStudentIDs.has(student.attendenceID),
-  //     confirmed: confirmedStudentIDs.has(student.attendenceID),
-  //   }));
-
-  //   // Call the mutation to update attendance data
-  //   if (result) {
-  //     updateAttendanceMutation.mutate(result);
-  //   }
-  // };
-
   const handleSaveData = (rowItem) => {
     const { checkedItems, checkedItemsConfirm, inputValues } = rowItem;
 
@@ -150,13 +89,36 @@ export default function TakeAttendance() {
       note: inputValues[index] || student.note, // Include the updated note here
     }));
 
-    console.log("result", result);
-    if (result) {
-      updateAttendanceMutation.mutate(result);
+    const today = new Date();
+
+    // Parse the date from `currentData[0]?.date` (assuming the format is dd/mm/yyyy)
+    const dateParts = currentData[0]?.date.split("/");
+    const dateEdit = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+
+    // Calculate the maximum date for updating (3 days from dateEdit)
+    const maxUpdateDate = new Date(dateEdit);
+    maxUpdateDate.setDate(dateEdit.getDate() + 3);
+
+    // console.log("today", today);
+    // console.log("dateEdit", dateEdit);
+    // console.log("maxUpdateDate", maxUpdateDate);
+
+    if (today > maxUpdateDate) {
+      // If today is past the maxUpdateDate, show error message
+      toast.error(
+        `Điểm danh thất bại. Thời gian cập nhật điểm danh từ ngày "${
+          currentData[0]?.date
+        }" đến ngày "${maxUpdateDate.toLocaleDateString("en-GB")}"!`
+      );
+    } else if (dateEdit <= today) {
+      if (result) {
+        updateAttendanceMutation.mutate(result);
+      }
+    } else {
+      toast.error(`Điểm danh thất bại. Tiết học bắt đầu vào ngày "${currentData[0]?.date}"!`);
     }
   };
 
-  console.log("currentDataa", currentData);
   return (
     <DashboardLayout>
       <ToastContainer autoClose={3000} />
@@ -178,7 +140,7 @@ export default function TakeAttendance() {
           <div className="flex justify-between mt-10 flex-wrap max-[767px]:mt-4">
             <div className="flex max-[767px]:mb-4">
               <div className="text-sm mr-4">
-                <span className="mr-2 font-bold">Gíáo viên:</span>
+                <span className="mr-2 font-bold">GVBM:</span>
                 <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
                   {currentSubject?.teacher || "Chưa có thông tin!"}
                 </span>
@@ -213,14 +175,7 @@ export default function TakeAttendance() {
             </div>
           ) : currentData && currentData?.length > 0 ? (
             <TableComponent
-              header={[
-                "Mã học sinh",
-                "Tên học sinh",
-                "Hình ảnh",
-                "Môn học",
-                "Trạng thái",
-                "Ghi chú",
-              ]}
+              header={["Mã học sinh", "Tên học sinh", "Hình ảnh", "Môn học", "Trạng thái"]}
               data={currentData?.map((item) => [
                 item.attendenceID.toString(),
                 item.studentID.toString(),
@@ -232,6 +187,7 @@ export default function TakeAttendance() {
               ])}
               onCheckboxChange={handleChecked}
               showCheckboxes={true}
+              isMaxLine={false}
               isShowNote={true}
               showCheckboxesConfirm={true}
               className="mt-4"
@@ -277,6 +233,10 @@ export default function TakeAttendance() {
                 <span className="italic">
                   Học sinh/Giáo viên đã không tham gia tiết học và không có phép.
                 </span>
+              </li>
+              <li>
+                <span className="text-color font-bold">Lưu ý: </span>
+                <span className="italic">Thông tin điểm danh chỉ được cập nhật trong 3 ngày!</span>
               </li>
             </ul>
           </div>

@@ -244,8 +244,27 @@ const SchoolBook = () => {
       const today = new Date();
       const dateEdit = new Date(data.dateEdit);
 
+      // Extract day, month, and year from dateEdit
+      const day = String(dateEdit.getDate()).padStart(2, "0");
+      const month = String(dateEdit.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+      const year = dateEdit.getFullYear();
+
+      // Format dateEdit to dd/mm/yyyy
+      const formattedDateEdit = `${day}/${month}/${year}`;
+
+      // Calculate the maximum date for updating (3 days from dateEdit)
+      const maxUpdateDate = new Date(dateEdit);
+      maxUpdateDate.setDate(dateEdit.getDate() + 3);
+
       if (data.teacherEdit === currentUser?.username) {
-        if (dateEdit <= today) {
+        if (today > maxUpdateDate) {
+          // If today is past the maxUpdateDate, show error message
+          toast.error(
+            `Cập nhật thất bại. Thời gian đánh giá tiết học từ ngày "${formattedDateEdit}" đến ngày "${maxUpdateDate.toLocaleDateString(
+              "en-GB"
+            )}"!`
+          );
+        } else if (dateEdit <= today) {
           updateSlotRegisterNotebookMutation.mutate(evaluateSlotDate);
         } else {
           toast.error(`Cập nhật thất bại. Tiết học bắt đầu vào ngày "${data.dateEdit}"!`);
@@ -430,19 +449,19 @@ const SchoolBook = () => {
             <p className="font-bold">Ghi chú:</p>
             <ul className="list-disc ml-5">
               <li>
-                <span className="success-color">(A): </span>
+                <span className="success-color font-bold">(A): </span>
                 <span className="italic">Tiết tích cực, tốt.</span>
               </li>
               <li>
-                <span className="primary-color">(B): </span>
+                <span className="primary-color font-bold">(B): </span>
                 <span className="italic">Tiết học khá.</span>
               </li>
               <li>
-                <span className="warning-color">(C): </span>
+                <span className="warning-color font-bold">(C): </span>
                 <span className="italic">Tiết Trung bình.</span>
               </li>
               <li>
-                <span className="error-color">(D): </span>
+                <span className="error-color font-bold">(D): </span>
                 <span className="italic">Tiết học kém.</span>
               </li>
             </ul>
@@ -487,17 +506,47 @@ const SchoolBook = () => {
                 value={currentSlot.title}
                 icon={<AssignmentIcon />}
               />
-              <TextValueComponent
-                label="Số lượng vắng"
-                value={`${currentSlot.numberOfAbsent} học sinh`}
-                icon={<EventAvailableIcon />}
-              />
-              <TextValueComponent
+              <div className="flex">
+                <TextValueComponent
+                  label="Số lượng vắng"
+                  value={`${currentSlot.numberOfAbsent} học sinh`}
+                  icon={<EventAvailableIcon />}
+                />
+                {currentSlot?.teacher === currentUser?.username ? (
+                  <p
+                    className="ml-2 underline font-medium primary-color cursor-pointer"
+                    onClick={() => {
+                      const today = new Date();
+                      const [day, month, year] = currentSlot?.date.split("/").map(Number);
+                      const date = new Date(year, month - 1, day);
+
+                      if (currentSlot?.teacher === currentUser?.username) {
+                        if (date <= today) {
+                          navigate(`/takeAttendance/${currentSlot.id}`);
+                        } else {
+                          toast.error(
+                            `Bạn không thể điểm danh tiết học! Tiết học bắt đầu vào ngày "${currentSlot?.date}"!`
+                          );
+                        }
+                      } else {
+                        toast.error(
+                          `Bạn không thể điểm danh tiết học của giáo viên "${currentSlot?.teacher}"!`
+                        );
+                      }
+                    }}
+                  >
+                    (chi tiết)
+                  </p>
+                ) : (
+                  ""
+                )}
+              </div>
+              {/* <TextValueComponent
                 maxWidth="w-64 max-w-md"
                 label="Học sinh vắng"
                 value={currentSlot.numberAbsent?.join(", ") || "Không có học sinh vắng!"}
                 icon={<PersonOffIcon />}
-              />
+              /> */}
               {/* </div> */}
               {currentSlot?.teacher === currentUser?.username ? (
                 <>

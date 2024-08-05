@@ -405,13 +405,13 @@ export default function MarkStatistics() {
                   </h4>
                   <h4 className="text-xl font-bold uppercase">
                     {value == 1
-                      ? `Khối ${schoolGrade}`
+                      ? `Khối ${schoolGrade}. `
                       : value == 2
-                      ? `Môn ${schoolSubject}`
+                      ? `Môn ${schoolSubject}. `
                       : value == 3
-                      ? `Lớp ${schoolClass}`
-                      : ""}{" "}
-                    . {schoolSemester}
+                      ? `Lớp ${schoolClass}. `
+                      : ""}
+                    {schoolSemester}
                   </h4>
                 </div>
                 <div className="w-full mt-5">

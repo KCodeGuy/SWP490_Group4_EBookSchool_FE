@@ -32,7 +32,7 @@ import {
   statisticOfAttendanceWholeYear,
 } from "../../services/StatisticService";
 
-const grades = [10, 11, 12];
+const grades = [12, 11, 10];
 
 const chartSetting = {
   yAxis: [
@@ -160,7 +160,7 @@ export default function AttendanceStatistics() {
     {
       color: "secondary",
       icon: "leaderboard",
-      title: "Vắng(K)",
+      title: "Vắng (K)",
       count: `${totalNumberOfAbsent - totalNumberOfConfirmed || 0} lượt`,
       textDescriptionColor: "secondary",
       amount: `${totalNumberOfAbsent - totalNumberOfConfirmed || 0}`,
@@ -169,7 +169,7 @@ export default function AttendanceStatistics() {
     {
       color: "warning",
       icon: "leaderboard",
-      title: "Vắng(phép)",
+      title: "Vắng (P)",
       count: `${totalNumberOfConfirmed || 0} lượt`,
       textDescriptionColor: "warning",
       amount: `${totalNumberOfConfirmed || 0}`,
@@ -315,14 +315,14 @@ export default function AttendanceStatistics() {
                         {
                           dataKey: "numberOfUnconfirmed",
                           stack: "A",
-                          label: "Vắng(K)",
-                          color: "#287CD4",
+                          label: "Vắng (K)",
+                          color: "#165C9E",
                           valueFormatter,
                         },
                         {
                           dataKey: "numberOfConfirmed",
                           stack: "A",
-                          label: "Vắng(phép)",
+                          label: "Vắng (P)",
                           color: "#A5A5A5",
                           valueFormatter,
                         },
@@ -340,8 +340,8 @@ export default function AttendanceStatistics() {
                       "GVCN",
                       "Số lượng HS",
                       "Có mặt",
-                      "Vắng(K)",
-                      "Vắng(phép)",
+                      "Vắng (K)",
+                      "Vắng (P)",
                       "Tổng lượt vắng",
                     ]}
                     data={currentData?.map((item) => [
@@ -373,21 +373,21 @@ export default function AttendanceStatistics() {
             <div className="mt-5 text-base">
               <p className="font-bold">Ghi chú:</p>
               <ul className="list-disc ml-5">
-                <li>
+                {/* <li>
                   <span className="primary-color font-bold">(Tổng lượt vắng): </span>
                   <span className="italic">
                     Tổng tất cả lượt vắng của học sinh trong năm học/tuần học quy định.
                   </span>
-                </li>
+                </li> */}
                 <li>
-                  <span className="text-color font-bold">(Vắng(K)): </span>
+                  <span className="k font-bold">(Vắng (K)): </span>
                   <span className="italic">
                     {" "}
                     Tổng tất cả lượt vắng không phép của học sinh trong năm học/tuần học quy định.
                   </span>
                 </li>
                 <li>
-                  <span className="warning-color font-bold">(Vắng(phép)): </span>
+                  <span className="p font-bold">(Vắng (P)): </span>
                   <span className="italic">
                     {" "}
                     Tổng tất cả lượt vắng có phép của học sinh trong năm học/tuần học quy định.
@@ -435,14 +435,14 @@ export default function AttendanceStatistics() {
                     className="justify-between w-full"
                   /> */}
                   <TextValueComponent
-                    label="Vắng(phép)"
+                    label="Vắng (P)"
                     value={`${currentAttendanceDetail.numberOfConfirmed} lượt` || "_"}
                     icon={<HowToRegIcon />}
                     customValue="text-black "
                     className="justify-between w-full"
                   />
                   <TextValueComponent
-                    label="Vắng(K)"
+                    label="Vắng (K)"
                     value={`${currentAttendanceDetail.numberOfAbsent} lượt` || "_"}
                     icon={<DoNotDisturbOffIcon />}
                     customValue="text-black "

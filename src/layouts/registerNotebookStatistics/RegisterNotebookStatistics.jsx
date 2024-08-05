@@ -37,7 +37,7 @@ import {
   statisticOfRegisterNotebookWholeYear,
 } from "../../services/StatisticService";
 
-const grades = [10, 11, 12];
+const grades = [12, 11, 10];
 const MARK_OF_TYPE_A = 20;
 const MARK_OF_TYPE_B = 15;
 const MARK_OF_TYPE_C = 10;
@@ -75,9 +75,11 @@ export default function RegisterNotebookStatistics() {
   const [schoolWeek, setSchoolWeek] = React.useState(currentWeekDate?.startTime);
   const [schoolWeekEnd, setSchoolWeekEnd] = React.useState(currentWeekDate?.endTime);
   const handleSchoolWeeksSelectedChange = (event) => {
+    const selectedWeek = schoolWeeks.find((item) => item.startTime === event.target.value);
     setSchoolWeek(event.target.value);
-    setSchoolWeekEnd(event.target.value);
+    setSchoolWeekEnd(selectedWeek.endTime);
   };
+
   const [grade, setGrade] = React.useState(grades[0]);
   const handleGradeSelectedChange = (event) => {
     setGrade(event.target.value);
@@ -275,7 +277,7 @@ export default function RegisterNotebookStatistics() {
       chartFormattedData.sort((a, b) => a.Điểm - b.Điểm);
 
       const totalMarks = data.reduce((sum, item) => sum + item.rankCounts.totalMark, 0);
-      const averageMark = totalMarks / data.length;
+      const averageMark = Math.round(totalMarks / data.length);
       setAverageMark(averageMark);
 
       return {
@@ -456,7 +458,6 @@ export default function RegisterNotebookStatistics() {
                           "Loại B",
                           "Loại C",
                           "Loại D",
-                          "Tiết chưa đánh giá",
                           "Tổng điểm",
                           "Hạng",
                         ]}
@@ -466,7 +467,6 @@ export default function RegisterNotebookStatistics() {
                           item.rankCounts.B,
                           item.rankCounts.C,
                           item.rankCounts.D,
-                          item.rankCounts.remainderSlot,
                           item.rankCounts.totalMark,
                           item.rankCounts.rank,
                         ])}
@@ -603,7 +603,6 @@ export default function RegisterNotebookStatistics() {
                               typeB: item.rankCounts.B,
                               typeC: item.rankCounts.C,
                               typeD: item.rankCounts.D,
-                              totalMark: item.rankCounts.totalMark,
                             }))}
                             xAxis={[
                               {
@@ -616,23 +615,27 @@ export default function RegisterNotebookStatistics() {
                             series={[
                               {
                                 dataKey: "typeA",
+                                stack: "A",
                                 label: "Loại A",
+                                color: "#165C9E",
                               },
                               {
                                 dataKey: "typeB",
+                                stack: "A",
                                 label: "Loại B",
+                                color: "#A5A5A5",
                               },
                               {
                                 dataKey: "typeC",
+                                stack: "A",
                                 label: "Loại C",
+                                color: "#F9C559",
                               },
                               {
                                 dataKey: "typeD",
+                                stack: "A",
                                 label: "Loại D",
-                              },
-                              {
-                                dataKey: "totalMark",
-                                label: "Điểm số",
+                                color: "#D70200",
                               },
                             ]}
                             {...chartSetting}
@@ -651,7 +654,6 @@ export default function RegisterNotebookStatistics() {
                           "Loại B",
                           "Loại C",
                           "Loại D",
-                          "Tiết chưa đánh giá",
                           "Tổng điểm",
                           "Xếp hạng",
                         ]}
@@ -661,7 +663,6 @@ export default function RegisterNotebookStatistics() {
                           item.rankCounts.B,
                           item.rankCounts.C,
                           item.rankCounts.D,
-                          item.rankCounts.remainderSlot,
                           item.rankCounts.totalMark,
                           item.rankCounts.rank,
                         ])}

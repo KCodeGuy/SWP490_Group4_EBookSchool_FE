@@ -32,7 +32,7 @@ import {
   statisticOfAttendanceWholeYear,
 } from "../../services/StatisticService";
 
-const grades = [10, 11, 12];
+const grades = [12, 11, 10];
 
 const chartSetting = {
   yAxis: [
@@ -160,7 +160,7 @@ export default function AttendanceReportStudent() {
     {
       color: "secondary",
       icon: "leaderboard",
-      title: "Vắng(K)",
+      title: "Vắng (K)",
       count: `${totalNumberOfAbsent - totalNumberOfConfirmed || 0} lượt`,
       textDescriptionColor: "secondary",
       amount: `${totalNumberOfAbsent - totalNumberOfConfirmed || 0}`,
@@ -169,7 +169,7 @@ export default function AttendanceReportStudent() {
     {
       color: "warning",
       icon: "leaderboard",
-      title: "Vắng(phép)",
+      title: "Vắng (P)",
       count: `${totalNumberOfConfirmed || 0} lượt`,
       textDescriptionColor: "warning",
       amount: `${totalNumberOfConfirmed || 0}`,
@@ -311,10 +311,10 @@ export default function AttendanceReportStudent() {
                           label: "Lựợt vắng",
                           valueFormatter,
                         },
-                        { dataKey: "numberOfUnconfirmed", label: "Vắng(K)", valueFormatter },
+                        { dataKey: "numberOfUnconfirmed", label: "Vắng (K)", valueFormatter },
                         {
                           dataKey: "numberOfConfirmed",
-                          label: "Vắng(phép)",
+                          label: "Vắng (P)",
                           valueFormatter,
                         },
                       ]}
@@ -331,8 +331,8 @@ export default function AttendanceReportStudent() {
                       "GVCN",
                       "Số lượng HS",
                       "Có mặt",
-                      "Vắng(K)",
-                      "Vắng(phép)",
+                      "Vắng (K)",
+                      "Vắng (P)",
                       "Tổng lượt vắng",
                     ]}
                     data={currentData?.map((item) => [
@@ -371,14 +371,14 @@ export default function AttendanceReportStudent() {
                   </span>
                 </li>
                 <li>
-                  <span className="text-color font-bold">(Vắng(K)): </span>
+                  <span className="text-color font-bold">(Vắng (K)): </span>
                   <span className="italic">
                     {" "}
                     Tổng tất cả lượt vắng không phép của học sinh trong năm học/tuần học quy định.
                   </span>
                 </li>
                 <li>
-                  <span className="warning-color font-bold">(Vắng(phép)): </span>
+                  <span className="warning-color font-bold">(Vắng (P)): </span>
                   <span className="italic">
                     {" "}
                     Tổng tất cả lượt vắng có phép của học sinh trong năm học/tuần học quy định.
@@ -426,14 +426,14 @@ export default function AttendanceReportStudent() {
                     className="justify-between w-full"
                   /> */}
                   <TextValueComponent
-                    label="Vắng(phép)"
+                    label="Vắng (P)"
                     value={`${currentAttendanceDetail.numberOfConfirmed} lượt` || "_"}
                     icon={<HowToRegIcon />}
                     customValue="text-black "
                     className="justify-between w-full"
                   />
                   <TextValueComponent
-                    label="Vắng(K)"
+                    label="Vắng (K)"
                     value={`${currentAttendanceDetail.numberOfAbsent} lượt` || "_"}
                     icon={<DoNotDisturbOffIcon />}
                     customValue="text-black "

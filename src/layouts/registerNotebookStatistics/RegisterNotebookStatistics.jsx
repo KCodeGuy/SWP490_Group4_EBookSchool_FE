@@ -440,6 +440,7 @@ export default function RegisterNotebookStatistics() {
                               {
                                 dataKey: "totalMark",
                                 label: "Điểm số",
+                                color: "#165C9E",
                               },
                             ]}
                             {...chartSetting}

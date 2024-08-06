@@ -172,18 +172,7 @@ function Basic() {
             />
             <MDBox mt={1} mb={1} textAlign="center">
               <MDTypography variant="button" color="text">
-                Bạn đã{" "}
-                <MDTypography
-                  component={Link}
-                  to="/authentication/reset-password"
-                  variant="button"
-                  color="info"
-                  fontWeight="medium"
-                  textGradient
-                >
-                  quên mật khẩu?
-                </MDTypography>
-                , cập nhật ngay!
+                Hãy đăng nhập tài khoản của bạn!
               </MDTypography>
             </MDBox>
             <ButtonComponent style={{ marginTop: "12px", width: "100%" }} action="submit">

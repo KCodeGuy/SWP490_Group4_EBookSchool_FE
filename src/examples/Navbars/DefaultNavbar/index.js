@@ -122,11 +122,11 @@ function DefaultNavbar({ transparent, light, action }) {
         <MDBox color="inherit" display={{ xs: "none", lg: "flex" }} m={0} p={0}>
           {/* <DefaultNavbarLink icon="donut_large" name="Giới thiệu" route="/authentication/sign-in" /> */}
           <DefaultNavbarLink icon="key" name="Đăng nhập" route="/authentication/sign-in" />
-          <DefaultNavbarLink
+          {/* <DefaultNavbarLink
             icon="key"
-            name="Quên mật khẩu"
+            name="Đổi mật khẩu"
             route="/authentication/reset-password"
-          />
+          /> */}
         </MDBox>
         {action &&
           (action.type === "internal" ? (

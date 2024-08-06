@@ -391,7 +391,7 @@ export default function MarkReportStudent() {
                           item.semester,
                           item.key,
                           `Lần ${item.indexCol}`,
-                          item.value,
+                          item.value != -1 ? item.value : "_",
                         ])}
                         itemsPerPage={50}
                         isPaginate={false}
@@ -401,10 +401,9 @@ export default function MarkReportStudent() {
                       <div className="mt-5 text-base w-full flex justify-end">
                         <div className="max-w-max">
                           <div className="flex justify-between items-center">
-                            <span className="font-bold">Xếp loại: </span>
+                            <span className="font-bold mr-3">Xếp loại: </span>
                             {currentOfStudentsMarkBySubject?.details ? (
-                              currentOfStudentsMarkBySubject?.details[0]?.average != 0 &&
-                              currentOfStudentsMarkBySubject?.details[0]?.average != -1 ? (
+                              currentOfStudentsMarkBySubject?.details[0]?.average > 0 ? (
                                 <span
                                   className={renderRankingStyles(
                                     currentOfStudentsMarkBySubject?.details[0]?.average
@@ -415,17 +414,16 @@ export default function MarkReportStudent() {
                                   )}
                                 </span>
                               ) : (
-                                "_"
+                                "Chưa xếp loại"
                               )
                             ) : (
-                              "_"
+                              "Chưa xếp loại"
                             )}
                           </div>
                           <div className="flex justify-between items-center mt-2 border-t-2 pt-2">
                             <span className="font-bold mr-4">Trung bình môn: </span>
                             {currentOfStudentsMarkBySubject?.details ? (
-                              currentOfStudentsMarkBySubject?.details[0]?.average != 0 &&
-                              currentOfStudentsMarkBySubject?.details[0]?.average != -1 ? (
+                              currentOfStudentsMarkBySubject?.details[0]?.average > 0 ? (
                                 <span
                                   className={renderAverageMarkStyles(
                                     currentOfStudentsMarkBySubject?.details[0]?.average
@@ -511,16 +509,16 @@ export default function MarkReportStudent() {
                         header={["Môn học", "Điểm trung bình", "Xếp loại môn"]}
                         data={currentMarkOfClass.map((item) => [
                           item.subject,
-                          schoolSemester == "Học kỳ I"
+                          schoolSemester == "Học kỳ I" && item.semester1Average > 0
                             ? item.semester1Average
-                            : schoolSemester == "Học kỳ II"
+                            : schoolSemester == "Học kỳ II" && item.semester2Average > 0
                             ? item.semester2Average
                             : "_",
-                          schoolSemester == "Học kỳ I"
+                          schoolSemester == "Học kỳ I" && item.semester1Average > 0
                             ? renderRanking(item.semester1Average)
-                            : schoolSemester == "Học kỳ II"
+                            : schoolSemester == "Học kỳ II" && item.semester2Average > 0
                             ? renderRanking(item.semester1Average)
-                            : "_",
+                            : "Chưa xếp loại",
                         ])}
                         itemsPerPage={50}
                         isPaginate={false}
@@ -530,8 +528,9 @@ export default function MarkReportStudent() {
                       <div className="mt-5 text-base w-full flex justify-end">
                         <div className="max-w-max">
                           <div className="flex justify-between items-center">
-                            <span className="font-bold">Xếp loại: </span>
-                            {currentMarkOfClass?.length > 0 ? (
+                            <span className="font-bold mr-3">Xếp loại: </span>
+                            {currentMarkOfClass?.length > 0 &&
+                            calculateAverage(currentMarkOfClass, schoolSemester) > 0 ? (
                               <span
                                 className={renderRankingStyles(
                                   calculateAverage(currentMarkOfClass, schoolSemester)
@@ -542,12 +541,13 @@ export default function MarkReportStudent() {
                                 )}
                               </span>
                             ) : (
-                              "_"
+                              "Chưa xếp loại"
                             )}
                           </div>
                           <div className="flex justify-between items-center mt-2 border-t-2 pt-2">
                             <span className="font-bold mr-4">Trung bình môn: </span>
-                            {currentMarkOfClass?.length > 0 ? (
+                            {currentMarkOfClass?.length > 0 &&
+                            calculateAverage(currentMarkOfClass, schoolSemester) > 0 ? (
                               <span
                                 className={renderAverageMarkStyles(
                                   calculateAverage(currentMarkOfClass, schoolSemester)
@@ -574,10 +574,12 @@ export default function MarkReportStudent() {
                         ]}
                         data={currentMarkOfClass.map((item) => [
                           item.subject,
-                          item.semester1Average,
-                          item.semester2Average,
-                          item.yearAverage,
-                          renderRanking(item.yearAverage),
+                          item.semester1Average != -1 ? item.semester1Average : "_",
+                          item.semester2Average != -1 ? item.semester2Average : "_",
+                          item.yearAverage != -1 ? item.yearAverage : "_",
+                          item.yearAverage != -1
+                            ? renderRanking(item.yearAverage)
+                            : "Chưa xếp loại",
                         ])}
                         itemsPerPage={50}
                         isPaginate={false}
@@ -588,7 +590,8 @@ export default function MarkReportStudent() {
                         <div className="max-w-max">
                           <div className="flex justify-between items-center">
                             <span className="font-bold">Xếp loại: </span>
-                            {currentMarkOfClass?.length > 0 ? (
+                            {currentMarkOfClass?.length > 0 &&
+                            calculateAverage(currentMarkOfClass, "Cả năm") > 0 ? (
                               <span
                                 className={renderRankingStyles(
                                   calculateAverage(currentMarkOfClass, "Cả năm")
@@ -597,24 +600,27 @@ export default function MarkReportStudent() {
                                 {renderRanking(calculateAverage(currentMarkOfClass, "Cả năm"))}
                               </span>
                             ) : (
-                              "_"
+                              "Chưa xếp loại"
                             )}
                           </div>
                           <div className="flex justify-between items-center mt-2 border-t-2 pt-2">
                             <span className="font-bold mr-4">Trung bình môn (Kỳ I): </span>
-                            {currentMarkOfClass?.length > 0
+                            {currentMarkOfClass?.length > 0 &&
+                            calculateAverage(currentMarkOfClass, "Học kỳ I") > 0
                               ? calculateAverage(currentMarkOfClass, "Học kỳ I")
                               : "_"}
                           </div>
                           <div className="flex justify-between items-center mt-2 border-t-2 pt-2">
                             <span className="font-bold mr-4">Trung bình môn (Kỳ II): </span>
-                            {currentMarkOfClass?.length > 0
+                            {currentMarkOfClass?.length > 0 &&
+                            calculateAverage(currentMarkOfClass, "Học kỳ II") > 0
                               ? calculateAverage(currentMarkOfClass, "Học kỳ II")
                               : "_"}
                           </div>
                           <div className="flex justify-between items-center mt-2 border-t-2 pt-2">
                             <span className="font-bold mr-4">Trung bình môn (Cả năm): </span>
-                            {currentMarkOfClass?.length > 0 ? (
+                            {currentMarkOfClass?.length > 0 &&
+                            calculateAverage(currentMarkOfClass, "Cả năm") > 0 ? (
                               <span
                                 className={renderAverageMarkStyles(
                                   calculateAverage(currentMarkOfClass, "Cả năm")
@@ -690,7 +696,7 @@ export default function MarkReportStudent() {
                 label={`${markDetails[2]}`}
                 key={markDetails[0]}
                 className="px-4 justify-between justify-between"
-                value={`${markDetails[3] != -1 ? `${markDetails[3]} điểm` : "_"}`}
+                value={`${markDetails[3] > 0 ? `${markDetails[3]} điểm` : "_"}`}
                 icon={<LockClockIcon />}
               />
             </div>
@@ -714,19 +720,27 @@ export default function MarkReportStudent() {
                   label={`${schoolSemester}`}
                   key={markDetails[0]}
                   className="px-4 justify-between justify-between"
-                  value={`${markDetails[1] != -1 ? `${markDetails[1]} điểm` : "_"}`}
+                  value={`${markDetails[1] > 0 ? `${markDetails[1]} điểm` : "_"}`}
                   icon={<LockClockIcon />}
                 />
                 <div className="flex justify-between mt-4 border-t-2 pt-3">
                   <div>
                     <span className="font-bold">Xếp loại: </span>
-                    <span className={renderRankingStyles(markDetails[1])}> {markDetails[2]}</span>
+                    {markDetails[1] > 0 ? (
+                      <span className={renderRankingStyles(markDetails[1])}> {markDetails[1]}</span>
+                    ) : (
+                      "Chưa xếp loại"
+                    )}
                   </div>
                   <div>
                     <span className="font-bold">TMB: </span>
-                    <span className={renderAverageMarkStyles(markDetails[1])}>
-                      {markDetails[1]}
-                    </span>
+                    {markDetails[1] > 0 ? (
+                      <span className={renderAverageMarkStyles(markDetails[1])}>
+                        {markDetails[1]}
+                      </span>
+                    ) : (
+                      "_"
+                    )}
                   </div>
                 </div>
               </div>
@@ -742,34 +756,41 @@ export default function MarkReportStudent() {
                   label={`Học kỳ I`}
                   key={markDetails[1]}
                   className="px-4 justify-between justify-between"
-                  value={`${markDetails[1] != -1 ? `${markDetails[1]} điểm` : "_"}`}
+                  value={`${markDetails[1] > 0 ? `${markDetails[1]} điểm` : "_"}`}
                   icon={<LockClockIcon />}
                 />
                 <TextValueComponent
                   label={`Học kỳ II`}
                   key={markDetails[2]}
                   className="px-4 justify-between justify-between"
-                  value={`${markDetails[2] != -1 ? `${markDetails[2]} điểm` : "_"}`}
+                  value={`${markDetails[2] > 0 ? `${markDetails[2]} điểm` : "_"}`}
                   icon={<LockClockIcon />}
                 />
                 <TextValueComponent
                   label={`Cả năm`}
                   key={markDetails[3]}
                   className="px-4 justify-between justify-between"
-                  value={`${markDetails[3] != -1 ? `${markDetails[3]} điểm` : "_"}`}
+                  value={`${markDetails[3] > 0 ? `${markDetails[3]} điểm` : "_"}`}
                   icon={<LockClockIcon />}
                 />
                 <div className="flex justify-between mt-4 border-t-2 pt-3">
                   <div>
                     <span className="font-bold">Xếp loại: </span>
-                    <span className={renderRankingStyles(markDetails[3])}> {markDetails[4]}</span>
+                    {markDetails[4] > 0 ? (
+                      <span className={renderRankingStyles(markDetails[3])}> {markDetails[4]}</span>
+                    ) : (
+                      "Chưa xếp loại"
+                    )}
                   </div>
                   <div>
                     <span className="font-bold">TMB: </span>
-                    <span className={renderAverageMarkStyles(markDetails[3])}>
-                      {" "}
-                      {markDetails[3]}
-                    </span>
+                    {markDetails[3] > 0 ? (
+                      <span className={renderAverageMarkStyles(markDetails[3])}>
+                        {markDetails[3]}
+                      </span>
+                    ) : (
+                      "_"
+                    )}
                   </div>
                 </div>
               </div>

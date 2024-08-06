@@ -354,7 +354,7 @@ export const getRouteName = (path) => {
       route: "/authentication/sign-in",
     },
     {
-      name: "Quên mật khẩu",
+      name: "Đổi mật khẩu",
       key: "reset-password",
       route: "/authentication/reset-password",
     },

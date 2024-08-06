@@ -136,7 +136,7 @@ function TableComponent({
               {header?.map((column, index) => (
                 <th key={index}>{column}</th>
               ))}
-              {isShowNote && <th className="w-40">Ghi chú</th>}
+              {isShowNote && <th className="w-36">Ghi chú</th>}
               {showCheckboxesConfirm && (
                 <th className="w-20">
                   Vắng <br />

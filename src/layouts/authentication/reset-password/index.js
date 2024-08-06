@@ -43,24 +43,41 @@ function Cover() {
   const userID = currentUser?.id;
   const queryClient = useQueryClient();
 
-  // Tôi yêu Thiên Nhi
-  const { data: studentData } = useQuery(
+  const {
+    data: studentData,
+    isLoading: isLoading,
+    refetch: refetchStudent,
+  } = useQuery(
     ["studentState", { accessToken, userID }],
     () => getStudentByID(accessToken, userID),
-    { enabled: userRole.includes("Student") && Boolean(accessToken && userID) }
+    { enabled: false }
   );
 
-  const { data: teacherData } = useQuery(
+  const {
+    data: teacherData,
+    isLoading: isLoadingTeacher,
+    refetch: refetchTeacher,
+  } = useQuery(
     ["teacherState", { accessToken, userID }],
     () => getTeacherByID(accessToken, userID),
-    { enabled: !userRole.includes("Student") && Boolean(accessToken && userID) }
+    { enabled: false }
   );
 
   useEffect(() => {
-    if (userRole.includes("Student") && studentData) {
-      setCurrentAccount(studentData);
-    } else if (!userRole.includes("Student") && teacherData) {
-      setCurrentAccount(teacherData);
+    if (userRole) {
+      if (userRole?.includes("Student")) {
+        refetchStudent().then((result) => {
+          if (result.data) {
+            setCurrentAccount(result.data);
+          }
+        });
+      } else if (!userRole?.includes("Student")) {
+        refetchTeacher().then((result) => {
+          if (result.data) {
+            setCurrentAccount(result.data);
+          }
+        });
+      }
     }
   }, [userRole, studentData, teacherData]);
 
@@ -70,12 +87,13 @@ function Cover() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("studentState");
-        toast.success("Cập nhật mật khẩu thành công!", {
-          onClose: () => {
-            logoutUser();
-            navigate("/authentication/sign-in");
-          },
-        });
+        if (response && response.status == 200)
+          toast.success("Cập nhật mật khẩu thành công!", {
+            onClose: () => {
+              logoutUser();
+              navigate("/authentication/sign-in");
+            },
+          });
       },
       onError: (error) => {
         console.error("Error updating student:", error);
@@ -108,52 +126,57 @@ function Cover() {
     const isCorrectPassword = data.password === data.passwordReset;
     setIsMatchedPassword(isCorrectPassword);
     if (isCorrectPassword) {
-      if (userRole.includes("Student")) {
-        const studentData = {
-          id: currentAccount?.id || "Chưa có dữ liệu",
-          username: currentAccount?.username || "Chưa có dữ liệu",
-          fullname: currentAccount?.fullname || "Chưa có dữ liệu",
-          address: currentAccount?.address || "Chưa có dữ liệu",
-          email: currentAccount?.email || "Chưa có dữ liệu",
-          phone: currentAccount?.phone || "Chưa có dữ liệu",
-          gender: currentAccount?.gender || "Chưa có dữ liệu",
-          birthday: currentAccount?.birthday || "Chưa có dữ liệu",
-          nation: currentAccount?.nation || "Chưa có dữ liệu",
-          birthplace: currentAccount?.birthplace || "Chưa có dữ liệu",
-          homeTown: currentAccount?.homeTown || "Chưa có dữ liệu",
-          fatherFullName: currentAccount?.fatherFullName || "Chưa có dữ liệu",
-          fatherProfession: currentAccount?.fatherProfession || "Chưa có dữ liệu",
-          fatherPhone: currentAccount?.fatherPhone || "Chưa có dữ liệu",
-          motherFullName: currentAccount?.motherFullName || "Chưa có dữ liệu",
-          motherProfession: currentAccount?.motherProfession || "Chưa có dữ liệu",
-          motherPhone: currentAccount?.motherPhone || "Chưa có dữ liệu",
-          avatar: currentAccount?.avatar || "Chưa có dữ liệu",
-          isMartyrs: currentAccount?.isMartyrs || false,
-          password: data.passwordReset || "aA@123",
-        };
-        updateStudentMutation.mutate(studentData);
-      } else {
-        const teacherData = {
-          id: currentAccount?.id || "Chưa có dữ liệu",
-          username: currentAccount?.username || "Chưa có dữ liệu",
-          fullname: currentAccount?.fullname || "Chưa có dữ liệu",
-          address: currentAccount?.address || "Chưa có dữ liệu",
-          email: currentAccount?.email || "Chưa có dữ liệu",
-          phone: currentAccount?.phone || "Chưa có dữ liệu",
-          gender: currentAccount?.gender || "Chưa có dữ liệu",
-          birthday: currentAccount?.birthday || "Chưa có dữ liệu",
-          nation: currentAccount?.nation || "Chưa có dữ liệu",
-          isBachelor: currentAccount?.isBachelor || false,
-          isMaster: currentAccount?.isMaster || false,
-          isDoctor: currentAccount?.isDoctor || false,
-          isProfessor: currentAccount?.isProfessor || false,
-          avatar: currentAccount?.avatar || "Chưa có dữ liệu",
-          roles: currentAccount?.roles,
-          permissions: currentAccount?.permissions,
-          password: data.passwordReset || "aA@123",
-        };
-        updateTeacherMutation.mutate(teacherData);
-        console.log(teacherData);
+      if (userRole) {
+        if (userRole?.includes("Student")) {
+          if (studentData) {
+            const studentData = {
+              id: currentAccount?.id || "Chưa có dữ liệu",
+              username: currentAccount?.username || "Chưa có dữ liệu",
+              fullname: currentAccount?.fullname || "Chưa có dữ liệu",
+              address: currentAccount?.address || "Chưa có dữ liệu",
+              email: currentAccount?.email || "Chưa có dữ liệu",
+              phone: currentAccount?.phone || "Chưa có dữ liệu",
+              gender: currentAccount?.gender || "Chưa có dữ liệu",
+              birthday: currentAccount?.birthday || "Chưa có dữ liệu",
+              nation: currentAccount?.nation || "Chưa có dữ liệu",
+              birthplace: currentAccount?.birthplace || "Chưa có dữ liệu",
+              homeTown: currentAccount?.homeTown || "Chưa có dữ liệu",
+              fatherFullName: currentAccount?.fatherFullName || "Chưa có dữ liệu",
+              fatherProfession: currentAccount?.fatherProfession || "Chưa có dữ liệu",
+              fatherPhone: currentAccount?.fatherPhone || "Chưa có dữ liệu",
+              motherFullName: currentAccount?.motherFullName || "Chưa có dữ liệu",
+              motherProfession: currentAccount?.motherProfession || "Chưa có dữ liệu",
+              motherPhone: currentAccount?.motherPhone || "Chưa có dữ liệu",
+              avatar: currentAccount?.avatar || "Chưa có dữ liệu",
+              isMartyrs: currentAccount?.isMartyrs || false,
+              password: data.passwordReset || "aA@123",
+            };
+            updateStudentMutation.mutate(studentData);
+          }
+        } else {
+          if (teacherData) {
+            const teacherData = {
+              id: currentAccount?.id || "Chưa có dữ liệu",
+              username: currentAccount?.username || "Chưa có dữ liệu",
+              fullname: currentAccount?.fullname || "Chưa có dữ liệu",
+              address: currentAccount?.address || "Chưa có dữ liệu",
+              email: currentAccount?.email || "Chưa có dữ liệu",
+              phone: currentAccount?.phone || "Chưa có dữ liệu",
+              gender: currentAccount?.gender || "Chưa có dữ liệu",
+              birthday: currentAccount?.birthday || "Chưa có dữ liệu",
+              nation: currentAccount?.nation || "Chưa có dữ liệu",
+              isBachelor: currentAccount?.isBachelor || false,
+              isMaster: currentAccount?.isMaster || false,
+              isDoctor: currentAccount?.isDoctor || false,
+              isProfessor: currentAccount?.isProfessor || false,
+              avatar: currentAccount?.avatar || "Chưa có dữ liệu",
+              roles: currentAccount?.roles,
+              permissions: currentAccount?.permissions,
+              password: data.passwordReset || "aA@123",
+            };
+            updateTeacherMutation.mutate(teacherData);
+          }
+        }
       }
     } else {
       toast.error("Mật khẩu nhập lại không khớp!");
@@ -186,18 +209,38 @@ function Cover() {
         </MDBox>
         <MDBox pt={2} pb={3} px={3}>
           <form onSubmit={handleSubmit(handleSubmitLogin)} className="w-full">
-            <div className="text-base ">
-              <label className={`mr-2 font-medium min-w-28`}>
-                Tên đăng nhập <span className="text-red-500">*</span>
-              </label>
-              <input
-                readOnly
-                className={`outline-none px-3 border py-2 rounded w-full
+            {userRole ? (
+              <div className="text-base ">
+                <label className={`mr-2 font-medium min-w-28`}>
+                  Mã tài khoản <span className="text-red-500">*</span>
+                </label>
+                <input
+                  readOnly
+                  className={`outline-none px-3 border py-2 rounded w-full
                border-blue-500}`}
+                  type="text"
+                  value={currentUser?.username}
+                />
+              </div>
+            ) : (
+              <InputBaseComponent
+                placeholder="Mã tài khoản..."
                 type="text"
-                value={currentUser?.username}
+                control={control}
+                setValue={noSetValue}
+                name="id"
+                label="Mã tài khoản"
+                errors={errors}
+                validationRules={{
+                  required: "Không được bỏ trống!",
+                  minLength: {
+                    value: 4,
+                    message: "Mã tài khoản ít nhất 4 kí tự!",
+                  },
+                }}
               />
-            </div>
+            )}
+
             <InputBaseComponent
               placeholder="Nhập mật khẩu mới..."
               type="password"

@@ -60,6 +60,8 @@ import { logoutUser } from "services/AuthService";
 import PopupComponent from "components/PopupComponent/PopupComponent";
 import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import { getRouteName } from "utils/CommonFunctions";
+import { logoutAPI } from "services/AuthService";
+import { QueryClient, useMutation } from "react-query";
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const navigate = useNavigate();
@@ -71,12 +73,26 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [modalLogout, setModalLogout] = useState(false);
   let currentUser = JSON.parse(localStorage.getItem("user"));
   const userRole = localStorage.getItem("userRole");
-  let schoolSetting = JSON.parse(localStorage.getItem("schoolSetting"));
-
+  const queryClient = new QueryClient();
+  const accessToken = localStorage.getItem("authToken");
+  // Adding action
+  const logoutAPIMutation = useMutation(() => logoutAPI(accessToken), {
+    onSuccess: (response) => {
+      queryClient.invalidateQueries("logoutAPI");
+      if (response && response.status == 200) {
+        logoutUser();
+        setModalLogout(false);
+        navigate("/authentication/sign-in");
+      } else {
+        toast.error(`Đăng xuất thất bại!`);
+      }
+    },
+    onError: (error) => {
+      toast.error(`Đăng xuất thất bại!`);
+    },
+  });
   const handleLogoutUser = () => {
-    logoutUser();
-    setModalLogout(false);
-    navigate("/authentication/sign-in");
+    logoutAPIMutation.mutate();
   };
 
   useEffect(() => {

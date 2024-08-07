@@ -32,14 +32,7 @@ import Footer from "layouts/authentication/components/Footer";
 function BasicLayout({ image, children }) {
   return (
     <PageLayout>
-      <DefaultNavbar
-        action={{
-          type: "internal",
-          route: "/",
-          label: "Trở lại",
-          color: "info",
-        }}
-      />
+      <DefaultNavbar />
       <MDBox
         position="absolute"
         width="100%"

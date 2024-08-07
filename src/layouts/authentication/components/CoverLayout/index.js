@@ -33,14 +33,7 @@ import Footer from "layouts/authentication/components/Footer";
 function CoverLayout({ coverHeight, image, children }) {
   return (
     <PageLayout>
-      <DefaultNavbar
-        action={{
-          type: "internal",
-          route: "/",
-          label: "Trở lại",
-          color: "info",
-        }}
-      />
+      <DefaultNavbar />
       <MDBox
         width="calc(100% - 2rem)"
         minHeight={coverHeight}

@@ -114,9 +114,7 @@ function DefaultNavbar({ transparent, light, action }) {
         >
           <div className="flex items-center">
             {brand && <MDBox component="img" src={brand} alt="Brand" width="2rem" />}
-            <p className="text-left text-sm font-medium ml-2">
-              {schoolSetting?.schoolName || "ORB"}
-            </p>
+            <p className="text-left text-sm font-medium ml-2">ORB</p>
           </div>
         </MDBox>
         <MDBox color="inherit" display={{ xs: "none", lg: "flex" }} m={0} p={0}>

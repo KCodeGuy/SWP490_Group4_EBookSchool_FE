@@ -48,6 +48,7 @@ const ratingOptions = [
 const SchoolBook = () => {
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [openModalEditSchoolBook, setOpenModalEditSchoolBook] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [currentRegisterNotebook, setCurrentRegisterNotebook] = useState({});
   const [currentSlot, setCurrentSlot] = useState({});
   const queryClient = useQueryClient();
@@ -191,22 +192,24 @@ const SchoolBook = () => {
 
   const handleFilterTimetable = () => {
     setIsFirstRender(false);
-    refetch().then((result) => {
-      if (result?.data) {
-        const transformedData = formatRegisterNotebook(result.data?.details);
-        setCurrentRegisterNotebook(transformedData);
-      }
-    });
+    setSearchLoading(true); // Start loading
+    refetch()
+      .then((result) => {
+        if (result?.data) {
+          const transformedData = formatRegisterNotebook(result.data?.details);
+          setCurrentRegisterNotebook(transformedData);
+        }
+        setSearchLoading(false); // End loading
+      })
+      .catch(() => {
+        setSearchLoading(false); // End loading in case of an error
+      });
   };
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
   const totalItems = schoolWeeks.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  // const handlePageChange = (page) => {
-  //   setCurrentPage(page);
-  // };
 
   const updateSlotRegisterNotebookMutation = useMutation(
     (slotData) => updateRegisterNotebook(accessToken, slotData),
@@ -408,7 +411,7 @@ const SchoolBook = () => {
             </div>
           </div>
 
-          {isLoading ? (
+          {isLoading || searchLoading ? (
             <div className="text-center primary-color my-10 text-xl italic font-medium">
               <div className="mx-auto flex items-center justify-center">
                 <p className="mr-3">Loading</p>

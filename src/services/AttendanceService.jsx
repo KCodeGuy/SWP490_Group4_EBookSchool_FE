@@ -15,6 +15,40 @@ const getAttendanceBySlot = async (accessToken, slotID) => {
   }
 };
 
+const getAttendanceByStudentAllSubject = async (accessToken, studentID, schoolYear) => {
+  try {
+    const res = await axios.get(
+      `${API_HOST}/Attendance/GetAttendanceByStudentAllSubject?studentID=${studentID}&schoolYear=${schoolYear}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+const getAttendanceByStudent = async (accessToken, studentID, schoolYear, subjectName) => {
+  try {
+    const res = await axios.get(
+      `${API_HOST}/Attendance/GetAttendanceByStudent?studentID=${studentID}&schoolYear=${schoolYear}&subjectName=${subjectName}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 const updateAttendance = async (accessToken, attendanceData) => {
   try {
     const res = await axios.put(`${API_HOST}/Attendance`, attendanceData, {
@@ -30,4 +64,9 @@ const updateAttendance = async (accessToken, attendanceData) => {
   }
 };
 
-export { getAttendanceBySlot, updateAttendance };
+export {
+  getAttendanceBySlot,
+  updateAttendance,
+  getAttendanceByStudentAllSubject,
+  getAttendanceByStudent,
+};

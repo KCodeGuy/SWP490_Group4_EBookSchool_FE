@@ -48,6 +48,7 @@ export default function MarkReportStudent() {
   const [currentMarkOfClass, setCurrentMarkOfClass] = useState([]);
   const [openModalDetailsAllSubject, setOpenModalDetailsAllSubject] = useState(false);
   const [openModalDetails, setOpenModalDetails] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [value, setValue] = React.useState(0);
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -149,28 +150,40 @@ export default function MarkReportStudent() {
 
   const handleFilterMark = () => {
     if (value == 0) {
-      refetch().then((result) => {
-        if (result?.data) {
-          // Sort the scores for each subject in the result data
-          const sortedData = result.data.details.map((detail) => {
-            return {
-              ...detail,
-              scores: sortData(detail.scores),
-            };
-          });
+      setSearchLoading(true); // Start loading
+      refetch()
+        .then((result) => {
+          if (result?.data) {
+            // Sort the scores for each subject in the result data
+            const sortedData = result.data.details.map((detail) => {
+              return {
+                ...detail,
+                scores: sortData(detail.scores),
+              };
+            });
 
-          setCurrentOfStudentsMarkBySubject({
-            ...result.data,
-            details: sortedData,
-          });
-        }
-      });
+            setCurrentOfStudentsMarkBySubject({
+              ...result.data,
+              details: sortedData,
+            });
+          }
+          setSearchLoading(false); // End loading
+        })
+        .catch(() => {
+          setSearchLoading(false); // End loading in case of an error
+        });
     } else if (value == 1) {
-      refetchMarkOfClass().then((result) => {
-        if (result?.data) {
-          setCurrentMarkOfClass(result?.data);
-        }
-      });
+      setSearchLoading(true); // Start loading
+      refetchMarkOfClass()
+        .then((result) => {
+          if (result?.data) {
+            setCurrentMarkOfClass(result?.data);
+          }
+          setSearchLoading(false); // End loading
+        })
+        .catch(() => {
+          setSearchLoading(false); // End loading in case of an error
+        });
     }
   };
 
@@ -376,7 +389,7 @@ export default function MarkReportStudent() {
                     </div>
                   </div>
 
-                  {isLoadingMark ? (
+                  {isLoadingMark || searchLoading ? (
                     <div className="text-center primary-color my-30 text-xl italic font-medium">
                       <div className="mx-auto flex items-center justify-center">
                         <p className="mr-3">Loading</p>
@@ -494,7 +507,7 @@ export default function MarkReportStudent() {
                   </FormControl>
                 </div>
               </div>
-              {isLoadingMarkOfClass ? (
+              {isLoadingMarkOfClass || searchLoading ? (
                 <div className="text-center primary-color my-30 text-xl italic font-medium">
                   <div className="mx-auto flex items-center justify-center">
                     <p className="mr-3">Loading</p>

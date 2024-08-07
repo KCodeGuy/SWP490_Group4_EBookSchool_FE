@@ -597,8 +597,14 @@ export default function ClassManagement() {
                           HỦY BỎ
                         </ButtonComponent>
                         <ButtonComponent action="submit">
-                          <AddCircleOutlineIcon className="mr-1" />
-                          TẠO
+                          {addClassByExcelMutation.isLoading ? (
+                            <CircularProgress size={20} color="inherit" />
+                          ) : (
+                            <>
+                              <AddCircleOutlineIcon className="text-3xl mr-1" />
+                              TẠO
+                            </>
+                          )}
                         </ButtonComponent>
                       </div>
                     </form>

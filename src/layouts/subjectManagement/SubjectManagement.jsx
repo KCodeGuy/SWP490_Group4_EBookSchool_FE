@@ -107,38 +107,44 @@ export default function SubjectManagement() {
   const addSubjectsMutation = useMutation((subjectData) => addSubject(accessToken, subjectData), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("subjectState");
-      if (response) {
+      if (response && response.status == 200) {
         refetch().then((result) => {
           if (result.data) {
             setCurrentData(result.data);
           }
         });
+        setMarkFactors([]);
+        setLessonPlans([]);
+        reset();
+        setModalOpen(false);
         toast.success("Tạo môn học thành công!");
       } else {
-        toast.error(`${response.data}!`);
+        toast.error(`Tạo môn thất bại! ${response?.response?.data}!`);
       }
-      setMarkFactors([]);
-      setLessonPlans([]);
-      reset();
-      setModalOpen(false);
+    },
+    onError: (error) => {
+      toast.error(`Tạo môn thất bại. ${error.message}!`);
     },
   });
 
   const addSubjectByExcelMutation = useMutation((file) => addSubjectByExcel(accessToken, file), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("addSubjectExcel");
-      if (response) {
+      if (response && response.status == 200) {
         refetch().then((result) => {
           if (result.data) {
             setCurrentData(result.data);
           }
         });
+        reset();
+        setModalOpen(false);
         toast.success("Tạo môn thành công!");
       } else {
-        toast.error(`${response.data}!`);
+        toast.error(`Tạo môn thất bại! Dữ liệu file không đúng định dạng!`);
       }
-      reset();
-      setModalOpen(false);
+    },
+    onError: (error) => {
+      toast.error(`Tạo môn thất bại. Dữ liệu file không đúng định dạng!`);
     },
   });
   const handleAddSubjectByExcel = (data) => {
@@ -676,8 +682,14 @@ export default function SubjectManagement() {
                           HỦY BỎ
                         </ButtonComponent>
                         <ButtonComponent action="submit">
-                          <AddCircleOutlineIcon className="text-3xl mr-1" />
-                          TẠO
+                          {addSubjectByExcelMutation.isLoading ? (
+                            <CircularProgress size={20} color="inherit" />
+                          ) : (
+                            <>
+                              <AddCircleOutlineIcon className="text-3xl mr-1" />
+                              TẠO
+                            </>
+                          )}
                         </ButtonComponent>
                       </div>
                     </form>

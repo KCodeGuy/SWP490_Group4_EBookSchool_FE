@@ -53,6 +53,7 @@ export default function RegisterNotebookStatistics() {
 
   const [currentData, setCurrentData] = useState([]);
   const [detail, setDetail] = useState({});
+  const [searchLoading, setSearchLoading] = useState(false);
   const [openModalDetail, setOpenModalDetail] = useState(false);
   const [highestMark, setHighestMark] = useState({ mark: 0, class: "Chưa thống kê!" });
   const [lowestMark, setLowerMark] = useState({ mark: 0, class: "Chưa thống kê!" });
@@ -151,21 +152,33 @@ export default function RegisterNotebookStatistics() {
   const tabLabels = ["ĐIỂM SĐB TOÀN TRƯỜNG", "ĐIỂM SĐB THEO KHỐI"];
 
   const handleStatisticWeekly = () => {
-    refetch().then((result) => {
-      if (result.data) {
-        const { transformedData } = transformData(result.data);
-        setCurrentData(transformedData);
-      }
-    });
+    setSearchLoading(true); // End loading
+    refetch()
+      .then((result) => {
+        if (result.data) {
+          const { transformedData } = transformData(result.data);
+          setCurrentData(transformedData);
+        }
+        setSearchLoading(false); // End loading
+      })
+      .catch(() => {
+        setSearchLoading(false); // End loading in case of an error
+      });
   };
 
   const handleStatisticWholeYear = () => {
-    refetchWholeYear().then((result) => {
-      if (result.data) {
-        const { transformedData } = transformData(result.data);
-        setCurrentData(transformedData);
-      }
-    });
+    setSearchLoading(true); // End loading
+    refetchWholeYear()
+      .then((result) => {
+        if (result.data) {
+          const { transformedData } = transformData(result.data);
+          setCurrentData(transformedData);
+        }
+        setSearchLoading(false); // End loading
+      })
+      .catch(() => {
+        setSearchLoading(false); // End loading in case of an error
+      });
   };
 
   const handleStatisticWeeklyByGrade = () => {
@@ -226,8 +239,6 @@ export default function RegisterNotebookStatistics() {
   ];
 
   (React.useState < "middle") | ("tick" > "middle");
-  const [tickPlacement, setTickPlacement] = React.useState("middle");
-  const [tickLabelPlacement, setTickLabelPlacement] = React.useState("middle");
 
   function transformData(data) {
     if (data.length > 0) {
@@ -396,14 +407,14 @@ export default function RegisterNotebookStatistics() {
                 </div>
 
                 <div className="mt-8 custom-table">
-                  {isLoading || isLoadingWholeYear ? (
+                  {isLoading || isLoadingWholeYear || searchLoading ? (
                     <div className="text-center primary-color py-20 text-xl italic font-medium">
                       <div className="mx-auto flex items-center justify-center">
                         <p className="mr-3">Loading</p>
                         <CircularProgress size={24} color="inherit" />
                       </div>
                     </div>
-                  ) : data && currentData.length > 0 ? (
+                  ) : data && currentData?.length > 0 ? (
                     <>
                       <div className="w-full custom mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
                         {aSchoolBookForAGradeBox.map((item, index) => (
@@ -421,13 +432,13 @@ export default function RegisterNotebookStatistics() {
                           />
                         ))}
                       </div>
-                      {currentData[0].rankCounts.totalMark > 0 ? (
+                      {currentData[0]?.rankCounts?.totalMark > 0 ? (
                         <div
                           className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
                           style={{ background: "#E9F7FF" }}
                         >
                           <BarChart
-                            dataset={currentData.map((item) => ({
+                            dataset={currentData?.map((item) => ({
                               className: item.className,
                               totalMark: item.rankCounts.totalMark,
                             }))}

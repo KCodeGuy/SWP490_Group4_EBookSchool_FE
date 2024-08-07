@@ -82,6 +82,7 @@ export default function MarkManagement() {
   const [openModalRandom, setOpenModalRandom] = useState(false);
   const [openModalDetailsAllSubject, setOpenModalDetailsAllSubject] = useState(false);
   const [openModalDetails, setOpenModalDetails] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [markDetails, setMarkDetails] = useState({});
   const [value, setValue] = React.useState(0);
   const handleChange = (event, newValue) => {
@@ -179,25 +180,36 @@ export default function MarkManagement() {
   });
 
   const handleFilterMark = () => {
+    setSearchLoading(true); // start loading
     if (value == 0) {
-      refetch().then((result) => {
-        if (result.data) {
-          setCurrentOfStudentsMarkBySubject(result.data);
-        }
-      });
+      refetch()
+        .then((result) => {
+          if (result.data) {
+            setCurrentOfStudentsMarkBySubject(result.data);
+          }
+          setSearchLoading(false); // End loading
+        })
+        .catch(() => {
+          setSearchLoading(false); // End loading in case of an error
+        });
     } else {
-      refetchMarkOfClass().then((result) => {
-        if (result.data) {
-          setCurrentMarkOfClass(result.data);
-        }
-      });
+      refetchMarkOfClass()
+        .then((result) => {
+          if (result.data) {
+            setCurrentMarkOfClass(result.data);
+          }
+          setSearchLoading(false); // End loading
+        })
+        .catch(() => {
+          setSearchLoading(false); // End loading in case of an error
+        });
     }
   };
 
   const formattedSubjects = data
     ?.filter((item) => item.isMark) // filter only items with isMark = true
     ?.map((item) => ({
-      label: `${item.name} (Khối-${item.grade})`,
+      label: `${item.name}`,
       name: item.name,
       value: item.name,
       grade: item.grade,
@@ -528,12 +540,18 @@ export default function MarkManagement() {
                           HỦY BỎ
                         </ButtonComponent>
                         <ButtonComponent action="submit">
-                          {currentAction == "adding" ? (
-                            <AddCircleOutlineIcon className="text-3xl mr-1" />
+                          {updateMarkMutation.isLoading || searchLoading ? (
+                            <CircularProgress size={20} color="inherit" />
                           ) : (
-                            <BorderColorIcon className="text-3xl mr-1" />
+                            <>
+                              {currentAction == "adding" ? (
+                                <AddCircleOutlineIcon className="text-3xl mr-1" />
+                              ) : (
+                                <BorderColorIcon className="text-3xl mr-1" />
+                              )}
+                              {currentAction == "adding" ? "NHẬP ĐIỂM" : "CẬP NHẬT"}
+                            </>
                           )}
-                          {currentAction == "adding" ? "NHẬP ĐIỂM" : "CẬP NHẬT"}
                         </ButtonComponent>
                       </div>
                     </form>
@@ -593,7 +611,7 @@ export default function MarkManagement() {
               </div>
 
               {userRole.includes(HOMEROOM_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
-                isLoadingMarkOfClass ? (
+                isLoadingMarkOfClass || searchLoading ? (
                   <div className="text-center primary-color my-30 text-xl italic font-medium">
                     <div className="mx-auto flex items-center justify-center">
                       <p className="mr-3">Loading</p>
@@ -687,7 +705,7 @@ export default function MarkManagement() {
                     </div>
                   </div>
 
-                  {isLoadingMark ? (
+                  {isLoadingMark || searchLoading ? (
                     <div className="text-center primary-color my-30 text-xl italic font-medium">
                       <div className="mx-auto flex items-center justify-center">
                         <p className="mr-3">Loading</p>

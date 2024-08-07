@@ -87,6 +87,7 @@ export default function MarkStatistics() {
   const [highestMark, setHighestMark] = useState("");
   const [lowestMark, setLowestMark] = useState("");
   const [averageMark, setAverageMark] = useState(0);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   const tabLabels = ["ĐIỂM MÔN TOÀN TRƯỜNG", "ĐIỂM THEO KHỐI", "ĐIỂM THEO MÔN", "ĐIỂM THEO LỚP"];
 
@@ -193,29 +194,35 @@ export default function MarkStatistics() {
     let highestMark = "";
     let lowestMark = "";
     let averageMark = 0;
-    refetch().then((result) => {
-      if (result.data) {
-        if (schoolSemester == "Học kì I") {
-          setCurrentData(result.data[0].scores);
-          highestMark = getHighestMark(result.data[0].scores);
-          lowestMark = getLowerMark(result.data[0].scores);
-          averageMark = getAverageMark(result.data[0].scores);
-        } else if (schoolSemester == "Học kì II") {
-          setCurrentData(result.data[1].scores);
-          highestMark = getHighestMark(result.data[1].scores);
-          lowestMark = getLowerMark(result.data[1].scores);
-          averageMark = getAverageMark(result.data[1].scores);
-        } else if (schoolSemester == "Cả năm") {
-          setCurrentData(result.data[2].scores);
-          highestMark = getHighestMark(result.data[2].scores);
-          lowestMark = getLowerMark(result.data[2].scores);
-          averageMark = getAverageMark(result.data[2].scores);
+    setSearchLoading(true); // start loading
+    refetch()
+      .then((result) => {
+        if (result.data) {
+          if (schoolSemester == "Học kì I") {
+            setCurrentData(result.data[0].scores);
+            highestMark = getHighestMark(result.data[0].scores);
+            lowestMark = getLowerMark(result.data[0].scores);
+            averageMark = getAverageMark(result.data[0].scores);
+          } else if (schoolSemester == "Học kì II") {
+            setCurrentData(result.data[1].scores);
+            highestMark = getHighestMark(result.data[1].scores);
+            lowestMark = getLowerMark(result.data[1].scores);
+            averageMark = getAverageMark(result.data[1].scores);
+          } else if (schoolSemester == "Cả năm") {
+            setCurrentData(result.data[2].scores);
+            highestMark = getHighestMark(result.data[2].scores);
+            lowestMark = getLowerMark(result.data[2].scores);
+            averageMark = getAverageMark(result.data[2].scores);
+          }
         }
-      }
-      setHighestMark(highestMark.averageScore);
-      setLowestMark(lowestMark.averageScore);
-      setAverageMark(averageMark);
-    });
+        setHighestMark(highestMark.averageScore);
+        setLowestMark(lowestMark.averageScore);
+        setAverageMark(averageMark);
+        setSearchLoading(false); // End loading
+      })
+      .catch(() => {
+        setSearchLoading(false); // End loading in case of an error
+      });
   };
 
   const detailedMarksfForSubjectOfClassBox = [
@@ -237,15 +244,6 @@ export default function MarkStatistics() {
       amount: `${highestMark} điểm`,
       label: "chiếm tỉ lệ cao nhất",
     },
-    // {
-    //   color: "success",
-    //   icon: "leaderboard",
-    //   title: "Điểm trung bình",
-    //   count: `7.6 điểm`,
-    //   textDescriptionColor: "success",
-    //   amount: `7.6 điểm`,
-    //   label: "là điểm trung bình",
-    // },
   ];
 
   (React.useState < "middle") | ("tick" > "middle");
@@ -416,7 +414,7 @@ export default function MarkStatistics() {
                 </div>
                 <div className="w-full mt-5">
                   <div className="mt-8 custom-table">
-                    {isLoading ? (
+                    {isLoading || searchLoading ? (
                       <div className="text-center primary-color my-10 text-xl italic font-medium">
                         <div className="mx-auto flex items-center justify-center">
                           <p className="mr-3">Loading</p>

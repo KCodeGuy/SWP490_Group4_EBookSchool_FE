@@ -54,6 +54,7 @@ export default function AttendanceStatistics() {
   const [currentData, setCurrentData] = useState([]);
   const [currentAttendanceDetail, setCurrentAttendanceDetail] = useState({});
   const [openModalDetail, setOpenModalDetail] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   let accessToken, userRole, schoolYearsAPI;
   userRole = localStorage.getItem("userRole");
@@ -105,8 +106,6 @@ export default function AttendanceStatistics() {
     enabled: false,
   });
 
-  console.log(currentData);
-
   const handleDetails = (rowItem) => {
     setOpenModalDetail(true);
     const attendanceDetail = {
@@ -123,19 +122,31 @@ export default function AttendanceStatistics() {
   };
 
   const handleStatisticByWeekly = () => {
-    refetch().then((result) => {
-      if (result.data) {
-        setCurrentData(result.data);
-      }
-    });
+    setSearchLoading(true); // start loading
+    refetch()
+      .then((result) => {
+        if (result.data) {
+          setCurrentData(result.data);
+        }
+        setSearchLoading(false); // End loading
+      })
+      .catch(() => {
+        setSearchLoading(false); // End loading in case of an error
+      });
   };
 
   const handleStatisticWholeYear = () => {
-    refetchWholeYear().then((result) => {
-      if (result.data) {
-        setCurrentData(result.data);
-      }
-    });
+    setSearchLoading(true); // start loading
+    refetchWholeYear()
+      .then((result) => {
+        if (result.data) {
+          setCurrentData(result.data);
+        }
+        setSearchLoading(false); // End loading
+      })
+      .catch(() => {
+        setSearchLoading(false); // End loading in case of an error
+      });
   };
 
   const totalNumberOfAbsent = currentData?.reduce(
@@ -261,7 +272,7 @@ export default function AttendanceStatistics() {
             </div>
 
             <div className="mt-8 custom-table">
-              {isLoading || isLoadingWholeYear ? (
+              {isLoading || isLoadingWholeYear || searchLoading ? (
                 <div className="text-center primary-color py-20 text-xl italic font-medium my-10">
                   <div className="mx-auto flex items-center justify-center">
                     <p className="mr-3">Loading</p>

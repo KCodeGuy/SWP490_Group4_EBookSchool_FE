@@ -68,6 +68,7 @@ export default function WeeklyTimeTable() {
   const [openModalDetail, setOpenModalDetail] = useState(false);
   const [openModalUpdate, setOpenModalUpdate] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [currentSlot, setCurrentSlot] = useState({});
   const [currentSlotID, setCurrentSlotID] = useState("");
   const [currentSlotDate, setCurrentSlotDate] = useState("");
@@ -182,11 +183,17 @@ export default function WeeklyTimeTable() {
 
   const handleFilterTimetable = () => {
     setIsFirstRender(false);
-    refetch().then((result) => {
-      if (result.data) {
-        setCurrentTimeTable(result.data?.details);
-      }
-    });
+    setSearchLoading(true); // Start loading
+    refetch()
+      .then((result) => {
+        if (result.data) {
+          setCurrentTimeTable(result.data?.details);
+        }
+        setSearchLoading(false); // End loading
+      })
+      .catch(() => {
+        setSearchLoading(false); // End loading in case of an error
+      });
   };
 
   if (currentTimeTable) {
@@ -632,8 +639,14 @@ export default function WeeklyTimeTable() {
                           HỦY BỎ
                         </ButtonComponent>
                         <ButtonComponent action="submit">
-                          <AddCircleOutlineIcon className="text-3xl mr-1" />
-                          TẠO
+                          {addTimeTableMutationManually.isLoading || searchLoading ? (
+                            <CircularProgress size={20} color="inherit" />
+                          ) : (
+                            <>
+                              <AddCircleOutlineIcon className="text-3xl mr-1" />
+                              TẠO
+                            </>
+                          )}
                         </ButtonComponent>
                       </div>
                     </form>
@@ -680,8 +693,14 @@ export default function WeeklyTimeTable() {
                         HỦY BỎ
                       </ButtonComponent>
                       <ButtonComponent action="submit">
-                        <AddCircleOutlineIcon className="text-3xl mr-1" />
-                        TẠO
+                        {addTimeTableMutationByExcel.isLoading || searchLoading ? (
+                          <CircularProgress size={20} color="inherit" />
+                        ) : (
+                          <>
+                            <AddCircleOutlineIcon className="text-3xl mr-1" />
+                            TẠO
+                          </>
+                        )}
                       </ButtonComponent>
                     </div>
                   </form>
@@ -726,8 +745,14 @@ export default function WeeklyTimeTable() {
                         HỦY BỎ
                       </ButtonComponent>
                       <ButtonComponent action="submit">
-                        <BorderColorIcon className="text-3xl mr-1" />
-                        CẬP NHẬT
+                        {addTimeTableMutationByExcel.isLoading || searchLoading ? (
+                          <CircularProgress size={20} color="inherit" />
+                        ) : (
+                          <>
+                            <BorderColorIcon className="text-3xl mr-1" />
+                            CẬP NHẬT
+                          </>
+                        )}
                       </ButtonComponent>
                     </div>
                   </form>
@@ -772,7 +797,7 @@ export default function WeeklyTimeTable() {
               </span>
             </div>
           </div>
-          {isLoading ? (
+          {isLoading || searchLoading ? (
             <div className="text-center primary-color my-10 text-xl italic font-medium">
               <div className="mx-auto flex items-center justify-center">
                 <p className="mr-3">Loading</p>

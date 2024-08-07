@@ -43,7 +43,7 @@ function Breadcrumbs({ icon, title, route, light }) {
           <MDTypography
             component="span"
             variant="body2"
-            color={grey[600]}
+            color="dark"
             opacity={light ? 0.8 : 0.5}
             sx={{ lineHeight: 0 }}
           >
@@ -75,7 +75,7 @@ function Breadcrumbs({ icon, title, route, light }) {
             variant="button"
             fontWeight="regular"
             textTransform="capitalize"
-            color={grey[600]}
+            color="dark"
             opacity={light ? 0.8 : 0.5}
             sx={{ lineHeight: 0 }}
           >
@@ -89,13 +89,7 @@ function Breadcrumbs({ icon, title, route, light }) {
           </MDTypography>
         </Link>
       </MuiBreadcrumbs>
-      <MDTypography
-        fontWeight="bold"
-        textTransform="capitalize"
-        variant="h6"
-        color="grey[100]"
-        noWrap
-      >
+      <MDTypography fontWeight="bold" textTransform="capitalize" variant="h6" color="dark" noWrap>
         {route[0] == "takeAttendance"
           ? "Điểm danh"
           : route[0] == "notificationDetails"

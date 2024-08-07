@@ -267,8 +267,9 @@ export default function AttendanceStatistics() {
               </ButtonComponent>
             </div>
             <div className="text-center mt-8">
-              <h4 className="text-xl font-bold uppercase">Thống kê lượt vắng khối {grade}</h4>
-              <h4 className="text-xl font-bold uppercase">Năm học: {schoolYear}</h4>
+              <h4 className="text-xl font-bold uppercase">Thống kê lượt vắng</h4>
+              <h4 className="text-xl font-bold uppercase">Năm học {schoolYear}</h4>
+              <h4 className="text-xl font-bold uppercase">Khối {grade}</h4>
             </div>
 
             <div className="mt-8 custom-table">

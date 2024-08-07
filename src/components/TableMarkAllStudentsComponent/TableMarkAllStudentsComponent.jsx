@@ -7,6 +7,7 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import { renderAverageMarkStyles } from "utils/RenderStyle";
 import { renderRanking } from "utils/RenderStyle";
 import { renderRankingStyles } from "utils/RenderStyle";
+import { renderRankingStylesByRaking } from "utils/RenderStyle";
 
 const TableMarkAllStudentsComponent = ({
   data,
@@ -22,7 +23,6 @@ const TableMarkAllStudentsComponent = ({
     "Mã học sinh",
     "TBM",
     "Học lực",
-    // "Hạnh kiểm",
     "Hạng",
     "Chi tiết",
   ];
@@ -95,16 +95,13 @@ const TableMarkAllStudentsComponent = ({
 
   const sortedData = data.map((student) => {
     const sortedSubjects = sortSubjects(student.subjectAverages);
-    const totalAverage1 = calculateAverages(sortedSubjects, "averageSemester1");
-    const totalAverage2 = calculateAverages(sortedSubjects, "averageSemester2");
-    const totalAverage = calculateAverages(sortedSubjects, "averageWholeYear");
+    // const totalAverage1 = calculateAverages(sortedSubjects, "averageSemester1");
+    // const totalAverage2 = calculateAverages(sortedSubjects, "averageSemester2");
+    // const totalAverage = calculateAverages(sortedSubjects, "averageWholeYear");
 
     return {
       ...student,
       subjectAverages: sortedSubjects,
-      totalAverage1,
-      totalAverage2,
-      totalAverage,
     };
   });
 
@@ -187,39 +184,48 @@ const TableMarkAllStudentsComponent = ({
                   : "_"}
                 <td>
                   {semester == "Học kỳ I" ? (
-                    <span className={renderAverageMarkStyles(student.totalAverage1)}>
-                      {student.totalAverage1}
+                    <span className={renderAverageMarkStyles(student.totalAverageSemester1)}>
+                      {student.totalAverageSemester1}
                     </span>
                   ) : semester == "Học kỳ II" ? (
-                    <span className={renderAverageMarkStyles(student.totalAverage2)}>
-                      {student.totalAverage2}
+                    <span className={renderAverageMarkStyles(student.totalAverageSemester2)}>
+                      {student.totalAverageSemester2}
                     </span>
                   ) : semester == "Cả năm" ? (
-                    <span className={renderAverageMarkStyles(student.totalAverage)}>
-                      {student.totalAverage}
+                    <span className={renderAverageMarkStyles(student.totalAverageWholeYear)}>
+                      {student.totalAverageWholeYear}
                     </span>
                   ) : (
-                    ""
+                    "_"
                   )}
                 </td>
                 <td>
                   {semester == "Học kỳ I" ? (
-                    <span className={renderRankingStyles(student.totalAverage1)}>
-                      {renderRanking(student.totalAverage1)}
+                    <span className={renderRankingStylesByRaking(student.performanceSemester1)}>
+                      {student.performanceSemester1}
                     </span>
                   ) : semester == "Học kỳ II" ? (
-                    <span className={renderRankingStyles(student.totalAverage2)}>
-                      {renderRanking(student.totalAverage2)}
+                    <span className={renderRankingStylesByRaking(student.performanceSemester2)}>
+                      {student.performanceSemester2}
                     </span>
                   ) : semester == "Cả năm" ? (
-                    <span className={renderRankingStyles(student.totalAverage)}>
-                      {renderRanking(student.totalAverage)}
+                    <span className={renderRankingStylesByRaking(student.performanceWholeYear)}>
+                      {student.performanceWholeYear}
                     </span>
                   ) : (
-                    ""
+                    "_"
                   )}
                 </td>
-                <td className="w-12">{student.ranking}</td>
+                <td className="w-12">
+                  {" "}
+                  {semester == "Học kỳ I"
+                    ? student.rankSemester1
+                    : semester == "Học kỳ II"
+                    ? student.rankSemester2
+                    : semester == "Cả năm"
+                    ? student.rankWholeYear
+                    : "_"}
+                </td>
                 <td>
                   <button className="primary-color text-xl" onClick={() => onViewDetails(student)}>
                     <EditCalendarIcon />

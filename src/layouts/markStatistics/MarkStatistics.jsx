@@ -410,17 +410,17 @@ export default function MarkStatistics() {
               <>
                 <div className="text-center mt-8">
                   <h4 className="text-xl font-bold uppercase">
-                    Thống kê thang điểm, Năm học {schoolYear}.
+                    Thống kê thang điểm <br />
+                    Năm học {schoolYear}
                   </h4>
                   <h4 className="text-xl font-bold uppercase">
                     {value == 1
-                      ? `Khối ${schoolGrade}. `
+                      ? `Khối ${schoolGrade} `
                       : value == 2
-                      ? `Môn ${schoolSubject}. `
+                      ? `Môn ${schoolSubject} `
                       : value == 3
-                      ? `Lớp ${schoolClass}. `
+                      ? `Lớp ${schoolClass} `
                       : ""}
-                    {schoolSemester}
                   </h4>
                 </div>
                 <div className="w-full mt-5">

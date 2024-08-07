@@ -119,7 +119,7 @@ function TableMarkOfSubjectComponent({
               </>
             )}
             <th className="w-20">{semester == "Cả năm" ? "Cả năm" : "Trung bình môn"}</th>
-            <th className="w-20">Xếp loại</th>
+            {/* <th className="w-20">Xếp loại</th> */}
             {isShowActions && <th className="w-28">Chi tiết</th>}
           </tr>
         </thead>
@@ -193,7 +193,7 @@ function TableMarkOfSubjectComponent({
                   "_"
                 )}
               </td>
-              <td>
+              {/* <td>
                 {semester == "Học kỳ I" ? (
                   row.averageSemester1 != -1 && row.averageSemester1 != 0 ? (
                     <span className={renderRankingStyles(row.averageSemester1)}>
@@ -221,7 +221,7 @@ function TableMarkOfSubjectComponent({
                 ) : (
                   <span className="italic font-medium w-20">Chưa xếp loại</span>
                 )}
-              </td>
+              </td> */}
               {isShowActions && (
                 <td className="max-w-28">
                   {onDetails && (

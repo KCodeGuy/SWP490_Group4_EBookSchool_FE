@@ -56,4 +56,19 @@ const renderRankingStyles = (averageMark) => {
   return defaultStyles;
 };
 
-export { renderAverageMarkStyles, renderRanking, renderRankingStyles };
+const renderRankingStylesByRaking = (raking) => {
+  let defaultStyles = "italic font-medium";
+  if (raking.toString() == "Yếu") {
+    defaultStyles = `${defaultStyles} error-color`;
+  } else if (raking.toString() == "Trung bình") {
+    defaultStyles = `${defaultStyles} warning-color`;
+  } else if (raking.toString() == "Khá") {
+    defaultStyles = `${defaultStyles} primary-color`;
+  } else if (raking.toString() == "Giỏi") {
+    defaultStyles = `${defaultStyles} success-color`;
+  } else {
+    defaultStyles = `${defaultStyles} text-color`;
+  }
+  return defaultStyles;
+};
+export { renderAverageMarkStyles, renderRanking, renderRankingStyles, renderRankingStylesByRaking };

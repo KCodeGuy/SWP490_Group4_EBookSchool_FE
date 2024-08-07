@@ -403,7 +403,7 @@ export default function RegisterNotebookStatistics() {
               <>
                 <div className="text-center mt-8">
                   <h4 className="text-xl font-bold uppercase">Thống kê sổ đầu bài</h4>
-                  <h4 className="text-xl font-bold uppercase">Năm học: {schoolYear}</h4>
+                  <h4 className="text-xl font-bold uppercase">Năm học {schoolYear}</h4>
                 </div>
 
                 <div className="mt-8 custom-table">
@@ -578,8 +578,9 @@ export default function RegisterNotebookStatistics() {
               </div>
               <>
                 <div className="text-center mt-8">
-                  <h4 className="text-xl font-bold uppercase">Thống kê sổ đầu bài khối {grade}</h4>
-                  <h4 className="text-xl font-bold uppercase">Năm học: {schoolYear}</h4>
+                  <h4 className="text-xl font-bold uppercase">Thống kê sổ đầu bài</h4>
+                  <h4 className="text-xl font-bold uppercase">Năm học {schoolYear}</h4>
+                  <h4 className="text-xl font-bold uppercase">Khối {grade}</h4>
                 </div>
 
                 <div className="mt-8 custom-table">

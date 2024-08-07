@@ -27,7 +27,7 @@ import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatist
 import TableComponent from "components/TableComponent/TableComponent";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import { TabPanel } from "../../components/TabPanelComponent";
-import { statisticOfMark } from "../../services/StatisticService";
+import { statisticOfAcademicPerformance, statisticOfMark } from "../../services/StatisticService";
 import { generateClasses } from "../../utils/CommonFunctions";
 import { getAllSubjects } from "../../services/SubjectService";
 import { grade } from "mock/grade";
@@ -53,19 +53,10 @@ const valueDetailedMarksfForSubjectOfClass = (value) => {
   }
   throw new Error("Value must be a number or null");
 };
-
 const chartDetailedMarksfForSubjectOfClass = {
   yAxis: [
     {
-      label: "Số lượng điểm",
-    },
-  ],
-  series: [
-    {
-      dataKey: "count",
-      label: "Thang điểm",
-      valueDetailedMarksfForSubjectOfClass,
-      color: "#247CD4",
+      label: "Số lượng học sinh",
     },
   ],
   height: 500,
@@ -89,7 +80,7 @@ export default function AcademicPerformanceStatistics() {
   const [averageMark, setAverageMark] = useState(0);
   const [searchLoading, setSearchLoading] = useState(false);
 
-  const tabLabels = ["ĐIỂM MÔN TOÀN TRƯỜNG", "ĐIỂM THEO KHỐI", "ĐIỂM THEO LỚP"];
+  const tabLabels = ["HỌC LỰC TOÀN TRƯỜNG", "HỌC LỰC THEO KHỐI", "HỌC LỰC THEO LỚP"];
 
   let accessToken, currentUser, userRole, userID, schoolYearsAPI, classesAPI;
   userRole = localStorage.getItem("userRole");
@@ -202,33 +193,31 @@ export default function AcademicPerformanceStatistics() {
   };
 
   const handleStatisticSubjectClass = () => {
-    let highestMark = "";
-    let lowestMark = "";
-    let averageMark = 0;
+    // let highestMark = "";
+    // let lowestMark = "";
+    // let averageMark = 0;
+
+    const vietnameseToEnglish = {
+      Yếu: "poor",
+      "Trung bình": "average",
+      Khá: "good",
+      Giỏi: "excellent",
+    };
+
+    const transformKeys = (data) => {
+      return Object.keys(data).reduce((acc, key) => {
+        acc[vietnameseToEnglish[key]] = data[key];
+        return acc;
+      }, {});
+    };
+
     setSearchLoading(true); // start loading
     refetch()
       .then((result) => {
         if (result.data) {
-          if (schoolSemester == "Học kì I") {
-            setCurrentData(result.data[0].scores);
-            highestMark = getHighestMark(result.data[0].scores);
-            lowestMark = getLowerMark(result.data[0].scores);
-            averageMark = getAverageMark(result.data[0].scores);
-          } else if (schoolSemester == "Học kì II") {
-            setCurrentData(result.data[1].scores);
-            highestMark = getHighestMark(result.data[1].scores);
-            lowestMark = getLowerMark(result.data[1].scores);
-            averageMark = getAverageMark(result.data[1].scores);
-          } else if (schoolSemester == "Cả năm") {
-            setCurrentData(result.data[2].scores);
-            highestMark = getHighestMark(result.data[2].scores);
-            lowestMark = getLowerMark(result.data[2].scores);
-            averageMark = getAverageMark(result.data[2].scores);
-          }
+          const transformedData = transformKeys(result.data);
+          setCurrentData(transformedData);
         }
-        setHighestMark(highestMark.averageScore);
-        setLowestMark(lowestMark.averageScore);
-        setAverageMark(averageMark);
         setSearchLoading(false); // End loading
       })
       .catch(() => {
@@ -236,24 +225,76 @@ export default function AcademicPerformanceStatistics() {
       });
   };
 
+  const calculatePercentage = (num, total) => {
+    return Math.round((num / total) * 100);
+  };
+
+  const getTotalPercentage = (percentages) => {
+    return Object.values(percentages).reduce((sum, value) => sum + value, 0);
+  };
+
+  const adjustPercentages = (percentages) => {
+    const totalPercentage = getTotalPercentage(percentages);
+    const difference = 100 - totalPercentage;
+
+    if (difference !== 0) {
+      const maxKey = Object.keys(percentages).reduce((a, b) =>
+        percentages[a] > percentages[b] ? a : b
+      );
+      percentages[maxKey] += difference;
+    }
+
+    return percentages;
+  };
+
+  const totalStudents =
+    currentData?.poor + currentData?.average + currentData?.good + currentData?.excellent;
+
+  const initialPercentages = {
+    poor: calculatePercentage(currentData?.poor, totalStudents),
+    average: calculatePercentage(currentData?.average, totalStudents),
+    good: calculatePercentage(currentData?.good, totalStudents),
+    excellent: calculatePercentage(currentData?.excellent, totalStudents),
+  };
+
+  const adjustedPercentages = adjustPercentages(initialPercentages);
+
   const detailedMarksfForSubjectOfClassBox = [
     {
       color: "primary",
       icon: "leaderboard",
-      title: "Ít nhất",
-      count: `${lowestMark} điểm`,
-      textDescriptionColor: "primary",
-      amount: `${lowestMark} điểm`,
-      label: "chiếm tỉ lệ ít nhất",
+      title: "Loại yếu",
+      count: `${adjustedPercentages?.poor} %`,
+      textDescriptionColor: "info",
+      amount: `${currentData?.poor}`,
+      label: "là số lượng học sinh yếu",
+    },
+    {
+      color: "warning",
+      icon: "leaderboard",
+      title: "Loại trung bình",
+      count: `${adjustedPercentages.average} %`,
+      textDescriptionColor: "info",
+      amount: `${currentData?.average}`,
+      label: "là số lượng học sinh trung bình",
     },
     {
       color: "info",
       icon: "leaderboard",
-      title: "Nhiều nhất",
-      count: `${highestMark} điểm`,
+      title: "Loại khá",
+      count: `${adjustedPercentages.good} %`,
       textDescriptionColor: "info",
-      amount: `${highestMark} điểm`,
-      label: "chiếm tỉ lệ cao nhất",
+      amount: `${currentData?.good}`,
+      label: "là số lượng học sinh khá",
+    },
+    {
+      color: "success",
+      icon: "leaderboard",
+      title: "Loại giỏi",
+      count: `${adjustedPercentages.excellent} %`,
+      textDescriptionColor: "info",
+      amount: `${currentData?.excellent}`,
+      label: "là số lượng học sinh giỏi",
     },
   ];
 
@@ -261,16 +302,14 @@ export default function AcademicPerformanceStatistics() {
   const [tickPlacement, setTickPlacement] = React.useState("middle");
   const [tickLabelPlacement, setTickLabelPlacement] = React.useState("middle");
   const { data, isError, isLoading, refetch } = useQuery({
-    queryKey: ["markStatistic"],
+    queryKey: ["academicPerformance"],
     queryFn: () => {
       if (value === 1) {
-        return statisticOfMark(accessToken, schoolYear, "schoolGrade", schoolGrade);
+        return statisticOfAcademicPerformance(accessToken, schoolYear, "schoolGrade", schoolGrade);
       } else if (value === 2) {
-        return statisticOfMark(accessToken, schoolYear, "schoolSubject", schoolSubject);
-      } else if (value === 3) {
-        return statisticOfMark(accessToken, schoolYear, "schoolClass", schoolClass);
+        return statisticOfAcademicPerformance(accessToken, schoolYear, "schoolClass", schoolClass);
       } else if (value == 0) {
-        return statisticOfMark(accessToken, schoolYear, "schoolYear", schoolYear);
+        return statisticOfAcademicPerformance(accessToken, schoolYear, "schoolYear", schoolYear);
       }
     },
     enabled: false,
@@ -318,23 +357,6 @@ export default function AcademicPerformanceStatistics() {
                     >
                       {schoolYearsAPI?.map((item, index) => (
                         <MenuItem key={index} value={item}>
-                          {item}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  <FormControl sx={{ minWidth: 120 }}>
-                    <InputLabel id="select-semester-lable">Học kỳ</InputLabel>
-                    <Select
-                      labelId="select-semester-lable"
-                      id="select-semester"
-                      value={schoolSemester}
-                      className="h-10 mr-2 max-[767px]:mb-4"
-                      label="Học kì"
-                      onChange={handleSchoolSemesterSelectedChange}
-                    >
-                      {semesters.map((item) => (
-                        <MenuItem key={item} value={item}>
                           {item}
                         </MenuItem>
                       ))}
@@ -392,20 +414,14 @@ export default function AcademicPerformanceStatistics() {
               <>
                 <div className="text-center mt-8">
                   <h4 className="text-xl font-bold uppercase">
-                    Thống kê thang điểm, Năm học {schoolYear}.
+                    Thống kê học lực <br /> Năm học {schoolYear}
                   </h4>
                   <h4 className="text-xl font-bold uppercase">
-                    {value == 1
-                      ? `Khối ${schoolGrade}. `
-                      : value == 2
-                      ? `Môn ${schoolSubject}. `
-                      : value == 3
-                      ? `Lớp ${schoolClass}. `
-                      : ""}
-                    {schoolSemester}
+                    {value == 1 ? `Khối ${schoolGrade} ` : value == 2 ? `Lớp ${schoolClass} ` : ""}
+                    {/* {schoolSemester} */}
                   </h4>
                 </div>
-                <div className="w-full mt-5">
+                <div className="w-full mt-6">
                   <div className="mt-8 custom-table">
                     {isLoading || searchLoading ? (
                       <div className="text-center primary-color my-10 text-xl italic font-medium">
@@ -414,9 +430,13 @@ export default function AcademicPerformanceStatistics() {
                           <CircularProgress size={24} color="inherit" />
                         </div>
                       </div>
-                    ) : data && currentData.length > 0 ? (
+                    ) : currentData &&
+                      (currentData?.poor > 0 ||
+                        currentData?.average > 0 ||
+                        currentData?.good > 0 ||
+                        currentData?.excellent > 0) ? (
                       <>
-                        <div className="mt-8 grid gap-4 sm:grid-cols-1 md:grid-cols-2 custom">
+                        <div className="mt-8 grid gap-4 sm:grid-cols-1 md:grid-cols-4 custom">
                           {detailedMarksfForSubjectOfClassBox.map((item, index) => (
                             <ComplexStatisticsCard
                               key={index}
@@ -438,27 +458,21 @@ export default function AcademicPerformanceStatistics() {
                             style={{ background: "#E9F7FF" }}
                           >
                             <BarChart
-                              dataset={currentData}
-                              xAxis={[
+                              xAxis={[{ scaleType: "band", data: ["Xếp loại học lực"] }]}
+                              series={[
+                                { data: [currentData?.poor], label: "Yếu", color: "#e91e63" },
                                 {
-                                  scaleType: "band",
-                                  dataKey: "averageScore",
-                                  tickPlacement,
-                                  tickLabelPlacement,
+                                  data: [currentData?.average],
+                                  label: "Trung bình",
+                                  color: "#fb8c00",
                                 },
+                                { data: [currentData?.good], label: "Khá", color: "#247CD4" },
+                                { data: [currentData?.excellent], label: "Giỏi", color: "#4caf50" },
                               ]}
                               {...chartDetailedMarksfForSubjectOfClass}
                             />
                           </div>
                         </div>
-                        <p className="text-base font-bold mt-6">THỐNG KÊ CHI TIẾT</p>
-
-                        <TableComponent
-                          header={["Thang điểm", "Số lượng"]}
-                          data={currentData?.map((item) => [item.averageScore, item.count])}
-                          onDetails={handleDetails}
-                          className="mt-4"
-                        />
                       </>
                     ) : (
                       <div className="text-center primary-color my-10 text-xl italic font-medium">
@@ -474,56 +488,6 @@ export default function AcademicPerformanceStatistics() {
                 </div>
               </>
             </TabPanel>
-            {currentData.length > 0 ? (
-              <PopupComponent
-                title="CHI TIẾT"
-                description={`NĂM HỌC: ${schoolYear || "chưa có dữ liệu!"} `}
-                rightNote={`HỌC KỲ: ${schoolSemester || "chưa có dữ liệu!"}`}
-                isOpen={openModalDetail}
-                onClose={() => setOpenModalDetail(false)}
-              >
-                <div className="max-w-md">
-                  {value == 1 ? (
-                    <TextValueComponent
-                      label={`Khối`}
-                      value={`${schoolGrade}` || "_"}
-                      icon={<LeaderboardIcon />}
-                      className="justify-between w-full"
-                    />
-                  ) : value == 2 ? (
-                    <TextValueComponent
-                      label={`Môn học`}
-                      value={`${schoolSubject}` || "_"}
-                      icon={<LeaderboardIcon />}
-                      className="justify-between w-full"
-                    />
-                  ) : value == 3 ? (
-                    <TextValueComponent
-                      label={`Lớp học`}
-                      value={`${schoolClass}` || "_"}
-                      icon={<LeaderboardIcon />}
-                      className="justify-between w-full"
-                    />
-                  ) : (
-                    ""
-                  )}
-                  <TextValueComponent
-                    label={`Thang điểm`}
-                    value={`${detail.averageScore}` || "_"}
-                    icon={<LeaderboardIcon />}
-                    className="justify-between w-full"
-                  />
-                  <TextValueComponent
-                    label={`Số lượng`}
-                    value={`${detail.count}` || "_"}
-                    icon={<BorderColorIcon />}
-                    className="justify-between w-full"
-                  />
-                </div>
-              </PopupComponent>
-            ) : (
-              ""
-            )}
           </div>
         </MDBox>
       </Card>

@@ -49,6 +49,7 @@ import { PRINCIPAL_ROLE } from "services/APIConfig";
 import { HOMEROOM_ROLE } from "services/APIConfig";
 import { isXlsxFile } from "utils/CommonFunctions";
 import { renderAverageMarkStyles } from "utils/RenderStyle";
+import { useNavigate } from "react-router-dom";
 
 // Mark management (HieuTTN)
 const semesters = [
@@ -85,6 +86,7 @@ export default function MarkManagement() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [markDetails, setMarkDetails] = useState({});
   const [value, setValue] = React.useState(0);
+  const navigate = useNavigate();
   const handleChange = (event, newValue) => {
     setValue(newValue);
     setSchoolSemester(semesters[0].label);
@@ -208,6 +210,7 @@ export default function MarkManagement() {
 
   // Step 2: Format and sort the unique data
   const formattedSubjects = data
+    ?.filter((item) => item.isMark)
     ?.map((item) => ({
       label: `${item.name}`,
       name: item.name,
@@ -243,7 +246,7 @@ export default function MarkManagement() {
       data.semester = semesters[0].value;
     }
     if (!data.subjectName) {
-      data.subjectName = formattedSubjects[0].value;
+      data.subjectName = uniqueSubjects[0].value;
     }
     if (!data.component) {
       data.component = nameScore[0].value;
@@ -490,7 +493,7 @@ export default function MarkManagement() {
                         control={control}
                         setValue={noSetValue}
                         type="select"
-                        options={formattedSubjects}
+                        options={uniqueSubjects}
                         errors={errors}
                       />
                       <InputBaseComponent
@@ -580,9 +583,12 @@ export default function MarkManagement() {
             <>
               {userRole.includes(HOMEROOM_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
                 <div className="text-center mt-10 uppercase">
-                  <h4 className="text-xl font-bold">Bảng điểm tổng kết lớp {schoolClass}</h4>
                   <h4 className="text-xl font-bold">
-                    Học kỳ: {schoolSemester}. Năm học: {schoolYear}
+                    Bảng điểm tổng kết <br /> Năm học {schoolYear}
+                  </h4>
+                  <h4 className="text-xl font-bold"></h4>
+                  <h4 className="text-xl font-bold">
+                    Lớp {schoolClass} ({schoolSemester})
                   </h4>
                 </div>
               ) : (
@@ -669,10 +675,11 @@ export default function MarkManagement() {
                 <>
                   <div className="text-center mt-10 uppercase">
                     <h4 className="text-xl font-bold">
-                      Bảng điểm môn {schoolSubject} lớp {schoolClass}
+                      Bảng điểm tổng kết <br /> Năm học {schoolYear}
                     </h4>
+                    <h4 className="text-xl font-bold"></h4>
                     <h4 className="text-xl font-bold">
-                      Học kỳ: {schoolSemester}. Năm học: {schoolYear}
+                      Môn {schoolSubject} ({schoolSemester})
                     </h4>
                   </div>
                   <div className="flex flex-nowrap justify-between icon-custom mt-5">
@@ -705,14 +712,14 @@ export default function MarkManagement() {
                           </Select>
                         </FormControl>
                       </div>
-                      <ButtonComponent
+                      {/* <ButtonComponent
                         onClick={() => {
-                          setOpenModalRandom(true);
+                          navigate("/markStatistics");
                         }}
                       >
                         <CardGiftcardIcon className="mr-2" />
-                        Random
-                      </ButtonComponent>
+                        THỐNG KÊ ĐIỂM
+                      </ButtonComponent> */}
                     </div>
                   </div>
 
@@ -779,7 +786,7 @@ export default function MarkManagement() {
               </li>
             </ul>
           </div>
-          <PopupComponent
+          {/* <PopupComponent
             title="RANDOM HỌC SINH"
             description="Chọn ngẫu nhiên học sinh"
             isOpen={openModalRandom}
@@ -795,7 +802,7 @@ export default function MarkManagement() {
               </ButtonComponent>
               <ButtonComponent action="button">RANDOM</ButtonComponent>
             </div>
-          </PopupComponent>
+          </PopupComponent> */}
           <PopupComponent
             title="CHI TIẾT ĐIỂM"
             description="Chi tiết các cột điểm môn học"

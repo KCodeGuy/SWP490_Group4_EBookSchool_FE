@@ -62,6 +62,7 @@ import ButtonComponent from "components/ButtonComponent/ButtonComponent";
 import { getRouteName } from "utils/CommonFunctions";
 import { logoutAPI } from "services/AuthService";
 import { QueryClient, useMutation } from "react-query";
+import { toast, ToastContainer } from "react-toastify";
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const navigate = useNavigate();
@@ -80,19 +81,20 @@ function DashboardNavbar({ absolute, light, isMini }) {
     onSuccess: (response) => {
       queryClient.invalidateQueries("logoutAPI");
       if (response && response.status == 200) {
-        logoutUser();
-        setModalLogout(false);
-        navigate("/authentication/sign-in");
       } else {
-        toast.error(`Đăng xuất thất bại!`);
+        // toast.error(`Đăng xuất thất bại!`);
       }
     },
     onError: (error) => {
-      toast.error(`Đăng xuất thất bại!`);
+      // toast.error(`Đăng xuất thất bại!`);
     },
   });
   const handleLogoutUser = () => {
+    logoutUser();
+    setModalLogout(false);
+    navigate("/authentication/sign-in");
     logoutAPIMutation.mutate();
+    console.clear();
   };
 
   useEffect(() => {
@@ -167,6 +169,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
         { marginBottom: "12px", borderRadius: "10px", padding: "6px 0" })
       }
     >
+      <ToastContainer autoClose={3000} />
       <Toolbar sx={(theme) => navbarContainer(theme)}>
         <MDBox color="inherit" mb={{ xs: 1, md: 0 }} sx={(theme) => navbarRow(theme, { isMini })}>
           <Breadcrumbs

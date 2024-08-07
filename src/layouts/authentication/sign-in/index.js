@@ -89,6 +89,7 @@ function Basic() {
         if (data?.roles) {
           localStorage.setItem("userRole", data?.roles?.toString());
         }
+        console.clear();
         navigate("/dashboard");
       } else {
         toast.error("Tên đăng nhập hoặc tài khoản không chính xác!");

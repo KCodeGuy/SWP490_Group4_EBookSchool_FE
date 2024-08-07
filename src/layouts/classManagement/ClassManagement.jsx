@@ -33,6 +33,7 @@ import {
   downloadTemplateClass,
   addClassByExcel,
   getClassByID,
+  downloadTemplateClassByQuery,
 } from "../../services/ClassService";
 import { getAllTeachers } from "../../services/TeacherService";
 import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
@@ -45,6 +46,7 @@ export default function ClassManagement() {
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [deletedData, setDeletedData] = useState({});
+  const [currentClass, setCurrentClass] = useState({});
   const [currentData, setCurrentData] = useState([]);
   const [addedStudents, setAddedStudents] = useState([]);
   const [currentStudents, setCurrentStudents] = useState([]);
@@ -215,6 +217,12 @@ export default function ClassManagement() {
       setValue("schoolYearEdit", rowItem[2]);
       setValue("teacherIDEdit", rowItem[4]);
       setModalDetailsOpen(true);
+      setCurrentClass({
+        id: rowItem[0],
+        classroom: rowItem[1],
+        schoolYear: rowItem[2],
+        teacherID: rowItem[4],
+      });
       classByID.then((result) => {
         setAddedStudents(result?.students);
       });
@@ -850,18 +858,21 @@ export default function ClassManagement() {
                   errors={errorsEditAction}
                 />
               </form>
-              {/* <SearchInputComponent
-                className=""
-                onSearch={(txt) => {
-                  setCurrentStudents(filterStudentsForAdding(txt, listAllStudents));
-                  resetEditAction();
-                }}
-                placeHolder="Nhập từ khóa..."
-              /> */}
-              <div className="flex justify-between mt-1">
+
+              <div className="flex justify-between items-center mt-4">
                 <p className="text-sm font-bold">
                   Danh sách học sinh {`(${addedStudents?.length})`}
                 </p>
+                <ButtonComponent
+                  className=""
+                  action="button"
+                  onClick={() => {
+                    downloadTemplateClassByQuery(currentClass?.classroom, currentClass?.schoolYear);
+                  }}
+                >
+                  <DownloadIcon className="mr-2" />
+                  TẢI XUỐNG
+                </ButtonComponent>
               </div>
 
               {isLoadingStudents ? (
@@ -875,7 +886,7 @@ export default function ClassManagement() {
                 <TableComponent
                   header={["Mã HS", "Họ và tên", "Ảnh"]}
                   data={addedStudents?.map((item) => [item.id, item.fullname, item.avatar])}
-                  className="mt-2"
+                  className="mt-4"
                   isOrdered={true}
                   itemsPerPage={50}
                   isImage={2}

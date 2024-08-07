@@ -71,6 +71,10 @@ const downloadTemplateClass = () => {
   window.location.href = `https://orbapi.click/Templates/template_class.xlsx`;
 };
 
+const downloadTemplateClassByQuery = (className, schoolYear) => {
+  window.location.href = `https://orbapi.click/api/Classes/GetExcel?className=${className}&schoolYear=${schoolYear}`;
+};
+
 const addClassByExcel = async (accessToken, file) => {
   const formData = new FormData();
   formData.append("file", file);
@@ -94,4 +98,5 @@ export {
   deleteClass,
   downloadTemplateClass,
   addClassByExcel,
+  downloadTemplateClassByQuery,
 };

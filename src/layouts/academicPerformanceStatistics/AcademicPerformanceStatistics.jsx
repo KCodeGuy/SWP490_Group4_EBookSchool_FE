@@ -1,308 +1,275 @@
-import { Card, FormControl, Grid, InputLabel, MenuItem, Select, Tab, Tabs } from "@mui/material";
+import {
+  Card,
+  CircularProgress,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  Tab,
+  Tabs,
+} from "@mui/material";
+import noDataImage3 from "../../assets/images/noDataImage3.avif";
+
+import { BarChart, axisClasses } from "@mui/x-charts";
 import MDBox from "components/MDBox";
 import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import React, { useState } from "react";
-import "./style.scss";
-
-import { BarChart } from "@mui/x-charts/BarChart";
-import { axisClasses } from "@mui/x-charts";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import { PieChart } from "@mui/x-charts/PieChart";
-import { schoolYears } from "mock/schoolYear";
-import { TabPanel } from "components/TabPanelComponent";
-import ButtonComponent from "components/ButtonComponent/ButtonComponent";
+import React, { useEffect, useState } from "react";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import { studentClasses } from "mock/class";
+import { useQuery } from "react-query";
+import LeaderboardIcon from "@mui/icons-material/Leaderboard";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+
+import "./style.scss";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 import TableComponent from "components/TableComponent/TableComponent";
+import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
+import { TabPanel } from "../../components/TabPanelComponent";
+import { statisticOfMark } from "../../services/StatisticService";
+import { generateClasses } from "../../utils/CommonFunctions";
+import { getAllSubjects } from "../../services/SubjectService";
+import { grade } from "mock/grade";
+import { subject } from "mock/subject";
+import { Class, Subject } from "@mui/icons-material";
+import PopupComponent from "components/PopupComponent/PopupComponent";
+import TextValueComponent from "components/TextValueComponent";
 
 const semesters = ["Học kì I", "Học kì II", "Cả năm"];
 
-const grades = ["Khối 10", "Khối 11", "Khối 12"];
+const grades = [12, 11, 10];
 
-const datasetAcademicPerformenceOfGrades = [
-  {
-    Giỏi: 14,
-    Khá: 20,
-    TB: 5,
-    Yếu: 1,
-    Lớp: "12A1",
-  },
-  {
-    Giỏi: 14,
-    Khá: 20,
-    TB: 5,
-    Yếu: 1,
-    Lớp: "12A2",
-  },
-  {
-    Giỏi: 14,
-    Khá: 20,
-    TB: 5,
-    Yếu: 1,
-    Lớp: "12A3",
-  },
-  {
-    Giỏi: 14,
-    Khá: 20,
-    TB: 5,
-    Yếu: 1,
-    Lớp: "12A4",
-  },
-  {
-    Giỏi: 14,
-    Khá: 20,
-    TB: 5,
-    Yếu: 1,
-    Lớp: "12A5",
-  },
-  {
-    Giỏi: 14,
-    Khá: 20,
-    TB: 5,
-    Yếu: 1,
-    Lớp: "12A6",
-  },
-  {
-    Giỏi: 14,
-    Khá: 20,
-    TB: 5,
-    Yếu: 1,
-    Lớp: "12A7",
-  },
-  {
-    Giỏi: 14,
-    Khá: 20,
-    TB: 5,
-    Yếu: 1,
-    Lớp: "12A8",
-  },
-];
-const chartSetting = {
+const valueASubjectForAGrade = (value) => {
+  if (typeof value === "number" || value === null) {
+    return `${value} điểm`;
+  }
+  throw new Error("Value must be a number or null");
+};
+
+const valueDetailedMarksfForSubjectOfClass = (value) => {
+  if (typeof value === "number" || value === null) {
+    return `${value} học sinh`;
+  }
+  throw new Error("Value must be a number or null");
+};
+
+const chartDetailedMarksfForSubjectOfClass = {
   yAxis: [
     {
-      label: "Số phần trăm",
-      min: 0,
-      max: 50,
+      label: "Số lượng điểm",
     },
   ],
-  width: 1000,
+  series: [
+    {
+      dataKey: "count",
+      label: "Thang điểm",
+      valueDetailedMarksfForSubjectOfClass,
+      color: "#247CD4",
+    },
+  ],
   height: 500,
   sx: {
-    [`.${axisClasses.left} .${axisClasses.label}`]: {
-      transform: "translate(-10px, 0)",
+    [`& .${axisClasses.directionY} .${axisClasses.label}`]: {
+      transform: "translateX(-10px)",
     },
   },
 };
 
-const valueFormatter = (value) => `${value} học sinh`;
-
-const pieParams = { height: 200, margin: { right: 5 } };
-const palette = ["#287cd4", "#a5a5a5", "f9c559", "d70200"];
-
 export default function AcademicPerformanceStatistics() {
-  const [schoolYear, setSchoolYear] = React.useState(schoolYears.data[0].schoolYear);
+  const [value, setValue] = React.useState(0);
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+  const [detail, setDetail] = useState({});
+  const [openModalDetail, setOpenModalDetail] = useState(false);
+
+  const [highestMark, setHighestMark] = useState("");
+  const [lowestMark, setLowestMark] = useState("");
+  const [averageMark, setAverageMark] = useState(0);
+  const [searchLoading, setSearchLoading] = useState(false);
+
+  const tabLabels = ["ĐIỂM MÔN TOÀN TRƯỜNG", "ĐIỂM THEO KHỐI", "ĐIỂM THEO MÔN", "ĐIỂM THEO LỚP"];
+
+  let accessToken, currentUser, userRole, userID, schoolYearsAPI, classesAPI;
+  userRole = localStorage.getItem("userRole");
+  if (userRole) {
+    accessToken = localStorage.getItem("authToken");
+    schoolYearsAPI = JSON.parse(localStorage.getItem("schoolYears"));
+    classesAPI = JSON.parse(localStorage.getItem("currentClasses"));
+    currentUser = JSON.parse(localStorage.getItem("user"));
+    userID = currentUser.id;
+  }
+  const [currentData, setCurrentData] = useState([]);
+  const [schoolYear, setSchoolYear] = React.useState(schoolYearsAPI[schoolYearsAPI.length - 1]);
   const handleSchoolYearSelectedChange = (event) => {
     setSchoolYear(event.target.value);
   };
+
+  //call api get all
+  const {
+    data: subjects,
+    error,
+    isLoading: isLoadingSubject,
+  } = useQuery(["subjectState", { accessToken }], () => getAllSubjects(accessToken));
 
   const [schoolSemester, setSchoolSemester] = React.useState(semesters[0]);
   const handleSchoolSemesterSelectedChange = (event) => {
     setSchoolSemester(event.target.value);
   };
 
-  const [grade, setGrade] = React.useState(grades[0]);
+  const [schoolGrade, setSchoolGrade] = React.useState(grades[0]);
   const handleGradeSelectedChange = (event) => {
-    setGrade(event.target.value);
+    setSchoolGrade(event.target.value);
   };
 
-  const [schoolClass, setSchoolClass] = React.useState(studentClasses.data[0].name);
-  const handleSchoolClassSelectedChange = (event) => {
+  const classesOfSchoolYear = generateClasses(classesAPI, schoolYear);
+
+  const [schoolClass, setSchoolClass] = React.useState(classesOfSchoolYear[0]?.Classroom);
+  const handleChangeClass = (event) => {
     setSchoolClass(event.target.value);
   };
 
-  const [schoolSubject, setSchoolSubject] = React.useState("Môn học");
+  const formattedClasses = classesOfSchoolYear.map((item) => ({
+    label: item.Classroom,
+    value: item.ID,
+  }));
+
+  const [schoolSubject, setSchoolSubject] = React.useState("");
   const handleSchoolSubjectSelectedChange = (event) => {
     setSchoolSubject(event.target.value);
   };
 
+  useEffect(() => {
+    if (subjects && subjects.length > 0) {
+      setSchoolSubject(subjects[0].name);
+    }
+  }, [subjects]);
+
+  const formattedSubjects = subjects
+    ?.filter((item) => item.isMark) // filter only items with isMark = true
+    ?.map((item) => ({
+      label: `${item.name} (Khối-${item.grade})`,
+      name: item.name,
+      value: item.name,
+      grade: item.grade,
+    }))
+    ?.sort((a, b) => a.grade - b.grade); // sort by grade
+
   const handleDetails = (rowItem) => {
-    console.log("Details row:", rowItem);
-    // Implement delete logic here
+    if (rowItem) {
+      setOpenModalDetail(true);
+      const itemDetail = {
+        averageScore: rowItem[0],
+        count: rowItem[1],
+      };
+      setDetail(itemDetail);
+    }
   };
 
-  const handleStatisticSubjectSchool = () => {
-    console.log("Call api by all school: ", { schoolYear, schoolSemester, schoolSubject });
-  };
-  const [value, setValue] = React.useState(0);
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  // Find the item with the highest count
+  const getHighestMark = (data) => {
+    if (data.length > 0) {
+      return data?.reduce((max, item) => (item.count > max.count ? item : max), data[0]);
+    }
+    return 0;
   };
 
-  const tabLabels = ["HỌC LỰC TOÀN TRƯỜNG", "HỌC LỰC THEO KHỐI", "HỌC LỰC THEO LỚP"];
+  const getLowerMark = (data) => {
+    if (data.length > 0) {
+      return currentData?.reduce((min, item) => (item.count < min.count ? item : min), data[0]);
+    }
+    return 0;
+  };
 
-  const academicPerformenceOfAllSchoolsBox = [
+  const getAverageMark = (data) => {
+    if (data.length > 0) {
+      const total = currentData?.reduce((sum, item) => sum + item.count, 0);
+      return total / data.length;
+    }
+    return 0;
+  };
+
+  const handleStatisticSubjectClass = () => {
+    let highestMark = "";
+    let lowestMark = "";
+    let averageMark = 0;
+    setSearchLoading(true); // start loading
+    refetch()
+      .then((result) => {
+        if (result.data) {
+          if (schoolSemester == "Học kì I") {
+            setCurrentData(result.data[0].scores);
+            highestMark = getHighestMark(result.data[0].scores);
+            lowestMark = getLowerMark(result.data[0].scores);
+            averageMark = getAverageMark(result.data[0].scores);
+          } else if (schoolSemester == "Học kì II") {
+            setCurrentData(result.data[1].scores);
+            highestMark = getHighestMark(result.data[1].scores);
+            lowestMark = getLowerMark(result.data[1].scores);
+            averageMark = getAverageMark(result.data[1].scores);
+          } else if (schoolSemester == "Cả năm") {
+            setCurrentData(result.data[2].scores);
+            highestMark = getHighestMark(result.data[2].scores);
+            lowestMark = getLowerMark(result.data[2].scores);
+            averageMark = getAverageMark(result.data[2].scores);
+          }
+        }
+        setHighestMark(highestMark.averageScore);
+        setLowestMark(lowestMark.averageScore);
+        setAverageMark(averageMark);
+        setSearchLoading(false); // End loading
+      })
+      .catch(() => {
+        setSearchLoading(false); // End loading in case of an error
+      });
+  };
+
+  const detailedMarksfForSubjectOfClassBox = [
     {
       color: "primary",
       icon: "leaderboard",
-      title: "Học sinh giỏi nhiều nhất",
-      count: "Khối 10",
+      title: "Ít nhất",
+      count: `${lowestMark} điểm`,
       textDescriptionColor: "primary",
-      amount: "",
-      label: "là tỉ lệ HSG khối 10",
+      amount: `${lowestMark} điểm`,
+      label: "chiếm tỉ lệ ít nhất",
     },
     {
       color: "info",
       icon: "leaderboard",
-      title: "Học sinh khá nhiều nhất",
-      count: "Khối 10",
+      title: "Nhiều nhất",
+      count: `${highestMark} điểm`,
       textDescriptionColor: "info",
-      amount: "100%",
-      label: "là tỉ lệ HSK khối 10",
-    },
-    {
-      color: "success",
-      icon: "leaderboard",
-      title: "Học sinh TB nhiều nhất",
-      count: "Khối 10",
-      textDescriptionColor: "success",
-      amount: "100%",
-      label: "là tỉ lệ HSTB khối 10",
-    },
-    {
-      color: "info",
-      icon: "leaderboard",
-      title: "Học sinh yếu nhiều nhất",
-      count: "Khối 10",
-      textDescriptionColor: "info",
-      amount: "100%",
-      label: "là tỉ lệ HSY khối 10",
+      amount: `${highestMark} điểm`,
+      label: "chiếm tỉ lệ cao nhất",
     },
   ];
 
-  const academicPerformenceOfGradesBox = [
-    {
-      color: "primary",
-      icon: "leaderboard",
-      title: "Học sinh giỏi",
-      count: "20%",
-      textDescriptionColor: "primary",
-      amount: "Học sinh giỏi",
-      label: "có tỉ lệ thấp nhất",
-    },
-    {
-      color: "info",
-      icon: "leaderboard",
-      title: "Học sinh khá",
-      count: "30%",
-      textDescriptionColor: "info",
-      amount: "Học sinh khá",
-      label: "",
-    },
-    {
-      color: "success",
-      icon: "leaderboard",
-      title: "Học sinh trung bình",
-      count: "40%",
-      textDescriptionColor: "success",
-      amount: "Học sinh trung bình",
-      label: "",
-    },
-    {
-      color: "info",
-      icon: "leaderboard",
-      title: "Học sinh yếu",
-      count: "10%",
-      textDescriptionColor: "info",
-      amount: "Học sinh yếu",
-      label: "có tỉ lệ cao nhất",
-    },
-  ];
-
-  const [academicPerformenceOfGrades, setAcademicPerformenceOfGrades] = useState([
-    ["12A1", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A2", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A3", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A4", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A5", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A6", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A7", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A8", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A9", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A10", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A11", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-    ["12A12", "50", "Lê Văn A", "10%", "20%", "30%", "40%", "HSG"],
-  ]);
-  const [academicPerformenceOfAllSchools, setAcademicPerformenceOfAllSchools] = useState([
-    ["Khối 10", "500", "100", "200", "300", "400", "HSG"],
-    ["Khối 11", "500", "100", "200", "300", "400", "HSG"],
-    ["Khối 12", "500", "100", "200", "300", "400", "HSG"],
-  ]);
-  const [academicPerformanceStatisticsOfAClass, setAcademicPerformanceStatisticsOfAClass] =
-    useState([
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-      ["Lê Văn A", "CE161025", "HSG", "HSG", "HSG"],
-    ]);
-
-  const pieChartAcademicPerformanceInEntireSchool1 = [
-    { value: 30, color: "#287cd4" },
-    { value: 50, color: "#a5a5a5" },
-    { value: 10, color: "#f9c559" },
-    { value: 10, color: "#d70200" },
-  ];
-  const pieChartAcademicPerformanceInEntireSchool2 = [
-    { value: 30, color: "#287cd4" },
-    { value: 50, color: "#a5a5a5" },
-    { value: 20, color: "#f9c559" },
-    { value: 10, color: "#d70200" },
-  ];
-  const pieChartAcademicPerformanceInEntireSchool3 = [
-    { value: 30, color: "#287cd4" },
-    { value: 50, color: "#a5a5a5" },
-    { value: 20, color: "#f9c559" },
-    { value: 10, color: "#d70200" },
-  ];
-
-  const pieChartAcademicPerformanceStatisticsOfAClass1 = [
-    { value: 30, color: "#287cd4" },
-    { value: 50, color: "#a5a5a5" },
-    { value: 20, color: "#f9c559" },
-    { value: 10, color: "#d70200" },
-  ];
-  const pieChartAcademicPerformanceStatisticsOfAClass2 = [
-    { value: 30, color: "#287cd4" },
-    { value: 50, color: "#a5a5a5" },
-    { value: 20, color: "#f9c559" },
-    { value: 10, color: "#d70200" },
-  ];
-  const pieChartAcademicPerformanceStatisticsOfAClass3 = [
-    { value: 30, color: "#287cd4" },
-    { value: 50, color: "#a5a5a5" },
-    { value: 20, color: "#f9c559" },
-    { value: 10, color: "#d70200" },
-  ];
   (React.useState < "middle") | ("tick" > "middle");
   const [tickPlacement, setTickPlacement] = React.useState("middle");
   const [tickLabelPlacement, setTickLabelPlacement] = React.useState("middle");
+  const { data, isError, isLoading, refetch } = useQuery({
+    queryKey: ["markStatistic"],
+    queryFn: () => {
+      if (value === 1) {
+        return statisticOfMark(accessToken, schoolYear, "schoolGrade", schoolGrade);
+      } else if (value === 2) {
+        return statisticOfMark(accessToken, schoolYear, "schoolSubject", schoolSubject);
+      } else if (value === 3) {
+        return statisticOfMark(accessToken, schoolYear, "schoolClass", schoolClass);
+      } else if (value == 0) {
+        return statisticOfMark(accessToken, schoolYear, "schoolYear", schoolYear);
+      }
+    },
+    enabled: false,
+  });
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Card className="mb-8">
+      <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
-          {/* DO NOT DELETE CODE AS ABOVE*/}
           <div className="w-full mb-10">
             <Tabs
               value={value}
@@ -325,482 +292,247 @@ export default function AcademicPerformanceStatistics() {
                 <Tab key={index} label={item} />
               ))}
             </Tabs>
+            <TabPanel value={value} index={value}>
+              <div className="flex justify-between">
+                <div className="left">
+                  <FormControl sx={{ minWidth: 120 }}>
+                    <InputLabel id="select-school-year-lable">Năm học</InputLabel>
+                    <Select
+                      labelId="select-school-year-lable"
+                      id="elect-school-year"
+                      value={schoolYear}
+                      className="h-10 mr-2 max-[767px]:mb-4"
+                      label="Năm học"
+                      onChange={handleSchoolYearSelectedChange}
+                    >
+                      {schoolYearsAPI?.map((item, index) => (
+                        <MenuItem key={index} value={item}>
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <FormControl sx={{ minWidth: 120 }}>
+                    <InputLabel id="select-semester-lable">Học kỳ</InputLabel>
+                    <Select
+                      labelId="select-semester-lable"
+                      id="select-semester"
+                      value={schoolSemester}
+                      className="h-10 mr-2 max-[767px]:mb-4"
+                      label="Học kì"
+                      onChange={handleSchoolSemesterSelectedChange}
+                    >
+                      {semesters.map((item) => (
+                        <MenuItem key={item} value={item}>
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  {value == 1 ? (
+                    <FormControl sx={{ minWidth: 120 }}>
+                      <InputLabel id="select-school-grade-lable">Khối</InputLabel>
+                      <Select
+                        labelId="select-school-grade-lable"
+                        id="select-grade"
+                        value={schoolGrade}
+                        className="h-10 mr-2 max-[767px]:mb-4"
+                        label="Khối"
+                        onChange={handleGradeSelectedChange}
+                      >
+                        {grades?.map((item, index) => (
+                          <MenuItem key={index} value={item}>
+                            {`Khối ${item}`}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  ) : value == 2 ? (
+                    <FormControl sx={{ minWidth: 120 }}>
+                      <InputLabel id="select-school-subject-lable">Môn học</InputLabel>
+                      <Select
+                        labelId="select-school-subject-lable"
+                        id="select-school-subject"
+                        value={schoolSubject}
+                        className="h-10 mr-2 max-[767px]:mb-4"
+                        label="Môn học"
+                        onChange={handleSchoolSubjectSelectedChange}
+                      >
+                        {formattedSubjects?.map((item, index) => (
+                          <MenuItem key={index} value={item.name}>
+                            {item.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  ) : value == 3 ? (
+                    <FormControl sx={{ minWidth: 120 }}>
+                      <InputLabel id="select-school-class-lable">Lớp</InputLabel>
+                      <Select
+                        labelId="select-school-class-lable"
+                        id="select-school-class"
+                        value={schoolClass}
+                        className="h-10 mr-2 max-[767px]:mb-4"
+                        label="Lớp"
+                        onChange={handleChangeClass}
+                      >
+                        {formattedClasses?.map((item, index) => (
+                          <MenuItem key={index} value={item.label}>
+                            {item.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  ) : (
+                    ""
+                  )}
 
-            <TabPanel value={value} index={0}>
-              <div className="left">
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-school-year-lable">Năm học</InputLabel>
-                  <Select
-                    labelId="select-school-year-lable"
-                    id="elect-school-year"
-                    value={schoolYear}
-                    className="h-11 mr-3"
-                    label="Năm học"
-                    onChange={handleSchoolYearSelectedChange}
+                  <ButtonComponent
+                    type="success"
+                    className="max-[639px]:w-full"
+                    onClick={handleStatisticSubjectClass}
                   >
-                    {schoolYears.data.map((item) => (
-                      <MenuItem key={item.schoolYear} value={item.schoolYear}>
-                        {item.schoolYear}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-semester-lable">Học kì</InputLabel>
-                  <Select
-                    labelId="select-semester-lable"
-                    id="select-semester"
-                    value={schoolSemester}
-                    className="h-11 mr-3"
-                    label="Học kì"
-                    onChange={handleSchoolSemesterSelectedChange}
-                  >
-                    {semesters.map((item) => (
-                      <MenuItem key={item} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <ButtonComponent
-                  type="success"
-                  className="max-[639px]:w-full"
-                  onClick={handleStatisticSubjectSchool}
-                >
-                  <FilterAltIcon className="mr-1" /> Thống kê
-                </ButtonComponent>
+                    <FilterAltIcon className="mr-1" /> THỐNG KÊ
+                  </ButtonComponent>
+                </div>
               </div>
-              <div className="text-center mt-8">
-                <h4 className="text-xl font-bold">Thống kê học lực trường THPT Nguyễn Việt Hồng</h4>
-                <h4 className="text-xl font-bold">
-                  Học kỳ: {schoolSemester}. Năm học: {schoolYear}
-                </h4>
-              </div>
-              <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4 custom">
-                {academicPerformenceOfAllSchoolsBox.map((item, index) => (
-                  <ComplexStatisticsCard
-                    key={index}
-                    color={item.color}
-                    icon={item.icon}
-                    title={item.title}
-                    count={item.count}
-                    percentage={{
-                      color: item.textDescriptionColor,
-                      amount: item.amount,
-                      label: item.label,
-                    }}
+              <>
+                <div className="text-center mt-8">
+                  <h4 className="text-xl font-bold uppercase">
+                    Thống kê thang điểm, Năm học {schoolYear}.
+                  </h4>
+                  <h4 className="text-xl font-bold uppercase">
+                    {value == 1
+                      ? `Khối ${schoolGrade}. `
+                      : value == 2
+                      ? `Môn ${schoolSubject}. `
+                      : value == 3
+                      ? `Lớp ${schoolClass}. `
+                      : ""}
+                    {schoolSemester}
+                  </h4>
+                </div>
+                <div className="w-full mt-5">
+                  <div className="mt-8 custom-table">
+                    {isLoading || searchLoading ? (
+                      <div className="text-center primary-color my-10 text-xl italic font-medium">
+                        <div className="mx-auto flex items-center justify-center">
+                          <p className="mr-3">Loading</p>
+                          <CircularProgress size={24} color="inherit" />
+                        </div>
+                      </div>
+                    ) : data && currentData.length > 0 ? (
+                      <>
+                        <div className="mt-8 grid gap-4 sm:grid-cols-1 md:grid-cols-2 custom">
+                          {detailedMarksfForSubjectOfClassBox.map((item, index) => (
+                            <ComplexStatisticsCard
+                              key={index}
+                              color={item.color}
+                              icon={item.icon}
+                              title={item.title}
+                              count={item.count}
+                              percentage={{
+                                color: item.textDescriptionColor,
+                                amount: item.amount,
+                                label: item.label,
+                              }}
+                            />
+                          ))}
+                        </div>
+                        <div className="table w-full mt-8">
+                          <div
+                            className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
+                            style={{ background: "#E9F7FF" }}
+                          >
+                            <BarChart
+                              dataset={currentData}
+                              xAxis={[
+                                {
+                                  scaleType: "band",
+                                  dataKey: "averageScore",
+                                  tickPlacement,
+                                  tickLabelPlacement,
+                                },
+                              ]}
+                              {...chartDetailedMarksfForSubjectOfClass}
+                            />
+                          </div>
+                        </div>
+                        <p className="text-base font-bold mt-6">
+                          THỐNG KÊ CHI TIẾT MÔN TOÁN (HK1, 2023)
+                        </p>
+
+                        <TableComponent
+                          header={["Thang điểm", "Số lượng"]}
+                          data={currentData?.map((item) => [item.averageScore, item.count])}
+                          onDetails={handleDetails}
+                          className="mt-4"
+                        />
+                      </>
+                    ) : (
+                      <div className="text-center primary-color my-10 text-xl italic font-medium">
+                        <img
+                          className="w-60 h-60 object-cover object-center mx-auto"
+                          src={noDataImage3}
+                          alt="Chưa có dữ liệu!"
+                        />
+                        Chưa có dữ liệu!
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            </TabPanel>
+            {currentData.length > 0 ? (
+              <PopupComponent
+                title="CHI TIẾT"
+                description={`NĂM HỌC: ${schoolYear || "chưa có dữ liệu!"} `}
+                rightNote={`HỌC KỲ: ${schoolSemester || "chưa có dữ liệu!"}`}
+                isOpen={openModalDetail}
+                onClose={() => setOpenModalDetail(false)}
+              >
+                <div className="max-w-md">
+                  {value == 1 ? (
+                    <TextValueComponent
+                      label={`Khối`}
+                      value={`${schoolGrade}` || "_"}
+                      icon={<LeaderboardIcon />}
+                      className="justify-between w-full"
+                    />
+                  ) : value == 2 ? (
+                    <TextValueComponent
+                      label={`Môn học`}
+                      value={`${schoolSubject}` || "_"}
+                      icon={<LeaderboardIcon />}
+                      className="justify-between w-full"
+                    />
+                  ) : value == 3 ? (
+                    <TextValueComponent
+                      label={`Lớp học`}
+                      value={`${schoolClass}` || "_"}
+                      icon={<LeaderboardIcon />}
+                      className="justify-between w-full"
+                    />
+                  ) : (
+                    ""
+                  )}
+                  <TextValueComponent
+                    label={`Thang điểm`}
+                    value={`${detail.averageScore}` || "_"}
+                    icon={<LeaderboardIcon />}
+                    className="justify-between w-full"
                   />
-                ))}
-              </div>
-              <div
-                className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
-                style={{ background: "#E9F7FF" }}
-              >
-                <div className="mt-3 customSquare flex justify-center items-center">
-                  <div className="flex customSquare-1">
-                    <div className="h-5 w-5 mr-2 mt-1.5"></div>
-                    <div className="border-0 border-solid border-zinc-200 font-light mr-2">
-                      Giỏi
-                    </div>
-                  </div>
-                  <div className="flex customSquare-2">
-                    <div className="h-5 w-5 mr-2 mt-1.5"></div>
-                    <div className="border-0 border-solid border-zinc-200 font-light mr-2">Khá</div>
-                  </div>
-                  <div className="flex customSquare-3">
-                    <div className="h-5 w-5 mr-2 mt-1.5"></div>
-                    <div className="border-0 border-solid border-zinc-200 font-light mr-2">TB</div>
-                  </div>
-                  <div className="flex customSquare-4">
-                    <div className="h-5 w-5 mr-2 mt-1.5"></div>
-                    <div className="border-0 border-solid border-zinc-200 font-light mr-2">Yếu</div>
-                  </div>
-                </div>
-                <Grid container spacing={2} textAlign="center" paddingTop={2} paddingBottom={1}>
-                  <Grid item xs={12} sm={4}>
-                    <Box>
-                      <PieChart
-                        colors={palette}
-                        series={[
-                          {
-                            // arcLabelMinAngle: 180,
-                            arcLabel: (item) => `(${item.value}%)`,
-                            data: pieChartAcademicPerformanceInEntireSchool1,
-                            highlightScope: { faded: "global", highlighted: "item" },
-                            faded: { innerRadius: 30, additionalRadius: -30, color: "gray" },
-                          },
-                        ]}
-                        {...pieParams}
-                      />
-                      <Typography fontWeight={700}>Khối 10</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <Box>
-                      <PieChart
-                        colors={palette}
-                        series={[
-                          {
-                            data: pieChartAcademicPerformanceInEntireSchool2,
-                            highlightScope: { faded: "global", highlighted: "item" },
-                            faded: { innerRadius: 30, additionalRadius: -30, color: "gray" },
-                          },
-                        ]}
-                        {...pieParams}
-                      />
-                      <Typography fontWeight={700}>Khối 11</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <Box>
-                      <PieChart
-                        colors={palette}
-                        series={[
-                          {
-                            data: pieChartAcademicPerformanceInEntireSchool3,
-                            highlightScope: { faded: "global", highlighted: "item" },
-                            faded: { innerRadius: 30, additionalRadius: -30, color: "gray" },
-                          },
-                        ]}
-                        {...pieParams}
-                      />
-                      <Typography fontWeight={700}>Khối 12</Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </div>
-
-              <div className="mt-8 custom-table">
-                <p className="text-base font-bold">THỐNG KÊ CHI TIẾT</p>
-                <TableComponent
-                  header={[
-                    "Khối",
-                    "Số lượng",
-                    "Số HSG",
-                    "Số HSK",
-                    "Số HSTB",
-                    "Số HSY",
-                    "Nhiều nhất",
-                  ]}
-                  data={academicPerformenceOfAllSchools}
-                  // onEdit={handleEdit}
-                  onDetails={handleDetails}
-                  // onDelete={handleDelete}
-                  className="mt-4"
-                />
-              </div>
-            </TabPanel>
-            <TabPanel value={value} index={1}>
-              <div className="left">
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-school-year-lable">Năm học</InputLabel>
-                  <Select
-                    labelId="select-school-year-lable"
-                    id="elect-school-year"
-                    value={schoolYear}
-                    className="h-11 mr-3"
-                    label="Năm học"
-                    onChange={handleSchoolYearSelectedChange}
-                  >
-                    {schoolYears.data.map((item) => (
-                      <MenuItem key={item.schoolYear} value={item.schoolYear}>
-                        {item.schoolYear}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-grade-lable">Khối</InputLabel>
-                  <Select
-                    labelId="select-grade-lable"
-                    id="select-grade"
-                    value={grade}
-                    className="h-11 mr-3"
-                    label="Khối"
-                    onChange={handleGradeSelectedChange}
-                  >
-                    {grades.map((item) => (
-                      <MenuItem key={item} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-semester-lable">Học kì</InputLabel>
-                  <Select
-                    labelId="select-semester-lable"
-                    id="select-semester"
-                    value={schoolSemester}
-                    className="h-11 mr-3"
-                    label="Học kì"
-                    onChange={handleSchoolSemesterSelectedChange}
-                  >
-                    {semesters.map((item) => (
-                      <MenuItem key={item} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <ButtonComponent
-                  type="success"
-                  className="max-[639px]:w-full"
-                  onClick={handleStatisticSubjectSchool}
-                >
-                  <FilterAltIcon className="mr-1" /> Thống kê
-                </ButtonComponent>
-              </div>
-              <div className="text-center mt-8">
-                <h4 className="text-xl font-bold">
-                  Thống kê học lực khối {grade} trường THPT Nguyễn Việt Hồng
-                </h4>
-                <h4 className="text-xl font-bold">
-                  Học kỳ: {schoolSemester}. Năm học: {schoolYear}
-                </h4>
-              </div>
-              <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4 custom">
-                {academicPerformenceOfGradesBox.map((item, index) => (
-                  <ComplexStatisticsCard
-                    key={index}
-                    color={item.color}
-                    icon={item.icon}
-                    title={item.title}
-                    count={item.count}
-                    percentage={{
-                      color: item.textDescriptionColor,
-                      amount: item.amount,
-                      label: item.label,
-                    }}
+                  <TextValueComponent
+                    label={`Số lượng`}
+                    value={`${detail.count}` || "_"}
+                    icon={<BorderColorIcon />}
+                    className="justify-between w-full"
                   />
-                ))}
-              </div>
-              <div
-                className="mt-8 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
-                style={{ background: "#E9F7FF" }}
-              >
-                <BarChart
-                  dataset={datasetAcademicPerformenceOfGrades}
-                  xAxis={[{ scaleType: "band", dataKey: "Lớp", tickPlacement, tickLabelPlacement }]}
-                  series={[
-                    { dataKey: "Giỏi", label: "Giỏi", valueFormatter },
-                    { dataKey: "Khá", label: "Khá", valueFormatter },
-                    { dataKey: "TB", label: "TB", valueFormatter },
-                    { dataKey: "Yếu", label: "Yếu", valueFormatter },
-                  ]}
-                  {...chartSetting}
-                />
-              </div>
-
-              <div className="mt-8 custom-table">
-                <p className="text-base font-bold">THỐNG KÊ CHI TIẾT ({grade})</p>
-                <TableComponent
-                  header={[
-                    "Lớp",
-                    "Sỉ số",
-                    "GVCN",
-                    "Tỉ lệ HSG",
-                    "Tỉ lệ HSK",
-                    "Tỉ lệ HSTB",
-                    "Tỉ lệ HSY",
-                    "Nhiều nhất",
-                  ]}
-                  data={academicPerformenceOfGrades}
-                  // onEdit={handleEdit}
-                  onDetails={handleDetails}
-                  // onDelete={handleDelete}
-                  className="mt-4"
-                />
-              </div>
-            </TabPanel>
-            <TabPanel value={value} index={2}>
-              <div className="left">
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-school-year-lable">Năm học</InputLabel>
-                  <Select
-                    labelId="select-school-year-lable"
-                    id="elect-school-year"
-                    value={schoolYear}
-                    className="h-11 mr-3"
-                    label="Năm học"
-                    onChange={handleSchoolYearSelectedChange}
-                  >
-                    {schoolYears.data.map((item) => (
-                      <MenuItem key={item.schoolYear} value={item.schoolYear}>
-                        {item.schoolYear}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-grade-lable">Khối</InputLabel>
-                  <Select
-                    labelId="select-grade-lable"
-                    id="select-grade"
-                    value={grade}
-                    className="h-11 mr-3"
-                    label="Khối"
-                    onChange={handleGradeSelectedChange}
-                  >
-                    {grades.map((item) => (
-                      <MenuItem key={item} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-semester-lable">Học kì</InputLabel>
-                  <Select
-                    labelId="select-semester-lable"
-                    id="select-semester"
-                    value={schoolSemester}
-                    className="h-11 mr-3"
-                    label="Học kì"
-                    onChange={handleSchoolSemesterSelectedChange}
-                  >
-                    {semesters.map((item) => (
-                      <MenuItem key={item} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ minWidth: 120, marginBottom: "12px" }}>
-                  <InputLabel id="select-school-class-lable">Lớp</InputLabel>
-                  <Select
-                    labelId="select-school-class-lable"
-                    id="select-school-class"
-                    value={schoolClass}
-                    className="h-11 mr-3"
-                    label="Lớp"
-                    onChange={handleSchoolClassSelectedChange}
-                  >
-                    {studentClasses.data.map((item) => (
-                      <MenuItem key={item.name} value={item.name}>
-                        {item.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <ButtonComponent
-                  type="success"
-                  className="max-[639px]:w-full"
-                  onClick={handleStatisticSubjectSchool}
-                >
-                  <FilterAltIcon className="mr-1" /> Thống kê
-                </ButtonComponent>
-              </div>
-              <div className="text-center mt-8">
-                <h4 className="text-xl font-bold">
-                  Thống kê học lực lớp {schoolClass} trường THPT Nguyễn Việt Hồng
-                </h4>
-                <h4 className="text-xl font-bold">
-                  Học kỳ: {schoolSemester}. Năm học: {schoolYear}
-                </h4>
-              </div>
-              <div className="flex justify-between mt-4">
-                <div className="text-sm">
-                  <span className="mr-2 font-bold">Giáo viên</span>
-                  <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                    Lương Hoàng Hướng
-                  </span>
                 </div>
-                <div className="text-sm">
-                  <span className="mr-2 font-bold">Sỉ số:</span>
-                  <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                    40
-                  </span>
-                </div>
-              </div>
-              <div
-                className="mt-4 w-full p-3 rounded-md shadow-md max-[639px]:overflow-x-scroll sm:overflow-auto"
-                style={{ background: "#E9F7FF" }}
-              >
-                <div className="mt-3 customSquare flex justify-center items-center">
-                  <div className="flex customSquare-1">
-                    <div className="h-5 w-5 mr-2 mt-1.5"></div>
-                    <div className="border-0 border-solid border-zinc-200 font-light mr-2">
-                      Giỏi
-                    </div>
-                  </div>
-                  <div className="flex customSquare-2">
-                    <div className="h-5 w-5 mr-2 mt-1.5"></div>
-                    <div className="border-0 border-solid border-zinc-200 font-light mr-2">Khá</div>
-                  </div>
-                  <div className="flex customSquare-3">
-                    <div className="h-5 w-5 mr-2 mt-1.5"></div>
-                    <div className="border-0 border-solid border-zinc-200 font-light mr-2">TB</div>
-                  </div>
-                  <div className="flex customSquare-4">
-                    <div className="h-5 w-5 mr-2 mt-1.5"></div>
-                    <div className="border-0 border-solid border-zinc-200 font-light mr-2">Yếu</div>
-                  </div>
-                </div>
-                <Grid container spacing={2} textAlign="center" paddingTop={2} paddingBottom={1}>
-                  <Grid item xs={12} sm={4}>
-                    <Box>
-                      <PieChart
-                        colors={palette}
-                        series={[
-                          {
-                            data: pieChartAcademicPerformanceStatisticsOfAClass1,
-                            highlightScope: { faded: "global", highlighted: "item" },
-                            faded: { innerRadius: 30, additionalRadius: -30, color: "gray" },
-                          },
-                        ]}
-                        {...pieParams}
-                      />
-                      <Typography fontWeight={700}>HKI</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <Box>
-                      <PieChart
-                        colors={palette}
-                        series={[
-                          {
-                            data: pieChartAcademicPerformanceStatisticsOfAClass2,
-                            highlightScope: { faded: "global", highlighted: "item" },
-                            faded: { innerRadius: 30, additionalRadius: -30, color: "gray" },
-                          },
-                        ]}
-                        {...pieParams}
-                      />
-                      <Typography fontWeight={700}>HKII</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <Box>
-                      <PieChart
-                        colors={palette}
-                        series={[
-                          {
-                            data: pieChartAcademicPerformanceStatisticsOfAClass3,
-                            highlightScope: { faded: "global", highlighted: "item" },
-                            faded: { innerRadius: 30, additionalRadius: -30, color: "gray" },
-                          },
-                        ]}
-                        {...pieParams}
-                      />
-                      <Typography fontWeight={700}>Cả năm</Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </div>
-
-              <div className="mt-8 custom-table">
-                <p className="text-base font-bold">THỐNG KÊ CHI TIẾT ({grade})</p>
-                <TableComponent
-                  header={["Họ và tên", "Mã học sinh", "HKI", "HKII", "Cả năm"]}
-                  data={academicPerformanceStatisticsOfAClass}
-                  // onEdit={handleEdit}
-                  onDetails={handleDetails}
-                  // onDelete={handleDelete}
-                  className="mt-4"
-                />
-              </div>
-            </TabPanel>
+              </PopupComponent>
+            ) : (
+              ""
+            )}
           </div>
         </MDBox>
       </Card>

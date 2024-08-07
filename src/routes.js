@@ -55,7 +55,6 @@ import StudentAccountManagement from "./layouts/studentAccountManagement/Student
 import WeeklyTimeTable from "./layouts/weeklyTimeTable";
 import MarkStatistics from "./layouts/markStatistics/MarkStatistics";
 import TakeAttendance from "layouts/takeAttendance";
-import AcademicPerformanceStatistics from "./layouts/academicPerformanceStatistics/AcademicPerformanceStatistics";
 import NotificationDetails from "layouts/notificationDetails/NotificationDetails";
 import LogManagement from "layouts/logManagement/LogManagement";
 import SystemSetting from "layouts/systemSetting";
@@ -63,6 +62,7 @@ import RegisterNotebookStatistics from "layouts/registerNotebookStatistics/Regis
 import AttendanceStatistics from "layouts/attendanceStatistics/AttendanceStatistics";
 import MarkReportStudent from "layouts/markReportStudent";
 import AttendanceReportStudent from "layouts/attendanceReportStudent/attendanceReportStudent";
+import AcademicPerformanceStatistics from "layouts/AcademicPerformanceStatistics/AcademicPerformanceStatistics";
 
 const routes = [
   {
@@ -141,14 +141,14 @@ const routes = [
     route: "/markStatistics",
     component: <MarkStatistics />,
   },
-  // {
-  //   type: "collapse",
-  //   name: "Thống kê học lực",
-  //   key: "academicPerformanceStatistics",
-  //   icon: <Icon fontSize="small">leaderboard</Icon>,
-  //   route: "/academicPerformanceStatistics",
-  //   component: <AcademicPerformanceStatistics />,
-  // },
+  {
+    type: "collapse",
+    name: "Thống kê học lực",
+    key: "academicPerformanceStatistics",
+    icon: <Icon fontSize="small">leaderboard</Icon>,
+    route: "/academicPerformanceStatistics",
+    component: <AcademicPerformanceStatistics />,
+  },
   {
     type: "title",
     title: "Quản lí",
@@ -414,14 +414,14 @@ const subjectTeacherRoutes = [
     route: "/markStatistics",
     component: <MarkStatistics />,
   },
-  // {
-  //   type: "collapse",
-  //   name: "Thống kê học lực",
-  //   key: "academicPerformanceStatistics",
-  //   icon: <Icon fontSize="small">leaderboard</Icon>,
-  //   route: "/academicPerformanceStatistics",
-  //   component: <AcademicPerformanceStatistics />,
-  // },
+  {
+    type: "collapse",
+    name: "Thống kê học lực",
+    key: "academicPerformanceStatistics",
+    icon: <Icon fontSize="small">leaderboard</Icon>,
+    route: "/academicPerformanceStatistics",
+    component: <AcademicPerformanceStatistics />,
+  },
   // {
   //   type: "collapse",
   //   name: "Thống kê hạnh kiểm",
@@ -546,14 +546,14 @@ const homeRoomTeacherRoutes = [
     route: "/markStatistics",
     component: <MarkStatistics />,
   },
-  // {
-  //   type: "collapse",
-  //   name: "Thống kê học lực",
-  //   key: "academicPerformanceStatistics",
-  //   icon: <Icon fontSize="small">leaderboard</Icon>,
-  //   route: "/academicPerformanceStatistics",
-  //   component: <AcademicPerformanceStatistics />,
-  // },
+  {
+    type: "collapse",
+    name: "Thống kê học lực",
+    key: "academicPerformanceStatistics",
+    icon: <Icon fontSize="small">leaderboard</Icon>,
+    route: "/academicPerformanceStatistics",
+    component: <AcademicPerformanceStatistics />,
+  },
   // {
   //   type: "collapse",
   //   name: "Thống kê hạnh kiểm",

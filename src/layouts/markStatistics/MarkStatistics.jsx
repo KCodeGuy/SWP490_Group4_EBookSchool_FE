@@ -149,12 +149,23 @@ export default function MarkStatistics() {
   const formattedSubjects = subjects
     ?.filter((item) => item.isMark) // filter only items with isMark = true
     ?.map((item) => ({
-      label: `${item.name} (Khối-${item.grade})`,
+      label: `${item.name}`,
       name: item.name,
       value: item.name,
       grade: item.grade,
     }))
     ?.sort((a, b) => a.grade - b.grade); // sort by grade
+
+  // Filter out duplicates by name
+  const uniqueSubjects = [];
+  const uniqueNames = new Set();
+
+  formattedSubjects?.forEach((item) => {
+    if (!uniqueNames.has(item.name)) {
+      uniqueNames.add(item.name);
+      uniqueSubjects.push(item);
+    }
+  });
 
   const handleDetails = (rowItem) => {
     if (rowItem) {
@@ -358,7 +369,7 @@ export default function MarkStatistics() {
                         label="Môn học"
                         onChange={handleSchoolSubjectSelectedChange}
                       >
-                        {formattedSubjects?.map((item, index) => (
+                        {uniqueSubjects?.map((item, index) => (
                           <MenuItem key={index} value={item.name}>
                             {item.label}
                           </MenuItem>
@@ -458,9 +469,7 @@ export default function MarkStatistics() {
                             />
                           </div>
                         </div>
-                        <p className="text-base font-bold mt-6">
-                          THỐNG KÊ CHI TIẾT MÔN TOÁN (HK1, 2023)
-                        </p>
+                        <p className="text-base font-bold mt-6">THỐNG KÊ CHI TIẾT</p>
 
                         <TableComponent
                           header={["Thang điểm", "Số lượng"]}

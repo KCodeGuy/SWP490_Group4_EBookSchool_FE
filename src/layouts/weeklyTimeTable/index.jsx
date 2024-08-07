@@ -124,9 +124,20 @@ export default function WeeklyTimeTable() {
   };
 
   const formattedSubjects = currentSubjects?.map((item) => ({
-    label: `${item.name} (Khối-${item.grade})`,
+    label: `${item.name}`,
     value: item.id,
   }));
+
+  // Filter out duplicates by name
+  const uniqueSubjects = [];
+  const uniqueNames = new Set();
+
+  formattedSubjects?.forEach((item) => {
+    if (!uniqueNames.has(item.label)) {
+      uniqueNames.add(item.label);
+      uniqueSubjects.push(item);
+    }
+  });
 
   const formattedClasses = classesOfSchoolYear.map((item) => ({
     label: item.Classroom,
@@ -269,7 +280,7 @@ export default function WeeklyTimeTable() {
 
   const handleAddTimetableManually = (data) => {
     if (!data?.subjectID || data?.subjectID === "") {
-      data.subjectID = formattedSubjects[0].value;
+      data.subjectID = uniqueSubjects[0]?.value;
     }
     if (!data?.teacherID || data?.teacherID === "") {
       data.teacherID = formattedTeachers[0].value;
@@ -561,7 +572,7 @@ export default function WeeklyTimeTable() {
                         control={control}
                         setValue={noSetValue}
                         type="select"
-                        options={formattedSubjects}
+                        options={uniqueSubjects}
                         errors={errors}
                       />
                       <InputBaseComponent
@@ -857,7 +868,7 @@ export default function WeeklyTimeTable() {
                   control={controlEditAction}
                   setValue={setValue}
                   type="select"
-                  options={formattedSubjects}
+                  options={uniqueSubjects}
                   errors={errorsEditAction}
                   validationRules={{
                     required: "Hãy chọn môn học!",

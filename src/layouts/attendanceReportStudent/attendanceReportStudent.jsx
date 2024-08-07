@@ -125,6 +125,8 @@ export default function AttendanceReportStudent() {
     return Math.round(num * 10) / 10;
   };
 
+  console.log(currentData);
+
   (React.useState < "middle") | ("tick" > "middle");
 
   return (
@@ -176,7 +178,7 @@ export default function AttendanceReportStudent() {
                     <CircularProgress size={24} color="inherit" />
                   </div>
                 </div>
-              ) : currentData?.length > 0 ? (
+              ) : data && currentData?.length > 0 ? (
                 <>
                   <TableComponent
                     header={[

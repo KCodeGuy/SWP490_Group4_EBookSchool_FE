@@ -89,7 +89,7 @@ export default function AcademicPerformanceStatistics() {
   const [averageMark, setAverageMark] = useState(0);
   const [searchLoading, setSearchLoading] = useState(false);
 
-  const tabLabels = ["ĐIỂM MÔN TOÀN TRƯỜNG", "ĐIỂM THEO KHỐI", "ĐIỂM THEO MÔN", "ĐIỂM THEO LỚP"];
+  const tabLabels = ["ĐIỂM MÔN TOÀN TRƯỜNG", "ĐIỂM THEO KHỐI", "ĐIỂM THEO LỚP"];
 
   let accessToken, currentUser, userRole, userID, schoolYearsAPI, classesAPI;
   userRole = localStorage.getItem("userRole");
@@ -149,12 +149,23 @@ export default function AcademicPerformanceStatistics() {
   const formattedSubjects = subjects
     ?.filter((item) => item.isMark) // filter only items with isMark = true
     ?.map((item) => ({
-      label: `${item.name} (Khối-${item.grade})`,
+      label: `${item.name}`,
       name: item.name,
       value: item.name,
       grade: item.grade,
     }))
     ?.sort((a, b) => a.grade - b.grade); // sort by grade
+
+  // Filter out duplicates by name
+  const uniqueSubjects = [];
+  const uniqueNames = new Set();
+
+  formattedSubjects?.forEach((item) => {
+    if (!uniqueNames.has(item.name)) {
+      uniqueNames.add(item.name);
+      uniqueSubjects.push(item);
+    }
+  });
 
   const handleDetails = (rowItem) => {
     if (rowItem) {
@@ -349,24 +360,6 @@ export default function AcademicPerformanceStatistics() {
                     </FormControl>
                   ) : value == 2 ? (
                     <FormControl sx={{ minWidth: 120 }}>
-                      <InputLabel id="select-school-subject-lable">Môn học</InputLabel>
-                      <Select
-                        labelId="select-school-subject-lable"
-                        id="select-school-subject"
-                        value={schoolSubject}
-                        className="h-10 mr-2 max-[767px]:mb-4"
-                        label="Môn học"
-                        onChange={handleSchoolSubjectSelectedChange}
-                      >
-                        {formattedSubjects?.map((item, index) => (
-                          <MenuItem key={index} value={item.name}>
-                            {item.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  ) : value == 3 ? (
-                    <FormControl sx={{ minWidth: 120 }}>
                       <InputLabel id="select-school-class-lable">Lớp</InputLabel>
                       <Select
                         labelId="select-school-class-lable"
@@ -458,9 +451,7 @@ export default function AcademicPerformanceStatistics() {
                             />
                           </div>
                         </div>
-                        <p className="text-base font-bold mt-6">
-                          THỐNG KÊ CHI TIẾT MÔN TOÁN (HK1, 2023)
-                        </p>
+                        <p className="text-base font-bold mt-6">THỐNG KÊ CHI TIẾT</p>
 
                         <TableComponent
                           header={["Thang điểm", "Số lượng"]}

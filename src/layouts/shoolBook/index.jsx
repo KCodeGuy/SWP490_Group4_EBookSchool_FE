@@ -461,7 +461,7 @@ const SchoolBook = () => {
               </li>
               <li>
                 <span className="warning-color font-bold">(C): </span>
-                <span className="italic">Tiết Trung bình.</span>
+                <span className="italic">Tiết trung bình.</span>
               </li>
               <li>
                 <span className="error-color font-bold">(D): </span>
@@ -538,7 +538,7 @@ const SchoolBook = () => {
                       }
                     }}
                   >
-                    (chi tiết)
+                    chi tiết
                   </p>
                 ) : (
                   ""

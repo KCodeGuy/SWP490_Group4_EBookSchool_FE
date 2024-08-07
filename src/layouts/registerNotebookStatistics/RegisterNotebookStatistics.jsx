@@ -661,9 +661,7 @@ export default function RegisterNotebookStatistics() {
                       ) : (
                         ""
                       )}
-                      <p className="text-base font-bold mt-5">
-                        THỐNG KÊ CHI TIẾT NĂM HỌC({schoolYear})
-                      </p>
+                      <p className="text-base font-bold mt-5">THỐNG KÊ CHI TIẾT</p>
                       <TableComponent
                         header={[
                           "Lớp",
@@ -714,7 +712,7 @@ export default function RegisterNotebookStatistics() {
                 </li>
                 <li>
                   <span className="warning-color font-bold">(Loại C): </span>
-                  <span className="italic">Tiết Trung bình ({MARK_OF_TYPE_C} điểm/tiết.).</span>
+                  <span className="italic">Tiết trung bình ({MARK_OF_TYPE_C} điểm/tiết.).</span>
                 </li>
                 <li>
                   <span className="error-color font-bold">(Loại D): </span>

@@ -188,15 +188,23 @@ export default function MarkReportStudent() {
   };
 
   const formattedSubjects = data
-    ?.filter((item) => item.isMark) // filter only items with isMark = true
     ?.map((item) => ({
       label: `${item.name}`,
       name: item.name,
       value: item.name,
       grade: item.grade,
     }))
-    ?.sort((a, b) => a.grade - b.grade); // sort by grade
+    .sort((a, b) => a.grade - b.grade); // Sort by grade
+  // Filter out duplicates by name
+  const uniqueSubjects = [];
+  const uniqueNames = new Set();
 
+  formattedSubjects?.forEach((item) => {
+    if (!uniqueNames.has(item.name)) {
+      uniqueNames.add(item.name);
+      uniqueSubjects.push(item);
+    }
+  });
   const handleDetailsAllSubject = (rowItem) => {
     if (rowItem) {
       setMarkDetails(rowItem);
@@ -316,7 +324,7 @@ export default function MarkReportStudent() {
                     label="Môn học"
                     onChange={handleSchoolSubjectSelectedChange}
                   >
-                    {formattedSubjects?.map((item, index) => (
+                    {uniqueSubjects?.map((item, index) => (
                       <MenuItem key={index} value={item.name}>
                         {item.label}
                       </MenuItem>

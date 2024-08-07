@@ -341,9 +341,7 @@ export default function AttendanceStatistics() {
                       {...chartSetting}
                     />
                   </div>
-                  <p className="text-base font-bold mt-6">
-                    THỐNG KÊ CHI TIẾT LƯỢT VẮNG({schoolYear})
-                  </p>
+                  <p className="text-base font-bold mt-6">THỐNG KÊ CHI TIẾT</p>
                   <TableComponent
                     header={[
                       "Lớp",

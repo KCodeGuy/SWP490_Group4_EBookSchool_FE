@@ -222,7 +222,7 @@ export default function SystemSetting() {
                   control={controlEditAction}
                   setValue={setValue}
                   name="schoolLevel"
-                  label="Cấp bậc trường"
+                  label="Cấp bật trường"
                   errors={errorsEditAction}
                   options={schoolLevelOptions}
                 />
@@ -281,13 +281,13 @@ export default function SystemSetting() {
                   control={controlEditAction}
                   setValue={setValue}
                   name="schoolSlider1"
-                  label="Ảnh nổi bậc(1)"
+                  label="Ảnh nổi bật(1)"
                   errors={errorsEditAction}
                 />
                 <img
                   className="w-14 ml-2 h-14 rounded-md object-cover object-center"
                   src={schoolSlider1 ? schoolSlider1 : sliderImage1}
-                  alt="Ảnh nổi bậc 1"
+                  alt="Ảnh nổi bật 1"
                 />
               </div>
               <div className="flex items-center">
@@ -297,13 +297,13 @@ export default function SystemSetting() {
                   control={controlEditAction}
                   setValue={setValue}
                   name="schoolSlider2"
-                  label="Ảnh nổi bậc(2)"
+                  label="Ảnh nổi bật(2)"
                   errors={errorsEditAction}
                 />
                 <img
                   className="w-14 ml-2 h-14 rounded-md object-cover object-center"
                   src={schoolSlider2 ? schoolSlider2 : sliderImage2}
-                  alt="Ảnh nổi bậc 2"
+                  alt="Ảnh nổi bật 2"
                 />
               </div>
               <div className="flex items-center">
@@ -313,13 +313,13 @@ export default function SystemSetting() {
                   control={controlEditAction}
                   setValue={setValue}
                   name="schoolSlider3"
-                  label="Ảnh nổi bậc(3)"
+                  label="Ảnh nổi bật(3)"
                   errors={errorsEditAction}
                 />
                 <img
                   className="w-14 ml-2 h-14 rounded-md object-cover object-center"
                   src={schoolSlider3 ? schoolSlider3 : sliderImage3}
-                  alt="Ảnh nổi bậc 3"
+                  alt="Ảnh nổi bật 3"
                 />
               </div>
 
@@ -388,7 +388,7 @@ export default function SystemSetting() {
                 </div>
                 <div className="flex items-center mt-4">
                   <MilitaryTechIcon />
-                  <span className="text-base font-bold mx-2">Cấp bậc: </span>
+                  <span className="text-base font-bold mx-2">Cấp bật: </span>
                   <span className="text-sm text-color">
                     {data?.schoolLevel || "Chưa có dữ liệu!"}
                   </span>
@@ -410,29 +410,29 @@ export default function SystemSetting() {
                 </MDBox>
                 <div className="flex items-center">
                   <FilterIcon />
-                  <span className="text-base font-bold mx-2">Ảnh nổi bậc(1): </span>
+                  <span className="text-base font-bold mx-2">Ảnh nổi bật(1): </span>
                   <img
                     className="w-14 ml-2 h-14 rounded-md object-cover object-center"
                     src={schoolSlider1 ? schoolSlider1 : sliderImage1}
-                    alt="Ảnh nổi bậc 1"
+                    alt="Ảnh nổi bật 1"
                   />
                 </div>
                 <div className="flex items-center mt-4">
                   <FilterIcon />
-                  <span className="text-base font-bold mx-2">Ảnh nổi bậc(2): </span>
+                  <span className="text-base font-bold mx-2">Ảnh nổi bật(2): </span>
                   <img
                     className="w-14 ml-2 h-14 rounded-md object-cover object-center"
                     src={schoolSlider2 ? schoolSlider2 : sliderImage2}
-                    alt="Ảnh nổi bậc 1"
+                    alt="Ảnh nổi bật 1"
                   />
                 </div>
                 <div className="flex items-center mt-4">
                   <FilterIcon />
-                  <span className="text-base font-bold mx-2">Ảnh nổi bậc(3): </span>
+                  <span className="text-base font-bold mx-2">Ảnh nổi bật(3): </span>
                   <img
                     className="w-14 ml-2 h-14 rounded-md object-cover object-center"
                     src={schoolSlider3 ? schoolSlider3 : sliderImage3}
-                    alt="Ảnh nổi bậc 1"
+                    alt="Ảnh nổi bật 1"
                   />
                 </div>
               </Grid>

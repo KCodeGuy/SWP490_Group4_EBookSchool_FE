@@ -615,7 +615,7 @@ export default function ComponentMark() {
               </div>
 
               <div className="mt-8 custom-table">
-                <p className="text-base font-bold">THỐNG KÊ CHI TIẾT ({grade})</p>
+                <p className="text-base font-bold">THỐNG KÊ CHI TIẾT</p>
                 <TableComponent
                   header={[
                     "Lớp",
@@ -812,7 +812,7 @@ export default function ComponentMark() {
               </div>
 
               <div className="mt-8 custom-table">
-                <p className="text-base font-bold">THỐNG KÊ CHI TIẾT ({grade})</p>
+                <p className="text-base font-bold">THỐNG KÊ CHI TIẾT</p>
                 <TableComponent
                   header={["Họ và tên", "Mã học sinh", "HKI", "HKII", "Cả năm"]}
                   data={conductOfAClass}

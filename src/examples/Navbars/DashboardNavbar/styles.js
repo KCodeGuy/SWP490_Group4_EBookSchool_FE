@@ -26,7 +26,7 @@ function navbar(theme, ownerState) {
     backdropFilter: transparentNavbar || absolute ? "none" : `saturate(200%) blur(${pxToRem(30)})`,
     backgroundColor:
       transparentNavbar || absolute
-        ? `${transparent.main} !important`
+        ? `${white.main} !important`
         : rgba(darkMode ? background.default : white.main, 0.8),
 
     color: () => {
@@ -35,9 +35,9 @@ function navbar(theme, ownerState) {
       if (light) {
         color = white.main;
       } else if (transparentNavbar) {
-        color = text.main;
+        color = white.main;
       } else {
-        color = dark.main;
+        color = white.main;
       }
 
       return color;

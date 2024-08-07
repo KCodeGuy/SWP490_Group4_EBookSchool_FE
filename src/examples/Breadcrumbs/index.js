@@ -26,6 +26,7 @@ import Icon from "@mui/material/Icon";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
+import { grey } from "@mui/material/colors";
 
 function Breadcrumbs({ icon, title, route, light }) {
   const routes = route.slice(0, -1);
@@ -42,7 +43,7 @@ function Breadcrumbs({ icon, title, route, light }) {
           <MDTypography
             component="span"
             variant="body2"
-            color={light ? "white" : "dark"}
+            color={grey[600]}
             opacity={light ? 0.8 : 0.5}
             sx={{ lineHeight: 0 }}
           >
@@ -74,7 +75,7 @@ function Breadcrumbs({ icon, title, route, light }) {
             variant="button"
             fontWeight="regular"
             textTransform="capitalize"
-            color={light ? "white" : "dark"}
+            color={grey[600]}
             opacity={light ? 0.8 : 0.5}
             sx={{ lineHeight: 0 }}
           >
@@ -92,7 +93,7 @@ function Breadcrumbs({ icon, title, route, light }) {
         fontWeight="bold"
         textTransform="capitalize"
         variant="h6"
-        color={light ? "white" : "dark"}
+        color="grey[100]"
         noWrap
       >
         {route[0] == "takeAttendance"

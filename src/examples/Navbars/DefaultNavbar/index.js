@@ -88,7 +88,7 @@ function DefaultNavbar({ transparent, light, action }) {
         width="calc(100% - 48px)"
         borderRadius="lg"
         shadow={transparent ? "none" : "md"}
-        color={light ? "white" : "dark"}
+        color={light ? "white" : ""}
         display="flex"
         justifyContent="space-between"
         alignItems="center"
@@ -99,9 +99,7 @@ function DefaultNavbar({ transparent, light, action }) {
           palette: { transparent: transparentColor, white, background },
           functions: { rgba },
         }) => ({
-          backgroundColor: transparent
-            ? transparentColor.main
-            : rgba(darkMode ? background.sidenav : white.main, 1),
+          backgroundColor: white.main,
           backdropFilter: transparent ? "none" : `saturate(200%) blur(30px)`,
         })}
       >

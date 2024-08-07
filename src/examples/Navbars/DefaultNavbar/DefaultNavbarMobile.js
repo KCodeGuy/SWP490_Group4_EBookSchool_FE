@@ -46,7 +46,6 @@ function DefaultNavbarMobile({ open, close }) {
     >
       <MDBox px={0.5}>
         <DefaultNavbarLink icon="key" name="Đăng nhập" route="/authentication/sign-in" />
-        {/* <DefaultNavbarLink icon="key" name="Quên mật khẩu" route="/authentication/reset-password" /> */}
       </MDBox>
     </Menu>
   );

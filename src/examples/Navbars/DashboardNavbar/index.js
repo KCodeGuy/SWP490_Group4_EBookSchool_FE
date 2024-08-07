@@ -197,7 +197,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
               <IconButton
                 size="small"
                 disableRipple
-                color="inherit"
+                color="default"
                 sx={navbarMobileMenu}
                 onClick={handleMiniSidenav}
               >
@@ -205,7 +205,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                   {miniSidenav ? "menu_open" : "menu"}
                 </Icon>
               </IconButton>
-              <IconButton
+              {/* <IconButton
                 size="small"
                 disableRipple
                 color="inherit"
@@ -213,7 +213,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 onClick={handleConfiguratorOpen}
               >
                 <Icon sx={iconsStyle}>settings</Icon>
-              </IconButton>
+              </IconButton> */}
               {currentUser && (
                 <div className="flex items-center text-base font-medium ml-2 ">
                   <Link to={userRole == "Student" ? "/studentProfile" : "/profile"}>
@@ -271,7 +271,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
 // Setting default values for the props of DashboardNavbar
 DashboardNavbar.defaultProps = {
   absolute: false,
-  light: false,
+  light: true,
   isMini: false,
 };
 

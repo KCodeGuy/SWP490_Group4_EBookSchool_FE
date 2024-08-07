@@ -159,12 +159,12 @@ function Configurator() {
           <Switch checked={darkMode} onChange={handleDarkMode} />
         </MDBox>
         <Divider />
-        <MDBox mt={3} mb={2}>
+        {/* <MDBox mt={3} mb={2}>
           <ButtonComponent className="w-full">
             <AutoStoriesIcon className="mr-2 mb-1" />
             HƯỚNG DẪN SỬ DỤNG
           </ButtonComponent>
-        </MDBox>
+        </MDBox> */}
 
         <MDBox mt={2} textAlign="center">
           <p className="text-base text-wrap text-color">

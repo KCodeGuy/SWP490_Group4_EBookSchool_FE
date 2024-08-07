@@ -18,7 +18,7 @@ export const loginUser = async ({ username, password }) => {
 };
 
 export const logoutAPI = async (accessToken) => {
-  console.log("accessToken", accessToken);
+  // console.log("accessToken", accessToken);
   try {
     const response = await fetch(`${API_HOST}/Auth/Logout`, {
       method: "POST",
@@ -28,7 +28,7 @@ export const logoutAPI = async (accessToken) => {
       },
     });
 
-    console.log("response", response);
+    // console.log("response", response);
     return response;
   } catch (error) {
     return error;

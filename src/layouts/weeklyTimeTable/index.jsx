@@ -378,7 +378,7 @@ export default function WeeklyTimeTable() {
         }
       },
       onError: (error) => {
-        toast.error(`Cập nhật tiết học thất bại! ${error.message}!`);
+        toast.error(`Cập nhật tiết học thất bại!`);
       },
     }
   );

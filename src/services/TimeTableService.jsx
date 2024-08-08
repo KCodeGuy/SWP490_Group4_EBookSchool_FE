@@ -94,7 +94,7 @@ export const updateSlotOfTimeTable = async (accessToken, slotData) => {
       },
     });
 
-    return res.data;
+    return res;
   } catch (error) {
     return error;
   }

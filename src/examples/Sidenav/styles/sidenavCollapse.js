@@ -27,7 +27,7 @@ function collapseItem(theme, ownerState) {
       : transparent.main,
     color:
       (transparentSidenav && !darkMode && !active) || (whiteSidenav && !active)
-        ? white.main
+        ? dark.main
         : white.main,
     display: "flex",
     alignItems: "center",

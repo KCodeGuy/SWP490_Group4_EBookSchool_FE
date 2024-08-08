@@ -16,6 +16,7 @@ Coded by www.creative-tim.com
 // @mui material components
 import Drawer from "@mui/material/Drawer";
 import { styled } from "@mui/material/styles";
+import { dark } from "@mui/material/styles/createPalette";
 
 export default styled(Drawer)(({ theme, ownerState }) => {
   const { palette, boxShadows, transitions, breakpoints, functions } = theme;
@@ -26,14 +27,12 @@ export default styled(Drawer)(({ theme, ownerState }) => {
   const { xxl } = boxShadows;
   const { pxToRem, linearGradient } = functions;
 
-  let backgroundValue = darkMode
-    ? background.sidenav
-    : linearGradient(gradients.dark.main, gradients.dark.state);
+  let backgroundValue = linearGradient(white.main, white.state);
 
   if (transparentSidenav) {
-    backgroundValue = transparent.main;
+    backgroundValue = dark.main;
   } else if (whiteSidenav) {
-    backgroundValue = white.main;
+    backgroundValue = dark.main;
   }
 
   // styles for the sidenav when miniSidenav={false}

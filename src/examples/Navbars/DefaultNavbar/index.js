@@ -88,7 +88,7 @@ function DefaultNavbar({ transparent, light, action }) {
         width="calc(100% - 48px)"
         borderRadius="lg"
         shadow={transparent ? "none" : "md"}
-        color={light ? "white" : ""}
+        color="white"
         display="flex"
         justifyContent="space-between"
         alignItems="center"

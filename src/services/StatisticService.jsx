@@ -105,6 +105,28 @@ const statisticOfAttendanceWholeYear = async (accessToken, schoolYear, grade) =>
     return error;
   }
 };
+
+const statisticOfAttendanceByClassBySubject = async (
+  accessToken,
+  schoolYear,
+  className,
+  subjectName
+) => {
+  try {
+    const res = await axios.get(
+      `${API_HOST}/Statistics/GetAttendanceByClassBySubject?schoolYear=${schoolYear}&className=${className}&subjectName=${subjectName}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
 const statisticOfMark = async (accessToken, schoolYear, action, value) => {
   try {
     let url = `${API_HOST}/Statistics/GroupScore?schoolYear=${schoolYear}`;
@@ -162,4 +184,5 @@ export {
   statisticOfRegisterNotebookWholeYear,
   statisticOfRegisterNotebookByGradeWholeYear,
   statisticOfRegisterNotebookByGrade,
+  statisticOfAttendanceByClassBySubject,
 };

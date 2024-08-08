@@ -774,27 +774,30 @@ export default function WeeklyTimeTable() {
           <div className="text-center mt-10">
             <div className="flex justify-center items-center text-3xl mx-auto w-full">
               <TodayIcon />
-              <h4 className="text-xl font-bold uppercase ml-3">
+              <h4 className="text-xl font-bold uppercase ml-3  max-[767px]:hidden">
                 {userRole.includes(HOMEROOM_ROLE) ||
                 userRole.includes(PRINCIPAL_ROLE) ||
                 userRole.includes(HEADTEACHER_ROLE)
                   ? `THỜI KHÓA BIỂU LỚP ${schoolClass}`
                   : `THỜI KHÓA BIỂU (${currentUser.fullname.toString()})`}
               </h4>
+              <h4 className="text-xl font-bold uppercase ml-3 hidden  max-[767px]:block">
+                THỜI KHÓA BIỂU
+              </h4>
             </div>
           </div>
           <div className="text-center mt-10"></div>
           <div className="flex justify-between mt-2 flex-wrap max-[767px]:mt-4">
-            <div className="flex max-[767px]:mb-4">
-              <div className="text-sm mr-4">
-                <span className="mr-2 font-bold">
+            <div className="flex flex-wrap">
+              <div className="text-sm mr-4 max-[767px]:mb-4">
+                <span className="mr-2 font-bold max-[767px]:mb-4">
                   {userRole.includes(STUDENT_ROLE) ? "Học sinh: " : "Giáo viên: "}
                 </span>
                 <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
                   {currentUser ? currentUser.fullname.toString() : ""}
                 </span>
               </div>
-              <div className="text-sm">
+              <div className="text-sm max-[767px]:mb-4">
                 <span className="mr-2 font-bold">Tiết học:</span>
                 <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
                   {numberOfSlotInWeek}
@@ -1031,7 +1034,7 @@ export default function WeeklyTimeTable() {
               isOpen={openModalDetail}
               onClose={() => setOpenModalDetail(false)}
             >
-              <div className="max-w-md">
+              <div className="max-w-md max-[767px]:w-full">
                 <TextValueComponent
                   label="Tên môn học"
                   value={currentSlot?.subject}
@@ -1087,7 +1090,7 @@ export default function WeeklyTimeTable() {
                 ) : (
                   ""
                 )}
-                <div className="mt-4 flex justify-end">
+                <div className="mt-4 flex justify-end flex-wrap">
                   {currentSlot?.teacher === currentUser?.username ? (
                     <ButtonComponent
                       type="success"

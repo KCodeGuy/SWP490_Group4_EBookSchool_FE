@@ -196,7 +196,7 @@ export default function AttendanceStatistics() {
       <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
           <div className="w-full">
-            <div className="flex justify-between">
+            <div className="flex justify-between flex-wrap">
               <div className="left">
                 <FormControl sx={{ minWidth: 120 }}>
                   <InputLabel id="select-school-year-lable">Năm học</InputLabel>
@@ -252,7 +252,7 @@ export default function AttendanceStatistics() {
                 </FormControl>
                 <ButtonComponent
                   type="success"
-                  className="max-[639px]:w-full"
+                  className="max-[639px]:mb-4"
                   onClick={handleStatisticByWeekly}
                 >
                   <FilterAltIcon className="mr-1" /> THỐNG KÊ

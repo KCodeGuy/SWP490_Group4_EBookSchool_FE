@@ -345,7 +345,7 @@ export default function RegisterNotebookStatistics() {
               ))}
             </Tabs>
             <TabPanel value={value} index={0}>
-              <div className="w-full flex justify-between">
+              <div className="w-full flex justify-between flex-wrap">
                 <div className="">
                   <FormControl sx={{ minWidth: 120 }}>
                     <InputLabel id="select-school-year-lable">Năm học</InputLabel>
@@ -385,7 +385,7 @@ export default function RegisterNotebookStatistics() {
 
                   <ButtonComponent
                     type="success"
-                    className="max-[639px]:w-full"
+                    className="max-[767px]:w-full "
                     onClick={handleStatisticWeekly}
                   >
                     <FilterAltIcon className="mr-1" /> THỐNG KÊ
@@ -393,7 +393,7 @@ export default function RegisterNotebookStatistics() {
                 </div>
                 <ButtonComponent
                   type="primary"
-                  className="max-[639px]:w-full"
+                  className="max-[767px]:w-full max-[767px]:mt-2"
                   onClick={handleStatisticWholeYear}
                 >
                   <FilterAltIcon className="mr-1" /> CẢ NĂM
@@ -504,7 +504,7 @@ export default function RegisterNotebookStatistics() {
               </>
             </TabPanel>
             <TabPanel value={value} index={1}>
-              <div className="w-full flex justify-between">
+              <div className="w-full flex justify-between flex-wrap">
                 <div>
                   <FormControl sx={{ minWidth: 120 }}>
                     <InputLabel id="select-school-year-lable">Năm học</InputLabel>

@@ -20,6 +20,20 @@
   z-index: 100;
 }
 
+/* Responsive styles for mobile screens */
+@media (max-width: 767px) {
+  .slick-prev {
+    margin-left: 10%;
+  }
+
+  .slick-next {
+    margin-right: 13%;
+  }
+  .slick-dots {
+    margin-bottom: 12%;
+  }
+}
+
 .slick-prev::before,
 .slick-next::before {
   font-size: 32px; /* Adjust as needed */

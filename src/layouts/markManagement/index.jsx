@@ -340,7 +340,7 @@ export default function MarkManagement() {
             ""
           )}
 
-          <div className="flex flex-nowrap justify-between mb-2.5 mt-8">
+          <div className="flex flex-wrap justify-between mb-2.5 mt-8">
             <div className="left">
               <FormControl sx={{ minWidth: 120 }}>
                 <InputLabel id="select-school-year-lable">Năm học</InputLabel>
@@ -425,7 +425,7 @@ export default function MarkManagement() {
                   )} */}
 
                   <ButtonComponent
-                    className=""
+                    className="max-[767px]:mb-2"
                     onClick={() => {
                       setCurrentAction("adding");
                       setModalAdd(true);

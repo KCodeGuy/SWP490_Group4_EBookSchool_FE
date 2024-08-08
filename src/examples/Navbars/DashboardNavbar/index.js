@@ -54,7 +54,7 @@ import {
   setOpenConfigurator,
 } from "context";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { Grid } from "@mui/material";
+import { Grid, useMediaQuery } from "@mui/material";
 import MDAvatar from "components/MDAvatar";
 import { logoutUser } from "services/AuthService";
 import PopupComponent from "components/PopupComponent/PopupComponent";
@@ -122,7 +122,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
     // Remove event listener on cleanup
     // return () => window.removeEventListener("scroll", handleTransparentNavbar);
   }, [dispatch, fixedNavbar]);
-
+  const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("lg"));
   const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav);
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
   const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
@@ -150,12 +150,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   // Styles for the navbar icons
   const iconsStyle = ({ palette: { dark, white, text }, functions: { rgba } }) => ({
     color: () => {
-      let colorValue = light || darkMode ? white.main : dark.main;
-
-      if (transparentNavbar && !light) {
-        colorValue = darkMode ? rgba(text.main, 0.6) : text.main;
-      }
-
+      let colorValue = dark.main;
       return colorValue;
     },
   });
@@ -194,17 +189,26 @@ function DashboardNavbar({ absolute, light, isMini }) {
               >
                 <Icon sx={iconsStyle}>notifications</Icon>
               </IconButton> */}
-              <IconButton
-                size="small"
-                disableRipple
-                color="default"
-                sx={navbarMobileMenu}
-                onClick={handleMiniSidenav}
-              >
-                <Icon sx={iconsStyle} fontSize="medium">
-                  {miniSidenav ? "menu_open" : "menu"}
-                </Icon>
-              </IconButton>
+              {isSmallScreen && (
+                <IconButton
+                  size="small"
+                  disableRipple
+                  sx={{
+                    color: "black", // Set the icon color to black
+                    ...navbarMobileMenu, // Include your existing styles
+                  }}
+                  onClick={handleMiniSidenav}
+                >
+                  <Icon
+                    sx={{
+                      ...iconsStyle,
+                      fontSize: "medium",
+                    }}
+                  >
+                    {miniSidenav ? "menu_open" : "menu"}
+                  </Icon>
+                </IconButton>
+              )}
               {/* <IconButton
                 size="small"
                 disableRipple

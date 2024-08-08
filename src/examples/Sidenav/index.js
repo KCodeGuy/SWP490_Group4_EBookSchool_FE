@@ -47,6 +47,7 @@ import {
   setWhiteSidenav,
 } from "context";
 import { splitStringBySecondWord } from "utils/CommonFunctions";
+import { dark } from "@mui/material/styles/createPalette";
 
 function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const [controller, dispatch] = useMaterialUIController();
@@ -63,12 +64,12 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
     }
   }, []);
 
-  let textColor = "white";
+  let textColor = "dark";
 
   if (transparentSidenav || (whiteSidenav && !darkMode)) {
     textColor = "dark";
   } else if (whiteSidenav && darkMode) {
-    textColor = "inherit";
+    textColor = "dark";
   }
 
   const closeSidenav = () => setMiniSidenav(dispatch, true);
@@ -106,6 +107,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
         <Link
           href={href}
           key={key}
+          color={textColor}
           target="_blank"
           rel="noreferrer"
           fontWeight="bold"
@@ -122,10 +124,16 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
         <NavLink
           key={key}
           to={route}
+          color={textColor}
           className="font-bold"
           style={{ display: hidden ? "none" : "block" }}
         >
-          <SidenavCollapse name={name} icon={icon} active={key === collapseName} />
+          <SidenavCollapse
+            name={name}
+            color={textColor}
+            icon={icon}
+            active={key === collapseName}
+          />
         </NavLink>
       );
     } else if (type === "title") {
@@ -146,15 +154,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
         </MDTypography>
       );
     } else if (type === "divider") {
-      returnValue = (
-        <Divider
-          key={key}
-          light={
-            (!darkMode && !whiteSidenav && !transparentSidenav) ||
-            (darkMode && !transparentSidenav && whiteSidenav)
-          }
-        />
-      );
+      returnValue = <Divider key={key} light={false} />;
     }
 
     return returnValue;
@@ -176,7 +176,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
           right={0}
           p={1.625}
           onClick={closeSidenav}
-          sx={{ cursor: "pointer" }}
+          sx={{ cursor: "pointer", color: "secondary" }}
         >
           <MDTypography variant="h6" color="secondary">
             <Icon sx={{ fontWeight: "bold" }}>close</Icon>
@@ -189,7 +189,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
               src={imageURL ? imageURL : brand}
               alt="avatar"
             />
-            <p className="text-left text-sm font-medium ml-2">
+            <p className="text-left text-sm font-medium ml-2 dark">
               {part1}
               <br />
               {part2}
@@ -197,20 +197,15 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
           </div>
         </Link>
       </MDBox>
-      <Divider
-        light={
-          (!darkMode && !whiteSidenav && !transparentSidenav) ||
-          (darkMode && !transparentSidenav && whiteSidenav)
-        }
-      />
-      <List>{renderRoutes}</List>
+      <Divider light={true} />
+      <List color={textColor}>{renderRoutes}</List>
     </SidenavRoot>
   );
 }
 
 // Setting default values for the props of Sidenav
 Sidenav.defaultProps = {
-  color: "info",
+  color: "dark",
   brand: "",
 };
 

@@ -393,11 +393,17 @@ const SchoolBook = () => {
           <div className="text-center mt-10 ">
             <div className="flex justify-center items-center text-3xl mx-auto w-full">
               <AssignmentIcon />
-              <h4 className="text-xl font-bold ml-3">SỔ GHI ĐẦU BÀI LỚP {currentClass}</h4>
+              <h4 className="text-xl font-bold ml-3 max-[767px]:hidden">
+                SỔ GHI ĐẦU BÀI LỚP {currentClass}
+              </h4>
+              <h4 className="text-xl hidden font-bold ml-3 max-[767px]:block mb-2">
+                SỔ GHI ĐẦU <br />
+                BÀI LỚP {currentClass}
+              </h4>
             </div>
           </div>
-          <div className="flex justify-between mt-2">
-            <div className="text-sm">
+          <div className="flex justify-between flex-wrap mt-2">
+            <div className="text-sm max-[767px]:mb-2">
               <span className="mr-2 font-bold">Giáo viên:</span>
               <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
                 {currentUser?.fullname}

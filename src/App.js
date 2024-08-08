@@ -194,7 +194,7 @@ export default function App() {
           <>
             <Sidenav
               color={sidenavColor}
-              brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
+              brand={whiteSidenav ? brandWhite : brandWhite}
               brandName={schoolSetting?.schoolName || "ORB"}
               routes={currentRoutes}
               onMouseEnter={handleOnMouseEnter}

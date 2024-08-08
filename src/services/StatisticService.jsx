@@ -137,7 +137,7 @@ const statisticOfAcademicPerformance = async (accessToken, schoolYear, action, v
     if (action === "schoolSubject") {
       url += `&schoolSubject=${value}`;
     } else if (action === "schoolGrade") {
-      url += `&schoolGrade=${value}`;
+      url += `&grade=${value}`;
     } else if (action === "schoolClass") {
       url += `&className=${value}`;
     }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 import "../../assets/css/base.scss";
 import "./style.scss";
@@ -8,20 +8,16 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditCalendarIcon from "@mui/icons-material/EditCalendar";
 import { renderAverageMarkStyles } from "utils/RenderStyle";
-import { renderRankingStyles } from "utils/RenderStyle";
-import { renderRanking } from "../../utils/RenderStyle";
 
 const keyOrder = ["Miệng", "15p", "1 Tiết", "Cuối kỳ"];
 
-function TableMarkOfSubjectComponent({
+function TableMarkOfSubjectComponentDynamic({
   data,
   isHideMark,
   onEdit,
   onDelete,
   onDetails,
-  onCheckboxChange,
   semester,
-  onSave,
   className,
   itemsPerPage,
   isOrdered,
@@ -29,51 +25,36 @@ function TableMarkOfSubjectComponent({
   isPaginate,
 }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const isShowActions = onDelete != undefined || onEdit != undefined || onDetails != undefined;
+
+  const isShowActions = onDelete !== undefined || onEdit !== undefined || onDetails !== undefined;
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = data.slice(startIndex, endIndex);
+
+  const currentData = useMemo(() => data.slice(startIndex, endIndex), [data, startIndex, endIndex]);
+
+  const headerTable = useMemo(() => {
+    if (currentData.length > 0 && semester) {
+      const uniqueKeys = new Set();
+      currentData.forEach((student) => {
+        student.scores.forEach((score) => {
+          if (score.semester === semester) {
+            uniqueKeys.add(score.key);
+          }
+        });
+      });
+
+      const orderedKeys = keyOrder.filter((key) => uniqueKeys.has(key));
+      const otherKeys = [...uniqueKeys].filter((key) => !keyOrder.includes(key));
+      return [...orderedKeys, ...otherKeys];
+    }
+    return [];
+  }, [currentData, semester]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-
-  const extractHeaderTable = (scores, semester) => {
-    const filteredScores = scores.filter((score) => score.semester === semester);
-    const uniqueScores = [];
-
-    console.log("filteredScores", filteredScores);
-
-    keyOrder.forEach((key) => {
-      const seenIndexCols = new Set();
-      filteredScores.forEach((score) => {
-        if (score.key === key && !seenIndexCols.has(score.indexCol)) {
-          uniqueScores.push(score);
-          seenIndexCols.add(score.indexCol);
-        }
-      });
-    });
-
-    const keyCountMap = {};
-    uniqueScores.forEach((score) => {
-      if (!keyCountMap[score.key]) {
-        keyCountMap[score.key] = 0;
-      }
-      keyCountMap[score.key]++;
-    });
-
-    return keyOrder.map((key) => ({
-      key,
-      count: keyCountMap[key] || 0,
-    }));
-  };
-
-  let headerTable = [];
-  if (currentData.length > 0 && semester) {
-    headerTable = extractHeaderTable(currentData[0]?.scores, semester);
-  }
 
   const sortScores = (scores) => {
     const semesterOrder = ["Học kỳ I", "Học kỳ II"];
@@ -107,23 +88,15 @@ function TableMarkOfSubjectComponent({
             {isOrdered && <th className="w-10">STT.</th>}
             <th className="w-32">Tên học sinh</th>
             <th className="w-28">Mã học sinh</th>
-            {semester != "Cả năm" ? (
-              headerTable?.map((column, index) =>
-                column.count > 0 ? (
-                  <th colSpan={column.count} key={index}>
-                    {column.key}
-                  </th>
-                ) : (
-                  ""
-                )
-              )
+            {semester !== "Cả năm" ? (
+              headerTable.map((key, index) => <th key={index}>{key}</th>)
             ) : (
               <>
                 <th className="w-32">Học kỳ I</th>
                 <th className="w-28">Học kỳ II</th>
               </>
             )}
-            <th className="w-20">{semester == "Cả năm" ? "Cả năm" : "Trung bình môn"}</th>
+            <th className="w-20">{semester === "Cả năm" ? "Cả năm" : "Trung bình môn"}</th>
             {isShowActions && <th className="w-28">Chi tiết</th>}
           </tr>
         </thead>
@@ -137,29 +110,21 @@ function TableMarkOfSubjectComponent({
                 ? sortScores(row.scores).map((item, index) =>
                     item.semester === semester ? (
                       <td key={index} className="min-w-9">
-                        {isHideMark || item.value == -1 ? "_" : item.value}
+                        {isHideMark || item.value === -1 ? "_" : item.value}
                       </td>
-                    ) : (
-                      ""
-                    )
+                    ) : null
                   )
-                : semester !== "Cả năm"
-                ? headerTable?.map((column, index) => (
-                    <td colSpan={column.count} key={index}>
-                      _
-                    </td>
-                  ))
-                : ""}
-              {semester == "Cả năm" ? (
+                : headerTable.map((key, index) => <td key={index}>_</td>)}
+              {semester === "Cả năm" ? (
                 <>
                   <td>
-                    {row.averageSemester1 != -1 && row.averageSemester1 != 0
+                    {row.averageSemester1 !== -1 && row.averageSemester1 !== 0
                       ? row.averageSemester1
                       : "_"}
                   </td>
                   <td>
                     {" "}
-                    {row.averageSemester2 != -1 && row.averageSemester2 != 0
+                    {row.averageSemester2 !== -1 && row.averageSemester2 !== 0
                       ? row.averageSemester2
                       : "_"}
                   </td>
@@ -167,26 +132,25 @@ function TableMarkOfSubjectComponent({
               ) : (
                 ""
               )}
-
               <td>
-                {semester == "Học kỳ I" ? (
-                  row.averageSemester1 != -1 && row.averageSemester1 != 0 ? (
+                {semester === "Học kỳ I" ? (
+                  row.averageSemester1 !== -1 && row.averageSemester1 !== 0 ? (
                     <span className={renderAverageMarkStyles(row.averageSemester1)}>
                       {row.averageSemester1}
                     </span>
                   ) : (
                     "_"
                   )
-                ) : semester == "Học kỳ II" ? (
-                  row.averageSemester2 != -1 && row.averageSemester2 != 0 ? (
+                ) : semester === "Học kỳ II" ? (
+                  row.averageSemester2 !== -1 && row.averageSemester2 !== 0 ? (
                     <span className={renderAverageMarkStyles(row.averageSemester2)}>
                       {row.averageSemester2}
                     </span>
                   ) : (
                     "_"
                   )
-                ) : semester == "Cả năm" ? (
-                  row.averageYear != -1 && row.averageYear != 0 ? (
+                ) : semester === "Cả năm" ? (
+                  row.averageYear !== -1 && row.averageYear !== 0 ? (
                     <span className={renderAverageMarkStyles(row.averageYear)}>
                       {row.averageYear}
                     </span>
@@ -201,7 +165,7 @@ function TableMarkOfSubjectComponent({
                 <td className="max-w-28">
                   {onDetails && (
                     <button
-                      title="Detail button "
+                      title="Detail button"
                       className="text-xl ml-3 primary-color"
                       onClick={() => onDetails(row)}
                     >
@@ -214,48 +178,43 @@ function TableMarkOfSubjectComponent({
           ))}
         </tbody>
       </table>
-      <div
-        className={`pagination-table border py-2 flex justify-between items-center px-3 ${
-          !isPaginate ? "hidden" : ""
-        }`}
-      >
-        <div className="text-sm">
-          <span className="mr-4">Tổng: {data.length}</span>
+      {isPaginate && (
+        <div className="pagination-table border py-2 flex justify-between items-center px-3">
+          <div className="text-sm">
+            <span className="mr-4">Tổng: {data.length}</span>
+          </div>
+          <div className="text-sm">
+            <span>Số lượng: {itemsPerPage}</span>
+            <span className="ml-4">
+              {currentPage} / {totalPages}
+            </span>
+            <button
+              className="text-2xl ml-2 primary-color"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <KeyboardArrowLeftIcon />
+            </button>
+            <button
+              className="text-2xl ml-2 primary-color"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              <KeyboardArrowRightIcon />
+            </button>
+          </div>
         </div>
-        <div className="text-sm">
-          <span>Số lượng: {itemsPerPage}</span>
-          <span className="ml-4">
-            {currentPage} / {totalPages}
-          </span>
-          <button
-            className="text-2xl ml-2 primary-color"
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            <KeyboardArrowLeftIcon />
-          </button>
-          <button
-            className="text-2xl ml-2 primary-color"
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            <KeyboardArrowRightIcon />
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
 
-TableMarkOfSubjectComponent.propTypes = {
-  header: PropTypes.array,
+TableMarkOfSubjectComponentDynamic.propTypes = {
   data: PropTypes.array,
   onDetails: PropTypes.func,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
   semester: PropTypes.string,
-  onCheckboxChange: PropTypes.func,
-  onSave: PropTypes.func,
   className: PropTypes.string,
   itemsPerPage: PropTypes.number,
   isOrdered: PropTypes.bool,
@@ -264,14 +223,12 @@ TableMarkOfSubjectComponent.propTypes = {
   isHideMark: PropTypes.bool,
 };
 
-TableMarkOfSubjectComponent.defaultProps = {
+TableMarkOfSubjectComponentDynamic.defaultProps = {
   data: [],
   onDetails: undefined,
   onEdit: undefined,
   onDelete: undefined,
   semester: "Cả năm",
-  onCheckboxChange: undefined,
-  onSave: undefined,
   className: "",
   itemsPerPage: 200,
   isOrdered: true,
@@ -280,4 +237,4 @@ TableMarkOfSubjectComponent.defaultProps = {
   isHideMark: false,
 };
 
-export default TableMarkOfSubjectComponent;
+export default TableMarkOfSubjectComponentDynamic;

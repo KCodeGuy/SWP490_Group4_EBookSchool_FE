@@ -51,6 +51,7 @@ import { isXlsxFile } from "utils/CommonFunctions";
 import { renderAverageMarkStyles } from "utils/RenderStyle";
 import { useNavigate } from "react-router-dom";
 import { renderRankingStylesByRaking } from "utils/RenderStyle";
+import TableMarkOfSubjectComponentDynamic from "components/TableMarkOfSubjectComponentDynamic/TableMarkOfSubjectComponent";
 
 // Mark management (HieuTTN)
 const semesters = [
@@ -85,6 +86,7 @@ export default function MarkManagement() {
   const [openModalDetailsAllSubject, setOpenModalDetailsAllSubject] = useState(false);
   const [openModalDetails, setOpenModalDetails] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [isBlockMark, setIsBlockMark] = useState(false);
   const [markDetails, setMarkDetails] = useState({});
   const [value, setValue] = React.useState(0);
   const navigate = useNavigate();
@@ -403,9 +405,24 @@ export default function MarkManagement() {
                 <FilterAltIcon className="mr-1" /> TÌM KIẾM
               </ButtonComponent>
             </div>
-            {userRole.includes(SUBJECT_ROLE) ? (
+            {userRole.includes(SUBJECT_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
               <>
                 <div>
+                  {/* {userRole.includes(PRINCIPAL_ROLE) ? (
+                    <ButtonComponent
+                      type="error"
+                      onClick={() => {
+                        setIsBlockMark(!isBlockMark);
+                        localStorage.setItem("isBlockMark", isBlockMark);
+                      }}
+                    >
+                      <LockClockIcon className="mr-1" />
+                      {isBlockMark ? "MỞ KHÓA" : "KHÓA ĐIỂM"}
+                    </ButtonComponent>
+                  ) : (
+                    ""
+                  )} */}
+
                   <ButtonComponent
                     className=""
                     onClick={() => {
@@ -1003,7 +1020,6 @@ export default function MarkManagement() {
                 />
               </>
             ))}
-            {console.log("markDetails", markDetails)}
             <div className="flex justify-between text-base mt-3 border-t-2 pt-2">
               <div>
                 <span className="font-bold">Xếp loại: </span>

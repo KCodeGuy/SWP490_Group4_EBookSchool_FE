@@ -532,9 +532,13 @@ export default function MarkReportStudent() {
                         header={["Môn học", "Điểm trung bình"]}
                         data={currentMarkOfClass.map((item) => [
                           item.subject,
-                          schoolSemester == "Học kỳ I" && item.semester1Average > 0
+                          (schoolSemester == "Học kỳ I" && item.semester1Average > 0) ||
+                          (schoolSemester == "Học kỳ I" &&
+                            (item.semester1Average == "CĐ" || item.semester1Average == "Đ"))
                             ? item.semester1Average
-                            : schoolSemester == "Học kỳ II" && item.semester2Average > 0
+                            : (schoolSemester == "Học kỳ II" && item.semester2Average > 0) ||
+                              (schoolSemester == "Học kỳ II" &&
+                                (item.semester2Average == "CĐ" || item.semester2Average == "Đ"))
                             ? item.semester2Average
                             : "_",
                           // schoolSemester == "Học kỳ I" && item.semester1Average > 0

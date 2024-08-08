@@ -39,6 +39,7 @@ import { getAllTeachers } from "../../services/TeacherService";
 import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
 import { getAllStudents } from "services/StudentService";
 import { isXlsxFile } from "utils/CommonFunctions";
+import { PRINCIPAL_ROLE } from "services/APIConfig";
 
 export default function ClassManagement() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -417,10 +418,14 @@ export default function ClassManagement() {
                 placeHolder="Nhập từ khóa..."
               />
               <div className="ml-3">
-                <ButtonComponent className="" onClick={() => setModalOpen(true)}>
-                  <AddCircleOutlineIcon className="mr-1" focusable="false" />
-                  TẠO
-                </ButtonComponent>
+                {userRole.includes(PRINCIPAL_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
+                  <ButtonComponent className="" onClick={() => setModalOpen(true)}>
+                    <AddCircleOutlineIcon className="mr-1" focusable="false" />
+                    TẠO
+                  </ButtonComponent>
+                ) : (
+                  ""
+                )}
                 <PopupComponent
                   title="TẠO LỚP HỌC"
                   description="Hãy tạo lớp học để bắt đầu năm học mới"
@@ -629,23 +634,40 @@ export default function ClassManagement() {
                   <CircularProgress size={24} color="inherit" />
                 </div>
               </div>
-            ) : data ? (
-              <TableComponent
-                header={["Tên lớp", "Năm học", "Phòng học", "Giáo viên chủ nhiệm"]}
-                data={currentData?.map((item) => [
-                  item.id,
-                  item.classroom,
-                  item.schoolYear,
-                  `Phòng ${item.classroom}`,
-                  item.teacher,
-                ])}
-                itemsPerPage={20}
-                onEdit={handleEdit}
-                onDetails={handleDetails}
-                hiddenColumns={[0]}
-                onDelete={handleDelete}
-                className="mt-8"
-              />
+            ) : data && currentData.length > 0 ? (
+              userRole.includes(PRINCIPAL_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
+                <TableComponent
+                  header={["Tên lớp", "Năm học", "Phòng học", "Giáo viên chủ nhiệm"]}
+                  data={currentData?.map((item) => [
+                    item.id,
+                    item.classroom,
+                    item.schoolYear,
+                    `Phòng ${item.classroom}`,
+                    item.teacher,
+                  ])}
+                  itemsPerPage={20}
+                  onEdit={handleEdit}
+                  onDetails={handleDetails}
+                  hiddenColumns={[0]}
+                  onDelete={handleDelete}
+                  className="mt-8"
+                />
+              ) : (
+                <TableComponent
+                  header={["Tên lớp", "Năm học", "Phòng học", "Giáo viên chủ nhiệm"]}
+                  data={currentData?.map((item) => [
+                    item.id,
+                    item.classroom,
+                    item.schoolYear,
+                    `Phòng ${item.classroom}`,
+                    item.teacher,
+                  ])}
+                  itemsPerPage={20}
+                  onDetails={handleDetails}
+                  hiddenColumns={[0]}
+                  className="mt-8"
+                />
+              )
             ) : (
               <div className="text-center primary-color my-10 text-xl italic font-medium">
                 <img

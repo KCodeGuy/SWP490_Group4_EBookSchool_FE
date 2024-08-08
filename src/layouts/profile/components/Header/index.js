@@ -50,6 +50,10 @@ import { updateTeacher } from "services/TeacherService";
 import { ToastContainer, toast } from "react-toastify";
 import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
 import { nationOptions } from "mock/student";
+import { PRINCIPAL_ROLE } from "services/APIConfig";
+import { HEADTEACHER_ROLE } from "services/APIConfig";
+import { SUBJECT_ROLE } from "services/APIConfig";
+import { HOMEROOM_ROLE } from "services/APIConfig";
 
 const accessToken = localStorage.getItem("authToken");
 const genderOptions = [
@@ -61,6 +65,7 @@ function Header({ children, currentUser, permissions }) {
   const [tabValue, setTabValue] = useState(0);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [avatar, setAvatar] = useState(null);
+  let userRole = localStorage.getItem("userRole");
 
   const queryClient = useQueryClient();
 
@@ -208,8 +213,15 @@ function Header({ children, currentUser, permissions }) {
                 {currentUser ? currentUser.fullname : "Chưa có thông tin!"}
               </MDTypography>
               <MDTypography variant="button" color="text" fontWeight="regular">
-                {/* {permissions || "No permission"} | {currentUser.id} */}
-                Giáo viên | {currentUser ? currentUser.id : "Chưa có thông tin!"} |{" "}
+                {userRole?.includes(PRINCIPAL_ROLE)
+                  ? "HIỆU TRƯỞNG/PHÓ HIỆU TRƯỞNG | "
+                  : userRole?.includes(HEADTEACHER_ROLE)
+                  ? "TỔNG PHỤ TRÁCH/GIÁM THỊ | "
+                  : userRole?.includes(SUBJECT_ROLE)
+                  ? "GIÁO VIÊN BỘ MÔN | "
+                  : userRole?.includes(HOMEROOM_ROLE)
+                  ? "GIÁO VIÊN CHỦ NHIỆM | "
+                  : ""}
                 {currentUser ? currentUser.email : "Chưa có thông tin!"}
               </MDTypography>
             </MDBox>

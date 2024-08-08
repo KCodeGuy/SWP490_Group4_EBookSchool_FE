@@ -253,6 +253,187 @@ const routes = [
   },
 ];
 
+const headTeacherRoutes = [
+  {
+    type: "title",
+    title: "Học tập",
+    key: "studying",
+  },
+  {
+    type: "collapse",
+    name: "Trang chủ",
+    key: "dashboard",
+    icon: <Icon fontSize="small">home</Icon>,
+    route: "/dashboard",
+    component: <Dashboard />,
+  },
+  {
+    type: "collapse",
+    name: "Sổ đầu bài",
+    key: "register-notebook",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/register-notebook",
+    component: <SchoolBook />,
+  },
+
+  {
+    type: "collapse",
+    name: "Thời khóa biểu",
+    key: "weeklyTimeTable",
+    icon: <Icon fontSize="small">eventNote</Icon>,
+    route: "/weeklyTimeTable",
+    component: <WeeklyTimeTable />,
+  },
+  {
+    type: "collapse",
+    name: "Điểm danh",
+    key: "takeAttendance",
+    icon: <Icon fontSize="small">grading</Icon>,
+    route: "/takeAttendance/:attendanceID",
+    component: <TakeAttendance />,
+  },
+  {
+    type: "collapse",
+    name: "Thông báo",
+    key: "notificationDetails",
+    icon: <Icon fontSize="small">notifications</Icon>,
+    route: "/notificationDetails/:notificationID",
+    component: <NotificationDetails />,
+  },
+
+  {
+    type: "title",
+    title: "Thống kê",
+    key: "statistic",
+  },
+  {
+    type: "collapse",
+    name: "Thống kê sổ đầu bài",
+    key: "registerNotebookStatistics",
+    icon: <Icon fontSize="small">equalizer</Icon>,
+    route: "/registerNotebookStatistics",
+    component: <RegisterNotebookStatistics />,
+  },
+  {
+    type: "collapse",
+    name: "Thống kê lượt vắng",
+    key: "attendanceStatistics",
+    icon: <Icon fontSize="small">leaderboard</Icon>,
+    route: "/attendanceStatistics",
+    component: <AttendanceStatistics />,
+  },
+  {
+    type: "collapse",
+    name: "Thống kê điểm",
+    key: "markStatistics",
+    icon: <Icon fontSize="small">leaderboard</Icon>,
+    route: "/markStatistics",
+    component: <MarkStatistics />,
+  },
+  {
+    type: "collapse",
+    name: "Thống kê học lực",
+    key: "academicPerformanceStatistics",
+    icon: <Icon fontSize="small">leaderboard</Icon>,
+    route: "/academicPerformanceStatistics",
+    component: <AcademicPerformanceStatistics />,
+  },
+  {
+    type: "title",
+    title: "Quản lí",
+    key: "management",
+  },
+
+  {
+    type: "collapse",
+    name: "Quản lí điểm",
+    key: "markManagement",
+    icon: <Icon fontSize="small">ballot</Icon>,
+    route: "/markManagement",
+    component: <MarkManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Quản lí lớp",
+    key: "classManagement",
+    icon: <Icon fontSize="small">roomPreferences</Icon>,
+    route: "/classManagement",
+    component: <ClassManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Quản lí môn",
+    key: "subjectManagement",
+    icon: <Icon fontSize="small">book</Icon>,
+    route: "/subjectManagement",
+    component: <SubjectManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Quản lí thông báo",
+    key: "notificationManagement",
+    icon: <Icon fontSize="small">notifications</Icon>,
+    route: "/notificationManagement",
+    component: <NotificationManagement />,
+  },
+
+  {
+    type: "collapse",
+    name: "Quản lí giáo viên",
+    key: "accountManagement",
+    icon: <Icon fontSize="small">group</Icon>,
+    route: "/accountManagement",
+    component: <AccountManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Quản lí học sinh",
+    key: "studentAccountManagement",
+    icon: <Icon fontSize="small">group</Icon>,
+    route: "/studentAccountManagement",
+    component: <StudentAccountManagement />,
+  },
+
+  {
+    type: "title",
+    title: "Hệ thống",
+    key: "system",
+  },
+  {
+    type: "collapse",
+    name: "Đăng nhập",
+    key: "sign-in",
+    icon: <Icon fontSize="small">login</Icon>,
+    route: "/authentication/sign-in",
+    component: <SignIn />,
+  },
+  {
+    type: "collapse",
+    name: "Quên mật khẩu",
+    key: "reset-password",
+    icon: <Icon fontSize="small">lockOpen</Icon>,
+    route: "/authentication/reset-password",
+    component: <ResetPassword />,
+  },
+
+  {
+    type: "collapse",
+    name: "Ghi log",
+    key: "logHistory",
+    icon: <Icon fontSize="small">history</Icon>,
+    route: "/logHistory",
+    component: <LogManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Tài khoản",
+    key: "profile",
+    icon: <Icon fontSize="small">person</Icon>,
+    route: "/profile",
+    component: <Profile />,
+  },
+];
+
 const studentRoutes = [
   {
     type: "title",
@@ -445,6 +626,14 @@ const subjectTeacherRoutes = [
     component: <MarkManagement />,
   },
   {
+    type: "collapse",
+    name: "Quản lí lớp",
+    key: "classManagement",
+    icon: <Icon fontSize="small">roomPreferences</Icon>,
+    route: "/classManagement",
+    component: <ClassManagement />,
+  },
+  {
     type: "title",
     title: "Hệ thống",
     key: "system",
@@ -576,7 +765,14 @@ const homeRoomTeacherRoutes = [
     route: "/markManagement",
     component: <MarkManagement />,
   },
-
+  {
+    type: "collapse",
+    name: "Quản lí lớp",
+    key: "classManagement",
+    icon: <Icon fontSize="small">roomPreferences</Icon>,
+    route: "/classManagement",
+    component: <ClassManagement />,
+  },
   {
     type: "title",
     title: "Hệ thống",
@@ -620,4 +816,11 @@ const guestRoutes = [
   },
 ];
 
-export { routes, subjectTeacherRoutes, homeRoomTeacherRoutes, studentRoutes, guestRoutes };
+export {
+  routes,
+  subjectTeacherRoutes,
+  homeRoomTeacherRoutes,
+  studentRoutes,
+  guestRoutes,
+  headTeacherRoutes,
+};

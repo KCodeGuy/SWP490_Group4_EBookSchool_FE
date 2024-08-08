@@ -52,6 +52,7 @@ import { renderAverageMarkStyles } from "utils/RenderStyle";
 import { useNavigate } from "react-router-dom";
 import { renderRankingStylesByRaking } from "utils/RenderStyle";
 import TableMarkOfSubjectComponentDynamic from "components/TableMarkOfSubjectComponentDynamic/TableMarkOfSubjectComponent";
+import { HEADTEACHER_ROLE } from "services/APIConfig";
 
 // Mark management (HieuTTN)
 const semesters = [
@@ -313,7 +314,7 @@ export default function MarkManagement() {
       <DashboardNavbar />
       <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
-          {userRole.includes(PRINCIPAL_ROLE) ? (
+          {userRole.includes(PRINCIPAL_ROLE) || userRole.includes(HEADTEACHER_ROLE) ? (
             <Tabs
               value={value}
               onChange={handleChange}
@@ -596,10 +597,18 @@ export default function MarkManagement() {
           </div>
           <TabPanel
             value={value}
-            index={userRole.includes(SUBJECT_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? 1 : 0}
+            index={
+              userRole.includes(SUBJECT_ROLE) ||
+              userRole.includes(PRINCIPAL_ROLE) ||
+              userRole.includes(HEADTEACHER_ROLE)
+                ? 1
+                : 0
+            }
           >
             <>
-              {userRole.includes(HOMEROOM_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
+              {userRole.includes(HOMEROOM_ROLE) ||
+              userRole.includes(PRINCIPAL_ROLE) ||
+              userRole.includes(HEADTEACHER_ROLE) ? (
                 <div className="text-center mt-10 uppercase">
                   <h4 className="text-xl font-bold">
                     Bảng điểm tổng kết <br /> Năm học {schoolYear}
@@ -613,7 +622,9 @@ export default function MarkManagement() {
                 ""
               )}
 
-              {userRole.includes(HOMEROOM_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
+              {userRole.includes(HOMEROOM_ROLE) ||
+              userRole.includes(PRINCIPAL_ROLE) ||
+              userRole.includes(HEADTEACHER_ROLE) ? (
                 isLoadingMarkOfClass || searchLoading ? (
                   <div className="text-center primary-color my-16 text-xl italic font-medium">
                     <div className="mx-auto flex items-center justify-center">
@@ -689,10 +700,18 @@ export default function MarkManagement() {
           </TabPanel>
           <TabPanel
             value={value}
-            index={userRole.includes(SUBJECT_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? 0 : 1}
+            index={
+              userRole.includes(SUBJECT_ROLE) ||
+              userRole.includes(PRINCIPAL_ROLE) ||
+              userRole.includes(HEADTEACHER_ROLE)
+                ? 0
+                : 1
+            }
           >
             <>
-              {userRole.includes(SUBJECT_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
+              {userRole.includes(SUBJECT_ROLE) ||
+              userRole.includes(PRINCIPAL_ROLE) ||
+              userRole.includes(HEADTEACHER_ROLE) ? (
                 <>
                   <div className="text-center mt-10 uppercase">
                     <h4 className="text-xl font-bold">

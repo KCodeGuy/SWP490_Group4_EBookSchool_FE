@@ -87,7 +87,11 @@ function Basic() {
         }));
         localStorage.setItem("currentClasses", JSON.stringify(formattedArray));
         if (data?.roles) {
-          localStorage.setItem("userRole", data?.roles?.toString());
+          if (data?.roles.includes("Supervisor")) {
+            localStorage.setItem("userRole", "Headteacher");
+          } else {
+            localStorage.setItem("userRole", data?.roles?.toString());
+          }
         }
         console.clear();
         navigate("/dashboard");

@@ -50,6 +50,7 @@ import ResetPassword from "layouts/authentication/reset-password";
 // Material Dashboard 2 React routes
 import {
   guestRoutes,
+  headTeacherRoutes,
   homeRoomTeacherRoutes,
   routes,
   studentRoutes,
@@ -78,8 +79,8 @@ export default function App() {
     if (userRole) {
       if (userRole.includes(PRINCIPAL_ROLE)) {
         setCurrentRoutes(routes);
-      } else if (userRole.includes(HEADTEACHER_ROLE)) {
-        setCurrentRoutes(routes);
+      } else if (userRole.includes(HEADTEACHER_ROLE) || userRole.includes("Supervisor")) {
+        setCurrentRoutes(headTeacherRoutes);
       } else if (userRole.includes(SUBJECT_ROLE)) {
         setCurrentRoutes(subjectTeacherRoutes);
       } else if (userRole.includes(HOMEROOM_ROLE)) {
@@ -163,7 +164,7 @@ export default function App() {
 
   const configsButton = (
     <MDBox
-      display="flex"
+      display="none"
       justifyContent="center"
       alignItems="center"
       width="3.25rem"
@@ -200,7 +201,7 @@ export default function App() {
               onMouseLeave={handleOnMouseLeave}
             />
             <Configurator />
-            {/* {configsButton} */}
+            {configsButton}
           </>
         )}
         {layout === "vr" && <Configurator />}

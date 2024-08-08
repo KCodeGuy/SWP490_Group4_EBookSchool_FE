@@ -1,5 +1,11 @@
 import axios from "axios";
-import { API_HOST, HOMEROOM_ROLE, PRINCIPAL_ROLE, SUBJECT_ROLE } from "./APIConfig";
+import {
+  API_HOST,
+  HEADTEACHER_ROLE,
+  HOMEROOM_ROLE,
+  PRINCIPAL_ROLE,
+  SUBJECT_ROLE,
+} from "./APIConfig";
 
 export const getTimetable = async (
   userID,
@@ -31,7 +37,7 @@ export const getTimetable = async (
       fromDate,
       classname: classID,
     };
-  } else if (userRole.includes(PRINCIPAL_ROLE)) {
+  } else if (userRole.includes(PRINCIPAL_ROLE) || userRole.includes(HEADTEACHER_ROLE)) {
     apiURL = `${API_HOST}/Schedules/Class`;
     params = {
       className: classID,

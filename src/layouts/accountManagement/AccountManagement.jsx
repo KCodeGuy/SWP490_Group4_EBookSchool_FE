@@ -33,6 +33,7 @@ import { handleDownloadTeacherExcel } from "services/TeacherService";
 import { addTeacherByExcel } from "services/TeacherService";
 import { isXlsxFile } from "utils/CommonFunctions";
 import { nationOptions } from "mock/student";
+import { PRINCIPAL_ROLE } from "services/APIConfig";
 
 const sortOptions = [
   { label: "Mã giáo viên(A-Z)", value: { index: 1, option: "ASC" } },
@@ -50,7 +51,6 @@ const genderOptions = [
 
 // Account management (UolLT)
 export default function AccountManagement() {
-  const accessToken = localStorage.getItem("authToken");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
@@ -62,6 +62,16 @@ export default function AccountManagement() {
   const [avatar, setAvatar] = useState(null);
   const [sortOption, setSortOption] = useState(sortOptions[0].value);
   const queryClient = useQueryClient();
+
+  let accessToken, currentUser, userRole, userID, schoolYearsAPI, classesAPI;
+  userRole = localStorage.getItem("userRole");
+  if (userRole) {
+    accessToken = localStorage.getItem("authToken");
+    schoolYearsAPI = JSON.parse(localStorage.getItem("schoolYears"));
+    classesAPI = JSON.parse(localStorage.getItem("currentClasses"));
+    currentUser = JSON.parse(localStorage.getItem("user"));
+    userID = currentUser.id;
+  }
 
   const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["teacherAccounts"],
@@ -471,10 +481,15 @@ export default function AccountManagement() {
                 placeHolder="Nhập từ khóa..."
               />
               <div className="ml-3">
-                <ButtonComponent className="" onClick={() => setModalOpen(true)}>
-                  <AddCircleOutlineIcon className="text-3xl mr-1" />
-                  TẠO
-                </ButtonComponent>
+                {userRole.includes(PRINCIPAL_ROLE) ? (
+                  <ButtonComponent className="" onClick={() => setModalOpen(true)}>
+                    <AddCircleOutlineIcon className="text-3xl mr-1" />
+                    TẠO
+                  </ButtonComponent>
+                ) : (
+                  ""
+                )}
+
                 <PopupComponent
                   title="TẠO TÀI KHOẢN"
                   description="Hãy tạo tài khoản"
@@ -1219,29 +1234,53 @@ export default function AccountManagement() {
                 </div>
               </div>
             ) : data && accounts?.length > 0 ? (
-              <TableComponent
-                header={[
-                  "Mã giáo viên",
-                  "Tên đăng nhập",
-                  "Họ và tên",
-                  "Hình ảnh",
-                  "Email",
-                  "Số điện thoại",
-                ]}
-                data={accounts.map((item) => [
-                  item.id,
-                  item.username,
-                  item.fullname,
-                  item.avatar,
-                  item.email,
-                  item.phone,
-                ])}
-                itemsPerPage={30}
-                isImage={3}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                className="mt-8"
-              />
+              userRole.includes(PRINCIPAL_ROLE) ? (
+                <TableComponent
+                  header={[
+                    "Mã giáo viên",
+                    "Tên đăng nhập",
+                    "Họ và tên",
+                    "Hình ảnh",
+                    "Email",
+                    "Số điện thoại",
+                  ]}
+                  data={accounts.map((item) => [
+                    item.id,
+                    item.username,
+                    item.fullname,
+                    item.avatar,
+                    item.email,
+                    item.phone,
+                  ])}
+                  itemsPerPage={30}
+                  isImage={3}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  className="mt-8"
+                />
+              ) : (
+                <TableComponent
+                  header={[
+                    "Mã giáo viên",
+                    "Tên đăng nhập",
+                    "Họ và tên",
+                    "Hình ảnh",
+                    "Email",
+                    "Số điện thoại",
+                  ]}
+                  data={accounts.map((item) => [
+                    item.id,
+                    item.username,
+                    item.fullname,
+                    item.avatar,
+                    item.email,
+                    item.phone,
+                  ])}
+                  itemsPerPage={30}
+                  isImage={3}
+                  className="mt-8"
+                />
+              )
             ) : (
               <div className="text-center primary-color my-10 text-xl italic font-medium">
                 <img

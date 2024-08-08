@@ -221,6 +221,8 @@ function Header({ children, currentUser, permissions }) {
                   ? "GIÁO VIÊN BỘ MÔN | "
                   : userRole?.includes(HOMEROOM_ROLE)
                   ? "GIÁO VIÊN CHỦ NHIỆM | "
+                  : userRole?.includes(SUBJECT_ROLE) && userRole?.includes(HOMEROOM_ROLE)
+                  ? "GIÁO VIÊN BỘ MÔN/CHỦ NHIỆM |"
                   : ""}
                 {currentUser ? currentUser.email : "Chưa có thông tin!"}
               </MDTypography>

@@ -237,7 +237,7 @@ export default function AttendanceReportStudent() {
                 </li>
               </ul>
             </div>
-            {currentData?.length > 0 ? (
+            {currentData?.length > 0 && currentAttendanceBySubject?.length > 0 ? (
               <PopupComponent
                 title="CHI TIẾT"
                 description={`NĂM HỌC: ${schoolYear || "_"} `}
@@ -354,14 +354,7 @@ export default function AttendanceReportStudent() {
                     </div>
                   </>
                 ) : (
-                  <div className="text-center primary-color my-10 text-xl italic font-medium">
-                    <img
-                      className="w-60 h-60 object-cover object-center mx-auto"
-                      src={noDataImage3}
-                      alt="Chưa có dữ liệu!"
-                    />
-                    Chưa có dữ liệu!
-                  </div>
+                  ""
                 )}
               </PopupComponent>
             ) : (

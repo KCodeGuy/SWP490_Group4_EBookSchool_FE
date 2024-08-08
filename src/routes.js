@@ -62,7 +62,7 @@ import RegisterNotebookStatistics from "layouts/registerNotebookStatistics/Regis
 import AttendanceStatistics from "layouts/attendanceStatistics/AttendanceStatistics";
 import MarkReportStudent from "layouts/markReportStudent";
 import AttendanceReportStudent from "layouts/attendanceReportStudent/attendanceReportStudent";
-import AcademicPerformanceStatistics from "layouts/AcademicPerformanceStatistics/AcademicPerformanceStatistics";
+import AcademicPerformanceStatistics from "layouts/academicPerformanceStatistics";
 
 const routes = [
   {

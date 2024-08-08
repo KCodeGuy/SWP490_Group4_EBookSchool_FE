@@ -397,7 +397,7 @@ export default function ComponentMark() {
                   Thống kê hạnh kiểm trường THPT Nguyễn Việt Hồng
                 </h4>
                 <h4 className="text-xl font-bold">
-                  Học kỳ: {schoolSemester}. Năm học: {schoolYear}
+                  Học kỳ {schoolSemester} Năm học {schoolYear}
                 </h4>
               </div>
               <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4 custom">

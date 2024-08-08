@@ -169,11 +169,11 @@ export default function AttendanceStatistics() {
       label: "là tổng lượt vắng",
     },
     {
-      color: "secondary",
+      color: "primary",
       icon: "leaderboard",
       title: "Vắng (K)",
       count: `${totalNumberOfAbsent - totalNumberOfConfirmed || 0} lượt`,
-      textDescriptionColor: "secondary",
+      textDescriptionColor: "primary",
       amount: `${totalNumberOfAbsent - totalNumberOfConfirmed || 0}`,
       label: "là tổng lượt vắng không phép",
     },
@@ -328,14 +328,16 @@ export default function AttendanceStatistics() {
                           dataKey: "numberOfUnconfirmed",
                           stack: "A",
                           label: "Vắng (K)",
-                          color: "#165C9E",
+                          // color: "#165C9E",
+                          color: "#e91e63",
                           valueFormatter,
                         },
                         {
                           dataKey: "numberOfConfirmed",
                           stack: "A",
                           label: "Vắng (P)",
-                          color: "#A5A5A5",
+                          // color: "#A5A5A5",
+                          color: "#fb8c00",
                           valueFormatter,
                         },
                       ]}
@@ -383,23 +385,15 @@ export default function AttendanceStatistics() {
             <div className="mt-5 text-base">
               <p className="font-bold">Ghi chú:</p>
               <ul className="list-disc ml-5">
-                {/* <li>
-                  <span className="primary-color font-bold">(Tổng lượt vắng): </span>
-                  <span className="italic">
-                    Tổng tất cả lượt vắng của học sinh trong năm học/tuần học quy định.
-                  </span>
-                </li> */}
                 <li>
-                  <span className="k font-bold">(Vắng (K)): </span>
+                  <span className="error-color font-bold">(Vắng (K)): </span>
                   <span className="italic">
-                    {" "}
                     Tổng tất cả lượt vắng không phép của học sinh trong năm học/tuần học quy định.
                   </span>
                 </li>
                 <li>
-                  <span className="p font-bold">(Vắng (P)): </span>
+                  <span className="warning-color font-bold">(Vắng (P)): </span>
                   <span className="italic">
-                    {" "}
                     Tổng tất cả lượt vắng có phép của học sinh trong năm học/tuần học quy định.
                   </span>
                 </li>

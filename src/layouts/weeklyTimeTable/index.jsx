@@ -1065,22 +1065,28 @@ export default function WeeklyTimeTable() {
                   value={currentSlot?.slotByLessonPlans}
                   icon={<LockClockIcon />}
                 />
-                <TextValueComponent
-                  label="Trạng thái"
-                  value={`(${currentSlot?.status})`}
-                  icon={<AccessAlarmIcon />}
-                  customValue={
-                    currentSlot?.status == "Có mặt"
-                      ? "success-color font-medium"
-                      : currentSlot?.status == "Vắng có phép"
-                      ? "warning-color font-medium"
-                      : currentSlot?.status == "Vắng không phép"
-                      ? "error-color font-medium"
-                      : currentSlot?.status == "Chưa bắt đầu"
-                      ? "text-color font-medium"
-                      : ""
-                  }
-                />
+                {!userRole.includes(PRINCIPAL_ROLE) ? (
+                  <TextValueComponent
+                    label="Trạng thái"
+                    value={`(${currentSlot?.status})`}
+                    icon={<AccessAlarmIcon />}
+                    customValue={
+                      currentSlot?.status == "Có mặt"
+                        ? "success-color font-medium"
+                        : currentSlot?.status == "Vắng có phép"
+                        ? "warning-color font-medium"
+                        : currentSlot?.status == "Vắng không phép"
+                        ? "error-color font-medium"
+                        : currentSlot?.status == "Chưa bắt đầu"
+                        ? "text-color font-medium"
+                        : currentSlot?.status == "Vắng"
+                        ? "error-color font-medium"
+                        : ""
+                    }
+                  />
+                ) : (
+                  ""
+                )}
                 <div className="mt-4 flex justify-end">
                   {currentSlot?.teacher === currentUser?.username ? (
                     <ButtonComponent

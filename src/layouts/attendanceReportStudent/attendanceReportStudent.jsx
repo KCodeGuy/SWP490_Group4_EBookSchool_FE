@@ -125,8 +125,6 @@ export default function AttendanceReportStudent() {
     return Math.round(num * 10) / 10;
   };
 
-  console.log(currentData);
-
   (React.useState < "middle") | ("tick" > "middle");
 
   return (
@@ -169,7 +167,7 @@ export default function AttendanceReportStudent() {
                 <h4 className="text-xl font-bold">
                   Báo cáo lượt vắng {`(${currentUser?.fullname})`}
                 </h4>
-                <h4 className="text-xl font-bold">Năm học: {schoolYear}</h4>
+                <h4 className="text-xl font-bold">Năm học {schoolYear}</h4>
               </div>
               {isLoading || searchLoading ? (
                 <div className="text-center primary-color py-20 text-xl italic font-medium my-10">
@@ -226,112 +224,35 @@ export default function AttendanceReportStudent() {
               <p className="font-bold">Ghi chú:</p>
               <ul className="list-disc ml-5">
                 <li>
-                  <span className="primary-color font-bold">(Tổng lượt vắng): </span>
+                  <span className="error-color font-bold">(Vắng (K)): </span>
                   <span className="italic">
-                    Tổng tất cả lượt vắng của học sinh trong năm học/tuần học quy định.
-                  </span>
-                </li>
-                <li>
-                  <span className="text-color font-bold">(Vắng (K)): </span>
-                  <span className="italic">
-                    {" "}
                     Tổng tất cả lượt vắng không phép của học sinh trong năm học/tuần học quy định.
                   </span>
                 </li>
                 <li>
                   <span className="warning-color font-bold">(Vắng (P)): </span>
                   <span className="italic">
-                    {" "}
                     Tổng tất cả lượt vắng có phép của học sinh trong năm học/tuần học quy định.
                   </span>
                 </li>
               </ul>
             </div>
-            {currentData?.length > 0 && currentAttendanceBySubject?.length > 0 ? (
+            {currentData?.length > 0 ? (
               <PopupComponent
                 title="CHI TIẾT"
-                description={`NĂM HỌC: ${schoolYear || "chưa có dữ liệu!"} `}
-                rightNote={`Môn học: ${currentAttendanceDetail?.subject || "chưa có dữ liệu!"}`}
+                description={`NĂM HỌC: ${schoolYear || "_"} `}
+                rightNote={`Môn học: ${currentAttendanceDetail?.subject || "_"}`}
                 isOpen={openModalDetail}
                 onClose={() => {
                   setOpenModalDetail(false);
                   setCurrentAttendanceBySubject([]);
                 }}
               >
-                <div className="w-full">
-                  <TextValueComponent
-                    label="Tổng số tiết"
-                    value={`${currentAttendanceBySubject?.length} tiết` || "_"}
-                    icon={<AutoStoriesIcon />}
-                    customValue="text-black "
-                    className="justify-between w-full"
-                  />
-                  <TextValueComponent
-                    label="Chưa bắt đầu"
-                    value={`${currentAttendanceDetail?.notStarted} tiết` || "_"}
-                    icon={<DoNotDisturbOffIcon />}
-                    customValue="text-black "
-                    className="justify-between w-full"
-                  />
-                  <TextValueComponent
-                    label="Có mặt"
-                    value={`${currentAttendanceDetail?.present} lượt` || "_"}
-                    icon={<CheckCircleIcon />}
-                    customValue="text-black "
-                    className="justify-between w-full"
-                  />
-                  <TextValueComponent
-                    label="Vắng (P)"
-                    value={`${currentAttendanceDetail?.confirmed} lượt` || "_"}
-                    icon={<HowToRegIcon />}
-                    customValue="text-black "
-                    className="justify-between w-full"
-                  />
-                  <TextValueComponent
-                    label="Vắng (K)"
-                    value={`${currentAttendanceDetail?.unconfirmed} lượt` || "_"}
-                    icon={<DoNotDisturbOffIcon />}
-                    customValue="text-black "
-                    className="justify-between w-full"
-                  />
-
-                  <TextValueComponent
-                    label="Ngày bắt đầu"
-                    value={`${currentAttendanceDetail?.startDate}` || "_"}
-                    icon={<EventAvailableIcon />}
-                    customValue="text-black "
-                    className="justify-between w-full"
-                  />
-                  <TextValueComponent
-                    label="Ngày kết thúc"
-                    value={`${currentAttendanceDetail?.endDate}` || "_"}
-                    icon={<EventAvailableIcon />}
-                    customValue="text-black "
-                    className="justify-between w-full"
-                  />
-                  <TextValueComponent
-                    label="Tỉ lệ vắng"
-                    value={`${currentAttendanceDetail?.absentPercent}` || "_"}
-                    icon={<LeaderboardIcon />}
-                    customValue="text-black "
-                    className="justify-between w-full"
-                  />
-
-                  <div className="w-full h-0.5 bg-slate-400 my-3"></div>
-                  <TextValueComponent
-                    label="Tổng lượt vắng"
-                    value={
-                      `${
-                        currentAttendanceDetail.confirmed + currentAttendanceDetail.unconfirmed
-                      } lượt` || "_"
-                    }
-                    icon={<AutoStoriesIcon />}
-                    variantValue="primary"
-                    className="justify-between w-full"
-                  />
-                </div>
-
-                {isLoadingSubject ? (
+                {isLoading ||
+                searchLoading ||
+                isLoadingSubject ||
+                currentAttendanceBySubject?.length <= 0 ||
+                !currentAttendanceDetail ? (
                   <div className="text-center primary-color py-20 text-xl italic font-medium my-10">
                     <div className="mx-auto flex items-center justify-center">
                       <p className="mr-3">Loading</p>
@@ -339,25 +260,99 @@ export default function AttendanceReportStudent() {
                     </div>
                   </div>
                 ) : currentAttendanceBySubject?.length > 0 ? (
-                  <div>
-                    <p className="text-base font-bold mt-4">
-                      CHI TIẾT LƯỢT VẮNG ({`${currentAttendanceBySubject[0]?.subject}`})
-                    </p>
-                    <TableComponent
-                      header={["Tiết", "Ngày", "Giáo viên", "Môn", "Trạng thái", "Ghi chú"]}
-                      data={currentAttendanceBySubject?.map((item) => [
-                        item.slot,
-                        item.date,
-                        item.teacher,
-                        item.subject,
-                        item.status,
-                        item.note,
-                      ])}
-                      isOrdered={false}
-                      itemsPerPage={200}
-                      className="mt-4"
-                    />
-                  </div>
+                  <>
+                    <div className="w-full">
+                      <TextValueComponent
+                        label="Tổng số tiết"
+                        value={`${currentAttendanceBySubject?.length} tiết` || "_"}
+                        icon={<AutoStoriesIcon />}
+                        customValue="text-black "
+                        className="justify-between w-full"
+                      />
+                      <TextValueComponent
+                        label="Chưa bắt đầu"
+                        value={`${currentAttendanceDetail?.notStarted} tiết` || "_"}
+                        icon={<DoNotDisturbOffIcon />}
+                        customValue="text-black "
+                        className="justify-between w-full"
+                      />
+                      <TextValueComponent
+                        label="Có mặt"
+                        value={`${currentAttendanceDetail?.present} lượt` || "_"}
+                        icon={<CheckCircleIcon />}
+                        customValue="text-black "
+                        className="justify-between w-full"
+                      />
+                      <TextValueComponent
+                        label="Vắng (P)"
+                        value={`${currentAttendanceDetail?.confirmed} lượt` || "_"}
+                        icon={<HowToRegIcon />}
+                        customValue="text-black "
+                        className="justify-between w-full"
+                      />
+                      <TextValueComponent
+                        label="Vắng (K)"
+                        value={`${currentAttendanceDetail?.unconfirmed} lượt` || "_"}
+                        icon={<DoNotDisturbOffIcon />}
+                        customValue="text-black "
+                        className="justify-between w-full"
+                      />
+
+                      <TextValueComponent
+                        label="Ngày bắt đầu"
+                        value={`${currentAttendanceDetail?.startDate}` || "_"}
+                        icon={<EventAvailableIcon />}
+                        customValue="text-black "
+                        className="justify-between w-full"
+                      />
+                      <TextValueComponent
+                        label="Ngày kết thúc"
+                        value={`${currentAttendanceDetail?.endDate}` || "_"}
+                        icon={<EventAvailableIcon />}
+                        customValue="text-black "
+                        className="justify-between w-full"
+                      />
+                      <TextValueComponent
+                        label="Tỉ lệ vắng"
+                        value={`${currentAttendanceDetail?.absentPercent}` || "_"}
+                        icon={<LeaderboardIcon />}
+                        customValue="text-black "
+                        className="justify-between w-full"
+                      />
+
+                      <div className="w-full h-0.5 bg-slate-400 my-3"></div>
+                      <TextValueComponent
+                        label="Tổng lượt vắng"
+                        value={
+                          `${
+                            currentAttendanceDetail.confirmed + currentAttendanceDetail.unconfirmed
+                          } lượt` || "_"
+                        }
+                        icon={<AutoStoriesIcon />}
+                        variantValue="primary"
+                        className="justify-between w-full"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-base font-bold mt-4">
+                        CHI TIẾT LƯỢT VẮNG ({`${currentAttendanceBySubject[0]?.subject}`})
+                      </p>
+                      <TableComponent
+                        header={["Tiết", "Ngày", "Giáo viên", "Môn", "Trạng thái", "Ghi chú"]}
+                        data={currentAttendanceBySubject?.map((item) => [
+                          item.slot,
+                          item.date,
+                          item.teacher,
+                          item.subject,
+                          item.status,
+                          item.note,
+                        ])}
+                        isOrdered={false}
+                        itemsPerPage={200}
+                        className="mt-4"
+                      />
+                    </div>
+                  </>
                 ) : (
                   <div className="text-center primary-color my-10 text-xl italic font-medium">
                     <img

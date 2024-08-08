@@ -26,6 +26,12 @@ const TableWeeklyTimeTableComponent = ({
 
   const renderSlotStatus = (status) => {
     switch (status) {
+      case "Vắng có phép": {
+        return <span className="font-bold warning-color">({status})</span>;
+      }
+      case "Vắng không phép": {
+        return <span className="font-bold error-color">({status})</span>;
+      }
       case "Vắng": {
         return <span className="font-bold error-color">({status})</span>;
       }

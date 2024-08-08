@@ -50,6 +50,7 @@ import { HOMEROOM_ROLE } from "services/APIConfig";
 import { isXlsxFile } from "utils/CommonFunctions";
 import { renderAverageMarkStyles } from "utils/RenderStyle";
 import { useNavigate } from "react-router-dom";
+import { renderRankingStylesByRaking } from "utils/RenderStyle";
 
 // Mark management (HieuTTN)
 const semesters = [
@@ -594,56 +595,59 @@ export default function MarkManagement() {
               ) : (
                 ""
               )}
-              <div className="flex flex-nowrap justify-between icon-custom mt-5">
-                <div className="text-sm mr-4 flex">
-                  <div className="mr-2">
-                    <span className="mr-2 font-bold">GVCN: </span>
-                    <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                      {currentMarkOfClass?.teacherName || "Chưa có thông tin!"}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex">
-                  <div className="flex items-center">
-                    <span className="mr-2 font-bold text-sm">Chọn học kỳ: </span>
-                    <FormControl sx={{ minWidth: 120 }}>
-                      <InputLabel id="select-school-semester-lable">Học kỳ</InputLabel>
-                      <Select
-                        labelId="select-school-semester-lable"
-                        id="select-school-semester"
-                        value={schoolSemester}
-                        className="h-10 mr-2 max-[767px]:mb-4"
-                        label="Học kỳ"
-                        onChange={handleSemesterChange}
-                      >
-                        {semesters.map((item, index) => (
-                          <MenuItem key={index} value={item.value}>
-                            {item.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </div>
-                </div>
-              </div>
 
               {userRole.includes(HOMEROOM_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
                 isLoadingMarkOfClass || searchLoading ? (
-                  <div className="text-center primary-color my-30 text-xl italic font-medium">
+                  <div className="text-center primary-color my-16 text-xl italic font-medium">
                     <div className="mx-auto flex items-center justify-center">
                       <p className="mr-3">Loading</p>
                       <CircularProgress size={24} color="inherit" />
                     </div>
                   </div>
                 ) : markOfClassAllSubject && currentMarkOfClass?.averages?.length > 0 ? (
-                  <TableMarkAllStudentsComponent
-                    className="mt-4"
-                    semester={schoolSemester}
-                    isPaginate={false}
-                    itemsPerPage={200}
-                    data={currentMarkOfClass?.averages}
-                    onViewDetails={handleDetailsAllSubject}
-                  />
+                  <>
+                    <div className="flex flex-nowrap justify-between icon-custom mt-5">
+                      <div className="text-sm mr-4 flex">
+                        <div className="mr-2">
+                          <span className="mr-2 font-bold">GVCN: </span>
+                          <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                            {currentMarkOfClass?.teacherName || "Chưa có thông tin!"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex">
+                        <div className="flex items-center">
+                          <span className="mr-2 font-bold text-sm">Chọn học kỳ: </span>
+                          <FormControl sx={{ minWidth: 120 }}>
+                            <InputLabel id="select-school-semester-lable">Học kỳ</InputLabel>
+                            <Select
+                              labelId="select-school-semester-lable"
+                              id="select-school-semester"
+                              value={schoolSemester}
+                              className="h-10 mr-2 max-[767px]:mb-4"
+                              label="Học kỳ"
+                              onChange={handleSemesterChange}
+                            >
+                              {semesters.map((item, index) => (
+                                <MenuItem key={index} value={item.value}>
+                                  {item.label}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </div>
+                      </div>
+                    </div>
+
+                    <TableMarkAllStudentsComponent
+                      className="mt-4"
+                      semester={schoolSemester}
+                      isPaginate={false}
+                      itemsPerPage={200}
+                      data={currentMarkOfClass?.averages}
+                      onViewDetails={handleDetailsAllSubject}
+                    />
+                  </>
                 ) : (
                   <div className="text-center primary-color my-10 text-xl italic font-medium">
                     <img
@@ -682,49 +686,9 @@ export default function MarkManagement() {
                       Môn {schoolSubject} ({schoolSemester})
                     </h4>
                   </div>
-                  <div className="flex flex-nowrap justify-between icon-custom mt-5">
-                    <div className="text-sm mr-4 flex">
-                      <div className="mr-2">
-                        <span className="mr-2 font-bold">GVBM: </span>
-                        <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                          {currentOfStudentsMarkBySubject?.teacherName || "Chưa có thông tin!"}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex">
-                      <div className="flex items-center">
-                        <span className="mr-2 font-bold text-sm">Chọn học kỳ: </span>
-                        <FormControl sx={{ minWidth: 120 }}>
-                          <InputLabel id="select-school-semester-lable">Học kỳ</InputLabel>
-                          <Select
-                            labelId="select-school-semester-lable"
-                            id="select-school-semester"
-                            value={schoolSemester}
-                            className="h-10 mr-2 max-[767px]:mb-4"
-                            label="Học kỳ"
-                            onChange={handleSemesterChange}
-                          >
-                            {semesters.map((item, index) => (
-                              <MenuItem key={index} value={item.value}>
-                                {item.label}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </div>
-                      {/* <ButtonComponent
-                        onClick={() => {
-                          navigate("/markStatistics");
-                        }}
-                      >
-                        <CardGiftcardIcon className="mr-2" />
-                        THỐNG KÊ ĐIỂM
-                      </ButtonComponent> */}
-                    </div>
-                  </div>
 
                   {isLoadingMark || searchLoading ? (
-                    <div className="text-center primary-color my-30 text-xl italic font-medium">
+                    <div className="text-center primary-color my-16 text-xl italic font-medium">
                       <div className="mx-auto flex items-center justify-center">
                         <p className="mr-3">Loading</p>
                         <CircularProgress size={24} color="inherit" />
@@ -732,15 +696,57 @@ export default function MarkManagement() {
                     </div>
                   ) : markOfStudentsBySubject &&
                     currentOfStudentsMarkBySubject?.score?.length > 0 ? (
-                    <TableMarkOfSubjectComponent
-                      semester={schoolSemester}
-                      isHideMark={openModalRandom}
-                      data={currentOfStudentsMarkBySubject?.score}
-                      className="mt-4 text-left"
-                      isPaginate={false}
-                      onDetails={handleDetails}
-                      itemsPerPage={200}
-                    />
+                    <>
+                      <div className="flex flex-nowrap justify-end icon-custom mt-5">
+                        {/* <div className="text-sm mr-4 flex">
+                      <div className="mr-2">
+                        <span className="mr-2 font-bold">GVBM: </span>
+                        <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                          {currentOfStudentsMarkBySubject?.teacherName || "Chưa có thông tin!"}
+                        </span>
+                      </div>
+                    </div> */}
+                        <div className="flex">
+                          <div className="flex items-center">
+                            <span className="mr-2 font-bold text-sm">Chọn học kỳ: </span>
+                            <FormControl sx={{ minWidth: 120 }}>
+                              <InputLabel id="select-school-semester-lable">Học kỳ</InputLabel>
+                              <Select
+                                labelId="select-school-semester-lable"
+                                id="select-school-semester"
+                                value={schoolSemester}
+                                className="h-10 mr-2 max-[767px]:mb-4"
+                                label="Học kỳ"
+                                onChange={handleSemesterChange}
+                              >
+                                {semesters.map((item, index) => (
+                                  <MenuItem key={index} value={item.value}>
+                                    {item.label}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+                          </div>
+                          {/* <ButtonComponent
+                        onClick={() => {
+                          navigate("/markStatistics");
+                        }}
+                      >
+                        <CardGiftcardIcon className="mr-2" />
+                        THỐNG KÊ ĐIỂM
+                      </ButtonComponent> */}
+                        </div>
+                      </div>
+                      <TableMarkOfSubjectComponent
+                        semester={schoolSemester}
+                        isHideMark={openModalRandom}
+                        data={currentOfStudentsMarkBySubject?.score}
+                        className="mt-4 text-left"
+                        isPaginate={false}
+                        onDetails={handleDetails}
+                        itemsPerPage={200}
+                      />
+                    </>
                   ) : (
                     <div className="text-center primary-color my-10 text-xl italic font-medium">
                       <img
@@ -899,8 +905,8 @@ export default function MarkManagement() {
                 </div>
               </>
             )}
-            <div className="flex justify-between text-base mt-3 border-t-2 pt-3">
-              <div>
+            <div className="flex justify-end text-base mt-3 border-t-2 pt-3">
+              {/* <div>
                 <span className="font-bold">Xếp loại: </span>
                 {schoolSemester == "Học kỳ I" ? (
                   markDetails?.averageSemester1 != -1 && markDetails?.averageSemester1 != 0 ? (
@@ -929,7 +935,7 @@ export default function MarkManagement() {
                 ) : (
                   ""
                 )}
-              </div>
+              </div> */}
               <div>
                 <span className="font-bold">TBM: </span>
                 {schoolSemester == "Học kỳ I" ? (
@@ -997,29 +1003,34 @@ export default function MarkManagement() {
                 />
               </>
             ))}
+            {console.log("markDetails", markDetails)}
             <div className="flex justify-between text-base mt-3 border-t-2 pt-2">
               <div>
                 <span className="font-bold">Xếp loại: </span>
                 {schoolSemester == "Học kỳ I" ? (
-                  markDetails?.totalAverage1 != -1 && markDetails?.totalAverage1 != 0 ? (
-                    <span className={renderRankingStyles(markDetails?.totalAverage1)}>
-                      {renderRanking(markDetails?.totalAverage1)}
+                  markDetails?.performanceSemester1 ? (
+                    <span
+                      className={renderRankingStylesByRaking(markDetails?.performanceSemester1)}
+                    >
+                      {markDetails?.performanceSemester1}
                     </span>
                   ) : (
                     <span className="text-base italic">Chưa xếp loại!</span>
                   )
                 ) : schoolSemester == "Học kỳ II" ? (
-                  markDetails?.totalAverage2 != -1 && markDetails?.totalAverage2 != 0 ? (
-                    <span className={renderRankingStyles(markDetails?.totalAverage2)}>
-                      {renderRanking(markDetails?.totalAverage2)}
+                  markDetails?.performanceSemester2 ? (
+                    <span
+                      className={renderRankingStylesByRaking(markDetails?.performanceSemester2)}
+                    >
+                      {markDetails?.performanceSemester2}
                     </span>
                   ) : (
                     <span className="text-base italic">Chưa xếp loại!</span>
                   )
                 ) : schoolSemester == "Cả năm" ? (
-                  markDetails?.totalAverage != -1 && markDetails?.totalAverage != 0 ? (
-                    <span className={renderRankingStyles(markDetails?.totalAverage)}>
-                      {renderRanking(markDetails?.totalAverage)}
+                  markDetails?.performanceWholeYear ? (
+                    <span className={renderRankingStyles(markDetails?.performanceWholeYear)}>
+                      {markDetails?.performanceWholeYear}
                     </span>
                   ) : (
                     <span className="text-base italic">Chưa xếp loại!</span>
@@ -1031,25 +1042,28 @@ export default function MarkManagement() {
               <div>
                 <span className="font-bold">TBM: </span>
                 {schoolSemester == "Học kỳ I" ? (
-                  markDetails?.totalAverage1 != -1 && markDetails?.totalAverage1 != 0 ? (
-                    <span className={renderAverageMarkStyles(markDetails?.totalAverage1)}>
-                      {markDetails ? markDetails?.totalAverage1 : "_"}
+                  markDetails?.totalAverageSemester1 != -1 &&
+                  markDetails?.totalAverageSemester1 != 0 ? (
+                    <span className={renderAverageMarkStyles(markDetails?.totalAverageSemester1)}>
+                      {markDetails ? markDetails?.totalAverageSemester1 : "_"}
                     </span>
                   ) : (
                     <span className="text-base italic">Chưa có điểm!</span>
                   )
                 ) : schoolSemester == "Học kỳ II" ? (
-                  markDetails?.totalAverage2 != -1 && markDetails?.totalAverage2 != 0 ? (
-                    <span className={renderAverageMarkStyles(markDetails?.totalAverage2)}>
-                      {markDetails ? markDetails?.totalAverage2 : "_"}
+                  markDetails?.totalAverageSemester2 != -1 &&
+                  markDetails?.totalAverageSemester2 != 0 ? (
+                    <span className={renderAverageMarkStyles(markDetails?.totalAverageSemester2)}>
+                      {markDetails ? markDetails?.totalAverageSemester2 : "_"}
                     </span>
                   ) : (
                     <span className="text-base italic">Chưa có điểm!</span>
                   )
                 ) : schoolSemester == "Cả năm" ? (
-                  markDetails?.totalAverage != -1 && markDetails?.totalAverage != 0 ? (
-                    <span className={renderAverageMarkStyles(markDetails?.totalAverage)}>
-                      {markDetails ? markDetails?.totalAverage : "_"}
+                  markDetails?.totalAverageWholeYear != -1 &&
+                  markDetails?.totalAverageWholeYear != 0 ? (
+                    <span className={renderAverageMarkStyles(markDetails?.totalAverageWholeYear)}>
+                      {markDetails ? markDetails?.totalAverageWholeYear : "_"}
                     </span>
                   ) : (
                     <span className="text-base italic">Chưa có điểm!</span>

@@ -188,6 +188,7 @@ export default function MarkReportStudent() {
   };
 
   const formattedSubjects = data
+    ?.filter((item) => item.isMark)
     ?.map((item) => ({
       label: `${item.name}`,
       name: item.name,
@@ -347,58 +348,14 @@ export default function MarkReportStudent() {
                 <>
                   <div className="text-center mt-10 uppercase">
                     <h4 className="text-xl font-bold">Bảng điểm {`(${currentUser?.fullname})`}</h4>
+                    <h4 className="text-xl font-bold">Năm học {schoolYear}</h4>
                     <h4 className="text-xl font-bold">
-                      Môn: {schoolSubject} Học kỳ: {schoolSemester}.
+                      Môn {schoolSubject}({schoolSemester})
                     </h4>
-                    <h4 className="text-xl font-bold">Năm học: {schoolYear}</h4>
-                  </div>
-                  <div className="flex flex-nowrap justify-between icon-custom mt-5">
-                    <div className="flex">
-                      <div className="text-sm mr-4 flex">
-                        <div className="mr-2">
-                          <span className="mr-2 font-bold">Lớp: </span>
-                          <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                            {currentOfStudentsMarkBySubject?.className || "Chưa có thông tin!"}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-sm mr-4 flex">
-                        <div className="mr-2">
-                          <span className="mr-2 font-bold">Môn: </span>
-                          <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                            {currentOfStudentsMarkBySubject?.details
-                              ? currentOfStudentsMarkBySubject?.details[0]?.subject
-                              : "Chưa có thông tin!"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex">
-                      <div className="flex items-center">
-                        <span className="mr-2 font-bold text-sm">Chọn học kỳ: </span>
-                        <FormControl sx={{ minWidth: 120 }}>
-                          <InputLabel id="select-school-semester-lable">Học kỳ</InputLabel>
-                          <Select
-                            labelId="select-school-semester-lable"
-                            id="select-school-semester"
-                            value={schoolSemester}
-                            className="h-10 mr-2 max-[767px]:mb-4"
-                            label="Học kỳ"
-                            onChange={handleSemesterChange}
-                          >
-                            {semesters.map((item, index) => (
-                              <MenuItem key={index} value={item.value}>
-                                {item.label}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </div>
-                    </div>
                   </div>
 
                   {isLoadingMark || searchLoading ? (
-                    <div className="text-center primary-color my-30 text-xl italic font-medium">
+                    <div className="text-center primary-color my-16 text-xl italic font-medium">
                       <div className="mx-auto flex items-center justify-center">
                         <p className="mr-3">Loading</p>
                         <CircularProgress size={24} color="inherit" />
@@ -406,6 +363,50 @@ export default function MarkReportStudent() {
                     </div>
                   ) : currentOfStudentsMarkBySubject?.details?.length > 0 ? (
                     <>
+                      <div className="flex flex-nowrap justify-between icon-custom mt-5">
+                        <div className="flex">
+                          <div className="text-sm mr-4 flex">
+                            <div className="mr-2">
+                              <span className="mr-2 font-bold">Lớp: </span>
+                              <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                                {currentOfStudentsMarkBySubject?.className || "_"}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="text-sm mr-4 flex">
+                            <div className="mr-2">
+                              <span className="mr-2 font-bold">Môn: </span>
+                              <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                                {currentOfStudentsMarkBySubject?.details
+                                  ? currentOfStudentsMarkBySubject?.details[0]?.subject
+                                  : "_"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex">
+                          <div className="flex items-center">
+                            <span className="mr-2 font-bold text-sm">Chọn học kỳ: </span>
+                            <FormControl sx={{ minWidth: 120 }}>
+                              <InputLabel id="select-school-semester-lable">Học kỳ</InputLabel>
+                              <Select
+                                labelId="select-school-semester-lable"
+                                id="select-school-semester"
+                                value={schoolSemester}
+                                className="h-10 mr-2 max-[767px]:mb-4"
+                                label="Học kỳ"
+                                onChange={handleSemesterChange}
+                              >
+                                {semesters.map((item, index) => (
+                                  <MenuItem key={index} value={item.value}>
+                                    {item.label}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+                          </div>
+                        </div>
+                      </div>
                       <TableComponent
                         header={["Học kỳ", "Điểm thành phần", "Thứ tự", "Điểm"]}
                         data={getFilteredScores().map((item) => [
@@ -421,7 +422,7 @@ export default function MarkReportStudent() {
                       />
                       <div className="mt-5 text-base w-full flex justify-end">
                         <div className="max-w-max">
-                          <div className="flex justify-between items-center">
+                          {/* <div className="flex justify-between items-center">
                             <span className="font-bold mr-3">Xếp loại: </span>
                             {currentOfStudentsMarkBySubject?.details ? (
                               currentOfStudentsMarkBySubject?.details[0]?.average > 0 ? (
@@ -440,8 +441,8 @@ export default function MarkReportStudent() {
                             ) : (
                               "Chưa xếp loại"
                             )}
-                          </div>
-                          <div className="flex justify-between items-center mt-2 border-t-2 pt-2">
+                          </div> */}
+                          <div className="flex justify-between items-center mt-2 pt-2">
                             <span className="font-bold mr-4">Trung bình môn: </span>
                             {currentOfStudentsMarkBySubject?.details ? (
                               currentOfStudentsMarkBySubject?.details[0]?.average > 0 ? (
@@ -482,41 +483,12 @@ export default function MarkReportStudent() {
             <>
               <div className="text-center mt-10 uppercase">
                 <h4 className="text-xl font-bold">Bảng điểm {`(${currentUser?.fullname})`}</h4>
-                <h4 className="text-xl font-bold">Học kỳ: {schoolSemester}.</h4>
-                <h4 className="text-xl font-bold">Năm học: {schoolYear}</h4>
+                <h4 className="text-xl font-bold">Năm học {schoolYear}</h4>
+                <h4 className="text-xl font-bold">{schoolSemester}</h4>
               </div>
-              <div className="flex flex-nowrap icon-custom mt-5 w-full justify-between">
-                <div className="text-sm mr-4 flex">
-                  <div className="mr-2">
-                    <span className="mr-2 font-bold">Lớp: </span>
-                    <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
-                      {currentOfStudentsMarkBySubject?.className || "Chưa có thông tin!"}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <span className="mr-2 font-bold text-sm">Chọn học kỳ: </span>
-                  <FormControl sx={{ minWidth: 120 }}>
-                    <InputLabel id="select-school-semester-lable">Học kỳ</InputLabel>
-                    <Select
-                      labelId="select-school-semester-lable"
-                      id="select-school-semester"
-                      value={schoolSemester}
-                      className="h-10 mr-2 max-[767px]:mb-4"
-                      label="Học kỳ"
-                      onChange={handleSemesterChange}
-                    >
-                      {semesters.map((item, index) => (
-                        <MenuItem key={index} value={item.value}>
-                          {item.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </div>
-              </div>
+
               {isLoadingMarkOfClass || searchLoading ? (
-                <div className="text-center primary-color my-30 text-xl italic font-medium">
+                <div className="text-center primary-color my-16 text-xl italic font-medium">
                   <div className="mx-auto flex items-center justify-center">
                     <p className="mr-3">Loading</p>
                     <CircularProgress size={24} color="inherit" />
@@ -524,10 +496,40 @@ export default function MarkReportStudent() {
                 </div>
               ) : markOfClassAllSubject && currentMarkOfClass?.length > 0 ? (
                 <>
+                  <div className="flex flex-nowrap icon-custom mt-5 w-full justify-end">
+                    {/* <div className="text-sm mr-4 flex">
+                      <div className="mr-2">
+                        <span className="mr-2 font-bold">Lớp: </span>
+                        <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
+                          {currentOfStudentsMarkBySubject?.className || "_"}
+                        </span>
+                      </div>
+                    </div> */}
+                    <div className="flex items-center">
+                      <span className="mr-2 font-bold text-sm">Chọn học kỳ: </span>
+                      <FormControl sx={{ minWidth: 120 }}>
+                        <InputLabel id="select-school-semester-lable">Học kỳ</InputLabel>
+                        <Select
+                          labelId="select-school-semester-lable"
+                          id="select-school-semester"
+                          value={schoolSemester}
+                          className="h-10 mr-2 max-[767px]:mb-4"
+                          label="Học kỳ"
+                          onChange={handleSemesterChange}
+                        >
+                          {semesters.map((item, index) => (
+                            <MenuItem key={index} value={item.value}>
+                              {item.label}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </div>
+                  </div>
                   {schoolSemester != "Cả năm" ? (
                     <>
                       <TableComponent
-                        header={["Môn học", "Điểm trung bình", "Xếp loại môn"]}
+                        header={["Môn học", "Điểm trung bình"]}
                         data={currentMarkOfClass.map((item) => [
                           item.subject,
                           schoolSemester == "Học kỳ I" && item.semester1Average > 0
@@ -535,11 +537,11 @@ export default function MarkReportStudent() {
                             : schoolSemester == "Học kỳ II" && item.semester2Average > 0
                             ? item.semester2Average
                             : "_",
-                          schoolSemester == "Học kỳ I" && item.semester1Average > 0
-                            ? renderRanking(item.semester1Average)
-                            : schoolSemester == "Học kỳ II" && item.semester2Average > 0
-                            ? renderRanking(item.semester1Average)
-                            : "Chưa xếp loại",
+                          // schoolSemester == "Học kỳ I" && item.semester1Average > 0
+                          //   ? renderRanking(item.semester1Average)
+                          //   : schoolSemester == "Học kỳ II" && item.semester2Average > 0
+                          //   ? renderRanking(item.semester1Average)
+                          //   : "Chưa xếp loại",
                         ])}
                         itemsPerPage={50}
                         isPaginate={false}
@@ -744,15 +746,15 @@ export default function MarkReportStudent() {
                   value={`${markDetails[1] > 0 ? `${markDetails[1]} điểm` : "_"}`}
                   icon={<LockClockIcon />}
                 />
-                <div className="flex justify-between mt-4 border-t-2 pt-3">
-                  <div>
+                <div className="flex justify-end mt-4 border-t-2 pt-3">
+                  {/* <div>
                     <span className="font-bold">Xếp loại: </span>
                     {markDetails[1] > 0 ? (
                       <span className={renderRankingStyles(markDetails[1])}> {markDetails[1]}</span>
                     ) : (
                       "Chưa xếp loại"
                     )}
-                  </div>
+                  </div> */}
                   <div>
                     <span className="font-bold">TMB: </span>
                     {markDetails[1] > 0 ? (

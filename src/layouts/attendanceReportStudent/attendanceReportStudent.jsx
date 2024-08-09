@@ -141,7 +141,7 @@ export default function AttendanceReportStudent() {
                     labelId="select-school-year-lable"
                     id="elect-school-year"
                     value={schoolYear}
-                    className="h-10 mr-2 max-[767px]:mb-4"
+                    className="h-10 mr-2 max-[639px]:mb-4"
                     label="Năm học"
                     onChange={handleSchoolYearSelectedChange}
                   >

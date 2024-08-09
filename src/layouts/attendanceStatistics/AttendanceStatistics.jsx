@@ -204,7 +204,7 @@ export default function AttendanceStatistics() {
                     labelId="select-school-year-lable"
                     id="elect-school-year"
                     value={schoolYear}
-                    className="h-10 mr-2 max-[767px]:mb-4"
+                    className="h-10 mr-2 max-[639px]:mb-4"
                     label="Năm học"
                     onChange={handleSchoolYearSelectedChange}
                   >
@@ -222,7 +222,7 @@ export default function AttendanceStatistics() {
                     labelId="select-school-week-lable"
                     id="select-school-week"
                     value={schoolWeek}
-                    className="h-10 mr-2 max-[767px]:mb-4"
+                    className="h-10 mr-2 max-[639px]:mb-4"
                     label="Tuần"
                     onChange={handleSchoolWeeksSelectedChange}
                   >
@@ -239,7 +239,7 @@ export default function AttendanceStatistics() {
                     labelId="select-school-grade-lable"
                     id="select-grade"
                     value={grade}
-                    className="h-10 mr-2 max-[767px]:mb-4"
+                    className="h-10 mr-2 max-[639px]:mb-4"
                     label="Khối"
                     onChange={handleGradeSelectedChange}
                   >
@@ -252,19 +252,21 @@ export default function AttendanceStatistics() {
                 </FormControl>
                 <ButtonComponent
                   type="success"
-                  className="max-[639px]:mb-4"
+                  className="max-[639px]:w-full"
                   onClick={handleStatisticByWeekly}
                 >
                   <FilterAltIcon className="mr-1" /> THỐNG KÊ
                 </ButtonComponent>
               </div>
-              <ButtonComponent
-                type="primary"
-                className="max-[639px]:w-full"
-                onClick={handleStatisticWholeYear}
-              >
-                <FilterAltIcon className="mr-1" /> CẢ NĂM
-              </ButtonComponent>
+              <div className="mt-3 md:mt-0 max-[639px]:w-full">
+                <ButtonComponent
+                  type="primary"
+                  className="max-[639px]:w-full "
+                  onClick={handleStatisticWholeYear}
+                >
+                  <FilterAltIcon className="mr-1" /> CẢ NĂM
+                </ButtonComponent>
+              </div>
             </div>
             <div className="text-center mt-8">
               <h4 className="text-xl font-bold uppercase">Thống kê lượt vắng</h4>

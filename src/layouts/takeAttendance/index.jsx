@@ -129,7 +129,7 @@ export default function TakeAttendance() {
             <div className="flex justify-center items-center text-3xl mx-auto w-full">
               <GradingIcon />
               {currentSubject ? (
-                <h4 className="text-xl font-bold ml-3">
+                <h4 className="text-xl font-bold ml-3 max-[639px]:w-44">
                   ĐIỂM DANH MÔN {currentSubject?.subject?.toUpperCase()}
                 </h4>
               ) : (
@@ -137,22 +137,22 @@ export default function TakeAttendance() {
               )}
             </div>
           </div>
-          <div className="flex justify-between mt-10 flex-wrap max-[767px]:mt-4">
-            <div className="flex max-[767px]:mb-4">
-              <div className="text-sm mr-4">
+          <div className="flex justify-between mt-10 flex-wrap max-[639px]:mt-4">
+            <div className="flex flex-wrap">
+              <div className="text-sm mr-4 max-[639px]:mb-4">
                 <span className="mr-2 font-bold">GVBM:</span>
                 <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
                   {currentSubject?.teacher || "Chưa có thông tin!"}
                 </span>
               </div>
 
-              <div className="text-sm">
+              <div className="text-sm max-[639px]:mb-4">
                 <span className="mr-2 font-bold">Ngày:</span>
                 <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
                   {currentSubject?.date || "Chưa có thông tin!"}
                 </span>
               </div>
-              <div className="text-sm ml-4">
+              <div className="text-sm ml-4 max-[639px]:mb-4">
                 <span className="mr-2 font-bold">Môn:</span>
                 <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
                   {currentSubject?.subject || "Chưa có thông tin"}

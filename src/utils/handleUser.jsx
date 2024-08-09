@@ -6,7 +6,7 @@ const getUserRole = (userRole) => {
     formattedRole = "Student";
   } else if (userRole === "Subject Teacher") {
     formattedRole = "SubjectTeacher";
-  } else if (userRole === "HoomrooTeacher") {
+  } else if (userRole === "HemroomTeacher") {
     formattedRole = "SubjectTeacher";
   }
   return userRole;

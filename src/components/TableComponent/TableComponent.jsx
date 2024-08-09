@@ -278,7 +278,7 @@ function TableComponent({
           </tbody>
         </table>
         <div
-          className={`pagination-table border py-2 flex justify-between items-center px-3 ${
+          className={`pagination-table border py-2 flex justify-between items-center px-3 max-[639px]:w-max max-[639px]:flex-wrap${
             !isPaginate ? "hidden" : ""
           }`}
         >

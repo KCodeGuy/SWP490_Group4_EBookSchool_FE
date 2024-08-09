@@ -406,18 +406,23 @@ export default function ClassManagement() {
                   ))}
                 </Select>
               </FormControl>
-              <div className="max-[639px]:mt-2 ml-3">
-                <ButtonComponent type="success" onClick={handleStatistic}>
+              <div className="max-[639px]:w-full mt-3 sm:mt-0">
+                <ButtonComponent
+                  type="success"
+                  className="max-[639px]:w-full"
+                  onClick={handleStatistic}
+                >
                   <FilterAltIcon className="" /> TÌM KIẾM
                 </ButtonComponent>
               </div>
             </div>
-            <div className="flex justify-end items-center sm:w-full sm:flex-wrap ">
+            <div className="flex justify-end items-center mt-3 sm:mt-0">
               <SearchInputComponent
+                className="max[639px]:max-w-24"
                 onSearch={handleChangeSearchValue}
                 placeHolder="Nhập từ khóa..."
               />
-              <div className="ml-3">
+              <div className="ml-3 max[639px]:flex-1">
                 {userRole.includes(PRINCIPAL_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
                   <ButtonComponent className="" onClick={() => setModalOpen(true)}>
                     <AddCircleOutlineIcon className="mr-1" focusable="false" />

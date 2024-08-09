@@ -340,7 +340,7 @@ const SchoolBook = () => {
                   labelId="select-school-year-lable"
                   id="elect-school-year"
                   value={schoolYear}
-                  className="h-10 mr-2 max-[767px]:mb-4"
+                  className="h-10 mr-2 max-[639px]:mb-4"
                   label="Năm học"
                   onChange={handleSchoolYearSelectedChange}
                 >
@@ -357,7 +357,7 @@ const SchoolBook = () => {
                   labelId="select-school-class-lable"
                   id="select-school-class"
                   value={schoolClass}
-                  className="h-10 mr-2 max-[767px]:mb-4"
+                  className="h-10 mr-2 max-[639px]:mb-4"
                   label="Lớp"
                   onChange={handleChangeClass}
                 >
@@ -374,7 +374,7 @@ const SchoolBook = () => {
                   labelId="select-school-week-lable"
                   id="select-school-week"
                   value={schoolWeek}
-                  className="h-10 mr-2 max-[767px]:mb-4"
+                  className="h-10 mr-2 max-[639px]:mb-4"
                   label="Tuần"
                   onChange={handleSchoolWeeksSelectedChange}
                 >
@@ -385,7 +385,11 @@ const SchoolBook = () => {
                   ))}
                 </Select>
               </FormControl>
-              <ButtonComponent type="success" onClick={handleFilterTimetable}>
+              <ButtonComponent
+                type="success"
+                className="max-[639px]:w-full"
+                onClick={handleFilterTimetable}
+              >
                 <FilterAltIcon className="mr-1" /> TÌM KIẾM
               </ButtonComponent>
             </div>
@@ -393,17 +397,17 @@ const SchoolBook = () => {
           <div className="text-center mt-10 ">
             <div className="flex justify-center items-center text-3xl mx-auto w-full">
               <AssignmentIcon />
-              <h4 className="text-xl font-bold ml-3 max-[767px]:hidden">
+              <h4 className="text-xl font-bold ml-3 max-[639px]:hidden">
                 SỔ GHI ĐẦU BÀI LỚP {currentClass}
               </h4>
-              <h4 className="text-xl hidden font-bold ml-3 max-[767px]:block mb-2">
+              <h4 className="text-xl hidden font-bold ml-3 max-[639px]:block mb-3">
                 SỔ GHI ĐẦU <br />
                 BÀI LỚP {currentClass}
               </h4>
             </div>
           </div>
           <div className="flex justify-between flex-wrap mt-2">
-            <div className="text-sm max-[767px]:mb-2">
+            <div className="text-sm max-[639px]:mb-3">
               <span className="mr-2 font-bold">Giáo viên:</span>
               <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
                 {currentUser?.fullname}
@@ -593,7 +597,7 @@ const SchoolBook = () => {
                     }}
                   />
                   <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ trước khi đánh giá!" />
-                  <div className="mt-4 flex justify-end">
+                  <div className="mt-4 flex justify-end w-full">
                     <ButtonComponent
                       type="success"
                       action="button"

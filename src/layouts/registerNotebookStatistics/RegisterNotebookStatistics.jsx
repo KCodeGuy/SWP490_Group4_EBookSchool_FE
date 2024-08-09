@@ -36,6 +36,7 @@ import {
   statisticOfRegisterNotebookByGradeWholeYear,
   statisticOfRegisterNotebookWholeYear,
 } from "../../services/StatisticService";
+import { position } from "stylis";
 
 const grades = [12, 11, 10];
 const MARK_OF_TYPE_A = 20;
@@ -301,7 +302,6 @@ export default function RegisterNotebookStatistics() {
       chartFormattedData: [],
     };
   }
-
   const chartSetting = {
     yAxis: [
       {
@@ -353,7 +353,7 @@ export default function RegisterNotebookStatistics() {
                       labelId="select-school-year-lable"
                       id="elect-school-year"
                       value={schoolYear}
-                      className="h-10 mr-2 max-[767px]:mb-4"
+                      className="h-10 mr-2 max-[639px]:mb-4"
                       label="Năm học"
                       onChange={handleSchoolYearSelectedChange}
                     >
@@ -371,7 +371,7 @@ export default function RegisterNotebookStatistics() {
                       labelId="select-school-week-lable"
                       id="select-school-week"
                       value={schoolWeek}
-                      className="h-10 mr-2 max-[767px]:mb-4"
+                      className="h-10 mr-2 max-[639px]:mb-4"
                       label="Tuần"
                       onChange={handleSchoolWeeksSelectedChange}
                     >
@@ -385,19 +385,21 @@ export default function RegisterNotebookStatistics() {
 
                   <ButtonComponent
                     type="success"
-                    className="max-[767px]:w-full "
+                    className="max-[639px]:w-full"
                     onClick={handleStatisticWeekly}
                   >
                     <FilterAltIcon className="mr-1" /> THỐNG KÊ
                   </ButtonComponent>
                 </div>
-                <ButtonComponent
-                  type="primary"
-                  className="max-[767px]:w-full max-[767px]:mt-2"
-                  onClick={handleStatisticWholeYear}
-                >
-                  <FilterAltIcon className="mr-1" /> CẢ NĂM
-                </ButtonComponent>
+                <div className="mt-3 md:mt-0 max-[639px]:w-full">
+                  <ButtonComponent
+                    type="primary"
+                    className="max-[639px]:w-full "
+                    onClick={handleStatisticWholeYear}
+                  >
+                    <FilterAltIcon className="mr-1" /> CẢ NĂM
+                  </ButtonComponent>
+                </div>
               </div>
 
               <>
@@ -512,7 +514,7 @@ export default function RegisterNotebookStatistics() {
                       labelId="select-school-year-lable"
                       id="elect-school-year"
                       value={schoolYear}
-                      className="h-10 mr-2 max-[767px]:mb-4"
+                      className="h-10 mr-2 max-[639px]:mb-4"
                       label="Năm học"
                       onChange={handleSchoolYearSelectedChange}
                     >
@@ -530,7 +532,7 @@ export default function RegisterNotebookStatistics() {
                       labelId="select-school-week-lable"
                       id="select-school-week"
                       value={schoolWeek}
-                      className="h-10 mr-2 max-[767px]:mb-4"
+                      className="h-10 mr-2 max-[639px]:mb-4"
                       label="Tuần"
                       onChange={handleSchoolWeeksSelectedChange}
                     >
@@ -548,7 +550,7 @@ export default function RegisterNotebookStatistics() {
                       labelId="select-school-grade-lable"
                       id="select-school-grade"
                       value={grade}
-                      className="h-10 mr-2 max-[767px]:mb-4"
+                      className="h-10 mr-2 max-[639px]:mb-4"
                       label="Khối"
                       onChange={handleGradeSelectedChange}
                     >
@@ -568,13 +570,15 @@ export default function RegisterNotebookStatistics() {
                     <FilterAltIcon className="mr-1" /> THỐNG KÊ
                   </ButtonComponent>
                 </div>
-                <ButtonComponent
-                  type="primary"
-                  className="max-[639px]:w-full"
-                  onClick={handleStatisticWeeklyByGradeWholeYear}
-                >
-                  <FilterAltIcon className="mr-1" /> CẢ NĂM
-                </ButtonComponent>
+                <div className="max-[639px]:mt-3 max-[639px]:w-full">
+                  <ButtonComponent
+                    type="primary"
+                    className="max-[639px]:w-full"
+                    onClick={handleStatisticWeeklyByGradeWholeYear}
+                  >
+                    <FilterAltIcon className="mr-1" /> CẢ NĂM
+                  </ButtonComponent>
+                </div>
               </div>
               <>
                 <div className="text-center mt-8">

@@ -312,7 +312,7 @@ export default function MarkStatistics() {
                       labelId="select-school-year-lable"
                       id="elect-school-year"
                       value={schoolYear}
-                      className="h-10 mr-2 max-[767px]:mb-4"
+                      className="h-10 mr-2 max-[639px]:mb-4"
                       label="Năm học"
                       onChange={handleSchoolYearSelectedChange}
                     >
@@ -329,7 +329,7 @@ export default function MarkStatistics() {
                       labelId="select-semester-lable"
                       id="select-semester"
                       value={schoolSemester}
-                      className="h-10 mr-2 max-[767px]:mb-4"
+                      className="h-10 mr-2 max-[639px]:mb-4"
                       label="Học kì"
                       onChange={handleSchoolSemesterSelectedChange}
                     >
@@ -347,7 +347,7 @@ export default function MarkStatistics() {
                         labelId="select-school-grade-lable"
                         id="select-grade"
                         value={schoolGrade}
-                        className="h-10 mr-2 max-[767px]:mb-4"
+                        className="h-10 mr-2 max-[639px]:mb-4"
                         label="Khối"
                         onChange={handleGradeSelectedChange}
                       >
@@ -365,7 +365,7 @@ export default function MarkStatistics() {
                         labelId="select-school-subject-lable"
                         id="select-school-subject"
                         value={schoolSubject}
-                        className="h-10 mr-2 max-[767px]:mb-4"
+                        className="h-10 mr-2 max-[639px]:mb-4"
                         label="Môn học"
                         onChange={handleSchoolSubjectSelectedChange}
                       >
@@ -383,7 +383,7 @@ export default function MarkStatistics() {
                         labelId="select-school-class-lable"
                         id="select-school-class"
                         value={schoolClass}
-                        className="h-10 mr-2 max-[767px]:mb-4"
+                        className="h-10 mr-2 max-[639px]:mb-4"
                         label="Lớp"
                         onChange={handleChangeClass}
                       >

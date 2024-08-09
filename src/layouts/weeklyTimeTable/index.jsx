@@ -448,7 +448,7 @@ export default function WeeklyTimeTable() {
       <DashboardNavbar />
       <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center flex-wrap">
             <div>
               <FormControl sx={{ minWidth: 120 }}>
                 <InputLabel id="select-school-year-lable">Năm học</InputLabel>
@@ -456,7 +456,7 @@ export default function WeeklyTimeTable() {
                   labelId="select-school-year-lable"
                   id="elect-school-year"
                   value={schoolYear}
-                  className="h-10 mr-2 max-[767px]:mb-4"
+                  className="h-10 mr-2 max-[639px]:mb-4"
                   label="Năm học"
                   onChange={handleSchoolYearSelectedChange}
                 >
@@ -476,7 +476,7 @@ export default function WeeklyTimeTable() {
                     labelId="select-school-class-lable"
                     id="select-school-class"
                     value={schoolClass}
-                    className="h-10 mr-2 max-[767px]:mb-4"
+                    className="h-10 mr-2 max-[639px]:mb-4"
                     label="Lớp"
                     onChange={handleChangeClass}
                   >
@@ -497,7 +497,7 @@ export default function WeeklyTimeTable() {
                   labelId="select-school-week-lable"
                   id="select-school-week"
                   value={schoolWeek}
-                  className="h-10 mr-2 max-[767px]:mb-4"
+                  className="h-10 mr-2 max-[639px]:mb-4"
                   label="Tuần"
                   onChange={handleSchoolWeeksSelectedChange}
                 >
@@ -508,23 +508,20 @@ export default function WeeklyTimeTable() {
                   ))}
                 </Select>
               </FormControl>
-              <ButtonComponent type="success" onClick={handleFilterTimetable}>
-                <FilterAltIcon className="mr-1" /> TÌM KIẾM
-              </ButtonComponent>
               <ButtonComponent
-                className="max-[767px]:inline-block max-[639px]:ml-0 md:hidden"
-                onClick={() => setOpenModelAdd(true)}
+                type="success"
+                className="max-[639px]:w-full "
+                onClick={handleFilterTimetable}
               >
-                <AddCircleOutlineIcon className="text-3xl mr-1" />
-                TẠO
+                <FilterAltIcon className="mr-1" /> TÌM KIẾM
               </ButtonComponent>
             </div>
 
-            <div className="flex items-center">
+            <div className="">
               {userRole.includes(PRINCIPAL_ROLE) || userRole.includes(HEADTEACHER_ROLE) ? (
-                <>
+                <div className="flex items-center mt-3 md:mt-0 flex-1">
                   <ButtonComponent
-                    className="max-[767px]:hidden md:block"
+                    className=""
                     onClick={() => {
                       setIsUpdateAction(true);
                     }}
@@ -532,15 +529,11 @@ export default function WeeklyTimeTable() {
                     <BorderColorIcon className="text-3xl mr-1" />
                     CẬP NHẬT
                   </ButtonComponent>
-                  <ButtonComponent
-                    type="success"
-                    className="max-[767px]:hidden md:block"
-                    onClick={handleOpenCreateModal}
-                  >
+                  <ButtonComponent type="success" className="" onClick={handleOpenCreateModal}>
                     <AddCircleOutlineIcon className="text-3xl mr-1" />
                     TẠO
                   </ButtonComponent>
-                </>
+                </div>
               ) : (
                 ""
               )}
@@ -774,30 +767,30 @@ export default function WeeklyTimeTable() {
           <div className="text-center mt-10">
             <div className="flex justify-center items-center text-3xl mx-auto w-full">
               <TodayIcon />
-              <h4 className="text-xl font-bold uppercase ml-3  max-[767px]:hidden">
+              <h4 className="text-xl font-bold uppercase ml-3  max-[639px]:hidden">
                 {userRole.includes(HOMEROOM_ROLE) ||
                 userRole.includes(PRINCIPAL_ROLE) ||
                 userRole.includes(HEADTEACHER_ROLE)
                   ? `THỜI KHÓA BIỂU LỚP ${schoolClass}`
                   : `THỜI KHÓA BIỂU (${currentUser.fullname.toString()})`}
               </h4>
-              <h4 className="text-xl font-bold uppercase ml-3 hidden  max-[767px]:block">
+              <h4 className="text-xl font-bold uppercase ml-3 hidden  max-[639px]:block">
                 THỜI KHÓA BIỂU
               </h4>
             </div>
           </div>
           <div className="text-center mt-10"></div>
-          <div className="flex justify-between mt-2 flex-wrap max-[767px]:mt-4">
+          <div className="flex justify-between mt-2 flex-wrap max-[639px]:mt-4">
             <div className="flex flex-wrap">
-              <div className="text-sm mr-4 max-[767px]:mb-4">
-                <span className="mr-2 font-bold max-[767px]:mb-4">
+              <div className="text-sm mr-4 max-[639px]:mb-4">
+                <span className="mr-2 font-bold max-[639px]:mb-4">
                   {userRole.includes(STUDENT_ROLE) ? "Học sinh: " : "Giáo viên: "}
                 </span>
                 <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
                   {currentUser ? currentUser.fullname.toString() : ""}
                 </span>
               </div>
-              <div className="text-sm max-[767px]:mb-4">
+              <div className="text-sm max-[639px]:mb-4">
                 <span className="mr-2 font-bold">Tiết học:</span>
                 <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
                   {numberOfSlotInWeek}
@@ -1034,7 +1027,7 @@ export default function WeeklyTimeTable() {
               isOpen={openModalDetail}
               onClose={() => setOpenModalDetail(false)}
             >
-              <div className="max-w-md max-[767px]:w-full">
+              <div className="max-w-md max-[639px]:w-full">
                 <TextValueComponent
                   label="Tên môn học"
                   value={currentSlot?.subject}

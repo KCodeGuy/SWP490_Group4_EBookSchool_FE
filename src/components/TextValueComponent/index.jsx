@@ -38,7 +38,7 @@ export default function TextValueComponent({
         {icon}
         <label className="mx-2 font-medium w-36 text-wrap">{label}: </label>
       </div>
-      <p className={`text-base ${variantValueStyle} ${customValue}`}>{value}</p>
+      <p className={`text-base break-words ${variantValueStyle} ${customValue}`}>{value}</p>
     </div>
   );
 }

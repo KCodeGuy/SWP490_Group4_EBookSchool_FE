@@ -304,7 +304,7 @@ export default function NotificationManagement() {
                   labelId="select-school-year-label"
                   id="select-school-year"
                   value={schoolYear}
-                  className="h-10 mr-2 max-[767px]:mb-4"
+                  className="h-10 mr-2 max-[639px]:mb-4"
                   label="Năm"
                   onChange={handleSchoolYearSelectedChange}
                 >

@@ -34,7 +34,7 @@ export default function NotificationDetails() {
             <div className="text-center mt-5 text-base">
               <div className="flex justify-between max-[639px]:flex-wrap">
                 <div className="flex items-baseline ">
-                  <h4 className="text-xl font-bold uppercase">[{data?.title}]</h4>
+                  <h4 className="text-xl font-bold uppercase max-[639px]:mb-2">[{data?.title}]</h4>
                   <div className="text-sm bg-success-color italic text-white rounded-md px-2 ml-4 h-5 leading-5 animate-new transition-all max-[639px]:hidden ">
                     Mới nhất
                   </div>
@@ -72,9 +72,9 @@ export default function NotificationDetails() {
                 className="w-full text-left mt-5"
                 dangerouslySetInnerHTML={{ __html: data?.content }}
               ></div>
-              <div className="flex mt-5 font-medium justify-end">
+              <div className="flex mt-5 font-medium justify-end ">
                 <span>{schoolSetting?.schoolName}</span>
-                <span className="mx-2">|</span>
+                <span className="mx-2 max-[639px]:mx-0.5">|</span>
                 <span>{data?.createBy}</span>
               </div>
             </div>

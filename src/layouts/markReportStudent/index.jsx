@@ -303,7 +303,7 @@ export default function MarkReportStudent() {
                   labelId="select-school-year-lable"
                   id="elect-school-year"
                   value={schoolYear}
-                  className="h-10 mr-2 max-[767px]:mb-4"
+                  className="h-10 mr-2 max-[639px]:mb-4"
                   label="Năm học"
                   onChange={handleSchoolYearSelectedChange}
                 >
@@ -321,7 +321,7 @@ export default function MarkReportStudent() {
                     labelId="select-school-subject-lable"
                     id="select-school-subject"
                     value={schoolSubject}
-                    className="h-10 mr-2 max-[767px]:mb-4"
+                    className="h-10 mr-2 max-[639px]:mb-4"
                     label="Môn học"
                     onChange={handleSchoolSubjectSelectedChange}
                   >
@@ -393,7 +393,7 @@ export default function MarkReportStudent() {
                                 labelId="select-school-semester-lable"
                                 id="select-school-semester"
                                 value={schoolSemester}
-                                className="h-10 mr-2 max-[767px]:mb-4"
+                                className="h-10 mr-2 max-[639px]:mb-4"
                                 label="Học kỳ"
                                 onChange={handleSemesterChange}
                               >
@@ -513,7 +513,7 @@ export default function MarkReportStudent() {
                           labelId="select-school-semester-lable"
                           id="select-school-semester"
                           value={schoolSemester}
-                          className="h-10 mr-2 max-[767px]:mb-4"
+                          className="h-10 mr-2 max-[639px]:mb-4"
                           label="Học kỳ"
                           onChange={handleSemesterChange}
                         >

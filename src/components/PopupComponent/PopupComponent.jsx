@@ -88,7 +88,11 @@ export default function PopupComponent({
           ))}
         </Tabs>
       )}
-      <DialogContent sx={{ m: 0, paddingX: 3, paddingY: 3, minWidth: 380 }} dividers>
+      <DialogContent
+        sx={{ m: 0, paddingX: 3, paddingY: 3, width: "100%" }}
+        md={{ m: 0, paddingX: 3, paddingY: 3, minWidth: 380 }}
+        dividers
+      >
         {tabs ? children[selectedTab] : children}
       </DialogContent>
     </BootstrapDialog>

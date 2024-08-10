@@ -24,8 +24,10 @@ import { updateStudent } from "services/StudentService";
 import { updateTeacher } from "services/TeacherService";
 import { CircularProgress } from "@mui/material";
 import { logoutUser } from "services/AuthService";
+import { useToasts } from "react-toast-notifications";
 
 function Cover() {
+  const { addToast } = useToasts();
   const navigate = useNavigate();
   const {
     control,
@@ -88,15 +90,16 @@ function Cover() {
       onSuccess: (response) => {
         queryClient.invalidateQueries("studentState");
         if (response && response.status == 200)
-          // addToast("Cập nhật mật khẩu thành công!", {
-          //   onClose: () => {},
-          // });
-          logoutUser();
+          addToast("Cập nhật mật khẩu thành công!", {
+            appearance: "success",
+          });
+        logoutUser();
         navigate("/authentication/sign-in");
       },
       onError: (error) => {
-        console.error("Error updating student:", error);
-        addToast("Cập nhật mật khẩu thất bại!");
+        addToast("Cập nhật mật khẩu thất bại!", {
+          appearance: "error",
+        });
       },
     }
   );
@@ -107,15 +110,16 @@ function Cover() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("teacherState");
-        // addToast("Cập nhật mật khẩu thành công!", {
-        //   onClose: () => {},
-        // });
+        addToast("Cập nhật mật khẩu thành công!", {
+          appearance: "success",
+        });
         logoutUser();
         navigate("/authentication/sign-in");
       },
       onError: (error) => {
-        console.error("Error updating student:", error);
-        addToast("Cập nhật mật khẩu thất bại!");
+        addToast("Cập nhật mật khẩu thất bại!", {
+          appearance: "error",
+        });
       },
     }
   );
@@ -177,7 +181,9 @@ function Cover() {
         }
       }
     } else {
-      addToast("Mật khẩu nhập lại không khớp!");
+      addToast("Mật khẩu nhập lại không khớp!", {
+        appearance: "error",
+      });
     }
   };
 

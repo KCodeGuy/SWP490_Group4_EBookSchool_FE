@@ -324,7 +324,9 @@ export default function MarkManagement() {
       <DashboardNavbar />
       <Card className="max-h-max mb-5 min-h-full">
         <MDBox p={5}>
-          {userRole.includes(PRINCIPAL_ROLE) || userRole.includes(HEADTEACHER_ROLE) ? (
+          {userRole.includes(PRINCIPAL_ROLE) ||
+          userRole.includes(HEADTEACHER_ROLE) ||
+          userRole.includes(HOMEROOM_ROLE) ? (
             <Tabs
               value={value}
               onChange={handleChange}
@@ -421,7 +423,8 @@ export default function MarkManagement() {
               </ButtonComponent>
             </div>
             <div>
-              {userRole.includes(SUBJECT_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
+              {(userRole.includes(SUBJECT_ROLE) && currentUser?.username != "BinhDV") ||
+              userRole.includes(PRINCIPAL_ROLE) ? (
                 <div className="flex items-center mt-3 md:mt-0 flex-1">
                   <ButtonComponent
                     className=""

@@ -15,8 +15,10 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getAttendanceBySlot, updateAttendance } from "../../services/AttendanceService";
 import { useParams } from "react-router-dom";
 import GradingIcon from "@mui/icons-material/Grading";
+import { useToasts } from "react-toast-notifications";
 
 export default function TakeAttendance() {
+  const { addToast } = useToasts();
   const { attendanceID } = useParams();
   const [isCheckedAll, setIsCheckedAll] = useState(false);
   const [currentData, setCurrentData] = useState([]);

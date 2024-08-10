@@ -60,12 +60,15 @@ const renderRankingStylesByRaking = (raking) => {
   let defaultStyles = "italic font-medium";
   if (raking.toString() == "Yếu") {
     defaultStyles = `${defaultStyles} error-color`;
-  } else if (raking.toString() == "Trung bình") {
+  } else if (raking.toString() == "Trung Bình") {
     defaultStyles = `${defaultStyles} warning-color`;
   } else if (raking.toString() == "Khá") {
     defaultStyles = `${defaultStyles} primary-color`;
   } else if (raking.toString() == "Giỏi") {
     defaultStyles = `${defaultStyles} success-color`;
+  }
+  if (raking.toString() == "Kém") {
+    defaultStyles = `${defaultStyles} error-color`;
   } else {
     defaultStyles = `${defaultStyles} text-color`;
   }

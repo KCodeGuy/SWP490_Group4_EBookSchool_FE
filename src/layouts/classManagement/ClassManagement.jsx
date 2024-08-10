@@ -249,7 +249,7 @@ export default function ClassManagement() {
   const updateClassMutation = useMutation((classData) => updateClass(accessToken, classData), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("classState");
-      if (response && response == "Chỉnh sửa lớp thành công") {
+      if (response && response.status == 200) {
         refetch().then((result) => {
           if (result.data) {
             setCurrentData(result.data);

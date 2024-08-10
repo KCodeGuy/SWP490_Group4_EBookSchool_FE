@@ -442,7 +442,7 @@ export default function ClassManagement() {
                   ))}
                 </Select>
               </FormControl>
-              <div className="max-[639px]:w-full mt-3 sm:mt-0">
+              <div className="max-[639px]:w-full mt-3 ml-2 sm:mt-0">
                 <ButtonComponent
                   type="success"
                   className="max-[639px]:w-full"

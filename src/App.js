@@ -68,6 +68,7 @@ import { SUBJECT_ROLE } from "services/APIConfig";
 import { HOMEROOM_ROLE } from "services/APIConfig";
 import { STUDENT_ROLE } from "services/APIConfig";
 import { HEADTEACHER_ROLE } from "services/APIConfig";
+import { ToastProvider } from "react-toast-notifications";
 const queryClient = new QueryClient();
 
 export default function App() {
@@ -187,37 +188,39 @@ export default function App() {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={darkMode ? themeDark : theme}>
-        <CssBaseline />
-        {layout === "dashboard" && (
-          <>
-            <Sidenav
-              color={sidenavColor}
-              brand={whiteSidenav ? brandWhite : brandWhite}
-              brandName={schoolSetting?.schoolName || "ORB"}
-              routes={currentRoutes}
-              onMouseEnter={handleOnMouseEnter}
-              onMouseLeave={handleOnMouseLeave}
-            />
-            <Configurator />
-            {configsButton}
-          </>
-        )}
-        {layout === "vr" && <Configurator />}
-        <Routes>
-          {getRoutes(currentRoutes)}
-          {userRole ? (
-            pathname === "/" ? (
-              <Route path="*" element={<Navigate to="/dashboard" />} />
-            ) : (
-              <Route path="*" element={<Navigate to={pathname} />} />
-            )
-          ) : (
-            <Route path="*" element={<Navigate to="/authentication/sign-in" />} />
+    <ToastProvider autoDismiss autoDismissTimeout={3000} placement="top-right">
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider theme={darkMode ? themeDark : theme}>
+          <CssBaseline />
+          {layout === "dashboard" && (
+            <>
+              <Sidenav
+                color={sidenavColor}
+                brand={whiteSidenav ? brandWhite : brandWhite}
+                brandName={schoolSetting?.schoolName || "ORB"}
+                routes={currentRoutes}
+                onMouseEnter={handleOnMouseEnter}
+                onMouseLeave={handleOnMouseLeave}
+              />
+              <Configurator />
+              {configsButton}
+            </>
           )}
-        </Routes>
-      </ThemeProvider>
-    </QueryClientProvider>
+          {layout === "vr" && <Configurator />}
+          <Routes>
+            {getRoutes(currentRoutes)}
+            {userRole ? (
+              pathname === "/" ? (
+                <Route path="*" element={<Navigate to="/dashboard" />} />
+              ) : (
+                <Route path="*" element={<Navigate to={pathname} />} />
+              )
+            ) : (
+              <Route path="*" element={<Navigate to="/authentication/sign-in" />} />
+            )}
+          </Routes>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </ToastProvider>
   );
 }

@@ -122,7 +122,7 @@ const deleteTeacher = async (accessToken, username) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return res.data;
+    return res;
   } catch (error) {
     return error;
   }

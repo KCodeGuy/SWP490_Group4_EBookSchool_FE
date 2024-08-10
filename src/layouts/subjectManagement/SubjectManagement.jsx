@@ -34,6 +34,7 @@ import {
   getSubjectByID,
 } from "../../services/SubjectService";
 import { isXlsxFile } from "utils/CommonFunctions";
+import { useToasts } from "react-toast-notifications";
 
 const grades = [10, 11, 12, "Môn chung"];
 const semesters = [
@@ -49,6 +50,7 @@ const nameScore = [
 
 // Subject Management (UolLT)
 export default function SubjectManagement() {
+  const { addToast } = useToasts();
   const accessToken = localStorage.getItem("authToken");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
@@ -117,13 +119,19 @@ export default function SubjectManagement() {
         setLessonPlans([]);
         reset();
         setModalOpen(false);
-        toast.success("Tạo môn học thành công!");
+        addToast("Tạo môn học thành công!", {
+          appearance: "success",
+        });
       } else {
-        toast.error(`Tạo môn thất bại! ${response?.response?.data}!`);
+        addToast(`Tạo môn thất bại! ${response?.response?.data}!`, {
+          appearance: "error",
+        });
       }
     },
     onError: (error) => {
-      toast.error(`Tạo môn thất bại. ${error.message}!`);
+      addToast(`Tạo môn thất bại. ${error.message}!`, {
+        appearance: "error",
+      });
     },
   });
 
@@ -138,13 +146,19 @@ export default function SubjectManagement() {
         });
         reset();
         setModalOpen(false);
-        toast.success("Tạo môn thành công!");
+        addToast("Tạo môn thành công!", {
+          appearance: "success",
+        });
       } else {
-        toast.error(`Tạo môn thất bại! Dữ liệu file không đúng định dạng!`);
+        addToast(`Tạo môn thất bại! Dữ liệu file không đúng định dạng!`, {
+          appearance: "error",
+        });
       }
     },
     onError: (error) => {
-      toast.error(`Tạo môn thất bại. Dữ liệu file không đúng định dạng!`);
+      addToast(`Tạo môn thất bại. Dữ liệu file không đúng định dạng!`, {
+        appearance: "error",
+      });
     },
   });
   const handleAddSubjectByExcel = (data) => {
@@ -152,7 +166,9 @@ export default function SubjectManagement() {
       if (isXlsxFile(data?.subjectFile)) {
         addSubjectByExcelMutation.mutate(data?.subjectFile);
       } else {
-        toast.error(`Tạo môn học thất bại! File không đúng định dạng ".xlsx"!`);
+        addToast(`Tạo môn học thất bại! File không đúng định dạng ".xlsx"!`, {
+          appearance: "error",
+        });
       }
     }
   };
@@ -183,7 +199,9 @@ export default function SubjectManagement() {
       markFactors.forEach((item) => {
         if (item.nameScore === nameScoreFormatted && item.semester === semesterFormatted) {
           isDuplicateFactor = true;
-          toast.error(`Điểm thành phần "Kiểm tra ${data.nameScore}" đã tồn tại!`);
+          addToast(`Điểm thành phần "Kiểm tra ${data.nameScore}" đã tồn tại!`, {
+            appearance: "error",
+          });
         }
       });
     }
@@ -197,7 +215,9 @@ export default function SubjectManagement() {
         scoreFactor: data.scoreFactor,
       };
       setMarkFactors((prevMarkFactors) => [...prevMarkFactors, newMarkFactor]);
-      toast.success("Thêm điểm thành phần thành công!");
+      addToast("Thêm điểm thành phần thành công!", {
+        appearance: "success",
+      });
     }
     resetEditAction();
     reset();
@@ -209,10 +229,14 @@ export default function SubjectManagement() {
       lessonPlans.forEach((item) => {
         if (item.slot === data.slot) {
           isDuplicateLessonPlan = true;
-          toast.error(`Tiết học thứ "${data.slot}" đã tồn tại!`);
+          addToast(`Tiết học thứ "${data.slot}" đã tồn tại!`, {
+            appearance: "error",
+          });
         } else if (item.slot === data.slotEdit) {
           isDuplicateLessonPlan = true;
-          toast.error(`Tiết học thứ "${data.slotEdit}" đã tồn tại!`);
+          addToast(`Tiết học thứ "${data.slotEdit}" đã tồn tại!`, {
+            appearance: "error",
+          });
         }
       });
     }
@@ -224,7 +248,9 @@ export default function SubjectManagement() {
         title: data.titleOfSubject ? data.titleOfSubject : data.titleOfSubjectEdit,
       };
       setLessonPlans((pre) => [...pre, newLessonPlane]);
-      toast.success("Thêm giáo án thành công!");
+      addToast("Thêm giáo án thành công!", {
+        appearance: "success",
+      });
     }
     resetEditAction();
     reset();
@@ -236,9 +262,13 @@ export default function SubjectManagement() {
       formattedGrade = grades[0].toString();
     }
     if (markFactorsTransform.length <= 0) {
-      toast.error("Điểm thành phần không được bỏ trống!");
+      addToast("Điểm thành phần không được bỏ trống!", {
+        appearance: "error",
+      });
     } else if (lessonPlans.length <= 0) {
-      toast.error("Giáo án không được bỏ trống!");
+      addToast("Giáo án không được bỏ trống!", {
+        appearance: "error",
+      });
     } else {
       const classData = {
         name: data.nameOfSubject,
@@ -283,15 +313,21 @@ export default function SubjectManagement() {
               setCurrentData(result.data);
             }
           });
-          toast.success("Cập nhật môn học thành công!");
+          addToast("Cập nhật môn học thành công!", {
+            appearance: "success",
+          });
           resetEditAction();
           setModalEditOpen(false);
         } else {
-          toast.error(`Cập nhật môn học thất bại! ${response?.response?.data}!`);
+          addToast(`Cập nhật môn học thất bại! ${response?.response?.data}!`, {
+            appearance: "error",
+          });
         }
       },
       onError: (error) => {
-        toast.error(`Cập nhật môn học thất bại! ${error.message}!`);
+        addToast(`Cập nhật môn học thất bại! ${error.message}!`, {
+          appearance: "error",
+        });
       },
     }
   );
@@ -321,14 +357,20 @@ export default function SubjectManagement() {
             setCurrentData(result.data);
           }
         });
-        toast.success("Xóa môn học thành công!");
+        addToast("Xóa môn học thành công!", {
+          appearance: "success",
+        });
         setModalDeleteOpen(false);
       } else {
-        toast.error("Xóa môn học thất bại!");
+        addToast("Xóa môn học thất bại!", {
+          appearance: "error",
+        });
       }
     },
     onError: (error) => {
-      toast.error(`Xóa môn học thất bại! ${error.message}!`);
+      addToast(`Xóa môn học thất bại! ${error.message}!`, {
+        appearance: "error",
+      });
     },
   });
 
@@ -368,14 +410,18 @@ export default function SubjectManagement() {
   const handleDeleteMarkFactor = (data) => {
     if (data) {
       setMarkFactors(markFactors.filter((item) => item.id != data[0]));
-      toast.success("Xóa điểm thành phần thành công!");
+      addToast("Xóa điểm thành phần thành công!", {
+        appearance: "success",
+      });
     }
   };
 
   const handleDeleteLessonPlan = (data) => {
     if (data) {
       setLessonPlans(lessonPlans.filter((item) => item.id != data[0]));
-      toast.success("Xóa giáo án thành công!");
+      addToast("Xóa giáo án thành công!", {
+        appearance: "success",
+      });
     }
   };
 

@@ -108,7 +108,7 @@ export const deleteSlotOfTimeTable = async (accessToken, slotID) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return res.data;
+    return res;
   } catch (error) {
     return error;
   }

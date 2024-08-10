@@ -53,6 +53,7 @@ import { useNavigate } from "react-router-dom";
 import { renderRankingStylesByRaking } from "utils/RenderStyle";
 import TableMarkOfSubjectComponentDynamic from "components/TableMarkOfSubjectComponentDynamic/TableMarkOfSubjectComponent";
 import { HEADTEACHER_ROLE } from "services/APIConfig";
+import { useToasts } from "react-toast-notifications";
 
 // Mark management (HieuTTN)
 const semesters = [
@@ -79,6 +80,7 @@ const nameScore = [
 let tabs = ["ĐIỂM THEO MÔN", "ĐIỂM THEO LỚP"];
 
 export default function MarkManagement() {
+  const { addToast } = useToasts();
   const [currentOfStudentsMarkBySubject, setCurrentOfStudentsMarkBySubject] = useState([]);
   const [currentMarkOfClass, setCurrentMarkOfClass] = useState([]);
   const [currentAction, setCurrentAction] = useState("adding");
@@ -275,7 +277,9 @@ export default function MarkManagement() {
     onSuccess: (response) => {
       queryClient.invalidateQueries("timeTableState");
       if (response && response?.status === 200) {
-        toast.success("Nhập điểm thành công!");
+        addToast("Nhập điểm thành công!", {
+          appearance: "success",
+        });
         reset();
         setModalAdd(false);
         refetch().then((result) => {
@@ -284,11 +288,15 @@ export default function MarkManagement() {
           }
         });
       } else {
-        toast.error(`Nhập điểm thất bại! ${response?.response?.data}!`);
+        addToast(`Nhập điểm thất bại! ${response?.response?.data}!`, {
+          appearance: "error",
+        });
       }
     },
     onError: (error) => {
-      toast.error(`Nhập điểm thất bại! ${error.message}!`);
+      addToast(`Nhập điểm thất bại! ${error.message}!`, {
+        appearance: "error",
+      });
     },
   });
   const handleUploadTemplate = (data) => {
@@ -296,7 +304,9 @@ export default function MarkManagement() {
       if (isXlsxFile(data?.markFile)) {
         updateMarkMutation.mutate(data.markFile);
       } else {
-        toast.error(`Nhập điểm thất bại! File không đúng định dạng ".xlsx"!`);
+        addToast(`Nhập điểm thất bại! File không đúng định dạng ".xlsx"!`, {
+          appearance: "error",
+        });
       }
     }
   };

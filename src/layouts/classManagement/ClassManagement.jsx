@@ -40,8 +40,10 @@ import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
 import { getAllStudents } from "services/StudentService";
 import { isXlsxFile } from "utils/CommonFunctions";
 import { PRINCIPAL_ROLE } from "services/APIConfig";
+import { useToasts } from "react-toast-notifications";
 
 export default function ClassManagement() {
+  const { addToast } = useToasts();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDetailsOpen, setModalDetailsOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
@@ -132,16 +134,22 @@ export default function ClassManagement() {
             setCurrentData(result.data);
           }
         });
-        toast.success("Tạo lớp học thành công!");
+        addToast(`Tạo lớp học thành công!`, {
+          appearance: "success",
+        });
         reset();
         setAddedStudents([]);
         setModalOpen(false);
       } else {
-        toast.error(`Tạo lớp thất bại! ${response?.response?.data}!`);
+        addToast(`Tạo lớp thất bại! ${response?.response?.data}!`, {
+          appearance: "error",
+        });
       }
     },
     onError: (error) => {
-      toast.error(`Tạo lớp thất bại. ${error.message}!`);
+      addToast(`Tạo lớp thất bại! ${error?.message}!`, {
+        appearance: "error",
+      });
     },
   });
 
@@ -154,14 +162,18 @@ export default function ClassManagement() {
       addedStudents.forEach((item) => {
         if (item.id === studentID) {
           isDuplicate = true;
-          toast.error(`Học sinh "${studentFullName}" đã tồn tại!`);
+          addToast(`Học sinh "${studentFullName}" đã tồn tại!`, {
+            appearance: "error",
+          });
         }
       });
     }
     if (!isDuplicate) {
       const newStudent = { id: studentID, fullname: studentFullName };
       setAddedStudents((prevStudents) => [...prevStudents, newStudent]);
-      toast.success(`Học sinh "${studentFullName}" đã được thêm thành công!`);
+      addToast(`Học sinh "${studentFullName}" đã được thêm thành công!`, {
+        appearance: "success",
+      });
     }
   };
 
@@ -188,7 +200,9 @@ export default function ClassManagement() {
         // Xử lý lỗi nếu cần
       }
     } else {
-      toast.error("Bạn chưa thêm học sinh vào danh sách!");
+      addToast(`Bạn chưa thêm học sinh vào danh sách!`, {
+        appearance: "error",
+      });
     }
   };
 
@@ -243,13 +257,19 @@ export default function ClassManagement() {
         });
         resetEditAction();
         setModalEditOpen(false);
-        toast.success("Cập nhật lớp học thành công!");
+        addToast(`Cập nhật lớp học thành công!`, {
+          appearance: "success",
+        });
       } else {
-        toast.error(`Cập nhật lớp thất bại! ${response?.response?.data}!`);
+        addToast(`Cập nhật lớp thất bại! ${response?.response?.data}!`, {
+          appearance: "error",
+        });
       }
     },
     onError: (error) => {
-      toast.error(`Cập nhật lớp thất bại! ${error.message}!`);
+      addToast(`Cập nhật lớp thất bại! ${error.message}!`, {
+        appearance: "error",
+      });
     },
   });
 
@@ -266,7 +286,9 @@ export default function ClassManagement() {
       };
       updateClassMutation.mutate(classData);
     } else {
-      toast.error("Bạn chưa thêm học sinh vào danh sách!");
+      addToast("Bạn chưa thêm học sinh vào danh sách!", {
+        appearance: "error",
+      });
     }
   };
 
@@ -277,20 +299,26 @@ export default function ClassManagement() {
   const deleteClassMutation = useMutation((classId) => deleteClass(accessToken, classId), {
     onSuccess: (response) => {
       queryClient.invalidateQueries("classState");
-      if (response) {
+      if (response && response.status == 200) {
         refetch().then((result) => {
           if (result.data) {
             setCurrentData(result.data);
           }
         });
-        toast.success("Xóa lớp học thành công!");
+        addToast("Xóa lớp học thành công!", {
+          appearance: "success",
+        });
       } else {
-        toast.error("Xóa lớp học thất bại!");
+        addToast("Xóa lớp học thất bại!", {
+          appearance: "error",
+        });
       }
       setModalDeleteOpen(false);
     },
     onError: (error) => {
-      toast.error(`Xóa lớp thất bại. ${error.message}!`);
+      addToast(`Xóa lớp thất bại. ${error.message}!`, {
+        appearance: "error",
+      });
     },
   });
 
@@ -354,15 +382,21 @@ export default function ClassManagement() {
             setCurrentData(data);
           }
         });
-        toast.success("Tạo lớp học thành công!");
+        addToast("Tạo lớp học thành công!", {
+          appearance: "success",
+        });
         reset();
         setModalOpen(false);
       } else {
-        toast.error(`Tạo lớp thất bại! ${response?.response?.data}!`);
+        addToast(`Tạo lớp thất bại! ${response?.response?.data}!`, {
+          appearance: "error",
+        });
       }
     },
     onError: (error) => {
-      toast.error(`Tạo lớp thất bại. ${error.message}!`);
+      addToast(`Tạo lớp thất bại. ${error.message}!`, {
+        appearance: "error",
+      });
     },
   });
   const handleAddSubjectByExcel = (data) => {
@@ -370,7 +404,9 @@ export default function ClassManagement() {
       if (isXlsxFile(data?.classFile)) {
         addClassByExcelMutation.mutate(data.classFile);
       } else {
-        toast.error(`Tạo lớp thất bại! File không đúng định dạng ".xlsx"!`);
+        addToast(`Tạo lớp thất bại! File không đúng định dạng ".xlsx"!`, {
+          appearance: "error",
+        });
       }
     }
   };
@@ -508,7 +544,9 @@ export default function ClassManagement() {
                                   setAddedStudents(
                                     addedStudents.filter((student) => student.id != item.id)
                                   );
-                                  toast.success(`Xóa học sinh "${item.fullname}" thành công!`);
+                                  addToast(`Xóa học sinh "${item.fullname}" thành công!`, {
+                                    appearance: "success",
+                                  });
                                 }}
                               >
                                 <CancelIcon className="mb-0.5 ml-1" />
@@ -756,7 +794,9 @@ export default function ClassManagement() {
                             setAddedStudents(
                               addedStudents.filter((student) => student.id != item.id)
                             );
-                            toast.success(`Xóa học sinh "${item.fullname}" thành công!`);
+                            addToast(`Xóa học sinh "${item.fullname}" thành công!`, {
+                              appearance: "success",
+                            });
                           }}
                         >
                           <CancelIcon className="mb-0.5 ml-1" />

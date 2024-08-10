@@ -63,9 +63,13 @@ export default function TakeAttendance() {
               setCurrentData(result?.data);
             }
           });
-          toast.success("Điểm danh thành công!");
+          addToast("Điểm danh thành công!", {
+            appearance: "success",
+          });
         } else {
-          toast.error(`Điểm danh thất bại! ${response?.response?.data}`);
+          addToast(`Điểm danh thất bại! ${response?.response?.data}`, {
+            appearance: "error",
+          });
         }
       },
     }
@@ -105,17 +109,22 @@ export default function TakeAttendance() {
 
     if (today > maxUpdateDate) {
       // If today is past the maxUpdateDate, show error message
-      toast.error(
+      addToast(
         `Điểm danh thất bại. Thời gian cập nhật điểm danh từ ngày "${
           currentData[0]?.date
-        }" đến ngày "${maxUpdateDate.toLocaleDateString("en-GB")}"!`
+        }" đến ngày "${maxUpdateDate.toLocaleDateString("en-GB")}"!`,
+        {
+          appearance: "error",
+        }
       );
     } else if (dateEdit <= today) {
       if (result) {
         updateAttendanceMutation.mutate(result);
       }
     } else {
-      toast.error(`Điểm danh thất bại. Tiết học bắt đầu vào ngày "${currentData[0]?.date}"!`);
+      addToast(`Điểm danh thất bại. Tiết học bắt đầu vào ngày "${currentData[0]?.date}"!`, {
+        appearance: "error",
+      });
     }
   };
 

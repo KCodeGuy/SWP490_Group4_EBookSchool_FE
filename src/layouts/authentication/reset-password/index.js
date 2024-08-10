@@ -88,16 +88,15 @@ function Cover() {
       onSuccess: (response) => {
         queryClient.invalidateQueries("studentState");
         if (response && response.status == 200)
-          toast.success("Cập nhật mật khẩu thành công!", {
-            onClose: () => {
-              logoutUser();
-              navigate("/authentication/sign-in");
-            },
-          });
+          // addToast("Cập nhật mật khẩu thành công!", {
+          //   onClose: () => {},
+          // });
+          logoutUser();
+        navigate("/authentication/sign-in");
       },
       onError: (error) => {
         console.error("Error updating student:", error);
-        toast.error("Cập nhật mật khẩu thất bại!");
+        addToast("Cập nhật mật khẩu thất bại!");
       },
     }
   );
@@ -108,16 +107,15 @@ function Cover() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("teacherState");
-        toast.success("Cập nhật mật khẩu thành công!", {
-          onClose: () => {
-            logoutUser();
-            navigate("/authentication/sign-in");
-          },
-        });
+        // addToast("Cập nhật mật khẩu thành công!", {
+        //   onClose: () => {},
+        // });
+        logoutUser();
+        navigate("/authentication/sign-in");
       },
       onError: (error) => {
         console.error("Error updating student:", error);
-        toast.error("Cập nhật mật khẩu thất bại!");
+        addToast("Cập nhật mật khẩu thất bại!");
       },
     }
   );
@@ -179,13 +177,13 @@ function Cover() {
         }
       }
     } else {
-      toast.error("Mật khẩu nhập lại không khớp!");
+      addToast("Mật khẩu nhập lại không khớp!");
     }
   };
 
   return (
     <CoverLayout image={bgImage}>
-      <ToastContainer autoClose={3000} />
+      {/* <ToastContainer autoClose={3000} /> */}
       <Card>
         <MDBox
           variant="gradient"

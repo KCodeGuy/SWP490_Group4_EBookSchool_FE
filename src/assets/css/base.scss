@@ -204,3 +204,10 @@ $dark-hover-color: #505e77;
 .mt-3-ipt {
   margin-top: 12px !important;
 }
+.custom-toast {
+  z-index: 1200 !important;
+}
+
+.css-10xeiu1-MuiPaper-root-MuiAppBar-root {
+  z-index: 10 !important;
+}

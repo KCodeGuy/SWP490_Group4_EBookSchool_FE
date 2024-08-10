@@ -33,6 +33,7 @@ import NotifyCheckInfoForm from "../../components/NotifyCheckInfoForm";
 import { handleDownloadStudentExcel } from "../../services/StudentService";
 import { addStudentByExcel } from "../../services/StudentService";
 import { isXlsxFile } from "utils/CommonFunctions";
+import { useToasts } from "react-toast-notifications";
 
 const genderOptions = [
   { label: "Nam", value: "Nam" },
@@ -49,6 +50,7 @@ const sortOptions = [
 ];
 
 export default function StudentAccountManagement() {
+  const { addToast } = useToasts();
   const accessToken = localStorage.getItem("authToken");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
@@ -99,7 +101,9 @@ export default function StudentAccountManagement() {
       onSuccess: (response) => {
         queryClient.invalidateQueries("studentsState");
         if (response && response?.status === 200) {
-          toast.success("Tạo học sinh thành công!");
+          addToast("Tạo học sinh thành công!", {
+            appearance: "success",
+          });
           refetch().then((result) => {
             if (result.data) {
               setAccounts(data);
@@ -108,11 +112,15 @@ export default function StudentAccountManagement() {
           reset();
           setModalOpen(false);
         } else {
-          toast.error(`Tạo học sinh thất bại. Dữ liệu file không đúng định dạng!`);
+          addToast(`Tạo học sinh thất bại. Dữ liệu file không đúng định dạng!`, {
+            appearance: "error",
+          });
         }
       },
       onError: (error) => {
-        toast.error(`Tạo học sinh thất bại. ${error.message}!`);
+        addToast(`Tạo học sinh thất bại. ${error.message}!`, {
+          appearance: "error",
+        });
       },
     }
   );
@@ -122,7 +130,9 @@ export default function StudentAccountManagement() {
       if (isXlsxFile(data?.studentFileExcel)) {
         addStudentMutationByExcel.mutate(data?.studentFileExcel);
       } else {
-        toast.error(`Tạo tài khoản thất bại! File không đúng định dạng ".xlsx"!`);
+        addToast(`Tạo tài khoản thất bại! File không đúng định dạng ".xlsx"!`, {
+          appearance: "error",
+        });
       }
     }
   };
@@ -131,7 +141,9 @@ export default function StudentAccountManagement() {
     onSuccess: (response) => {
       queryClient.invalidateQueries("studentsState");
       if (response && response?.status === 200) {
-        toast.success("Tạo học sinh thành công!");
+        addToast("Tạo học sinh thành công!", {
+          appearance: "success",
+        });
         refetch().then((result) => {
           if (result.data) {
             setAccounts(data);
@@ -140,11 +152,15 @@ export default function StudentAccountManagement() {
         reset();
         setModalOpen(false);
       } else {
-        toast.error(`Tạo học sinh thất bại!. ${response?.response?.data}!`);
+        addToast(`Tạo học sinh thất bại!. ${response?.response?.data}!`, {
+          appearance: "error",
+        });
       }
     },
     onError: (error) => {
-      toast.error(`Tạo học sinh thất bại. ${error.message}!`);
+      addToast(`Tạo học sinh thất bại. ${error.message}!`, {
+        appearance: "error",
+      });
     },
   });
 
@@ -200,9 +216,13 @@ export default function StudentAccountManagement() {
       onSuccess: (response) => {
         queryClient.invalidateQueries("studentsState");
         if (response) {
-          toast.success("Cập nhật học sinh thành công!");
+          addToast("Cập nhật học sinh thành công!", {
+            appearance: "success",
+          });
         } else {
-          toast.error(`Cập nhật học sinh thất bại. ${response.data}!`);
+          addToast(`Cập nhật học sinh thất bại. ${response.data}!`, {
+            appearance: "error",
+          });
         }
         refetch().then((result) => {
           if (result.data) {
@@ -213,8 +233,9 @@ export default function StudentAccountManagement() {
         setModalEditOpen(false);
       },
       onError: (error) => {
-        console.error("Error updating student:", error);
-        toast.error("Cập nhật học sinh thất bại!");
+        addToast("Cập nhật học sinh thất bại!", {
+          appearance: "error",
+        });
       },
     }
   );
@@ -227,9 +248,11 @@ export default function StudentAccountManagement() {
 
   const deleteStudentMutation = useMutation((studentID) => deleteStudent(accessToken, studentID), {
     onSuccess: (response) => {
-      if (response) {
+      if (response && response.status == 200) {
         queryClient.invalidateQueries(["studentsState", { accessToken }]); // Invalidate the getStudents query
-        toast.success("Xóa học sinh thành công!");
+        addToast("Xóa học sinh thành công!", {
+          appearance: "success",
+        });
         refetch().then((result) => {
           if (result.data) {
             setAccounts(data);
@@ -237,7 +260,9 @@ export default function StudentAccountManagement() {
         });
         setModalDeleteOpen(false);
       } else {
-        toast.error("Xóa học sinh thất bại!");
+        addToast("Xóa học sinh thất bại!", {
+          appearance: "error",
+        });
       }
     },
   });

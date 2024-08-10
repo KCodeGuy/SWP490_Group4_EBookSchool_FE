@@ -54,6 +54,7 @@ import { PRINCIPAL_ROLE } from "services/APIConfig";
 import { HEADTEACHER_ROLE } from "services/APIConfig";
 import { SUBJECT_ROLE } from "services/APIConfig";
 import { HOMEROOM_ROLE } from "services/APIConfig";
+import { useToasts } from "react-toast-notifications";
 
 const accessToken = localStorage.getItem("authToken");
 const genderOptions = [
@@ -66,6 +67,7 @@ function Header({ children, currentUser, permissions }) {
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [avatar, setAvatar] = useState(null);
   let userRole = localStorage.getItem("userRole");
+  const { addToast } = useToasts();
 
   const queryClient = useQueryClient();
 
@@ -103,18 +105,23 @@ function Header({ children, currentUser, permissions }) {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("teacherState");
-        if (response) {
-          localStorage.setItem("user", JSON.stringify(teacherData));
-          toast.success("Cập nhật tài khoản thành công!");
+        if (response && response.status == 200) {
+          // localStorage.setItem("user", JSON.stringify(teacherData));
+          addToast(`Cập nhật tài khoản thành công!`, {
+            appearance: "success",
+          });
         } else {
-          toast.error(`Cập nhật tài khoản thất bại! ${response}`);
+          addToast(`Cập nhật tài khoản thất bại!`, {
+            appearance: "error",
+          });
         }
         resetEditAction();
         setModalEditOpen(false);
       },
       onError: (error) => {
-        console.error("Error updating teacher:", error);
-        toast.error("Cập nhật tài khoản thất bại!");
+        addToast(`Cập nhật tài khoản thất bại!`, {
+          appearance: "error",
+        });
       },
     }
   );

@@ -82,11 +82,11 @@ function DashboardNavbar({ absolute, light, isMini }) {
       queryClient.invalidateQueries("logoutAPI");
       if (response && response.status == 200) {
       } else {
-        // toast.error(`Đăng xuất thất bại!`);
+        // addToast(`Đăng xuất thất bại!`);
       }
     },
     onError: (error) => {
-      // toast.error(`Đăng xuất thất bại!`);
+      // addToast(`Đăng xuất thất bại!`);
     },
   });
   const handleLogoutUser = () => {

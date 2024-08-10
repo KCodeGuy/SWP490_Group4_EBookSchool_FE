@@ -22,6 +22,7 @@ import LockClockIcon from "@mui/icons-material/LockClock";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
 import { nationOptions } from "mock/student";
+import { useToasts } from "react-toast-notifications";
 
 const accessToken = localStorage.getItem("authToken");
 const genderOptions = [
@@ -30,6 +31,7 @@ const genderOptions = [
 ];
 
 function Header({ children, currentUser, permissions }) {
+  const { addToast } = useToasts();
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
   const [tabValue, setTabValue] = useState(0);
   const [modalEditOpen, setModalEditOpen] = useState(false);
@@ -51,20 +53,25 @@ function Header({ children, currentUser, permissions }) {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("studentState");
-        if (response) {
+        if (response && response.status == 200) {
           // if (currentStudent) {
           //   localStorage.setItem("user", JSON.stringify(currentStudent));
           // }
-          toast.success("Cập nhật tài khoản thành công!");
+          addToast(`Cập nhật tài khoản thành công!`, {
+            appearance: "success",
+          });
         } else {
-          toast.error(`Cập nhật tài khoản thất bại! ${response.data}!`);
+          addToast(`Cập nhật tài khoản thất bại!`, {
+            appearance: "error",
+          });
         }
         resetEditAction();
         setModalEditOpen(false);
       },
       onError: (error) => {
-        console.error("Error updating student:", error);
-        toast.error("Cập nhật tài khoản thất bại!");
+        addToast(`Cập nhật tài khoản thất bại!`, {
+          appearance: "error",
+        });
       },
     }
   );

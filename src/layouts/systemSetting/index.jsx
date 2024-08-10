@@ -39,6 +39,7 @@ import { SCHOOL_SLIDER_1 } from "services/APIConfig";
 import { SCHOOL_SLIDER_2 } from "services/APIConfig";
 import { SCHOOL_SLIDER_3 } from "services/APIConfig";
 import MDAvatar from "components/MDAvatar";
+import { useToasts } from "react-toast-notifications";
 
 const schoolLevelOptions = [
   { label: "Trường THPT", value: "Trường trung học phổ thông" },
@@ -46,6 +47,7 @@ const schoolLevelOptions = [
   { label: "Trường THCS & THPT", value: "Trường trung học cơ sở và trung học phổ thông" },
 ];
 export default function SystemSetting() {
+  const { addToast } = useToasts();
   const accessToken = localStorage.getItem("authToken");
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -71,14 +73,20 @@ export default function SystemSetting() {
       onSuccess: (response) => {
         queryClient.invalidateQueries("settingState");
         if (response && response.status == 200) {
-          toast.success("Cập nhật hệ thống thành công!");
+          addToast(`Cập nhật hệ thống thành công!`, {
+            appearance: "success",
+          });
           setModalEditOpen(false);
         } else {
-          toast.error(`Cập nhật hệ thống thất bại. ${response?.response?.data}!`);
+          addToast(`Cập nhật hệ thống thất bại! ${response?.response?.data}!`, {
+            appearance: "error",
+          });
         }
       },
       onError: (error) => {
-        toast.error(`Cập nhật hệ thống thất bại! ${error.message}!`);
+        addToast(`Cập nhật hệ thống thất bại!`, {
+          appearance: "error",
+        });
       },
     }
   );
@@ -152,7 +160,9 @@ export default function SystemSetting() {
           window.location.reload();
         }, 3000);
       } catch (error) {
-        toast.error(`Tải ảnh lên thất bại! ${error.message}`);
+        addToast(`Tải ảnh lên thất bại!`, {
+          appearance: "error",
+        });
       }
     }
   };

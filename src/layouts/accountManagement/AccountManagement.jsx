@@ -34,6 +34,7 @@ import { addTeacherByExcel } from "services/TeacherService";
 import { isXlsxFile } from "utils/CommonFunctions";
 import { nationOptions } from "mock/student";
 import { PRINCIPAL_ROLE } from "services/APIConfig";
+import { useToasts } from "react-toast-notifications";
 
 const sortOptions = [
   { label: "Mã giáo viên(A-Z)", value: { index: 1, option: "ASC" } },
@@ -51,6 +52,7 @@ const genderOptions = [
 
 // Account management (UolLT)
 export default function AccountManagement() {
+  const { addToast } = useToasts();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
@@ -109,7 +111,9 @@ export default function AccountManagement() {
     onSuccess: (response) => {
       queryClient.invalidateQueries("teacherState");
       if (response && response?.status === 200) {
-        toast.success("Tạo giáo viên thành công!");
+        addToast("Tạo giáo viên thành công!", {
+          appearance: "success",
+        });
         refetch().then((result) => {
           if (result.data) {
             setAccounts(data);
@@ -118,11 +122,15 @@ export default function AccountManagement() {
         reset();
         setModalOpen(false);
       } else {
-        toast.error(`Tạo giáo viên thất bại! ${response?.response?.data}!`);
+        addToast(`Tạo giáo viên thất bại! ${response?.response?.data}!`, {
+          appearance: "error",
+        });
       }
     },
     onError: (error) => {
-      toast.error(`Tạo giáo viên thất bại! ${error.message}!`);
+      addToast(`Tạo giáo viên thất bại! ${error.message}!`, {
+        appearance: "error",
+      });
     },
   });
 
@@ -132,7 +140,9 @@ export default function AccountManagement() {
       onSuccess: (response) => {
         queryClient.invalidateQueries("teacherState");
         if (response && response?.status === 200) {
-          toast.success("Tạo giáo viên thành công!");
+          addToast("Tạo giáo viên thành công!", {
+            appearance: "success",
+          });
           refetch().then((result) => {
             if (result.data) {
               setAccounts(data);
@@ -141,11 +151,15 @@ export default function AccountManagement() {
           reset();
           setModalOpen(false);
         } else {
-          toast.error(`Tạo giáo viên thất bại! ${response?.response?.data}!`);
+          addToast(`Tạo giáo viên thất bại! ${response?.response?.data}!`, {
+            appearance: "error",
+          });
         }
       },
       onError: (error) => {
-        toast.error(`Tạo giáo viên thất bại! ${error.message}!`);
+        addToast(`Tạo giáo viên thất bại! ${error.message}!`, {
+          appearance: "error",
+        });
       },
     }
   );
@@ -155,7 +169,9 @@ export default function AccountManagement() {
       if (isXlsxFile(data?.teacherFile)) {
         addTeacherMutationByExcel.mutate(data?.teacherFile);
       } else {
-        toast.error(`Tạo tài khoản thất bại! File không đúng định dạng ".xlsx"!`);
+        addToast(`Tạo tài khoản thất bại! File không đúng định dạng ".xlsx"!`, {
+          appearance: "error",
+        });
       }
     }
   };
@@ -208,12 +224,14 @@ export default function AccountManagement() {
       otherValues.avatar;
 
     if (!isCorrectOtherValue) {
-      toast.error("Tạo giáo viên thất bại! Bạn phải điền đủ thông tin chi tiết!");
+      addToast("Tạo giáo viên thất bại! Bạn phải điền đủ thông tin chi tiết!", {
+        appearance: "error",
+      });
     } else if (roles?.length <= 0) {
-      toast.error("Tạo giáo viên thất bại! Bạn chưa chọn vai trò!");
-    } else if (permissions?.length <= 0) {
-      toast.error("Tạo giáo viên thất bại! Bạn chưa phân quyền!");
-    } else if (roles?.length > 0 && permissions?.length > 0 && isCorrectOtherValue) {
+      addToast("Tạo giáo viên thất bại! Bạn chưa chọn vai trò!", {
+        appearance: "error",
+      });
+    } else if (roles?.length > 0 && isCorrectOtherValue) {
       addTeacherMutation.mutate(newObj);
     }
   };
@@ -265,7 +283,9 @@ export default function AccountManagement() {
       onSuccess: (response) => {
         queryClient.invalidateQueries("teacherState");
         if (response && response?.status === 200) {
-          toast.success("Cập nhật giáo viên thành công!");
+          addToast("Cập nhật giáo viên thành công!", {
+            appearance: "success",
+          });
           refetch().then((result) => {
             if (result.data) {
               setAccounts(data);
@@ -274,11 +294,15 @@ export default function AccountManagement() {
           resetEditAction();
           setModalEditOpen(false);
         } else {
-          toast.error(`Cập nhật giáo viên thất bại! ${response?.response?.data}!`);
+          addToast(`Cập nhật giáo viên thất bại! ${response?.response?.data}!`, {
+            appearance: "error",
+          });
         }
       },
       onError: (error) => {
-        toast.error(`Cập nhật giáo viên thất bại! ${error.message}!`);
+        addToast(`Cập nhật giáo viên thất bại! ${error.message}!`, {
+          appearance: "error",
+        });
       },
     }
   );
@@ -344,21 +368,25 @@ export default function AccountManagement() {
       otherValues.avatar;
 
     if (!isCorrectOtherValue) {
-      toast.error("Cập nhật giáo viên thất bại! Bạn phải điền đủ thông tin chi tiết!");
+      addToast("Cập nhật giáo viên thất bại! Bạn phải điền đủ thông tin chi tiết!", {
+        appearance: "error",
+      });
     } else if (roles?.length <= 0) {
-      toast.error("Cập nhật giáo viên thất bại! Bạn chưa chọn vai trò!");
-    } else if (permissions?.length <= 0) {
-      toast.error("Cập nhật giáo viên thất bại! Bạn chưa phân quyền!");
-    } else if (roles?.length > 0 && permissions?.length > 0 && isCorrectOtherValue) {
+      addToast("Cập nhật giáo viên thất bại! Bạn chưa chọn vai trò!", {
+        appearance: "error",
+      });
+    } else if (roles?.length > 0 && isCorrectOtherValue) {
       updateTeacherMutation.mutate(newObj);
     }
   };
 
   const deleteTeacherMutation = useMutation((username) => deleteTeacher(accessToken, username), {
     onSuccess: (response) => {
-      if (response) {
+      if (response && response.status == 200) {
         queryClient.invalidateQueries(["teacherAccounts", { accessToken }]); // Invalidate the getTeachers query
-        toast.success(`Xóa giáo viên thành công!`);
+        addToast(`Xóa giáo viên thành công!`, {
+          appearance: "success",
+        });
         refetch().then((result) => {
           if (result.data) {
             setAccounts(data);
@@ -366,7 +394,9 @@ export default function AccountManagement() {
         });
         setModalDeleteOpen(false);
       } else {
-        toast.error("Xóa giáo viên thất bại!");
+        addToast("Xóa giáo viên thất bại!", {
+          appearance: "error",
+        });
       }
     },
   });

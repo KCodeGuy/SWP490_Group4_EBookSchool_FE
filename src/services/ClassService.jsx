@@ -47,7 +47,7 @@ const updateClass = async (accessToken, classData) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return res.data;
+    return res;
   } catch (error) {
     return error;
   }
@@ -61,7 +61,7 @@ const deleteClass = async (accessToken, classID) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return res.data;
+    return res;
   } catch (error) {
     return error;
   }

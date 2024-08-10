@@ -59,9 +59,11 @@ import {
 } from "../../services/TimeTableService";
 import { getAllSubjects } from "../../services/SubjectService";
 import { getAllTeachers } from "../../services/TeacherService";
+import { useToasts } from "react-toast-notifications";
 const slotDates = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 export default function WeeklyTimeTable() {
+  const { addToast } = useToasts();
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [openModelAdd, setOpenModelAdd] = useState(false);
   const [isUpdateAction, setIsUpdateAction] = useState(false);
@@ -260,7 +262,9 @@ export default function WeeklyTimeTable() {
       onSuccess: (response) => {
         queryClient.invalidateQueries("timeTableState");
         if (response && response?.status == 200) {
-          toast.success("Tạo tiết học thành công!");
+          addToast("Tạo tiết học thành công!", {
+            appearance: "success",
+          });
           reset();
           refetch().then((result) => {
             if (result.data) {
@@ -269,11 +273,15 @@ export default function WeeklyTimeTable() {
           });
           setOpenModelAdd(false);
         } else {
-          toast.error(`Tạo tiết học thất bại! ${response?.response?.data}!`);
+          addToast(`Tạo tiết học thất bại! ${response?.response?.data}!`, {
+            appearance: "error",
+          });
         }
       },
       onError: (error) => {
-        toast.error(`Tạo tiết học thất bại! ${error.message}!`);
+        addToast(`Tạo tiết học thất bại! ${error.message}!`, {
+          appearance: "error",
+        });
       },
     }
   );
@@ -300,7 +308,9 @@ export default function WeeklyTimeTable() {
       onSuccess: (response) => {
         queryClient.invalidateQueries("timeTableState");
         if (response && response?.status == 200) {
-          toast.success("Tạo thời khóa biểu thành công!");
+          addToast("Tạo thời khóa biểu thành công!", {
+            appearance: "success",
+          });
           reset();
           setOpenModelAdd(false);
           refetch().then((result) => {
@@ -309,11 +319,15 @@ export default function WeeklyTimeTable() {
             }
           });
         } else {
-          toast.error(`Tạo thời khóa biểu thất bại! ${response?.response?.data}!`);
+          addToast(`Tạo thời khóa biểu thất bại! ${response?.response?.data}!`, {
+            appearance: "error",
+          });
         }
       },
       onError: (error) => {
-        toast.error(`Tạo khóa biểu thất bại! ${error.message}!`);
+        addToast(`Tạo khóa biểu thất bại! ${error.message}!`, {
+          appearance: "error",
+        });
       },
     }
   );
@@ -323,7 +337,9 @@ export default function WeeklyTimeTable() {
       if (isXlsxFile(data?.timeTableFile)) {
         addTimeTableMutationByExcel.mutate(data.timeTableFile);
       } else {
-        toast.error(`Tạo thời khoá biểu thất bại! File không đúng định dạng ".xlsx"!`);
+        addToast(`Tạo thời khoá biểu thất bại! File không đúng định dạng ".xlsx"!`, {
+          appearance: "error",
+        });
       }
     }
   };
@@ -372,13 +388,19 @@ export default function WeeklyTimeTable() {
               setCurrentTimeTable(result.data?.details);
             }
           });
-          toast.success("Cập nhật tiết học thành công!");
+          addToast("Cập nhật tiết học thành công!", {
+            appearance: "success",
+          });
         } else {
-          toast.error(`Cập nhật học thất bại! ${response?.response?.data}!`);
+          addToast(`Cập nhật học thất bại! ${response?.response?.data}!`, {
+            appearance: "error",
+          });
         }
       },
       onError: (error) => {
-        toast.error(`Cập nhật tiết học thất bại!`);
+        addToast(`Cập nhật tiết học thất bại!`, {
+          appearance: "error",
+        });
       },
     }
   );
@@ -401,10 +423,14 @@ export default function WeeklyTimeTable() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("slotData");
-        if (response) {
-          toast.success("Xóa tiết học thành công!");
+        if (response && response.status == 200) {
+          addToast("Xóa tiết học thành công!", {
+            appearance: "success",
+          });
         } else {
-          toast.error("Xóa tiết học thất bại!");
+          addToast("Xóa tiết học thất bại!", {
+            appearance: "error",
+          });
         }
         setModalDeleteOpen(false);
         refetch().then((result) => {

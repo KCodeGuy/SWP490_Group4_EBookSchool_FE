@@ -35,6 +35,7 @@ import { formatUrlToFile } from "utils/CommonFunctions";
 import { getInnerTextInsideHTML } from "utils/CommonFunctions";
 import NotifyCheckInfoForm from "components/NotifyCheckInfoForm";
 import { isImageFie } from "utils/CommonFunctions";
+import { useToasts } from "react-toast-notifications";
 
 // Notification Management (UolLT)
 // Get access token
@@ -51,6 +52,7 @@ const modules = {
 };
 
 export default function NotificationManagement() {
+  const { addToast } = useToasts();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
@@ -120,9 +122,13 @@ export default function NotificationManagement() {
       onSuccess: (response) => {
         queryClient.invalidateQueries("notificationState");
         if (response) {
-          toast.success("Tạo thông báo thành công!");
+          addToast("Tạo thông báo thành công!", {
+            appearance: "success",
+          });
         } else {
-          toast.error(`${response.data}!`);
+          addToast(`${response.data}!`, {
+            appearance: "error",
+          });
         }
         reset();
         setModalOpen(false);
@@ -140,9 +146,13 @@ export default function NotificationManagement() {
     const isNotEmptyQuill = contentQuillValue && contentQuillValue !== "<p><br></p>";
     const isImage = isImageFie(data.thumbnail);
     if (!isNotEmptyQuill) {
-      toast.error(`Nội dung không được bỏ trống!`);
+      addToast(`Nội dung không được bỏ trống!`, {
+        appearance: "error",
+      });
     } else if (!isImage) {
-      toast.error(`File không đúng định dạnh hình ảnh!`);
+      addToast(`File không đúng định dạnh hình ảnh!`, {
+        appearance: "error",
+      });
     } else {
       addNotificationMutation.mutate(notificationData);
     }
@@ -167,16 +177,22 @@ export default function NotificationManagement() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("notificationState");
-        if (response) {
-          toast.success("Cập nhật thông báo thành công!");
+        if (response && response.status == 200) {
+          addToast("Cập nhật thông báo thành công!", {
+            appearance: "success",
+          });
         } else {
-          toast.error(`${response.data}!`);
+          addToast(`Cập nhật thông báo thất bại! ${response.data}!`, {
+            appearance: "error",
+          });
         }
         reset();
         setModalEditOpen(false);
       },
       onError: (error) => {
-        toast.error("Cập nhật thông báo thất bại! ", error);
+        addToast(`Cập nhật thông báo thất bại!`, {
+          appearance: "error",
+        });
       },
     }
   );
@@ -189,10 +205,12 @@ export default function NotificationManagement() {
     };
 
     // Check if the contentQuillValue is valid
-    if (!contentQuillValue || contentQuillValue === "<p><br></p>") {
-      toast.error(`Nội dung không được bỏ trống!`);
-      return;
-    }
+    // if (!contentQuillValue || contentQuillValue === "<p><br></p>")
+    //   addToast(`Nội dung không được bỏ trống!`, {
+    //     appearance: "error",
+    //   });
+    //   return;
+    // }
 
     let thumbnailFile;
 
@@ -213,13 +231,17 @@ export default function NotificationManagement() {
         thumbnail: thumbnailFile,
       };
       if (!isImageFie(thumbnailFile)) {
-        toast.error(`File không đúng định dạnh hình ảnh!`);
+        addToast(`File không đúng định dạnh hình ảnh!`, {
+          appearance: "error",
+        });
       } else {
         updateNotificationMutation.mutate(notificationData);
       }
       // Call the mutation to update the notification
     } catch (error) {
-      toast.error(`Có lỗi khi chuyển file: ${error.message}`);
+      addToast(`Có lỗi khi chuyển file: ${error.message}!`, {
+        appearance: "error",
+      });
     }
   };
 
@@ -228,10 +250,14 @@ export default function NotificationManagement() {
     {
       onSuccess: (response) => {
         queryClient.invalidateQueries("notificationState");
-        if (response) {
-          toast.success("Xóa thông báo thành công!");
+        if (response && response.status == 200) {
+          addToast(`Xóa thông báo thành công!`, {
+            appearance: "success",
+          });
         } else {
-          toast.error("Xóa thông báo thất bại!");
+          addToast(`Xóa thông báo  thất bại!`, {
+            appearance: "error",
+          });
         }
         setModalDeleteOpen(false);
       },

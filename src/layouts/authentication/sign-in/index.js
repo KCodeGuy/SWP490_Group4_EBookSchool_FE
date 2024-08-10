@@ -96,12 +96,12 @@ function Basic() {
         console.clear();
         navigate("/dashboard");
       } else {
-        toast.error("Tên đăng nhập hoặc tài khoản không chính xác!");
+        addToast("Tên đăng nhập hoặc tài khoản không chính xác!");
         setCurrentUser(data);
       }
     },
     onError: () => {
-      toast.error("Tên đăng nhập hoặc tài khoản không chính xác!");
+      addToast("Tên đăng nhập hoặc tài khoản không chính xác!");
     },
   });
 

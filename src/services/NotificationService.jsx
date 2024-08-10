@@ -35,10 +35,9 @@ const addNotification = async (accessToken, data) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return res.data;
+    return res;
   } catch (error) {
-    console.error("Error adding notification:", error);
-    throw error;
+    return error;
   }
 };
 
@@ -56,10 +55,9 @@ const updateNotification = async (accessToken, data) => {
       },
     });
 
-    return res.data;
+    return res;
   } catch (error) {
-    console.error("Error updating notification:", error);
-    throw error;
+    return error;
   }
 };
 
@@ -71,10 +69,9 @@ const deleteNotification = async (accessToken, notificationID) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return res.data;
+    return res;
   } catch (error) {
-    console.error("Error deleting notification:", error);
-    throw error;
+    return error;
   }
 };
 

@@ -38,6 +38,7 @@ import TextValueComponent from "../../components/TextValueComponent/index.jsx";
 import { SUBJECT_ROLE } from "services/APIConfig.jsx";
 import { PRINCIPAL_ROLE } from "services/APIConfig.jsx";
 import { HEADTEACHER_ROLE } from "services/APIConfig.jsx";
+import { useToasts } from "react-toast-notifications";
 
 const ratingOptions = [
   { id: 1, label: "Loại A (Tốt)", value: "A" },
@@ -46,6 +47,7 @@ const ratingOptions = [
   { id: 4, label: "Loại D (Kém)", value: "D" },
 ];
 const SchoolBook = () => {
+  const { addToast } = useToasts();
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [openModalEditSchoolBook, setOpenModalEditSchoolBook] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -223,13 +225,19 @@ const SchoolBook = () => {
           });
           resetEditAction();
           setOpenModalEditSchoolBook(false);
-          toast.success("Cập nhật tiết học thành công!");
+          addToast("Cập nhật tiết học thành công!", {
+            appearance: "success",
+          });
         } else {
-          toast.error(`Cập nhật tiết học thất bại. ${response?.response?.data}`);
+          addToast(`Cập nhật tiết học thất bại. ${response?.response?.data}`, {
+            appearance: "error",
+          });
         }
       },
       onError: (error) => {
-        toast.error(`Cập nhật tiết học thất bại! ${error.message}!`);
+        addToast(`Cập nhật tiết học thất bại! ${error.message}!`, {
+          appearance: "error",
+        });
       },
     }
   );
@@ -262,19 +270,27 @@ const SchoolBook = () => {
       if (data.teacherEdit === currentUser?.username) {
         if (today > maxUpdateDate) {
           // If today is past the maxUpdateDate, show error message
-          toast.error(
+          addToast(
             `Cập nhật thất bại. Thời gian đánh giá tiết học từ ngày "${formattedDateEdit}" đến ngày "${maxUpdateDate.toLocaleDateString(
               "en-GB"
-            )}"!`
+            )}"!`,
+            {
+              appearance: "error",
+            }
           );
         } else if (dateEdit <= today) {
           updateSlotRegisterNotebookMutation.mutate(evaluateSlotDate);
         } else {
-          toast.error(`Cập nhật thất bại. Tiết học bắt đầu vào ngày "${data.dateEdit}"!`);
+          addToast(`Cập nhật thất bại. Tiết học bắt đầu vào ngày "${data.dateEdit}"!`, {
+            appearance: "error",
+          });
         }
       } else {
-        toast.error(
-          `Cập nhật thất bại. Bạn không thể đánh giá tiết học của giáo viên "${data.teacherEdit}"!`
+        addToast(
+          `Cập nhật thất bại. Bạn không thể đánh giá tiết học của giáo viên "${data.teacherEdit}"!`,
+          {
+            appearance: "error",
+          }
         );
       }
     }
@@ -537,13 +553,19 @@ const SchoolBook = () => {
                         if (date <= today) {
                           navigate(`/takeAttendance/${currentSlot.id}`);
                         } else {
-                          toast.error(
-                            `Bạn không thể điểm danh tiết học! Tiết học bắt đầu vào ngày "${currentSlot?.date}"!`
+                          addToast(
+                            `Bạn không thể điểm danh tiết học! Tiết học bắt đầu vào ngày ${currentSlot?.date}!`,
+                            {
+                              appearance: "error",
+                            }
                           );
                         }
                       } else {
-                        toast.error(
-                          `Bạn không thể điểm danh tiết học của giáo viên "${currentSlot?.teacher}"!`
+                        addToast(
+                          `Bạn không thể điểm danh tiết học của giáo viên ${currentSlot?.teacher}!`,
+                          {
+                            appearance: "error",
+                          }
                         );
                       }
                     }}
@@ -611,13 +633,19 @@ const SchoolBook = () => {
                           if (date <= today) {
                             navigate(`/takeAttendance/${currentSlot.id}`);
                           } else {
-                            toast.error(
-                              `Bạn không thể điểm danh tiết học! Tiết học bắt đầu vào ngày "${currentSlot?.date}"!`
+                            addToast(
+                              `Bạn không thể điểm danh tiết học! Tiết học bắt đầu vào ngày "${currentSlot?.date}"!`,
+                              {
+                                appearance: "error",
+                              }
                             );
                           }
                         } else {
-                          toast.error(
-                            `Bạn không thể điểm danh tiết học của giáo viên "${currentSlot?.teacher}"!`
+                          addToast(
+                            `Bạn không thể điểm danh tiết học của giáo viên "${currentSlot?.teacher}"!`,
+                            {
+                              appearance: "error",
+                            }
                           );
                         }
                       }}

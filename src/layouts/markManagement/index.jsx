@@ -369,23 +369,27 @@ export default function MarkManagement() {
                   ))}
                 </Select>
               </FormControl>
-              <FormControl sx={{ minWidth: 120 }}>
-                <InputLabel id="select-school-class-lable">Lớp</InputLabel>
-                <Select
-                  labelId="select-school-class-lable"
-                  id="select-school-class"
-                  value={schoolClass}
-                  className="h-10 mr-2 max-[639px]:mb-4"
-                  label="Lớp"
-                  onChange={handleChangeClass}
-                >
-                  {classesOfSchoolYear?.map((item, index) => (
-                    <MenuItem key={index} value={item.Classroom}>
-                      {item.Classroom}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              {value == 1 ? (
+                <FormControl sx={{ minWidth: 120 }}>
+                  <InputLabel id="select-school-class-lable">Lớp</InputLabel>
+                  <Select
+                    labelId="select-school-class-lable"
+                    id="select-school-class"
+                    value={schoolClass}
+                    className="h-10 mr-2 max-[639px]:mb-4"
+                    label="Lớp"
+                    onChange={handleChangeClass}
+                  >
+                    {classesOfSchoolYear?.map((item, index) => (
+                      <MenuItem key={index} value={item.Classroom}>
+                        {item.Classroom}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ) : (
+                ""
+              )}
 
               {(userRole.includes(PRINCIPAL_ROLE) ||
                 userRole.includes(SUBJECT_ROLE) ||

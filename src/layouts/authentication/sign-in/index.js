@@ -50,8 +50,10 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { CircularProgress } from "@mui/material";
 import { getUserRole } from "utils/handleUser";
 import { getSetting } from "services/SettingService";
+import { useToasts } from "react-toast-notifications";
 
 function Basic() {
+  const { addToast } = useToasts();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [currentUser, setCurrentUser] = useState({});
@@ -69,39 +71,43 @@ function Basic() {
     isLoading,
   } = useQuery(["settingState"], () => getSetting(), { staleTime: Infinity });
 
-  const mutation = useMutation(loginUser, {
+  const mutation = useMutation((loginData) => loginUser(loginData), {
     onSuccess: (data) => {
-      if (data) {
+      if (data && data?.status == 200) {
         if (schoolSetting) {
           localStorage.setItem("schoolSetting", JSON.stringify(schoolSetting));
         }
-        localStorage.setItem("authToken", data.accessToken);
-        if (data?.permissions) {
-          localStorage.setItem("permissions", data?.permissions);
+        localStorage.setItem("authToken", data?.data?.accessToken);
+        if (data?.data?.permissions) {
+          localStorage.setItem("permissions", data?.data?.permissions);
         }
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("schoolYears", JSON.stringify(data.schoolYears));
-        const formattedArray = Object.keys(data.classes).map((schoolYear) => ({
+        localStorage.setItem("user", JSON.stringify(data?.data?.user));
+        localStorage.setItem("schoolYears", JSON.stringify(data?.data?.schoolYears));
+        const formattedArray = Object.keys(data?.data?.classes).map((schoolYear) => ({
           schoolYear,
-          details: data.classes[schoolYear],
+          details: data?.data?.classes[schoolYear],
         }));
         localStorage.setItem("currentClasses", JSON.stringify(formattedArray));
-        if (data?.roles) {
-          if (data?.roles.includes("Supervisor")) {
+        if (data?.data?.roles) {
+          if (data?.data?.roles.includes("Supervisor")) {
             localStorage.setItem("userRole", "Headteacher");
           } else {
-            localStorage.setItem("userRole", data?.roles?.toString());
+            localStorage.setItem("userRole", data?.data?.roles?.toString());
           }
         }
         console.clear();
         navigate("/dashboard");
       } else {
-        addToast("Tên đăng nhập hoặc tài khoản không chính xác!");
-        setCurrentUser(data);
+        addToast("Tên đăng nhập hoặc tài khoản không chính xác!", {
+          appearance: "error",
+        });
+        setCurrentUser(data?.data);
       }
     },
     onError: () => {
-      addToast("Tên đăng nhập hoặc tài khoản không chính xác!");
+      addToast("Tên đăng nhập hoặc tài khoản không chính xác!", {
+        appearance: "error",
+      });
     },
   });
 
@@ -110,7 +116,9 @@ function Basic() {
   }, [queryClient]);
 
   const handleSubmitLogin = (data) => {
-    mutation.mutate({ username: data.username, password: data.password });
+    if (data) {
+      mutation.mutate(data);
+    }
   };
 
   return (

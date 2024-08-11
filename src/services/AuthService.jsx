@@ -1,17 +1,17 @@
 import axios from "axios";
 import { API_HOST } from "./APIConfig";
-export const loginUser = async ({ username, password }) => {
+export const loginUser = async (data) => {
+  // console.log("accessToken", accessToken);
+  console.log(data);
   try {
-    const response = await fetch(`${API_HOST}/Auth/Login`, {
-      method: "POST",
+    const response = await axios.post(`${API_HOST}/Auth/Login`, data, {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password }),
     });
 
-    const data = await response.json();
-    return data;
+    console.log("response", response);
+    return response;
   } catch (error) {
     return error;
   }

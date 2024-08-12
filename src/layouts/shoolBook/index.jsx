@@ -44,7 +44,7 @@ const ratingOptions = [
   { id: 1, label: "Loại A (Tốt)", value: "A" },
   { id: 2, label: "Loại B (Khá)", value: "B" },
   { id: 3, label: "Loại C (Trung bình)", value: "C" },
-  { id: 4, label: "Loại D (Kém)", value: "D" },
+  { id: 4, label: "Loại D (Yếu)", value: "D" },
 ];
 const SchoolBook = () => {
   const { addToast } = useToasts();
@@ -123,7 +123,8 @@ const SchoolBook = () => {
       setValue("subjectEdit", slot.subject);
       setValue("teacherEdit", slot.teacher);
       setValue("slotByLessonPlansEdit", slot.slotByLessonPlans);
-      setValue("numberOfAbsentEdit", slot.numberOfAbsent);
+      setValue("numberOfAbsentEdit", slot.numberOfAbsent + slot.numberOfConfirmed);
+      setValue("numberOfAbsentConfirmed", slot.numberOfConfirmed);
       setValue("titleEdit", slot.title);
       setValue("noteEdit", slot.note);
       setValue("ratingEdit", slot.rating);
@@ -165,7 +166,8 @@ const SchoolBook = () => {
               subject: slot.subject,
               teacher: slot.teacher,
               slotByLessonPlan: slot.slotByLessonPlan,
-              numberOfAbsent: slot.numberOfAbsent,
+              numberOfAbsent: slot.numberOfAbsent + slot.numberOfConfirmed,
+              numberOfAbsentConfirmed: slot.numberOfConfirmed,
               numberAbsent: slot.numberAbsent,
               title: slot.title,
               note: slot.note,
@@ -491,7 +493,7 @@ const SchoolBook = () => {
               </li>
               <li>
                 <span className="error-color font-bold">(D): </span>
-                <span className="italic">Tiết học kém.</span>
+                <span className="italic">Tiết học yếu.</span>
               </li>
             </ul>
           </div>
@@ -538,7 +540,9 @@ const SchoolBook = () => {
               <div className="flex">
                 <TextValueComponent
                   label="Số lượng vắng"
-                  value={`${currentSlot.numberOfAbsent} học sinh`}
+                  value={`${currentSlot.numberOfAbsent} (${
+                    currentSlot.numberOfAbsentConfirmed
+                  }P - ${currentSlot.numberOfAbsent - currentSlot.numberOfAbsentConfirmed} K)`}
                   icon={<EventAvailableIcon />}
                 />
                 {currentSlot?.teacher === currentUser?.username ? (

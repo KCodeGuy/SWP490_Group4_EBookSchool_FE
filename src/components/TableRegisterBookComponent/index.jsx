@@ -179,7 +179,12 @@ function TableRegisterBookComponent({
                   <td className="px-2">{date.subject || "_"}</td>
                   <td className="px-2">{date.teacher || "_"}</td>
                   <td className="px-2">{date.slotByLessonPlan || "_"}</td>
-                  <td className="px-2">{date.numberOfAbsent || "_"}</td>
+                  <td className="px-2">{`${
+                    date.numberOfAbsent > 0 ? date.numberOfAbsent : "_"
+                  }`}</td>
+                  <td className="px-2 hidden">{`${
+                    date.numberOfAbsentConfirmed > 0 ? date.numberOfAbsentConfirmed : "_"
+                  }`}</td>
                   <td className="">
                     <span className="px-2 max-line-2 max-w-52">{date.title || "_"}</span>
                   </td>
@@ -189,7 +194,7 @@ function TableRegisterBookComponent({
                   <td className="px-2">{renderRating(date.rating) || "_"}</td>
                   {isShowActions && (
                     <td className="max-w-28 text-center">
-                      {onDetails && date.weekDate != "Chủ Nhật" ? (
+                      {onDetails || (date.weekDate == "Chủ Nhật" && date.subject) ? (
                         <button
                           title="Detail button "
                           className="text-xl primary-color"

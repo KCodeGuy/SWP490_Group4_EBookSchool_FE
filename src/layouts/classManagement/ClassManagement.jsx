@@ -41,6 +41,7 @@ import { getAllStudents } from "services/StudentService";
 import { isXlsxFile } from "utils/CommonFunctions";
 import { PRINCIPAL_ROLE } from "services/APIConfig";
 import { useToasts } from "react-toast-notifications";
+import { HEADTEACHER_ROLE } from "services/APIConfig";
 
 export default function ClassManagement() {
   const { addToast } = useToasts();
@@ -459,7 +460,7 @@ export default function ClassManagement() {
                 placeHolder="Nhập từ khóa..."
               />
               <div className="ml-3 max[639px]:flex-1">
-                {userRole.includes(PRINCIPAL_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
+                {userRole.includes(PRINCIPAL_ROLE) || userRole.includes(HEADTEACHER_ROLE) ? (
                   <ButtonComponent className="" onClick={() => setModalOpen(true)}>
                     <AddCircleOutlineIcon className="mr-1" focusable="false" />
                     TẠO
@@ -678,7 +679,7 @@ export default function ClassManagement() {
                 </div>
               </div>
             ) : data && currentData.length > 0 ? (
-              userRole.includes(PRINCIPAL_ROLE) || userRole.includes(PRINCIPAL_ROLE) ? (
+              userRole.includes(PRINCIPAL_ROLE) || userRole.includes(HEADTEACHER_ROLE) ? (
                 <TableComponent
                   header={["Tên lớp", "Năm học", "Phòng học", "Giáo viên chủ nhiệm"]}
                   data={currentData?.map((item) => [

@@ -721,7 +721,7 @@ export default function RegisterNotebookStatistics() {
                 </li>
                 <li>
                   <span className="error-color font-bold">(Loại D): </span>
-                  <span className="italic">Tiết học kém ({MARK_OF_TYPE_D} điểm/tiết.).</span>
+                  <span className="italic">Tiết học yếu ({MARK_OF_TYPE_D} điểm/tiết.).</span>
                 </li>
               </ul>
             </div>

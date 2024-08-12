@@ -442,14 +442,6 @@ const headTeacherRoutes = [
   },
   {
     type: "collapse",
-    name: "Thông báo",
-    key: "notificationDetails",
-    icon: <Icon fontSize="small">notifications</Icon>,
-    route: "/notificationDetails/:notificationID",
-    component: <NotificationDetails />,
-  },
-  {
-    type: "collapse",
     name: "Tài khoản",
     key: "profile",
     icon: <Icon fontSize="small">person</Icon>,

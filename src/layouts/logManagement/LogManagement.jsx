@@ -27,6 +27,7 @@ import SearchInputComponent from "../../components/SearchInputComponent/SearchIn
 import TextValueComponent from "components/TextValueComponent";
 import { getAllLogs } from "services/LogService";
 import { useQuery } from "react-query";
+import { useLocation, useParams } from "react-router-dom";
 
 const logActions = [
   { label: "TẠO", value: "CREATE" },
@@ -43,15 +44,22 @@ export default function LogManagement() {
   const [currentLog, setCurrentLog] = useState(logActions[0]);
   const [currentData, setCurrentData] = useState([]);
 
+  // Get query parameters
+  const { id } = useParams();
+
   const { data, error, isLoading } = useQuery(["logState", { accessToken }], () =>
     getAllLogs(accessToken)
   );
 
   useEffect(() => {
     if (data) {
-      setCurrentData(data);
+      if (id) {
+        setCurrentData(filterLogDetailsByID(id, data));
+      } else {
+        setCurrentData(data);
+      }
     }
-  }, [data]);
+  }, [data, id]);
 
   //2. Set data by Call API
   const [logAction, setLogAction] = React.useState(logActions[0].value);
@@ -84,10 +92,19 @@ export default function LogManagement() {
     if (data) {
       return data.filter((item) => {
         return (
+          item.id.toLowerCase().includes(search) ||
           item.type.toLowerCase().includes(search) ||
           item.note.toLowerCase().includes(search) ||
           item.date.toLowerCase().includes(search)
         );
+      });
+    }
+  };
+
+  const filterLogDetailsByID = (id, data) => {
+    if (data) {
+      return data.filter((item) => {
+        return item.id == id;
       });
     }
   };

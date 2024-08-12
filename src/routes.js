@@ -237,6 +237,14 @@ const routes = [
   },
   {
     type: "collapse",
+    name: "Chi tiết log",
+    key: "logHistoryDetails",
+    icon: <Icon fontSize="small">history</Icon>,
+    route: "/logHistory/:id",
+    component: <LogManagement />,
+  },
+  {
+    type: "collapse",
     name: "Cài đặt hệ thống",
     key: "systemSetting",
     icon: <Icon fontSize="small">settings</Icon>,
@@ -426,6 +434,22 @@ const headTeacherRoutes = [
   },
   {
     type: "collapse",
+    name: "Chi tiết log",
+    key: "logHistoryDetails",
+    icon: <Icon fontSize="small">history</Icon>,
+    route: "/logHistory/:id",
+    component: <LogManagement />,
+  },
+  {
+    type: "collapse",
+    name: "Thông báo",
+    key: "notificationDetails",
+    icon: <Icon fontSize="small">notifications</Icon>,
+    route: "/notificationDetails/:notificationID",
+    component: <NotificationDetails />,
+  },
+  {
+    type: "collapse",
     name: "Tài khoản",
     key: "profile",
     icon: <Icon fontSize="small">person</Icon>,
@@ -603,14 +627,6 @@ const subjectTeacherRoutes = [
     route: "/academicPerformanceStatistics",
     component: <AcademicPerformanceStatistics />,
   },
-  // {
-  //   type: "collapse",
-  //   name: "Thống kê hạnh kiểm",
-  //   key: "conductStatistics",
-  //   icon: <Icon fontSize="small">leaderboard</Icon>,
-  //   route: "/conductStatistics",
-  //   component: <ConductStatistics />,
-  // },
   {
     type: "title",
     title: "Quản lí",
@@ -743,14 +759,6 @@ const homeRoomTeacherRoutes = [
     route: "/academicPerformanceStatistics",
     component: <AcademicPerformanceStatistics />,
   },
-  // {
-  //   type: "collapse",
-  //   name: "Thống kê hạnh kiểm",
-  //   key: "conductStatistics",
-  //   icon: <Icon fontSize="small">leaderboard</Icon>,
-  //   route: "/conductStatistics",
-  //   component: <ConductStatistics />,
-  // },
   {
     type: "title",
     title: "Quản lí",

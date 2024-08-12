@@ -364,6 +364,11 @@ export const getRouteName = (path) => {
       route: "/logHistory",
     },
     {
+      name: "Ghi log",
+      key: "logHistoryDetails",
+      route: "/logHistory/:id",
+    },
+    {
       name: "Cài đặt hệ thống",
       key: "systemSetting",
       route: "/systemSetting",
@@ -382,6 +387,10 @@ export const getRouteName = (path) => {
 
   if (path == ":notificationID") {
     return "Chi tiết thông báo";
+  }
+
+  if (path == ":id") {
+    return "Ghi log";
   }
 
   if (isGuid(path)) {

@@ -100,6 +100,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
     const hidden =
       key === "takeAttendance" ||
       key === "notificationDetails" ||
+      key === "logHistoryDetails" ||
       key.includes("sign-in") ||
       key.includes("reset-password");
     if (type === "collapse") {

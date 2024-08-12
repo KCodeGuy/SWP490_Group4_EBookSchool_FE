@@ -35,6 +35,9 @@ import { isXlsxFile } from "utils/CommonFunctions";
 import { nationOptions } from "mock/student";
 import { PRINCIPAL_ROLE } from "services/APIConfig";
 import { useToasts } from "react-toast-notifications";
+import { HEADTEACHER_ROLE } from "services/APIConfig";
+import { HOMEROOM_ROLE } from "services/APIConfig";
+import { SUBJECT_ROLE } from "services/APIConfig";
 
 const sortOptions = [
   { label: "Mã giáo viên(A-Z)", value: { index: 1, option: "ASC" } },
@@ -250,18 +253,39 @@ export default function AccountManagement() {
         setValue("nation", result?.nation);
         setValue("email", result?.email);
         setValue("phone", result?.phone);
-        setValue("isBachelor", result?.isBachelor);
-        setValue("isMaster", result?.isMaster);
-        setValue("isDoctor", result?.isDoctor);
-        setValue("isProfessor", result?.isProfessor);
+        setValue("bachelor", result?.isBachelor);
+        setValue("master", result?.isMaster);
+        setValue("doctor", result?.isDoctor);
+        setValue("professor", result?.isProfessor);
+        setValue("address", result?.address);
+        // setValue("roleAmin", result?.);
+        // setValue("roleSupervisor", result?.address);
+        // setValue("roleHomeroomTeacher", result?.address);
+        // setValue("roleSubjectTeacher", result?.address);
+        // setValue("roleStudent", result?.address);
         setValue("address", result?.address);
         setValue("avatar", result?.avatar);
         setAvatar(result?.avatar);
 
-        result?.roles?.forEach((role) => {
-          const formattedRole = `role${role}`;
-          setValue(formattedRole, true);
-        });
+        if (result?.roles) {
+          const roles = result?.roles?.toString();
+          console.log(roles);
+          if (roles.includes("Admin")) {
+            setValue("roleAmin", true);
+          }
+          if (roles.includes(HEADTEACHER_ROLE)) {
+            setValue("roleSupervisor", true);
+          }
+          if (roles.includes("Homeroom Teacher")) {
+            setValue("roleHomeroomTeacher", true);
+          }
+          if (roles.includes("Subject Teacher")) {
+            setValue("roleSubjectTeacher", true);
+          }
+          if (roles.includes("Student")) {
+            setValue("roleStudent", true);
+          }
+        }
 
         // Handling permissions
         result?.permissions?.forEach((permission) => {
@@ -308,6 +332,7 @@ export default function AccountManagement() {
   );
 
   const handleEditSubject = (data) => {
+    console.log("Chạy vô đây", data);
     const permissionKeys = Object.keys(data).filter((key) => key.startsWith("is") && data[key]);
     const roleKeys = Object.keys(data).filter((key) => key.startsWith("role") && data[key]);
 
@@ -376,6 +401,7 @@ export default function AccountManagement() {
         appearance: "error",
       });
     } else if (roles?.length > 0 && isCorrectOtherValue) {
+      console.log("update data: ", newObj);
       updateTeacherMutation.mutate(newObj);
     }
   };
@@ -927,22 +953,29 @@ export default function AccountManagement() {
             )}
             <PopupComponent
               title="CẬP NHẬT"
-              description="Hãy chỉnh sửa để bắt đầu năm học mới"
-              icon={<EditIcon />}
+              description="Hãy cập nhật tài khoản"
+              icon={<AddCircleOutlineIcon />}
               isOpen={modalEditOpen}
-              onClose={() => setModalEditOpen(false)}
+              onClose={() => {
+                setModalEditOpen(false);
+                setValue("roleAmin", false);
+                setValue("roleSupervisor", false);
+                setValue("roleHomeroomTeacher", false);
+                setValue("roleSubjectTeacher", false);
+                setValue("roleStudent", false);
+                resetEditAction();
+              }}
               tabs={[{ label: "1. CHI TIẾT" }, { label: "2. VAI TRÒ" }]}
               currentTab={currentTabEdit}
-              onTabChange={(newTab) => {
-                setCurrentTabEdit(newTab);
-              }}
+              onTabChange={handleTabChange}
             >
-              <div role="tabpanel" hidden={currentTabEdit !== 0}>
+              {/* Content for Tab 2 */}
+              <div role="tabpanel" hidden={currentTabEdit == 1}>
                 <form onSubmit={handleSubmit(handleAddInfomation)}>
-                  <div className="w-full flex">
+                  <div className="flex">
                     <InputBaseComponent
-                      placeholder="Nguyễn Văn A"
-                      className="w-1/3 mr-2"
+                      placeholder="Nguyen Van A"
+                      className="w-1/2 mr-2"
                       type="text"
                       control={controlEditAction}
                       setValue={setValue}
@@ -953,47 +986,9 @@ export default function AccountManagement() {
                         required: "Không được bỏ trống!",
                       }}
                     />
-
-                    <InputBaseComponent
-                      placeholder=""
-                      className="w-1/3 mr-2"
-                      type="email"
-                      control={controlEditAction}
-                      setValue={setValue}
-                      name="email"
-                      label="Email"
-                      errors={errorsEditAction}
-                      validationRules={{
-                        required: "Không được bỏ trống!",
-                        pattern: {
-                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                          message: "Email không đúng định dạng!",
-                        },
-                      }}
-                    />
-                    <InputBaseComponent
-                      placeholder="Nhập số điện thoại"
-                      className="w-1/3"
-                      type="text"
-                      control={controlEditAction}
-                      setValue={setValue}
-                      name="phone"
-                      label="Số điện thoại"
-                      errors={errorsEditAction}
-                      validationRules={{
-                        required: "Không được bỏ trống!",
-                        pattern: {
-                          value: /^[0-9]{10}$/,
-                          message: "Số điện thoại không đúng định dạng!",
-                        },
-                      }}
-                    />
-                  </div>
-
-                  <div className="flex ">
                     <InputBaseComponent
                       placeholder="Nhập ngày sinh"
-                      className="w-1/3 mr-2"
+                      className="w-1/2 mr-2"
                       type="date"
                       control={controlEditAction}
                       setValue={setValue}
@@ -1004,10 +999,9 @@ export default function AccountManagement() {
                         required: "Không được bỏ trống!",
                       }}
                     />
-
                     <InputBaseComponent
                       type="select"
-                      className="w-1/3 mr-2"
+                      className="w-1/2 "
                       control={controlEditAction}
                       setValue={setValue}
                       name="gender"
@@ -1015,34 +1009,58 @@ export default function AccountManagement() {
                       errors={errorsEditAction}
                       options={genderOptions}
                     />
+                  </div>
+
+                  <div className="w-full flex">
                     <InputBaseComponent
                       type="select"
                       label="Dân tộc"
-                      className="w-1/3"
+                      className="w-1/2 mr-2"
                       control={controlEditAction}
                       setValue={setValue}
                       name="nation"
-                      errors={errorsEditAction}
+                      errors={errors}
                       options={nationOptions}
                     />
+                    <InputBaseComponent
+                      placeholder="gv@gmail.com"
+                      className="w-1/2 mr-2"
+                      type="email"
+                      control={controlEditAction}
+                      setValue={setValue}
+                      name="email"
+                      label="Email"
+                      errors={errorsEditAction}
+                      validationRules={{
+                        required: "Không được bỏ trống!",
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                          message: "Không đúng định dạng!",
+                        },
+                      }}
+                    />
+                    <InputBaseComponent
+                      placeholder="0234123470"
+                      className="w-1/2"
+                      type="text"
+                      control={controlEditAction}
+                      setValue={setValue}
+                      name="phone"
+                      label="Số điện thoại"
+                      errors={errorsEditAction}
+                      validationRules={{
+                        required: "Không được bỏ trống!",
+                        pattern: {
+                          value: /^[0-9]{10}$/,
+                          message: "Không đúng định dạng!",
+                        },
+                      }}
+                    />
                   </div>
-
-                  <InputBaseComponent
-                    placeholder="Nhập mã số căn cước"
-                    className="w-full"
-                    type="text"
-                    control={controlEditAction}
-                    setValue={setValue}
-                    name="address"
-                    label="Địa chỉ"
-                    errors={errorsEditAction}
-                    validationRules={{
-                      required: "Không được bỏ trống!",
-                    }}
-                  />
-                  <div className="flex justify-evenly">
+                  <div className="flex mt-2">
                     <InputBaseComponent
                       type="checkbox"
+                      className="mr-3"
                       horizontalLabel={true}
                       control={controlEditAction}
                       setValue={setValue}
@@ -1050,9 +1068,9 @@ export default function AccountManagement() {
                       label="Cử nhân"
                       errors={errorsEditAction}
                     />
-
                     <InputBaseComponent
                       type="checkbox"
+                      className="mr-3"
                       horizontalLabel={true}
                       control={controlEditAction}
                       setValue={setValue}
@@ -1063,6 +1081,7 @@ export default function AccountManagement() {
 
                     <InputBaseComponent
                       type="checkbox"
+                      className="mr-3"
                       horizontalLabel={true}
                       control={controlEditAction}
                       setValue={setValue}
@@ -1081,6 +1100,20 @@ export default function AccountManagement() {
                       errors={errorsEditAction}
                     />
                   </div>
+
+                  <InputBaseComponent
+                    placeholder="600 Nguyen van cu"
+                    className="w-full"
+                    type="text"
+                    control={controlEditAction}
+                    setValue={setValue}
+                    name="address"
+                    label="Địa chỉ"
+                    errors={errorsEditAction}
+                    validationRules={{
+                      required: "Không được bỏ trống!",
+                    }}
+                  />
 
                   <div className="flex">
                     <InputBaseComponent
@@ -1104,11 +1137,12 @@ export default function AccountManagement() {
                     )}
                   </div>
                 </form>
-                <NotifyCheckInfoForm actionText="Hãy chuyển sang tab tiếp theo để tiếp tục cập nhật!" />
+                <NotifyCheckInfoForm actionText="Hãy chuyển sang tab tiếp theo để tiếp tục tạo!" />
               </div>
-              <div role="tabpanel" hidden={currentTabEdit == 1}>
+              {/* Content for Tab 3 */}
+              <div role="tabpanel" hidden={currentTabEdit == 2}>
                 {/* phân quyền*/}
-                <form onSubmit={handleSubmit(handleAddRole)}>
+                <form onSubmit={handleSubmitEditAction(handleEditSubject)}>
                   <InputBaseComponent
                     type="checkbox"
                     className="w-full"
@@ -1159,27 +1193,28 @@ export default function AccountManagement() {
                     label="5. Học sinh"
                     errors={errorsEditAction}
                   />
+                  <NotifyCheckInfoForm
+                    className="mt-4"
+                    actionText="Hãy kiểm tra kĩ thông tin trước khi tạo!"
+                  />
+                  <div className="mt-5 flex justify-end">
+                    <ButtonComponent
+                      type="error"
+                      action="reset"
+                      onClick={() => {
+                        reset();
+                        setModalOpen(false);
+                      }}
+                    >
+                      <CancelIcon className="text-3xl mr-1 mb-0.5" />
+                      HỦY BỎ
+                    </ButtonComponent>
+                    <ButtonComponent action="submit">
+                      <BorderColorIcon className="text-3xl mr-1" />
+                      CẬP NHẬT
+                    </ButtonComponent>
+                  </div>
                 </form>
-                <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi cập nhật!" />
-
-                <div className="mt-5 flex justify-end">
-                  <ButtonComponent
-                    type="error"
-                    action="reset"
-                    onClick={() => {
-                      resetEditAction();
-                      setModalEditOpen(false);
-                    }}
-                  >
-                    <CancelIcon className="text-3xl mr-1 mb-0.5" />
-                    HỦY BỎ
-                  </ButtonComponent>
-                  <ButtonComponent action="submit">
-                    <BorderColorIcon className="text-3xl mr-1" />
-                    CẬP NHẬT
-                  </ButtonComponent>
-                </div>
-                <NotifyCheckInfoForm actionText="Hãy chuyển sang tab tiếp theo để tiếp tục cập nhật!" />
               </div>
             </PopupComponent>
             <PopupComponent

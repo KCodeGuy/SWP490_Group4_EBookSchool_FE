@@ -88,8 +88,9 @@ const InputBaseComponent = ({
                 disabled={disabled}
                 readOnly={readOnly}
                 type="checkbox"
+                checked={field.value} // Reflect the controlled value here
                 onChange={(e) => {
-                  field.onChange(e);
+                  field.onChange(e.target.checked);
                   handleSetValue(e.target.checked); // For checkboxes, set the value to the checked state
                 }}
                 placeholder={placeholder}

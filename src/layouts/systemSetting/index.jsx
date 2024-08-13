@@ -158,7 +158,7 @@ export default function SystemSetting() {
         updateSchoolSettingMutation.mutate(schoolSetting);
         setTimeout(() => {
           window.location.reload();
-        }, 3000);
+        }, 2000);
       } catch (error) {
         addToast(`Tải ảnh lên thất bại!`, {
           appearance: "error",

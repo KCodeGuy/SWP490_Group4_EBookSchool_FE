@@ -542,7 +542,7 @@ const SchoolBook = () => {
                   label="Số lượng vắng"
                   value={`${currentSlot.numberOfAbsent} (${
                     currentSlot.numberOfAbsentConfirmed
-                  }P - ${currentSlot.numberOfAbsent - currentSlot.numberOfAbsentConfirmed} K)`}
+                  } Phép - ${currentSlot.numberOfAbsent - currentSlot.numberOfAbsentConfirmed} K)`}
                   icon={<EventAvailableIcon />}
                 />
                 {currentSlot?.teacher === currentUser?.username ? (

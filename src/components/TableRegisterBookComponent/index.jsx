@@ -194,7 +194,7 @@ function TableRegisterBookComponent({
                   <td className="px-2">{renderRating(date.rating) || "_"}</td>
                   {isShowActions && (
                     <td className="max-w-28 text-center">
-                      {onDetails || (date.weekDate == "Chủ Nhật" && date.subject) ? (
+                      {onDetails && date.countSlots > 0 ? (
                         <button
                           title="Detail button "
                           className="text-xl primary-color"

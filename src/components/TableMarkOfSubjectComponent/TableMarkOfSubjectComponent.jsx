@@ -44,8 +44,6 @@ function TableMarkOfSubjectComponent({
     const filteredScores = scores.filter((score) => score.semester === semester);
     const uniqueScores = [];
 
-    console.log("filteredScores", filteredScores);
-
     keyOrder.forEach((key) => {
       const seenIndexCols = new Set();
       filteredScores.forEach((score) => {

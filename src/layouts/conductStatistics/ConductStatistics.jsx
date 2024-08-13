@@ -136,7 +136,7 @@ export default function ComponentMark() {
   };
 
   const handleDetails = (rowItem) => {
-    console.log("Details row:", rowItem);
+    // console.log("Details row:", rowItem);
     // Implement delete logic here
   };
 

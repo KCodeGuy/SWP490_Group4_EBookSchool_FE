@@ -151,37 +151,39 @@ const TableMarkAllStudentsComponent = ({
                 <td>{index + 1}</td>
                 <td className="px-1">{student.fullName}</td>
                 <td className="px-1">{student.id}</td>
-                {student.subjectAverages.length > 0
-                  ? student.subjectAverages.map((subject, index) =>
-                      semester == "Học kỳ I" ? (
-                        <td key={index}>
-                          {subject.averageSemester1 != -1 && subject.averageSemester1 != 0 ? (
-                            <span>{subject.averageSemester1}</span>
-                          ) : (
-                            "_"
-                          )}
-                        </td>
-                      ) : semester == "Học kỳ II" ? (
-                        <td key={index}>
-                          {subject.averageSemester2 != -1 && subject.averageSemester2 != 0 ? (
-                            <span>{subject.averageSemester2}</span>
-                          ) : (
-                            "_"
-                          )}
-                        </td>
-                      ) : semester == "Cả năm" ? (
-                        <td key={index}>
-                          {subject.averageWholeYear != -1 && subject.averageWholeYear != 0 ? (
-                            <span>{subject.averageWholeYear}</span>
-                          ) : (
-                            "_"
-                          )}
-                        </td>
-                      ) : (
-                        <td key={index}>_</td>
-                      )
+                {student.subjectAverages.length > 0 ? (
+                  student.subjectAverages.map((subject, index) =>
+                    semester == "Học kỳ I" ? (
+                      <td key={index}>
+                        {subject.averageSemester1 != -1 && subject.averageSemester1 != 0 ? (
+                          <span>{subject.averageSemester1}</span>
+                        ) : (
+                          "_"
+                        )}
+                      </td>
+                    ) : semester == "Học kỳ II" ? (
+                      <td key={index}>
+                        {subject.averageSemester2 != -1 && subject.averageSemester2 != 0 ? (
+                          <span>{subject.averageSemester2}</span>
+                        ) : (
+                          "_"
+                        )}
+                      </td>
+                    ) : semester == "Cả năm" ? (
+                      <td key={index}>
+                        {subject.averageWholeYear != -1 && subject.averageWholeYear != 0 ? (
+                          <span>{subject.averageWholeYear}</span>
+                        ) : (
+                          "_"
+                        )}
+                      </td>
+                    ) : (
+                      <td key={index}>_</td>
                     )
-                  : "_"}
+                  )
+                ) : (
+                  <td key={index}>_</td>
+                )}
                 <td>
                   {semester == "Học kỳ I" ? (
                     <span className={renderAverageMarkStyles(student.totalAverageSemester1)}>

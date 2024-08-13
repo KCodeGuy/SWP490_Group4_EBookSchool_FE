@@ -269,7 +269,6 @@ export default function AccountManagement() {
 
         if (result?.roles) {
           const roles = result?.roles?.toString();
-          console.log(roles);
           if (roles.includes("Admin")) {
             setValue("roleAmin", true);
           }
@@ -332,7 +331,7 @@ export default function AccountManagement() {
   );
 
   const handleEditSubject = (data) => {
-    console.log("Chạy vô đây", data);
+    // console.log("Chạy vô đây", data);
     const permissionKeys = Object.keys(data).filter((key) => key.startsWith("is") && data[key]);
     const roleKeys = Object.keys(data).filter((key) => key.startsWith("role") && data[key]);
 
@@ -401,7 +400,6 @@ export default function AccountManagement() {
         appearance: "error",
       });
     } else if (roles?.length > 0 && isCorrectOtherValue) {
-      console.log("update data: ", newObj);
       updateTeacherMutation.mutate(newObj);
     }
   };

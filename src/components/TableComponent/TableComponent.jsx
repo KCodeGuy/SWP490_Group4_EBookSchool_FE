@@ -282,7 +282,7 @@ function TableComponent({
           </tbody>
         </table>
         <div
-          className={`pagination-table overflow-scroll border py-2 flex justify-between items-center px-3 w-full ${
+          className={`pagination-table border py-2 flex justify-between items-center px-3 w-full ${
             !isPaginate ? "hidden" : ""
           }`}
         >

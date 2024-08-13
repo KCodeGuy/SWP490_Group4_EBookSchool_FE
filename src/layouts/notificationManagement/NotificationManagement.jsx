@@ -322,15 +322,15 @@ export default function NotificationManagement() {
               <h4 className="text-xl font-bold ml-3">QUẢN LÍ THÔNG BÁO</h4>
             </div>
           </div>
-          <div className="flex justify-between items-center mt-5">
-            <div className="">
+          <div className="mt-4 grid max-[693px]:grid-cols-1 md:grid-cols-2 gap-1 max-[693px]:mt-6">
+            <div className="flex justify-start max-[639px]:flex-wrap">
               <FormControl sx={{ minWidth: 120 }}>
                 <InputLabel id="select-school-year-label">Năm</InputLabel>
                 <Select
                   labelId="select-school-year-label"
                   id="select-school-year"
                   value={schoolYear}
-                  className="h-10 mr-2 max-[639px]:mb-4"
+                  className="h-10 mr-0"
                   label="Năm"
                   onChange={handleSchoolYearSelectedChange}
                 >
@@ -341,11 +341,17 @@ export default function NotificationManagement() {
                   ))}
                 </Select>
               </FormControl>
-              <ButtonComponent type="success" onClick={handleFilterNotificationByYear}>
-                <FilterAltIcon className="mr-1" /> TÌM KIẾM
-              </ButtonComponent>
+              <div className="max-[639px]:w-full max-[639px]:ml-0 mt-3 ml-2 sm:mt-0">
+                <ButtonComponent
+                  className="max-[639px]:w-full"
+                  type="success"
+                  onClick={handleFilterNotificationByYear}
+                >
+                  <FilterAltIcon className="mr-1" /> TÌM KIẾM
+                </ButtonComponent>
+              </div>
             </div>
-            <div className="flex items-center">
+            <div className="w-full flex justify-end max-[639px]:justify-between items-center mt-3 sm:mt-0 ">
               <SearchInputComponent
                 onSearch={handleChangeSearchValue}
                 placeHolder="Nhập từ khóa..."
@@ -408,7 +414,7 @@ export default function NotificationManagement() {
                         <p className="error-color mt-1 text-base">Không được bỏ trống!</p>
                       )}
                     </div>
-                    <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi tạo!" />
+                    <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ trước khi tạo!" />
                     <div className="mt-4 flex justify-end">
                       <ButtonComponent
                         type="error"
@@ -526,7 +532,7 @@ export default function NotificationManagement() {
                     placeholder="Nhập nội dung thông báo..."
                   />
                 </div>
-                <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi cập nhật!" />
+                <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ trước khi cập nhật!" />
                 <div className="mt-4 flex justify-end">
                   <ButtonComponent
                     type="error"

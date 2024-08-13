@@ -59,7 +59,7 @@ function Footer({ company, links }) {
         fontSize={size.sm}
         px={1.5}
       >
-        &copy; {new Date().getFullYear()}, Online-Register-Notebook - bản quyền thuộc về ORB.
+        &copy; 2024, Online-Register-Notebook - bản quyền thuộc về ORB.
       </MDBox>
       <MDBox
         component="ul"

@@ -437,7 +437,7 @@ export default function SubjectManagement() {
               <h4 className="text-xl font-bold ml-3">QUẢN LÍ MÔN HỌC</h4>
             </div>
           </div>
-          <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
+          <div className="mt-4 grid max-[693px]:grid-cols-1 md:grid-cols-2 gap-1 max-[693px]:mt-6">
             <div className="flex justify-start max-[639px]:flex-wrap">
               <FormControl sx={{ minWidth: 120, marginRight: "12px" }}>
                 <InputLabel id="select-school-year-lable" className="w-fit">
@@ -458,13 +458,17 @@ export default function SubjectManagement() {
                   ))}
                 </Select>
               </FormControl>
-              <div className="max-[639px]:mt-2">
-                <ButtonComponent type="success" onClick={handleStatistic}>
+              <div className="max-[639px]:w-full max-[639px]:ml-0 mt-3 ml-2 sm:mt-0">
+                <ButtonComponent
+                  className="max-[639px]:w-full"
+                  type="success"
+                  onClick={handleStatistic}
+                >
                   <FilterAltIcon className="mr-1" /> TÌM KIẾM
                 </ButtonComponent>
               </div>
             </div>
-            <div className="flex justify-end items-center sm:w-full sm:flex-wrap ">
+            <div className="w-full flex justify-end max-[639px]:justify-between items-center mt-3 sm:mt-0">
               <SearchInputComponent
                 onSearch={handleChangeSearchValue}
                 placeHolder="Nhập từ khóa..."
@@ -567,7 +571,9 @@ export default function SubjectManagement() {
                         </ButtonComponent>
                       </div>
                     </form>
-                    <p className="text-sm font-bold">TẤT CẢ CỘT ĐIỂM({markFactors?.length})</p>
+                    <p className="text-sm font-bold max-[639px]:my-3">
+                      TẤT CẢ CỘT ĐIỂM({markFactors?.length})
+                    </p>
                     <TableComponent
                       header={["Tên", "Kì học", "Số lượng", "Hệ số"]}
                       data={markFactors?.map((item) => [
@@ -635,7 +641,9 @@ export default function SubjectManagement() {
                         </ButtonComponent>
                       </div>
                     </form>
-                    <p className="text-sm font-bold">TẤT CẢ GIÁO ÁN({markFactors?.length})</p>
+                    <p className="text-sm font-bold max-[639px]:my-3">
+                      TẤT CẢ GIÁO ÁN({markFactors?.length})
+                    </p>
                     <TableComponent
                       header={["Tên bài học", "Tiêt thứ"]}
                       data={lessonPlans?.map((item) => [item.id, item.title, item.slot])}
@@ -853,7 +861,7 @@ export default function SubjectManagement() {
                     />
                   </div>
                   <NotifyCheckInfoForm actionText="Hãy chuyển sang tab tiếp theo để tiếp tục cập nhật!" />
-                  <div className="mt-4 flex justify-end min-w-fit-table">
+                  <div className="mt-4 flex justify-end sm:min-w-fit-table max-[639px]:mb-3">
                     <ButtonComponent
                       type="error"
                       action="reset"
@@ -870,7 +878,9 @@ export default function SubjectManagement() {
                     </ButtonComponent>
                   </div>
                 </form>
-                <p className="text-sm font-bold mt-3">TẤT CẢ CỘT ĐIỂM({markFactors?.length})</p>
+                <p className="text-sm font-bold mt-3 max-[639px]:my-3">
+                  TẤT CẢ CỘT ĐIỂM({markFactors?.length})
+                </p>
                 <TableComponent
                   header={["Tên", "Kì học", "Số lượng", "Hệ số"]}
                   data={markFactors?.map((item) => [
@@ -921,7 +931,7 @@ export default function SubjectManagement() {
                     />
                   </div>
                   <NotifyCheckInfoForm actionText="Hãy chuyển sang tab tiếp theo để tiếp tục tạo!" />
-                  <div className="mt-4 flex justify-end min-w-fit-table">
+                  <div className="mt-4 flex justify-end sm:min-w-fit-table max-[639px]:mb-3">
                     <ButtonComponent
                       type="error"
                       action="reset"
@@ -938,7 +948,9 @@ export default function SubjectManagement() {
                     </ButtonComponent>
                   </div>
                 </form>
-                <p className="text-sm font-bold mt-3">TẤT CẢ GIÁO ÁN({lessonPlans?.length})</p>
+                <p className="text-sm font-bold mt-3 max-[639px]:my-3">
+                  TẤT CẢ GIÁO ÁN({lessonPlans?.length})
+                </p>
                 <TableComponent
                   header={["Tên bài học", "Tiêt thứ"]}
                   data={lessonPlans?.map((item) => [item.id, item.title, item.slot])}

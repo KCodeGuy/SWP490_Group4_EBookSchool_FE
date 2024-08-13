@@ -144,9 +144,9 @@ export default function LogManagement() {
             <HistoryIcon />
             <h4 className="text-xl font-bold ml-3">GHI LOG</h4>
           </div>
-          <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
+          <div className="mt-4 grid max-[693px]:grid-cols-1 sm:grid-cols-2 gap-1 max-[693px]:mt-6">
             {/* School Year Select */}
-            <div className="flex justify-start max-[639px]:flex-wrap">
+            <div className="flex justify-start max-[639px]:flex-wrap flex-nowrap">
               <FormControl sx={{ minWidth: 120 }}>
                 <InputLabel id="select-school-year-lable">Thao tác</InputLabel>
                 <Select
@@ -164,13 +164,17 @@ export default function LogManagement() {
                   ))}
                 </Select>
               </FormControl>
-              <div className="max-[639px]:mt-2 ml-3">
-                <ButtonComponent type="success" onClick={handleStatistic}>
+              <div className="max-[639px]:w-full max-[639px]:ml-0 mt-3 ml-2 sm:mt-0">
+                <ButtonComponent
+                  className="max-[639px]:w-full"
+                  type="success"
+                  onClick={handleStatistic}
+                >
                   <FilterAltIcon className="" /> TÌM KIẾM
                 </ButtonComponent>
               </div>
             </div>
-            <div className="flex justify-end items-center sm:w-full sm:flex-wrap ">
+            <div className="w-full flex justify-end max-[639px]:justify-between items-center mt-3 sm:mt-0">
               <SearchInputComponent
                 onSearch={handleChangeSearchValue}
                 placeHolder="Nhập từ khóa..."

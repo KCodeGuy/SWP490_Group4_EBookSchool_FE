@@ -179,9 +179,9 @@ export default function SystemSetting() {
               <h4 className="text-xl font-bold ml-3">CÀI ĐẶT HỆ THỐNG</h4>
             </div>
           </div>
-          <div className="text-right">
-            <ButtonComponent onClick={handleOpenModalEdit}>
-              <BorderColorIcon className="text-3xl mr-1" />
+          <div className="sm:text-right max-[639px]:w-full max-[639px]:mt-4 max-[639px]:mb-4">
+            <ButtonComponent className="max-[639px]:w-full" onClick={handleOpenModalEdit}>
+              <BorderColorIcon className="text-3xl mr-1 " />
               CẬP NHẬT
             </ButtonComponent>
           </div>
@@ -403,7 +403,7 @@ export default function SystemSetting() {
                     {data?.schoolLevel || "Chưa có dữ liệu!"}
                   </span>
                 </div>
-                <div className="flex items-center mt-4">
+                <div className="flex items-center mt-4 max-[639px]:mb-4">
                   <LocationOnIcon />
                   <span className="text-base font-bold mx-2">Địa chỉ: </span>
                   <span className="text-sm text-color">
@@ -436,7 +436,7 @@ export default function SystemSetting() {
                     alt="Ảnh nổi bật 1"
                   />
                 </div>
-                <div className="flex items-center mt-4">
+                <div className="flex items-center mt-4 max-[639px]:mb-4">
                   <FilterIcon />
                   <span className="text-base font-bold mx-2">Ảnh nổi bật(3): </span>
                   <img

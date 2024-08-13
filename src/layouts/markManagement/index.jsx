@@ -389,10 +389,7 @@ export default function MarkManagement() {
                 </Select>
               </FormControl>
 
-              {(userRole.includes(PRINCIPAL_ROLE) ||
-                userRole.includes(SUBJECT_ROLE) ||
-                userRole.includes(HOMEROOM_ROLE)) &&
-              value != 1 ? (
+              {value != 1 ? (
                 <FormControl sx={{ minWidth: 120 }}>
                   <InputLabel id="select-school-subject-lable">Môn học</InputLabel>
                   <Select
@@ -432,7 +429,7 @@ export default function MarkManagement() {
                       setModalAdd(true);
                     }}
                   >
-                    <AddCircleOutlineIcon className="text-3xl mr-1" />
+                    <AddCircleOutlineIcon className="text-3xl mr-1 max-[639px]:hidden" />
                     NHẬP ĐIỂM
                   </ButtonComponent>
                   <ButtonComponent
@@ -442,7 +439,7 @@ export default function MarkManagement() {
                       setModalAdd(true);
                     }}
                   >
-                    <BorderColorIcon className="text-3xl mr-1" />
+                    <BorderColorIcon className="text-3xl mr-1 max-[639px]:hidden" />
                     CẬP NHẬT
                   </ButtonComponent>
                 </div>
@@ -654,7 +651,7 @@ export default function MarkManagement() {
                               labelId="select-school-semester-lable"
                               id="select-school-semester"
                               value={schoolSemester}
-                              className="h-10 mr-2 max-[639px]:mb-4"
+                              className="h-10 max-[639px]:mb-4"
                               label="Học kỳ"
                               onChange={handleSemesterChange}
                             >
@@ -753,7 +750,7 @@ export default function MarkManagement() {
                                 labelId="select-school-semester-lable"
                                 id="select-school-semester"
                                 value={schoolSemester}
-                                className="h-10 mr-2 max-[639px]:mb-4"
+                                className="h-10 max-[639px]:mb-4"
                                 label="Học kỳ"
                                 onChange={handleSemesterChange}
                               >

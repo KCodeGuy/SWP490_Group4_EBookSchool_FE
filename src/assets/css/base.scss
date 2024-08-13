@@ -213,8 +213,12 @@ $dark-hover-color: #505e77;
   z-index: 10 !important;
 }
 
-// @media (max-width: 992px) {
-//   .css-7qqlnw-MuiListItemIcon-root {
-//     color: $dark-color !important;
-//   }
-// }
+@media (min-width: 1900px) {
+  .css-10wg2pg-MuiDrawer-docked .MuiDrawer-paper {
+    display: none !important;
+  }
+}
+
+.hidden-ipt {
+  display: none !important;
+}

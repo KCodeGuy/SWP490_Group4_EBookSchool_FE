@@ -340,7 +340,7 @@ export default function StudentAccountManagement() {
               <h4 className="text-xl font-bold ml-3">QUẢN LÍ HỌC SINH</h4>
             </div>
           </div>
-          <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
+          <div className="mt-4 grid max-[693px]:grid-cols-1 md:grid-cols-2 gap-1 max-[693px]:mt-6">
             <div className="flex justify-start max-[639px]:flex-wrap">
               <FormControl sx={{ minWidth: 120 }}>
                 <InputLabel id="select-school-year-lable">Sắp xếp theo</InputLabel>
@@ -359,13 +359,17 @@ export default function StudentAccountManagement() {
                   ))}
                 </Select>
               </FormControl>
-              <div className="max-[639px]:mt-2 ml-3">
-                <ButtonComponent type="success" onClick={handleSortStudent}>
+              <div className="max-[639px]:w-full max-[639px]:ml-0 mt-3 ml-2 sm:mt-0">
+                <ButtonComponent
+                  type="success"
+                  className="max-[639px]:w-full"
+                  onClick={handleSortStudent}
+                >
                   <SwapVertIcon className="text-3xl mr-1" /> SẮP XẾP
                 </ButtonComponent>
               </div>
             </div>
-            <div className="flex justify-end items-center sm:w-full sm:flex-wrap ">
+            <div className="w-full flex justify-end max-[639px]:justify-between items-center mt-3 sm:mt-0 ">
               <SearchInputComponent
                 onSearch={handleChangeSearchValue}
                 placeHolder="Nhập từ khóa..."
@@ -390,10 +394,10 @@ export default function StudentAccountManagement() {
                   {/* Content for Tab 1 */}
                   <div role="tabpanel" hidden={currentTab !== 0}>
                     <form onSubmit={handleSubmit(handleAddStudentManually)}>
-                      <div className="flex">
+                      <div className="sm:flex">
                         <InputBaseComponent
                           type="text"
-                          className="w-1/2 mr-2"
+                          className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                           control={control}
                           name="fullName"
                           placeholder="Nguyễn Văn A"
@@ -406,7 +410,7 @@ export default function StudentAccountManagement() {
                         />
                         <InputBaseComponent
                           type="email"
-                          className="w-1/2  mr-2"
+                          className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                           control={control}
                           setValue={noSetValue}
                           name="email"
@@ -424,7 +428,7 @@ export default function StudentAccountManagement() {
                         <InputBaseComponent
                           type="text"
                           label="Số điện thoại"
-                          className="w-1/2"
+                          className="sm:w-1/2 max-[639px]-full"
                           control={control}
                           setValue={noSetValue}
                           name="phone"
@@ -439,10 +443,10 @@ export default function StudentAccountManagement() {
                           }}
                         />
                       </div>
-                      <div className="flex">
+                      <div className="sm:flex">
                         <InputBaseComponent
                           type="date"
-                          className="w-1/2 mr-2"
+                          className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                           control={control}
                           setValue={noSetValue}
                           name="birthday"
@@ -454,7 +458,7 @@ export default function StudentAccountManagement() {
                         />
                         <InputBaseComponent
                           type="select"
-                          className="w-1/2 mr-2"
+                          className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                           control={control}
                           setValue={noSetValue}
                           name="gender"
@@ -465,7 +469,7 @@ export default function StudentAccountManagement() {
                         <InputBaseComponent
                           type="select"
                           label="Dân tộc"
-                          className="w-1/2"
+                          className="sm:w-1/2 max-[639px]-full"
                           control={control}
                           setValue={noSetValue}
                           name="nation"
@@ -473,10 +477,10 @@ export default function StudentAccountManagement() {
                           options={nationOptions}
                         />
                       </div>
-                      <div className="flex justify-between">
+                      <div className="sm:flex justify-between">
                         <InputBaseComponent
                           type="text"
-                          className="w-1/2 mr-2"
+                          className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                           control={control}
                           setValue={noSetValue}
                           name="fatherFullName"
@@ -489,7 +493,7 @@ export default function StudentAccountManagement() {
                         />
                         <InputBaseComponent
                           type="text"
-                          className="w-1/2 mr-2"
+                          className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                           control={control}
                           setValue={noSetValue}
                           placeholder="Làm nông"
@@ -503,7 +507,7 @@ export default function StudentAccountManagement() {
 
                         <InputBaseComponent
                           type="text"
-                          className="w-1/2"
+                          className="sm:w-1/2 max-[639px]-full"
                           control={control}
                           setValue={noSetValue}
                           name="fatherPhone"
@@ -519,10 +523,10 @@ export default function StudentAccountManagement() {
                           }}
                         />
                       </div>
-                      <div className="flex justify-between">
+                      <div className="sm:flex justify-between">
                         <InputBaseComponent
                           type="text"
-                          className="w-1/2 mr-2"
+                          className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                           control={control}
                           setValue={noSetValue}
                           name="motherFullName"
@@ -535,7 +539,7 @@ export default function StudentAccountManagement() {
                         />
                         <InputBaseComponent
                           type="text"
-                          className="w-1/2 mr-2"
+                          className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                           control={control}
                           setValue={noSetValue}
                           name="motherProfession"
@@ -549,7 +553,7 @@ export default function StudentAccountManagement() {
 
                         <InputBaseComponent
                           type="text"
-                          className="w-1/2"
+                          className="sm:w-1/2 max-[639px]-full"
                           control={control}
                           setValue={noSetValue}
                           name="motherPhone"
@@ -722,10 +726,10 @@ export default function StudentAccountManagement() {
               onClose={() => setModalEditOpen(false)}
             >
               <form onSubmit={handleSubmitEditAction(handleEditSubject)}>
-                <div className="flex">
+                <div className="sm:flex">
                   <InputBaseComponent
                     type="text"
-                    className="w-1/2 mr-2"
+                    className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                     control={controlEditAction}
                     name="fullName"
                     placeholder="Nguyen Van A"
@@ -738,7 +742,7 @@ export default function StudentAccountManagement() {
                   />
                   <InputBaseComponent
                     type="email"
-                    className="w-1/2  mr-2"
+                    className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                     control={controlEditAction}
                     setValue={setValue}
                     name="email"
@@ -756,7 +760,7 @@ export default function StudentAccountManagement() {
                   <InputBaseComponent
                     type="text"
                     label="Số điện thoại"
-                    className="w-1/2"
+                    className="sm:w-1/2  max-[639px]-full"
                     control={controlEditAction}
                     setValue={setValue}
                     name="phone"
@@ -771,10 +775,10 @@ export default function StudentAccountManagement() {
                     }}
                   />
                 </div>
-                <div className="flex">
+                <div className="sm:flex">
                   <InputBaseComponent
                     type="date"
-                    className="w-1/2 mr-2"
+                    className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                     control={controlEditAction}
                     setValue={setValue}
                     name="birthday"
@@ -786,7 +790,7 @@ export default function StudentAccountManagement() {
                   />
                   <InputBaseComponent
                     type="select"
-                    className="w-1/2 mr-2"
+                    className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                     control={controlEditAction}
                     setValue={setValue}
                     name="gender"
@@ -798,7 +802,7 @@ export default function StudentAccountManagement() {
                   <InputBaseComponent
                     type="select"
                     label="Dân tộc"
-                    className="w-1/2"
+                    className="sm:w-1/2 max-[639px]-full"
                     control={controlEditAction}
                     setValue={setValue}
                     name="nation"
@@ -807,11 +811,10 @@ export default function StudentAccountManagement() {
                     options={nationOptions}
                   />
                 </div>
-                <div className="flex"></div>
-                <div className="flex justify-between">
+                <div className="sm:flex justify-between">
                   <InputBaseComponent
                     type="text"
-                    className="w-1/2 mr-2"
+                    className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                     control={controlEditAction}
                     setValue={setValue}
                     name="fatherFullName"
@@ -824,7 +827,7 @@ export default function StudentAccountManagement() {
                   />
                   <InputBaseComponent
                     type="text"
-                    className="w-1/2 mr-2"
+                    className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                     control={controlEditAction}
                     setValue={setValue}
                     placeholder="Làm nông"
@@ -838,7 +841,7 @@ export default function StudentAccountManagement() {
 
                   <InputBaseComponent
                     type="text"
-                    className="w-1/2"
+                    className="sm:w-1/2 max-[639px]-full"
                     control={controlEditAction}
                     setValue={setValue}
                     name="fatherPhone"
@@ -855,10 +858,10 @@ export default function StudentAccountManagement() {
                   />
                 </div>
 
-                <div className="flex justify-between">
+                <div className="sm:flex justify-between">
                   <InputBaseComponent
                     type="text"
-                    className="w-1/2 mr-2"
+                    className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                     control={controlEditAction}
                     setValue={setValue}
                     name="motherFullName"
@@ -871,7 +874,7 @@ export default function StudentAccountManagement() {
                   />
                   <InputBaseComponent
                     type="text"
-                    className="w-1/2 mr-2"
+                    className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                     control={controlEditAction}
                     setValue={setValue}
                     name="motherProfession"
@@ -885,7 +888,7 @@ export default function StudentAccountManagement() {
 
                   <InputBaseComponent
                     type="text"
-                    className="w-1/2"
+                    className="sm:w-1/2 max-[639px]-full"
                     control={controlEditAction}
                     setValue={setValue}
                     name="motherPhone"
@@ -949,7 +952,7 @@ export default function StudentAccountManagement() {
                     />
                   )}
                 </div>
-                <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi cập nhật!" />
+                <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ trước khi cập nhật!" />
                 <div className="mt-4 flex justify-end">
                   <ButtonComponent
                     type="error"

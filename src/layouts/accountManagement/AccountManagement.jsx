@@ -506,7 +506,7 @@ export default function AccountManagement() {
               <h4 className="text-xl font-bold ml-3">QUẢN LÍ GIÁO VIÊN</h4>
             </div>
           </div>
-          <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
+          <div className="mt-4 grid max-[693px]:grid-cols-1 md:grid-cols-2 gap-1 max-[693px]:mt-6">
             <div className="flex justify-start max-[639px]:flex-wrap">
               <FormControl sx={{ minWidth: 120 }}>
                 <InputLabel id="select-school-year-lable">Sắp xếp theo</InputLabel>
@@ -525,13 +525,17 @@ export default function AccountManagement() {
                   ))}
                 </Select>
               </FormControl>
-              <div className="max-[639px]:mt-2 ml-3">
-                <ButtonComponent type="success" onClick={handleSortTeacher}>
+              <div className="max-[639px]:w-full max-[639px]:ml-0 mt-3 ml-2 sm:mt-0">
+                <ButtonComponent
+                  type="success"
+                  className="max-[639px]:w-full"
+                  onClick={handleSortTeacher}
+                >
                   <SwapVertIcon className="text-3xl mr-1" /> SẮP XẾP
                 </ButtonComponent>
               </div>
             </div>
-            <div className="flex justify-end items-center sm:w-full sm:flex-wrap ">
+            <div className="w-full flex justify-end max-[639px]:justify-between items-center mt-3 sm:mt-0 ">
               <SearchInputComponent
                 onSearch={handleChangeSearchValue}
                 placeHolder="Nhập từ khóa..."
@@ -603,10 +607,10 @@ export default function AccountManagement() {
                   {/* Content for Tab 2 */}
                   <div role="tabpanel" hidden={currentTab == 1}>
                     <form onSubmit={handleSubmit(handleAddInfomation)}>
-                      <div className="flex">
+                      <div className="sm:flex">
                         <InputBaseComponent
                           placeholder="Nguyen Van A"
-                          className="w-1/2 mr-2"
+                          className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                           type="text"
                           control={control}
                           setValue={noSetValue}
@@ -619,7 +623,7 @@ export default function AccountManagement() {
                         />
                         <InputBaseComponent
                           placeholder="Nhập ngày sinh"
-                          className="w-1/2 mr-2"
+                          className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                           type="date"
                           control={control}
                           setValue={noSetValue}
@@ -632,7 +636,7 @@ export default function AccountManagement() {
                         />
                         <InputBaseComponent
                           type="select"
-                          className="w-1/2 "
+                          className="sm:w-1/2 max-[639px]-full"
                           control={control}
                           setValue={noSetValue}
                           name="gender"
@@ -642,11 +646,11 @@ export default function AccountManagement() {
                         />
                       </div>
 
-                      <div className="w-full flex">
+                      <div className="w-full sm:flex">
                         <InputBaseComponent
                           type="select"
                           label="Dân tộc"
-                          className="w-1/2 mr-2"
+                          className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                           control={control}
                           setValue={noSetValue}
                           name="nation"
@@ -655,7 +659,7 @@ export default function AccountManagement() {
                         />
                         <InputBaseComponent
                           placeholder="gv@gmail.com"
-                          className="w-1/2 mr-2"
+                          className="sm:w-1/2 sm:mr-2 max-[639px]-full"
                           type="email"
                           control={control}
                           setValue={noSetValue}
@@ -672,7 +676,7 @@ export default function AccountManagement() {
                         />
                         <InputBaseComponent
                           placeholder="0234123470"
-                          className="w-1/2"
+                          className="sm:w-1/2 max-[639px]-full"
                           type="text"
                           control={control}
                           setValue={noSetValue}
@@ -688,7 +692,7 @@ export default function AccountManagement() {
                           }}
                         />
                       </div>
-                      <div className="flex mt-2">
+                      <div className="sm:flex mt-2">
                         <InputBaseComponent
                           type="checkbox"
                           className="mr-3"
@@ -972,10 +976,10 @@ export default function AccountManagement() {
               {/* Content for Tab 2 */}
               <div role="tabpanel" hidden={currentTabEdit == 1}>
                 <form onSubmit={handleSubmit(handleAddInfomation)}>
-                  <div className="flex">
+                  <div className="sm:flex">
                     <InputBaseComponent
                       placeholder="Nguyen Van A"
-                      className="w-1/2 mr-2"
+                      className="sm:w-1/2 sm:mr-2 max-[639px]:w-full"
                       type="text"
                       control={controlEditAction}
                       setValue={setValue}
@@ -988,7 +992,7 @@ export default function AccountManagement() {
                     />
                     <InputBaseComponent
                       placeholder="Nhập ngày sinh"
-                      className="w-1/2 mr-2"
+                      className="sm:w-1/2 sm:mr-2 max-[639px]:w-full"
                       type="date"
                       control={controlEditAction}
                       setValue={setValue}
@@ -1001,7 +1005,7 @@ export default function AccountManagement() {
                     />
                     <InputBaseComponent
                       type="select"
-                      className="w-1/2 "
+                      className="sm:w-1/2 max-[639px]:w-full"
                       control={controlEditAction}
                       setValue={setValue}
                       name="gender"
@@ -1011,11 +1015,11 @@ export default function AccountManagement() {
                     />
                   </div>
 
-                  <div className="w-full flex">
+                  <div className="w-full sm:flex">
                     <InputBaseComponent
                       type="select"
                       label="Dân tộc"
-                      className="w-1/2 mr-2"
+                      className="sm:w-1/2 sm:mr-2 max-[639px]:w-full"
                       control={controlEditAction}
                       setValue={setValue}
                       name="nation"
@@ -1024,7 +1028,7 @@ export default function AccountManagement() {
                     />
                     <InputBaseComponent
                       placeholder="gv@gmail.com"
-                      className="w-1/2 mr-2"
+                      className="sm:w-1/2 sm:mr-2 max-[639px]:w-full"
                       type="email"
                       control={controlEditAction}
                       setValue={setValue}
@@ -1041,7 +1045,7 @@ export default function AccountManagement() {
                     />
                     <InputBaseComponent
                       placeholder="0234123470"
-                      className="w-1/2"
+                      className="sm:w-1/2 max-[639px]:w-full"
                       type="text"
                       control={controlEditAction}
                       setValue={setValue}
@@ -1057,7 +1061,7 @@ export default function AccountManagement() {
                       }}
                     />
                   </div>
-                  <div className="flex mt-2">
+                  <div className="sm:flex mt-2">
                     <InputBaseComponent
                       type="checkbox"
                       className="mr-3"

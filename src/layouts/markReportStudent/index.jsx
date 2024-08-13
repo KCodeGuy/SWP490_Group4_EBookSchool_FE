@@ -336,7 +336,11 @@ export default function MarkReportStudent() {
                 ""
               )}
 
-              <ButtonComponent type="success" onClick={handleFilterMark}>
+              <ButtonComponent
+                type="success"
+                className="max-[639px]:w-full"
+                onClick={handleFilterMark}
+              >
                 <FilterAltIcon className="mr-1" /> TÌM KIẾM
               </ButtonComponent>
             </div>
@@ -347,7 +351,12 @@ export default function MarkReportStudent() {
               {userRole.includes(STUDENT_ROLE) ? (
                 <>
                   <div className="text-center mt-10 uppercase">
-                    <h4 className="text-xl font-bold">Bảng điểm {`(${currentUser?.fullname})`}</h4>
+                    <h4 className="text-xl font-bold max-[639px]:hidden">
+                      Bảng điểm {`(${currentUser?.fullname})`}
+                    </h4>
+                    <h4 className="text-xl font-bold hidden max-[639px]:block">
+                      Bảng điểm <br /> {`(${currentUser?.fullname})`}
+                    </h4>
                     <h4 className="text-xl font-bold">Năm học {schoolYear}</h4>
                     <h4 className="text-xl font-bold">
                       Môn {schoolSubject}({schoolSemester})
@@ -363,8 +372,8 @@ export default function MarkReportStudent() {
                     </div>
                   ) : currentOfStudentsMarkBySubject?.details?.length > 0 ? (
                     <>
-                      <div className="flex flex-nowrap justify-between icon-custom mt-5">
-                        <div className="flex">
+                      <div className="flex flex-nowrap max-[639px]:flex-wrap justify-between icon-custom mt-5">
+                        <div className="flex max-[639px]:flex-wrap">
                           <div className="text-sm mr-4 flex">
                             <div className="mr-2">
                               <span className="mr-2 font-bold">Lớp: </span>
@@ -373,7 +382,7 @@ export default function MarkReportStudent() {
                               </span>
                             </div>
                           </div>
-                          <div className="text-sm mr-4 flex">
+                          <div className="text-sm mr-4 flex max-[639px]:my-3">
                             <div className="mr-2">
                               <span className="mr-2 font-bold">Môn: </span>
                               <span className="text-center text-white px-3 py-2 leading-8 rounded bg-primary-color">
@@ -393,7 +402,7 @@ export default function MarkReportStudent() {
                                 labelId="select-school-semester-lable"
                                 id="select-school-semester"
                                 value={schoolSemester}
-                                className="h-10 mr-2 max-[639px]:mb-4"
+                                className="h-10 max-[639px]:mb-4"
                                 label="Học kỳ"
                                 onChange={handleSemesterChange}
                               >
@@ -482,7 +491,12 @@ export default function MarkReportStudent() {
           <TabPanel value={value} index={1}>
             <>
               <div className="text-center mt-10 uppercase">
-                <h4 className="text-xl font-bold">Bảng điểm {`(${currentUser?.fullname})`}</h4>
+                <h4 className="text-xl font-bold max-[639px]:hidden">
+                  Bảng điểm {`(${currentUser?.fullname})`}
+                </h4>
+                <h4 className="text-xl font-bold hidden max-[639px]:block">
+                  Bảng điểm <br /> {`(${currentUser?.fullname})`}
+                </h4>
                 <h4 className="text-xl font-bold">Năm học {schoolYear}</h4>
                 <h4 className="text-xl font-bold">{schoolSemester}</h4>
               </div>
@@ -513,7 +527,7 @@ export default function MarkReportStudent() {
                           labelId="select-school-semester-lable"
                           id="select-school-semester"
                           value={schoolSemester}
-                          className="h-10 mr-2 max-[639px]:mb-4"
+                          className="h-10 max-[639px]:mb-2"
                           label="Học kỳ"
                           onChange={handleSemesterChange}
                         >

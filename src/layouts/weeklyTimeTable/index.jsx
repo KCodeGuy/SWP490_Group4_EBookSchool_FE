@@ -545,7 +545,7 @@ export default function WeeklyTimeTable() {
 
             <div className="">
               {userRole.includes(PRINCIPAL_ROLE) || userRole.includes(HEADTEACHER_ROLE) ? (
-                <div className="flex items-center mt-3 md:mt-0 flex-1">
+                <div className="flex items-center flex-1 max-[890px]:mt-3">
                   <ButtonComponent
                     className=""
                     onClick={() => {

@@ -132,7 +132,7 @@ function TableComponent({
         <table className="w-full">
           <thead>
             <tr>
-              {isOrdered && <th className="w-8">STT.</th>}
+              {isOrdered && <th className="w-8 max-[639px]:w-4 max-[639px]:hidden">STT.</th>}
               {header?.map((column, index) => (
                 <th key={index}>{column}</th>
               ))}
@@ -144,7 +144,7 @@ function TableComponent({
                 </th>
               )}
               {showCheckboxes && <th className="w-20">Có mặt</th>}
-              {isShowActions && <th className="w-28">Thao tác</th>}
+              {isShowActions && <th className="w-28 max-[639px]:w-36">Thao tác</th>}
               {isShowNote && <th className="w-36">Nhập ghi chú</th>}
             </tr>
           </thead>
@@ -152,7 +152,7 @@ function TableComponent({
             {currentData?.length === 0 ? (
               <tr>
                 <td
-                  className="font-medium"
+                  className="font-medium "
                   colSpan={
                     header.length +
                     (isOrdered ? 1 : 0) +
@@ -166,7 +166,11 @@ function TableComponent({
             ) : (
               currentData?.map((row, rowIndex) => (
                 <tr key={rowIndex}>
-                  {isOrdered && <td>{startIndex + rowIndex + 1}</td>}
+                  {isOrdered && (
+                    <td className="max-[639px]:max-w-4 max-[639px]:hidden">
+                      {startIndex + rowIndex + 1}
+                    </td>
+                  )}
                   {isShowImage && (
                     <td className="text-center">
                       <div className="text-4xl primary-color">
@@ -231,7 +235,7 @@ function TableComponent({
                   )}
 
                   {isShowActions && (
-                    <td className="max-w-28">
+                    <td className="max-w-28 max-[639px]:max-w-36">
                       {onGet && (
                         <ButtonComponent
                           action="button"
@@ -278,7 +282,7 @@ function TableComponent({
           </tbody>
         </table>
         <div
-          className={`pagination-table border py-2 flex justify-between items-center px-3 max-[639px]:w-max max-[639px]:flex-wrap${
+          className={`pagination-table overflow-scroll border py-2 flex justify-between items-center px-3 w-full ${
             !isPaginate ? "hidden" : ""
           }`}
         >

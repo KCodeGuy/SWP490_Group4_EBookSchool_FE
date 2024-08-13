@@ -50,7 +50,7 @@ function Footer({ light }) {
             color={light ? "white" : "text"}
             fontSize={size.sm}
           >
-            &copy; {new Date().getFullYear()}, Online-Register-Notebook - bản quyền thuộc về ORB.
+            &copy; 2024, Online-Register-Notebook - bản quyền thuộc về ORB.
           </MDBox>
           <MDBox
             component="ul"

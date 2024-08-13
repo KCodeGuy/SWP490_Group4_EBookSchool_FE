@@ -200,9 +200,10 @@ function Header({ children, currentUser, permissions }) {
           </Grid>
           <Grid item xs={12} md={6} lg={4} sx={{ ml: "auto" }}>
             <AppBar position="static">
-              <div className="flex items-center justify-end">
+              <div className="flex items-center justify-end max-[639px]:flex-wrap">
                 <ButtonComponent
                   type="success"
+                  className="max-[639px]:w-full"
                   onClick={() => {
                     navigate("/authentication/reset-password");
                   }}
@@ -210,22 +211,24 @@ function Header({ children, currentUser, permissions }) {
                   <LockClockIcon className="mr-2" />
                   ĐỔI MẬT KHẨU
                 </ButtonComponent>
-                <ButtonComponent onClick={openEditModal}>
-                  <BorderColorIcon className="mr-2" />
-                  CẬP NHẬT
-                </ButtonComponent>
+                <div className="max-[639px]:w-full max-[639px]:mt-3  sm:ml-3">
+                  <ButtonComponent className="max-[639px]:w-full " onClick={openEditModal}>
+                    <BorderColorIcon className="mr-2" />
+                    CẬP NHẬT
+                  </ButtonComponent>
+                </div>
                 <PopupComponent
                   title="CẬP NHẬT"
                   description="Cập nhật tài khoản"
-                  icon={<EditNotifications />}
+                  icon={<BorderColorIcon />}
                   isOpen={modalEditOpen}
                   onClose={() => setModalEditOpen(false)}
                 >
                   <form onSubmit={handleSubmitEditAction(handleEdit)}>
-                    <div className="flex">
+                    <div className="sm:flex">
                       <InputBaseComponent
                         type="text"
-                        className="w-1/2 mr-2"
+                        className="sm:w-1/2 sm:mr-2 max-[639px]:w-full"
                         control={controlEditAction}
                         name="fullName"
                         placeholder="Nguyen Van A"
@@ -238,7 +241,7 @@ function Header({ children, currentUser, permissions }) {
                       />
                       <InputBaseComponent
                         type="email"
-                        className="w-1/2  mr-2"
+                        className="sm:w-1/2 sm:mr-2 max-[639px]:w-full"
                         control={controlEditAction}
                         setValue={setValue}
                         name="email"
@@ -251,7 +254,7 @@ function Header({ children, currentUser, permissions }) {
                       />
                       <InputBaseComponent
                         type="select"
-                        className="w-1/2 "
+                        className="sm:w-1/2  max-[639px]:w-full"
                         control={controlEditAction}
                         setValue={setValue}
                         name="gender"
@@ -260,10 +263,10 @@ function Header({ children, currentUser, permissions }) {
                         options={genderOptions}
                       />
                     </div>
-                    <div className="flex">
+                    <div className="sm:flex">
                       <InputBaseComponent
                         type="date"
-                        className="w-1/2 mr-2"
+                        className="sm:w-1/2 sm:mr-2 max-[639px]:w-full"
                         control={controlEditAction}
                         setValue={setValue}
                         name="birthday"
@@ -276,7 +279,7 @@ function Header({ children, currentUser, permissions }) {
                       <InputBaseComponent
                         type="select"
                         label="Dân tộc"
-                        className="w-1/2 mr-2"
+                        className="sm:w-1/2 sm:mr-2 max-[639px]:w-full"
                         control={controlEditAction}
                         setValue={setValue}
                         name="nation"
@@ -286,7 +289,7 @@ function Header({ children, currentUser, permissions }) {
                       <InputBaseComponent
                         type="text"
                         label="Số điện thoại"
-                        className="w-1/2"
+                        className="sm:w-1/2  max-[639px]:w-full"
                         control={controlEditAction}
                         setValue={setValue}
                         name="phone"
@@ -297,11 +300,10 @@ function Header({ children, currentUser, permissions }) {
                         }}
                       />
                     </div>
-                    <div className="flex"></div>
-                    <div className="flex justify-between">
+                    <div className="sm:flex justify-between">
                       <InputBaseComponent
                         type="text"
-                        className="w-1/2 mr-2"
+                        className="sm:w-1/2 sm:mr-2 max-[639px]:w-full"
                         control={controlEditAction}
                         setValue={setValue}
                         name="fatherFullName"
@@ -314,7 +316,7 @@ function Header({ children, currentUser, permissions }) {
                       />
                       <InputBaseComponent
                         type="text"
-                        className="w-1/2 mr-2"
+                        className="sm:w-1/2 sm:mr-2 max-[639px]:w-full"
                         control={controlEditAction}
                         setValue={setValue}
                         placeholder="Làm nông"
@@ -328,7 +330,7 @@ function Header({ children, currentUser, permissions }) {
 
                       <InputBaseComponent
                         type="text"
-                        className="w-1/2"
+                        className="sm:w-1/2  max-[639px]:w-full"
                         control={controlEditAction}
                         setValue={setValue}
                         name="fatherPhone"
@@ -341,10 +343,10 @@ function Header({ children, currentUser, permissions }) {
                       />
                     </div>
 
-                    <div className="flex justify-between">
+                    <div className="sm:flex justify-between">
                       <InputBaseComponent
                         type="text"
-                        className="w-1/2 mr-2"
+                        className="sm:w-1/2 sm:mr-2 max-[639px]:w-full"
                         control={controlEditAction}
                         setValue={setValue}
                         name="motherFullName"
@@ -357,7 +359,7 @@ function Header({ children, currentUser, permissions }) {
                       />
                       <InputBaseComponent
                         type="text"
-                        className="w-1/2 mr-2"
+                        className="sm:w-1/2 sm:mr-2 max-[639px]:w-full"
                         control={controlEditAction}
                         setValue={setValue}
                         name="motherProfession"
@@ -371,7 +373,7 @@ function Header({ children, currentUser, permissions }) {
 
                       <InputBaseComponent
                         type="text"
-                        className="w-1/2"
+                        className="sm:w-1/2  max-[639px]:w-full"
                         control={controlEditAction}
                         setValue={setValue}
                         name="motherPhone"

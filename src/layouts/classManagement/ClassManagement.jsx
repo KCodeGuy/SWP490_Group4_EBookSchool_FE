@@ -424,7 +424,7 @@ export default function ClassManagement() {
               <h4 className="text-xl font-bold ml-3">QUẢN LÍ LỚP HỌC</h4>
             </div>
           </div>
-          <div className="mt-4 grid sm:grid-cols-1 lg:grid-cols-2 gap-1">
+          <div className="mt-4 grid max-[693px]:grid-cols-1 md:grid-cols-2 gap-1 max-[693px]:mt-6">
             <div className="flex justify-start max-[639px]:flex-wrap">
               <FormControl sx={{ minWidth: 120 }}>
                 <InputLabel id="select-school-year-lable">Năm học</InputLabel>
@@ -443,7 +443,7 @@ export default function ClassManagement() {
                   ))}
                 </Select>
               </FormControl>
-              <div className="max-[639px]:w-full mt-3 ml-2 sm:mt-0">
+              <div className="max-[639px]:w-full max-[639px]:ml-0 mt-3 ml-2 sm:mt-0">
                 <ButtonComponent
                   type="success"
                   className="max-[639px]:w-full"
@@ -453,13 +453,13 @@ export default function ClassManagement() {
                 </ButtonComponent>
               </div>
             </div>
-            <div className="flex justify-end items-center mt-3 sm:mt-0">
+            <div className="w-full flex justify-end max-[639px]:justify-between items-center mt-3 sm:mt-0 ">
               <SearchInputComponent
-                className="max[639px]:max-w-24"
+                className=""
                 onSearch={handleChangeSearchValue}
                 placeHolder="Nhập từ khóa..."
               />
-              <div className="ml-3 max[639px]:flex-1">
+              <div className="ml-3">
                 {userRole.includes(PRINCIPAL_ROLE) || userRole.includes(HEADTEACHER_ROLE) ? (
                   <ButtonComponent className="" onClick={() => setModalOpen(true)}>
                     <AddCircleOutlineIcon className="mr-1" focusable="false" />
@@ -559,8 +559,9 @@ export default function ClassManagement() {
                         )}
                       </div>
                       <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi tạo!" />
-                      <div className="mt-4 flex justify-end min-w-fit-table">
+                      <div className="mt-4 flex justify-end sm:min-w-fit-table max-[639px]:mb-3">
                         <ButtonComponent
+                          className=""
                           type="error"
                           action="reset"
                           onClick={() => {
@@ -578,18 +579,18 @@ export default function ClassManagement() {
                       </div>
                     </form>
                     <SearchInputComponent
-                      className="-translate-y-11"
+                      className="-translate-y-11 max-[639px]:translate-y-0"
                       onSearch={(txtSearch) => {
                         setCurrentStudents(filterStudentsForAdding(txtSearch, listAllStudents));
                         reset();
                       }}
                       placeHolder="Nhập từ khóa..."
                     />
-                    <div className="flex justify-between">
-                      <p className="text-sm font-bold -translate-y-9">
+                    <div className="flex justify-between max-[639px]:my-3">
+                      <p className="text-sm font-bold -translate-y-9 max-[639px]:translate-y-0">
                         TẤT CẢ HỌC SINH ({currentStudents?.length})
                       </p>
-                      <p className="text-sm font-bold -translate-y-9">
+                      <p className="text-sm font-bold -translate-y-9 max-[639px]:hidden">
                         Hãy thêm học sinh để tạo lớp.
                       </p>
                     </div>
@@ -606,7 +607,7 @@ export default function ClassManagement() {
                         header={["Mã HS", "Họ và tên", "Ảnh"]}
                         data={currentStudents?.map((item) => [item.id, item.fullname, item.avatar])}
                         onGet={handleGetItem}
-                        className="-translate-y-7"
+                        className="-translate-y-7 max-[639px]:translate-y-0"
                         isOrdered={true}
                         itemsPerPage={5}
                         isImage={2}
@@ -808,8 +809,8 @@ export default function ClassManagement() {
                     <span className="text-base font-medium">Chưa có học sinh!</span>
                   )}
                 </div>
-                <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ thông tin trước khi cập nhật!" />
-                <div className="mt-4 flex justify-end min-w-fit-table">
+                <NotifyCheckInfoForm actionText="Hãy kiểm tra kĩ trước khi cập nhật!" />
+                <div className="mt-4 flex justify-end sm:min-w-fit-table max-[639px]:mb-3">
                   <ButtonComponent
                     type="error"
                     action="reset"
@@ -828,18 +829,20 @@ export default function ClassManagement() {
                 </div>
               </form>
               <SearchInputComponent
-                className="-translate-y-11"
+                className="-translate-y-11 max-[639px]:translate-y-0 "
                 onSearch={(txt) => {
                   setCurrentStudents(filterStudentsForAdding(txt, listAllStudents));
                   resetEditAction();
                 }}
                 placeHolder="Nhập từ khóa..."
               />
-              <div className="flex justify-between">
-                <p className="text-sm font-bold -translate-y-9">
+              <div className="flex justify-between max-[639px]:my-3">
+                <p className="text-sm font-bold -translate-y-9  max-[639px]:translate-y-0">
                   TẤT CẢ HỌC SINH ({currentStudents?.length})
                 </p>
-                <p className="text-sm font-bold -translate-y-9">Hãy thêm học sinh để tạo lớp.</p>
+                <p className="text-sm font-bold -translate-y-9 max-[639px]:hidden">
+                  Hãy thêm học sinh để tạo lớp.
+                </p>
               </div>
 
               {isLoadingStudents ? (
@@ -854,7 +857,7 @@ export default function ClassManagement() {
                   header={["Mã HS", "Họ và tên", "Ảnh"]}
                   data={currentStudents?.map((item) => [item.id, item.fullname, item.avatar])}
                   onGet={handleGetItem}
-                  className="-translate-y-7"
+                  className="-translate-y-7 max-[639px]:translate-y-0"
                   isOrdered={true}
                   itemsPerPage={5}
                   isImage={2}

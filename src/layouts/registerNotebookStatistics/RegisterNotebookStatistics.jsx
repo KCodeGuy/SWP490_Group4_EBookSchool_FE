@@ -391,7 +391,7 @@ export default function RegisterNotebookStatistics() {
                     <FilterAltIcon className="mr-1" /> THỐNG KÊ
                   </ButtonComponent>
                 </div>
-                <div className="mt-3 md:mt-0 max-[639px]:w-full">
+                <div className="max-[660px]:mt-3 max-[639px]:w-full">
                   <ButtonComponent
                     type="primary"
                     className="max-[639px]:w-full "
@@ -570,7 +570,7 @@ export default function RegisterNotebookStatistics() {
                     <FilterAltIcon className="mr-1" /> THỐNG KÊ
                   </ButtonComponent>
                 </div>
-                <div className="max-[639px]:mt-3 max-[639px]:w-full">
+                <div className="max-[786px]:mt-3 max-[639px]:w-full">
                   <ButtonComponent
                     type="primary"
                     className="max-[639px]:w-full"

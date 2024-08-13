@@ -168,7 +168,7 @@ function Configurator() {
 
         <MDBox mt={2} textAlign="center">
           <p className="text-base text-wrap text-color">
-            &copy; {new Date().getFullYear()}, Online-Register-Notebook - bản quyền thuộc về ORB
+            &copy; 2024, Online-Register-Notebook - bản quyền thuộc về ORB
           </p>
         </MDBox>
       </MDBox>

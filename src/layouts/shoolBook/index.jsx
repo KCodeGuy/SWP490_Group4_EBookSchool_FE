@@ -549,29 +549,7 @@ const SchoolBook = () => {
                   <p
                     className="ml-2 underline font-medium primary-color cursor-pointer"
                     onClick={() => {
-                      const today = new Date();
-                      const [day, month, year] = currentSlot?.date.split("/").map(Number);
-                      const date = new Date(year, month - 1, day);
-
-                      if (currentSlot?.teacher === currentUser?.username) {
-                        if (date <= today) {
-                          navigate(`/takeAttendance/${currentSlot.id}`);
-                        } else {
-                          addToast(
-                            `Bạn không thể điểm danh tiết học! Tiết học bắt đầu vào ngày ${currentSlot?.date}!`,
-                            {
-                              appearance: "error",
-                            }
-                          );
-                        }
-                      } else {
-                        addToast(
-                          `Bạn không thể điểm danh tiết học của giáo viên ${currentSlot?.teacher}!`,
-                          {
-                            appearance: "error",
-                          }
-                        );
-                      }
+                      navigate(`/takeAttendance/${currentSlot.id}`);
                     }}
                   >
                     chi tiết
@@ -629,29 +607,29 @@ const SchoolBook = () => {
                       action="button"
                       className="mx-2"
                       onClick={() => {
-                        const today = new Date();
-                        const [day, month, year] = currentSlot?.date.split("/").map(Number);
-                        const date = new Date(year, month - 1, day);
+                        navigate(`/takeAttendance/${currentSlot.id}`);
+                        // const today = new Date();
+                        // const [day, month, year] = currentSlot?.date.split("/").map(Number);
+                        // const date = new Date(year, month - 1, day);
 
-                        if (currentSlot?.teacher === currentUser?.username) {
-                          if (date <= today) {
-                            navigate(`/takeAttendance/${currentSlot.id}`);
-                          } else {
-                            addToast(
-                              `Bạn không thể điểm danh tiết học! Tiết học bắt đầu vào ngày "${currentSlot?.date}"!`,
-                              {
-                                appearance: "error",
-                              }
-                            );
-                          }
-                        } else {
-                          addToast(
-                            `Bạn không thể điểm danh tiết học của giáo viên "${currentSlot?.teacher}"!`,
-                            {
-                              appearance: "error",
-                            }
-                          );
-                        }
+                        // if (currentSlot?.teacher === currentUser?.username) {
+                        //   if (date <= today) {
+                        //   } else {
+                        //     addToast(
+                        //       `Bạn không thể điểm danh tiết học! Tiết học bắt đầu vào ngày "${currentSlot?.date}"!`,
+                        //       {
+                        //         appearance: "error",
+                        //       }
+                        //     );
+                        //   }
+                        // } else {
+                        //   addToast(
+                        //     `Bạn không thể điểm danh tiết học của giáo viên "${currentSlot?.teacher}"!`,
+                        //     {
+                        //       appearance: "error",
+                        //     }
+                        //   );
+                        // }
                       }}
                     >
                       <BorderColorIcon className="mr-2" />

@@ -129,7 +129,7 @@ export default function RegisterNotebookStatistics() {
 
   const handleDetails = (rowItem) => {
     if (rowItem) {
-      console.log(rowItem);
+      // console.log(rowItem);
       setOpenModalDetail(true);
       const itemDetail = {
         className: rowItem[0],
@@ -756,12 +756,6 @@ export default function RegisterNotebookStatistics() {
                     label={`Loại D (${detail.typeD})`}
                     value={`${detail.typeD} điểm` || "_"}
                     icon={<BorderColorIcon />}
-                    className="justify-between w-full"
-                  />
-                  <TextValueComponent
-                    label="Tiết chưa đánh giá"
-                    value={detail.slotRemainder || "_"}
-                    icon={<RemoveCircleOutlineIcon />}
                     className="justify-between w-full"
                   />
 

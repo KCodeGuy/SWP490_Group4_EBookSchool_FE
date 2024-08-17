@@ -129,6 +129,7 @@ export default function RegisterNotebookStatistics() {
 
   const handleDetails = (rowItem) => {
     if (rowItem) {
+      console.log(rowItem);
       setOpenModalDetail(true);
       const itemDetail = {
         className: rowItem[0],
@@ -136,9 +137,8 @@ export default function RegisterNotebookStatistics() {
         typeB: rowItem[2],
         typeC: rowItem[3],
         typeD: rowItem[4],
-        slotRemainder: rowItem[5],
-        totalMark: rowItem[6],
-        rank: rowItem[7],
+        totalMark: rowItem[5],
+        rank: rowItem[6],
       };
       setDetail(itemDetail);
     }
@@ -759,7 +759,7 @@ export default function RegisterNotebookStatistics() {
                     className="justify-between w-full"
                   />
                   <TextValueComponent
-                    label="Tiết chưa đáng giá"
+                    label="Tiết chưa đánh giá"
                     value={detail.slotRemainder || "_"}
                     icon={<RemoveCircleOutlineIcon />}
                     className="justify-between w-full"

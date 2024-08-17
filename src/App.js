@@ -140,9 +140,9 @@ export default function App() {
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
 
   // Setting the dir attribute for the body element
-  useEffect(() => {
-    document.body.setAttribute("dir", direction);
-  }, [direction]);
+  // useEffect(() => {
+  //   document.body.setAttribute("dir", direction);
+  // }, [direction]);
 
   // Setting page scroll to 0 when changing the route
   useEffect(() => {

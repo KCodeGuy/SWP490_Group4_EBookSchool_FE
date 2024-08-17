@@ -190,14 +190,20 @@ $dark-hover-color: #505e77;
   height: 40px;
 }
 
-.css-qh1700-MuiListItemText-root span,
-.css-mvs481 {
-  color: $dark-color !important;
-}
-
 @media (max-width: 992px) {
-  .css-7qqlnw-MuiListItemIcon-root {
+  .css-7qqlnw-MuiListItemIcon-root,
+  .css-qh1700-MuiListItemText-root span,
+  .css-mvs481 {
     color: $dark-color !important;
+  }
+  a.font-bold.active {
+    li {
+      > div {
+        > div span {
+          color: $white-color !important;
+        }
+      }
+    }
   }
 }
 

@@ -141,11 +141,11 @@ export default function ComponentMark() {
   };
 
   const handleStatisticSubjectSchool = () => {
-    console.log("Call api by all school: ", { schoolYear, schoolSemester, schoolSubject });
+    // console.log("Call api by all school: ", { schoolYear, schoolSemester, schoolSubject });
   };
 
   const handleStatisticSubjectGrads = () => {
-    console.log("Call api by grad: ", { schoolYear, schoolSemester, schoolSubject, grade });
+    // console.log("Call api by grad: ", { schoolYear, schoolSemester, schoolSubject, grade });
   };
 
   const handleStatisticSubjectClass = () => {

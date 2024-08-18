@@ -124,11 +124,29 @@ export default function WeeklyTimeTable() {
   const handleSchoolWeeksSelectedChange = (event) => {
     setSchoolWeek(event.target.value);
   };
-
-  const formattedSubjects = currentSubjects?.map((item) => ({
-    label: `${item.name}`,
-    value: item.id,
-  }));
+  let formattedSubjects;
+  if (schoolClass.toString().includes("12")) {
+    formattedSubjects = currentSubjects
+      .filter((subject) => subject.grade === "12" || subject.grade === "Môn chung")
+      .map((item) => ({
+        label: `${item.name}`,
+        value: item.id,
+      }));
+  } else if (schoolClass.toString().includes("11")) {
+    formattedSubjects = currentSubjects
+      .filter((subject) => subject.grade === "11" || subject.grade === "Môn chung")
+      .map((item) => ({
+        label: `${item.name}`,
+        value: item.id,
+      }));
+  } else if (schoolClass.toString().includes("10")) {
+    formattedSubjects = currentSubjects
+      .filter((subject) => subject.grade === "10" || subject.grade === "Môn chung")
+      .map((item) => ({
+        label: `${item.name}`,
+        value: item.id,
+      }));
+  }
 
   // Filter out duplicates by name
   const uniqueSubjects = [];
@@ -243,7 +261,6 @@ export default function WeeklyTimeTable() {
   const handleOpenCreateModal = () => {
     refetchSubjects().then((result) => {
       if (result.data) {
-        // console.log(result.data?.data);
         setCurrentSubjects(result.data);
       }
     });
@@ -288,7 +305,7 @@ export default function WeeklyTimeTable() {
 
   const handleAddTimetableManually = (data) => {
     if (!data?.subjectID || data?.subjectID === "") {
-      data.subjectID = uniqueSubjects[0]?.value;
+      data.subjectID = formattedSubjects[0]?.value;
     }
     if (!data?.teacherID || data?.teacherID === "") {
       data.teacherID = formattedTeachers[0].value;
@@ -591,7 +608,7 @@ export default function WeeklyTimeTable() {
                         control={control}
                         setValue={noSetValue}
                         type="select"
-                        options={uniqueSubjects}
+                        options={formattedSubjects}
                         errors={errors}
                       />
                       <InputBaseComponent
@@ -890,7 +907,7 @@ export default function WeeklyTimeTable() {
                   control={controlEditAction}
                   setValue={setValue}
                   type="select"
-                  options={uniqueSubjects}
+                  options={formattedSubjects}
                   errors={errorsEditAction}
                   validationRules={{
                     required: "Hãy chọn môn học!",

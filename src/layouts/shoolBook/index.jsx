@@ -114,7 +114,6 @@ const SchoolBook = () => {
 
   const handleViewSlotDetail = (slot) => {
     if (slot) {
-      // console.log(slot);
       setCurrentSlot(slot);
       setValue("id", slot.id);
       setValue("dateEdit", formatDateYearsMonthsDates(slot.date));

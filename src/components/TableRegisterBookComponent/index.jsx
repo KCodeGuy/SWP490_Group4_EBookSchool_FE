@@ -185,8 +185,8 @@ function TableRegisterBookComponent({
                   <td className="px-2 hidden">{`${
                     date.numberOfAbsentConfirmed > 0 ? date.numberOfAbsentConfirmed : "_"
                   }`}</td>
-                  <td className="">
-                    <span className="px-2 max-line-2 max-w-52">{date.title || "_"}</span>
+                  <td className="text-center">
+                    <span className="px-2 max-line-2 max-w-52 mx-auto">{date.title || "_"}</span>
                   </td>
                   <td>
                     <div className="px-2 max-line-4 max-w-56 mx-auto">{date.note || "_"}</div>

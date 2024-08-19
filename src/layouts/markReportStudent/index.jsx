@@ -744,7 +744,7 @@ export default function MarkReportStudent() {
           </PopupComponent>
           <PopupComponent
             title="CHI TIẾT ĐIỂM"
-            description="Chi tiết điểm tất cả môn học"
+            description="Chi tiết điểm"
             rightNote={`HS: ${currentUser?.fullname}`}
             isOpen={openModalDetailsAllSubject}
             onClose={() => setOpenModalDetailsAllSubject(false)}

@@ -140,6 +140,7 @@ const SchoolBook = () => {
   });
 
   const formatRegisterNotebook = (registerNotebook) => {
+    // Format dateEdit to dd/mm/yyyy
     const transformedData = [];
     if (registerNotebook?.length > 0) {
       registerNotebook.forEach((detail) => {
@@ -253,8 +254,11 @@ const SchoolBook = () => {
         rating: data.ratingEdit,
       };
 
+      console.log("data.dateEdit", data.dateEdit);
       const today = new Date();
       const dateEdit = new Date(data.dateEdit);
+
+      console.log(dateEdit);
 
       // Extract day, month, and year from dateEdit
       const day = String(dateEdit.getDate()).padStart(2, "0");
@@ -498,7 +502,7 @@ const SchoolBook = () => {
           </div>
           <PopupComponent
             title={userRole.includes(SUBJECT_ROLE) ? "ĐÁNH GIÁ TIẾT HỌC" : "CHI TIẾT SỔ"}
-            description={`GVBM: ${currentUser?.fullname}`}
+            description={`GVBM: ${currentSlot?.teacher}`}
             rightNote={`Lớp: ${currentClass}`}
             icon={<BorderColorIcon />}
             isOpen={openModalEditSchoolBook}

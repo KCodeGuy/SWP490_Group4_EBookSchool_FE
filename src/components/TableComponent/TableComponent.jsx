@@ -197,6 +197,8 @@ function TableComponent({
                                   ? "warning-color font-bold"
                                   : cell === "Vắng không phép"
                                   ? "error-color font-bold"
+                                  : cell === "Chưa bắt đầu"
+                                  ? "text-color font-bold"
                                   : ""
                               }`}
                             >

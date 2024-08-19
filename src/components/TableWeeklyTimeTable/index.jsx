@@ -91,7 +91,7 @@ const TableWeeklyTimeTableComponent = ({
                           <p className="font-bold">{slotData.subject} </p>
                           <p className="warning-color">({slotData.teacher})</p>
                         </div>
-                        <p className="text-center text-white px-1 h-6 max-[993px]:hidden lg:block leading-6 rounded bg-success-color">
+                        <p className="text-center text-white px-1 h-6 max-w-max max-[993px]:hidden lg:block leading-6 rounded bg-success-color">
                           <AccessAlarmsIcon className="mb-1 mr-1" />
                           {slotData.slotTime}
                         </p>

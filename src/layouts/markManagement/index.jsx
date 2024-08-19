@@ -1005,7 +1005,7 @@ export default function MarkManagement() {
           </PopupComponent>
           <PopupComponent
             title="CHI TIẾT ĐIỂM"
-            description="Chi tiết điểm tất cả môn học"
+            description="Chi tiết điểm"
             rightNote={`HS: ${markDetails?.fullName}`}
             isOpen={openModalDetailsAllSubject}
             onClose={() => setOpenModalDetailsAllSubject(false)}

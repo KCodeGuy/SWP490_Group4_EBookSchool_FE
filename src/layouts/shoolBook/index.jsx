@@ -270,7 +270,7 @@ const SchoolBook = () => {
 
       // Calculate the maximum date for updating (3 days from dateEdit)
       const maxUpdateDate = new Date(dateEdit);
-      maxUpdateDate.setDate(dateEdit.getDate() + 3);
+      maxUpdateDate.setDate(dateEdit.getDate() + 2);
 
       if (data.teacherEdit === currentUser?.username) {
         if (today > maxUpdateDate) {

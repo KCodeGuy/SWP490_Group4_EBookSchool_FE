@@ -3,23 +3,31 @@ import { API_HOST } from "./APIConfig";
 
 const getAllNotifications = async (accessToken) => {
   // console.log(accessToken);
-  const res = await axios.get(`${API_HOST}/Notifications`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  return res.data;
+  try {
+    const res = await axios.get(`${API_HOST}/Notifications`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
 };
 
 const getNotificationByID = async (accessToken, notificationID) => {
-  const res = await axios.get(`${API_HOST}/Notifications/${notificationID}`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  return res.data;
+  try {
+    const res = await axios.get(`${API_HOST}/Notifications/${notificationID}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
 };
 
 const addNotification = async (accessToken, data) => {

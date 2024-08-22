@@ -270,7 +270,7 @@ export default function AccountManagement() {
         if (result?.roles) {
           const roles = result?.roles?.toString();
           if (roles.includes("Admin")) {
-            setValue("roleAmin", true);
+            setValue("roleAdmin", true);
           }
           if (roles.includes(HEADTEACHER_ROLE)) {
             setValue("roleSupervisor", true);

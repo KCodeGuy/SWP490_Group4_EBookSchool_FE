@@ -2,13 +2,17 @@ import axios from "axios";
 import { API_HOST, ORB_HOST } from "./APIConfig";
 
 const getAllSubjects = async (accessToken) => {
-  const res = await axios.get(`${API_HOST}/Subjects`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  return res.data;
+  try {
+    const res = await axios.get(`${API_HOST}/Subjects`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
 };
 
 const getSubjectByID = async (accessToken, subjectID) => {

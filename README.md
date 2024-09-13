@@ -11,22 +11,28 @@ Mô tả: E-SchoolBook là nền tảng sổ đầu bài trực tuyến, đưa s
 
 ## About Teams
 1. CE160343 Huỳnh Hữu Nghĩa (C) (BE)
-2. CE160367 Trần Đăng Khoa (FE)
-3. CE160438 Lê Trung Uôl (FE)
-4. CE161025 Trần Thị Ngọc Hiếu (FE)
-5. CE161096 Nguyễn Ngọc Mỹ Quyên (Mobile)
+2. CE160367 Trần Đăng Khoa (C) (FE)
+3. CE160438 Lê Trung Uôl 
+4. CE161025 Trần Thị Ngọc Hiếu 
+5. CE161096 Nguyễn Ngọc Mỹ Quyên
 
 ## Quick Start
 1. npm i or npm install
 2. npm start
-
 #Note: Before you must be installed nodeJS environment (test node -v)
 
+## Reference documatation
+1. ERD: https://dbdiagram.io/d/DB_SEP-66251c7303593b6b618caa75
+2. Figma: https://www.figma.com/file/csiYhbij7jWODvV8IWxWFI/SEP490_10?type=design&node-id=246-3663&mode=design&t=S4Fmd6bgaj7vE3TA-0
+3. Diagram: https://drive.google.com/file/d/1xg5FZZiD9Ya5-OUQly8oZQbEiKvcDOGE/view?usp=sharing
+   
 ## Reference tools
 1. UI component documents: 
    + https://mui.com/material-ui/getting-started/templates/
    + https://www.creative-tim.com/learning-lab/react/quick-start/material-dashboard/
 2. Styles: https://tailwindcss.com/docs/guides/create-react-app
 3. Call API(axios): https://tanstack.com/query/v4
-4. Form handling: https://react-hook-form.com/get-started
-5. Routing: https://reactrouter.com/en/main
+4. API hadling: https://www.npmjs.com/package/react-query
+5. Form handling: https://react-hook-form.com/get-started
+7. Routing: https://reactrouter.com/en/main
+   
